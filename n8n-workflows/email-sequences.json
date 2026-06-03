@@ -1,0 +1,349 @@
+{
+  "name": "AvaLimo Email Sequences",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "avalimo-email-trigger",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "email-trigger",
+      "name": "Email Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "avalimo-email"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Determine which email sequence to send\nconst body = $input.first().json.body;\nconst event = body.event_type;\nconst sequences = {\n  'new_lead': 'welcome_series',\n  'quote_requested': 'abandoned_quote',\n  'ride_completed': 'review_request',\n  'birthday': 'birthday_vip',\n  'anniversary': 'anniversary_vip'\n};\n\nreturn [{\n  json: {\n    sequence: sequences[event] || 'welcome_series',\n    customer: body,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "route-sequence",
+      "name": "Route Sequence",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.sequence }}",
+              "rightValue": "welcome_series",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-welcome",
+      "name": "Welcome?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "adam@avalimo.net",
+        "toEmail": "={{ $json.customer.email }}",
+        "subject": "Welcome to AvaLimo — Houston's Luxury Transportation",
+        "text": "Hi {{ $json.customer.name }},\n\nWelcome to AvaLimo — where every arrival is an occasion.\n\nI'm Adam J, the founder. Here's what makes us different:\n\n✓ Fixed pricing — what you see is what you pay\n✓ Flight tracking on every airport transfer\n✓ Professional chauffeurs, not just drivers\n✓ 24/7 availability, 365 days a year\n✓ Immaculately maintained Mercedes, Escalade, and Sprinter fleet\n\nNeed a ride? Reply or call me: (832) 990-8258\n\nBest,\nAdam J\nAvaLimo Houston\n\nP.S. Follow us @avalimo on Instagram for behind-the-scenes of our fleet."
+      },
+      "id": "welcome-email",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [850, 100]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "seconds": 0,
+              "minutes": 0,
+              "hours": 48
+            }
+          ]
+        }
+      },
+      "id": "wait-48h",
+      "name": "Wait 2 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1050, 100]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "adam@avalimo.net",
+        "toEmail": "={{ $json.customer.email }}",
+        "subject": "15% off your first ride — here's your code",
+        "text": "Hi {{ $json.customer.name }},\n\nI want to make your first AvaLimo experience unforgettable.\n\nUse code WELCOME15 for 15% off your first booking.\n\n✓ Any vehicle\n✓ Any service\n✓ Valid for 7 days\n\nBook: https://avalimo.net/book\nCode: WELCOME15\n\nQuestions? Reply or text: (832) 990-8258\n\nBest,\nAdam"
+      },
+      "id": "discount-email",
+      "name": "Send Discount Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1250, 100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.sequence }}",
+              "rightValue": "abandoned_quote",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-abandoned",
+      "name": "Abandoned?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "adam@avalimo.net",
+        "toEmail": "={{ $json.customer.email }}",
+        "subject": "Quick question about your AvaLimo quote",
+        "text": "Hi {{ $json.customer.name }},\n\nI noticed you requested a quote for {{ $json.customer.vehicle }} from {{ $json.customer.pickup }} to {{ $json.customer.dropoff }}.\n\nDid everything look right? Happy to adjust vehicle, time, or add special requests.\n\nJust reply or call: (832) 990-8258\n\nYour quote is held for 24 hours.\n\nBest,\nAdam"
+      },
+      "id": "abandoned-1h",
+      "name": "1h Follow-up",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [850, 350]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "seconds": 0,
+              "minutes": 0,
+              "hours": 24
+            }
+          ]
+        }
+      },
+      "id": "wait-24h",
+      "name": "Wait 24h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1050, 350]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "adam@avalimo.net",
+        "toEmail": "={{ $json.customer.email }}",
+        "subject": "{{ $json.customer.vehicle }} availability this weekend",
+        "text": "Hi {{ $json.customer.name }},\n\nOur {{ $json.customer.vehicle }} fleet is at 85% capacity for {{ $json.customer.time }}.\n\nI don't want you to miss out. Ready to confirm?\n\nBook: https://avalimo.net/book\nOr call: (832) 990-8258\n\nBest,\nAdam"
+      },
+      "id": "abandoned-24h",
+      "name": "24h Urgency",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1250, 350]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "seconds": 0,
+              "minutes": 0,
+              "hours": 24
+            }
+          ]
+        }
+      },
+      "id": "wait-48h-abandoned",
+      "name": "Wait 48h Total",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1450, 350]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "adam@avalimo.net",
+        "toEmail": "={{ $json.customer.email }}",
+        "subject": "Last call: 10% off your {{ $json.customer.vehicle }} booking",
+        "text": "Hi {{ $json.customer.name }},\n\nThis is my last email about your quote — I promise not to bug you after this.\n\n10% off to make it easy:\nCode: BOOKNOW10\nValid until midnight tonight.\n\nBook: https://avalimo.net/book\n\nNo pressure. If not now, I hope you'll think of us next time.\n\nBest,\nAdam"
+      },
+      "id": "abandoned-final",
+      "name": "Final Offer",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1650, 350]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Email sequence triggered: {{ $json.sequence }} for {{ $json.customer.name }} ({{ $json.customer.email }})",
+        "additionalFields": {}
+      },
+      "id": "notify-adam-email",
+      "name": "Notify Adam",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 550]
+    }
+  ],
+  "connections": {
+    "Email Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route Sequence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Sequence": {
+      "main": [
+        [
+          {
+            "node": "Welcome?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Abandoned?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Adam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Welcome?": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Days": {
+      "main": [
+        [
+          {
+            "node": "Send Discount Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Abandoned?": {
+      "main": [
+        [
+          {
+            "node": "1h Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1h Follow-up": {
+      "main": [
+        [
+          {
+            "node": "Wait 24h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 24h": {
+      "main": [
+        [
+          {
+            "node": "24h Urgency",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "24h Urgency": {
+      "main": [
+        [
+          {
+            "node": "Wait 48h Total",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 48h Total": {
+      "main": [
+        [
+          {
+            "node": "Final Offer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["avalimo", "email", "sequences", "automation"]
+}
