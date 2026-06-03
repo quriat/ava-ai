@@ -1,0 +1,264 @@
+{
+  "name": "AvaLimo Google Review Requests",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "seconds": 0,
+              "minutes": 0,
+              "hours": 24
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "daily-10am",
+      "name": "Daily at 10 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Get yesterday's completed rides\n// In production, this would query your database/CRM\n// For now, return sample data to demonstrate the workflow\n\nconst yesterday = new Date();\nyesterday.setDate(yesterday.getDate() - 1);\nyesterday.setHours(0, 0, 0, 0);\n\nconst completedRides = [\n  {\n    id: 'ride_001',\n    customer_name: 'James',\n    customer_email: 'james@example.com',\n    customer_phone: '+18325551234',\n    service: 'Airport Transfer',\n    date: yesterday.toISOString(),\n    review_requested: false\n  },\n  {\n    id: 'ride_002',\n    customer_name: 'Sarah',\n    customer_email: 'sarah@example.com',\n    customer_phone: '+18325555678',\n    service: 'Corporate Travel',\n    date: yesterday.toISOString(),\n    review_requested: false\n  },\n  {\n    id: 'ride_003',\n    customer_name: 'Michael',\n    customer_email: 'michael@example.com',\n    customer_phone: '+18325559012',\n    service: 'Wedding',\n    date: yesterday.toISOString(),\n    review_requested: false\n  }\n];\n\n// Filter out rides already reviewed or already requested\nconst eligible = completedRides.filter(r => !r.review_requested);\n\nreturn eligible.map(ride => ({\n  json: ride\n}));"
+      },
+      "id": "get-rides",
+      "name": "Get Yesterday's Rides",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.customer_email ? true : false }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "has-email",
+      "name": "Has Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "adam@avalimo.net",
+        "toEmail": "={{ $json.customer_email }}",
+        "subject": "How was your ride with AvaLimo?",
+        "text": "Hi {{ $json.customer_name }},\n\nThank you for choosing AvaLimo for your {{ $json.service }} yesterday. We hope you had a great experience!\n\nIf you have a moment, we would really appreciate a quick review on Google. It helps other Houston travelers find us and keeps our team motivated to deliver the best service.\n\nLeave a review: https://search.google.com/local/writereview?placeid=YOUR_GOOGLE_PLACE_ID\n\nThank you for supporting a local Houston business!\n\nBest regards,\nAdam J\nAvaLimo Houston\n(832) 990-8258\n"
+      },
+      "id": "email-review",
+      "name": "Send Review Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [850, 150]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.customer_phone ? true : false }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "has-phone",
+      "name": "Has Phone?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 450]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Review request sent to {{ $json.customer_name }} ({{ $json.service }}) via email.",
+        "additionalFields": {}
+      },
+      "id": "notify-sent",
+      "name": "Notify Adam",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1050, 150]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Review request sent to {{ $json.customer_name }} ({{ $json.service }}) via SMS fallback.",
+        "additionalFields": {}
+      },
+      "id": "notify-sms",
+      "name": "Notify Adam (SMS)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1050, 450]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build SMS message\nconst ride = $input.first().json;\nconst reviewUrl = 'https://search.google.com/local/writereview?placeid=YOUR_GOOGLE_PLACE_ID';\nconst shortUrl = reviewUrl; // Use bit.ly or similar for short URL\n\nreturn [{\n  json: {\n    to: ride.customer_phone,\n    message: `Hi ${ride.customer_name}, thanks for riding with AvaLimo! Quick review? ${shortUrl} - Adam`,\n    customer_name: ride.customer_name,\n    service: ride.service\n  }\n}];"
+      },
+      "id": "sms-message",
+      "name": "Build SMS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [850, 450]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "options": {},
+        "table": {
+          "mode": "list",
+          "value": "review_requests"
+        },
+        "columns": {
+          "matching": [
+            {
+              "column": "ride_id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "column": "customer_email",
+              "value": "={{ $json.customer_email }}"
+            },
+            {
+              "column": "customer_phone",
+              "value": "={{ $json.customer_phone }}"
+            },
+            {
+              "column": "sent_at",
+              "value": "={{ $now }}"
+            },
+            {
+              "column": "channel",
+              "value": "email"
+            },
+            {
+              "column": "status",
+              "value": "sent"
+            }
+          ]
+        }
+      },
+      "id": "log-request",
+      "name": "Log Request",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [1250, 150]
+    }
+  ],
+  "connections": {
+    "Daily at 10 AM": {
+      "main": [
+        [
+          {
+            "node": "Get Yesterday's Rides",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Yesterday's Rides": {
+      "main": [
+        [
+          {
+            "node": "Has Email?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Has Phone?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Email?": {
+      "main": [
+        [
+          {
+            "node": "Send Review Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Review Email": {
+      "main": [
+        [
+          {
+            "node": "Notify Adam",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Phone?": {
+      "main": [
+        [
+          {
+            "node": "Build SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build SMS": {
+      "main": [
+        [
+          {
+            "node": "Notify Adam (SMS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["avalimo", "reviews", "google", "crm"]
+}

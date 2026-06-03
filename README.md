@@ -1,6 +1,6 @@
-# AvaLimo Website — Full DevOps Pipeline
+# AvaLimo Website — Full DevOps + Marketing Pipeline
 
-Houston Premier Limo Service website with automated SEO, CI/CD, and business workflows.
+Houston Premier Limo Service website with automated SEO, CI/CD, content marketing, and business automation.
 
 ---
 
@@ -11,7 +11,9 @@ Houston Premier Limo Service website with automated SEO, CI/CD, and business wor
 | **SEO-ready HTML** | Placeholders for GSC + FB Pixel |
 | **GitHub Actions CI/CD** | Auto-lint + deploy + notify |
 | **Staging Branch** | Preview changes before production |
-| **n8n Workflows** | Deploy alerts + Lead nurture + Review requests |
+| **n8n Workflows (4)** | Deploy alerts, Lead nurture, Competitor tracker, Review requests |
+| **Content Calendar** | 12-month SEO blog strategy |
+| **Blog Post Template** | SEO-optimized HTML template + sample article |
 | **Dockerfile** | Ready for Coolify deployment |
 
 ---
@@ -35,10 +37,10 @@ git push -u origin staging
 
 ### 2. Add GitHub Secrets
 
-Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+Go to repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 
-| Secret Name | Value |
-|-------------|-------|
+| Secret | Value |
+|--------|-------|
 | `N8N_WEBHOOK_URL` | Get this from n8n after importing deploy-notifications.json |
 | `TELEGRAM_BOT_TOKEN` | From @BotFather |
 
@@ -46,72 +48,85 @@ Go to your repo → **Settings** → **Secrets and variables** → **Actions** �
 
 1. Create new **Application** in Coolify
 2. Source: GitHub → `avalimo-site` repo → `main` branch
-3. Build pack: **Dockerfile**
+3. Build Pack: **Dockerfile**
 4. Port: **80**
 5. Domain: `avalimo.net`
-6. Deploy!
+6. Deploy! 🚀
 
 ### 4. Configure n8n
 
 1. Log in to `n8napp.adamj.fit`
-2. **Import** → Upload `n8n-workflows/deploy-notifications.json`
-3. **Import** → Upload `n8n-workflows/lead-nurture.json`
-4. Update Telegram chat ID in both workflows
-5. Copy webhook URL from "GitHub Webhook" node
-6. Save that as `N8N_WEBHOOK_URL` in GitHub secrets
+2. **Import** these 4 workflows:
+   - `n8n-workflows/deploy-notifications.json`
+   - `n8n-workflows/lead-nurture.json`
+   - `n8n-workflows/competitor-tracker.json`
+   - `n8n-workflows/review-requests.json`
+3. Update Telegram chat ID in all workflows
+4. Copy webhook URL from "GitHub Webhook" node
+5. Save as `N8N_WEBHOOK_URL` in GitHub secrets
 
----
+### 5. Replace SEO Placeholders
 
-## Workflow Branches
+Edit `index.html`:
+- Replace `YOUR_GSC_CODE_HERE` with Google Search Console verification code
+- Replace `YOUR_PIXEL_ID_HERE` with Facebook Pixel ID (2 places)
 
-```
-main      → Production (avalimo.net)
-staging   → Test environment (staging.avalimo.net)
-PRs       → Auto-lint check + preview comment
-```
-
-### How to Use
-
-**Small fix (e.g., typo):**
 ```bash
 git checkout main
-git pull origin main
-# edit file
-git add .
-git commit -m "Fix typo in hero section"
+# edit index.html
+git add index.html
+git commit -m "Add GSC and FB Pixel codes"
 git push origin main
-# → Auto-deploys to production in ~30 seconds
-```
-
-**Big change (e.g., new page):**
-```bash
-git checkout staging
-git pull origin staging
-# make changes
-git add .
-git commit -m "Add new fleet page"
-git push origin staging
-# → Auto-deploys to staging for testing
-
-# Test on staging.avalimo.net
-# When ready:
-git checkout main
-git merge staging
-git push origin main
-# → Auto-deploys to production
+# → Auto-deploys to production!
 ```
 
 ---
 
-## SEO Setup Checklist
+## Content Marketing
 
-**Before first production deploy:**
+### Blog Strategy (`content/calendar/`)
 
-- [ ] Replace `YOUR_GSC_CODE_HERE` in `index.html` with Google Search Console verification code
-- [ ] Replace `YOUR_PIXEL_ID_HERE` in `index.html` with Facebook Pixel ID
-- [ ] Go to https://search.google.com/search-console → Add `avalimo.net`
-- [ ] Submit `sitemap.xml` in Search Console
-- [ ] Verify Google Business Profile is claimed
+12 months of SEO-optimized topics targeting Houston limo keywords:
+
+| Month | Focus | Articles |
+|-------|-------|----------|
+| **Month 1** | Airport/Travel | IAH Guide, Hobby Guide |
+| **Month 2** | Corporate/Events | Corporate travel, Houston events |
+| **Month 3** | Weddings | Wedding trends, Bachelorette parties |
+| **Month 4** | Tours | Wine country, Craft breweries |
+| **Month 5** | Local SEO | Sugar Land, The Woodlands |
+| **Month 6** | Seasonal | Prom, Holiday travel |
+
+**Sample article included:** `content/blog/iah-airport-transfer-guide.html`
+
+**Template for new articles:** `content/blog/TEMPLATE.html`
+
+### Keyword Targets
+
+**High-Intent (Book Now):**
+- `houston limo service` — 2,400/mo
+- `iah airport transfer` — 1,000/mo
+- `corporate car service houston` — 720/mo
+- `wedding limo houston` — 590/mo
+
+**Long-Tail (Easier Wins):**
+- `limo service sugar land tx`
+- `limo service the woodlands tx`
+- `houston airport transfer to galveston`
+- `bachelorette party transportation houston`
+
+---
+
+## Automation (n8n)
+
+| Workflow | Trigger | Action |
+|----------|---------|--------|
+| **Deploy Alert** | GitHub webhook | Telegram message |
+| **Production Email** | Deploy to `main` | Email to adam@avalimo.net |
+| **New Lead** | Booking form | Telegram + auto-reply + DB save |
+| **Lead Follow-up** | 1 hour after lead | Follow-up email |
+| **Competitor Tracker** | Daily schedule | Ranking report + alerts |
+| **Review Requests** | Daily 10 AM | Email/SMS to past customers |
 
 ---
 
@@ -119,68 +134,67 @@ git push origin main
 
 ```
 ├── index.html                    # Main website
-├── Dockerfile                    # Nginx container for Coolify
-├── .gitignore                   # Git ignore rules
-├── .env.example                 # Template for secrets
+├── Dockerfile                    # Nginx container
+├── .gitignore                   # Git rules
+├── .env.example                 # Secrets template
 ├── README.md                    # This file
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml           # Main CI/CD pipeline
-│       └── pr-preview.yml       # PR lint + comment
+│       ├── deploy.yml           # Main CI/CD
+│       └── pr-preview.yml       # PR checks
+├── content/
+│   ├── calendar/
+│   │   └── content-calendar.md  # 12-month strategy
+│   └── blog/
+│       ├── TEMPLATE.html        # SEO blog template
+│       └── iah-airport-transfer-guide.html  # Sample article
 └── n8n-workflows/
-    ├── deploy-notifications.json  # n8n deploy alerts
-    ├── lead-nurture.json         # n8n lead auto-response
-    └── README.md               # n8n setup guide
+    ├── deploy-notifications.json  # Deploy alerts
+    ├── lead-nurture.json         # Lead auto-response
+    ├── competitor-tracker.json   # SEO competitor monitor
+    ├── review-requests.json      # Google Review automation
+    └── README.md                # n8n setup guide
 ```
-
----
-
-## GitHub Actions Pipeline
-
-```
-Push to PR → Lint check → PR comment ✅
-Push to staging → Lint → Deploy staging → Telegram alert
-Push to main → Lint → Deploy production → Telegram alert + Email
-```
-
-**Lint checks include:**
-- Exactly 1 H1 tag
-- All images have alt text
-- Title tag exists
-- Meta description exists
-- Canonical tag exists
-- File size warning (if >150KB)
-
----
-
-## Business Automation (n8n)
-
-| Workflow | Trigger | Action |
-|----------|---------|--------|
-| **Deploy Alert** | GitHub webhook | Telegram message |
-| **Production Email** | Deploy = production | Email to adam@avalimo.net |
-| **New Lead** | Booking form POST | Telegram + auto-reply email |
-| **Lead Follow-up** | 1 hour after lead | Follow-up email |
-| **Review Request** | Daily at 10 AM | SMS/email to past customers |
 
 ---
 
 ## Domain Setup
 
-Point these A records to your Coolify server IP:
-
 ```
-A  avalimo.net      → YOUR_SERVER_IP
-A  www.avalimo.net  → YOUR_SERVER_IP
-A  staging.avalimo.net → YOUR_SERVER_IP (optional)
+A  avalimo.net      → YOUR_COOLIFY_SERVER_IP
+A  www.avalimo.net  → YOUR_COOLIFY_SERVER_IP
 ```
 
-SSL certificates auto-generated by Coolify (Let's Encrypt).
+SSL auto-generated by Coolify (Let's Encrypt).
+
+---
+
+## Your New Workflow
+
+```
+Edit site     → git push     → Lint checks     → Deploy     → Telegram alert
+Write blog    → git push     → PR comment      → Merge      → Deploy + alert
+New lead      → n8n webhook  → Telegram + email → Follow-up  → Review request
+Competitor    → n8n daily    → Ranking report   → Alert      → Take action
+```
+
+---
+
+## Next Steps After Setup
+
+1. [ ] **Claim Google Business Profile** (if not done) — search "AvaLimo Houston" and claim
+2. [ ] **Set up Google Search Console** — verify, submit sitemap
+3. [ ] **Install Facebook Pixel** — get Pixel ID, replace placeholder
+4. [ ] **Write 2 blog posts** using the template — publish on `/blog/`
+5. [ ] **Connect booking form** to n8n lead webhook
+6. [ ] **Add Google Place ID** to review request workflow
+7. [ ] **Set up competitor tracker** with real competitor domains
 
 ---
 
 ## Support
 
-- **GitHub Actions docs:** https://docs.github.com/en/actions
-- **Coolify docs:** https://coolify.io/docs
-- **n8n docs:** https://docs.n8n.io
+- **GitHub Actions:** https://docs.github.com/en/actions
+- **Coolify:** https://coolify.io/docs
+- **n8n:** https://docs.n8n.io
+- **Google Search Console:** https://search.google.com/search-console
