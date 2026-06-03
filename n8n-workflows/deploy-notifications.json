@@ -1,0 +1,111 @@
+{
+  "name": "AvaLimo Deploy Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "avalimo-deploy",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "GitHub Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "avalimo-deploy"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "AvaLimo Deploy Alert | Environment: {{ $json.body.environment }} | Commit: {{ $json.body.commit.substring(0,7) }} | Author: {{ $json.body.author }} | Message: {{ $json.body.message }}",
+        "additionalFields": {}
+      },
+      "id": "telegram-message",
+      "name": "Send Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.body.environment }}",
+              "rightValue": "production",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-production",
+      "name": "Is Production?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "deploy@avalimo.net",
+        "toEmail": "adam@avalimo.net",
+        "subject": "AvaLimo Production Deploy",
+        "text": "AvaLimo was deployed to production. Environment: {{ $json.body.environment }} | Commit: {{ $json.body.commit }} | Author: {{ $json.body.author }} | Message: {{ $json.body.message }} | URL: {{ $json.body.url }}"
+      },
+      "id": "email-notify",
+      "name": "Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [850, 200]
+    }
+  ],
+  "connections": {
+    "GitHub Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Alert": {
+      "main": [
+        [
+          {
+            "node": "Is Production?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Production?": {
+      "main": [
+        [
+          {
+            "node": "Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["avalimo", "deploy", "notifications"]
+}

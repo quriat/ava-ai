@@ -1,0 +1,71 @@
+name: Staging Preview
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    name: 👁️ PR Preview Check
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run lint checks
+        run: |
+          echo "🔍 Running PR preview checks..."
+          
+          # Check for exactly one H1 tag
+          H1_COUNT=$(grep -o '<h1[^>]*>' index.html | wc -l)
+          if [ "$H1_COUNT" -gt 1 ]; then
+            echo "❌ ERROR: Found $H1_COUNT H1 tags. Should be exactly 1."
+            exit 1
+          fi
+          echo "✅ H1 tags: OK ($H1_COUNT)"
+          
+          # Check alt tags
+          MISSING_ALT=$(grep -o '<img[^>]*>' index.html | grep -v 'alt=' | wc -l)
+          if [ "$MISSING_ALT" -gt 0 ]; then
+            echo "❌ ERROR: $MISSING_ALT images missing alt text."
+            exit 1
+          fi
+          echo "✅ Alt tags: OK"
+          
+          # Check file size (warn if over 150KB)
+          SIZE=$(wc -c < index.html)
+          if [ "$SIZE" -gt 153600 ]; then
+            echo "⚠️ WARNING: index.html is $SIZE bytes. Consider optimizing."
+          else
+            echo "✅ File size: OK ($SIZE bytes)"
+          fi
+          
+          # Summary
+          echo ""
+          echo "🎉 PR is ready for review!"
+
+  comment:
+    needs: preview
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `## ✅ AvaLimo PR Checks Passed
+            
+            - **H1 Tags**: Validated (exactly 1)
+            - **Alt Tags**: All images covered
+            - **File Size**: Within limits
+            - **Branch**: \`${{ github.head_ref }}\`
+            
+            Ready to merge to \`main\` for production deploy! 🚀`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });

@@ -1,66 +1,186 @@
-# AvaLimo Website
+# AvaLimo Website — Full DevOps Pipeline
 
-Houston Premier Limo Service website — deployed via GitHub + Coolify.
+Houston Premier Limo Service website with automated SEO, CI/CD, and business workflows.
+
+---
+
+## What's Included
+
+| Component | Status |
+|-----------|--------|
+| **SEO-ready HTML** | Placeholders for GSC + FB Pixel |
+| **GitHub Actions CI/CD** | Auto-lint + deploy + notify |
+| **Staging Branch** | Preview changes before production |
+| **n8n Workflows** | Deploy alerts + Lead nurture + Review requests |
+| **Dockerfile** | Ready for Coolify deployment |
+
+---
 
 ## Quick Start
 
 ### 1. Push to GitHub
-```bash
-# Create new private repo at https://github.com/new
-# Name it: avalimo-site
 
-# Add remote and push
+```bash
+cd avalimo-site
+
+# Set up remote (replace YOUR_USERNAME)
 git remote add origin https://github.com/YOUR_USERNAME/avalimo-site.git
 git branch -M main
 git push -u origin main
+
+# Also push staging branch
+git checkout staging
+git push -u origin staging
 ```
 
-### 2. Deploy with Coolify
-1. Log in to your Coolify instance
-2. Create new resource → **Application**
-3. Source: GitHub → Select `avalimo-site` repo
-4. Build pack: **Dockerfile**
-5. Port: **80**
-6. Domain: `avalimo.net`
-7. Deploy 🚀
+### 2. Add GitHub Secrets
+
+Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+
+| Secret Name | Value |
+|-------------|-------|
+| `N8N_WEBHOOK_URL` | Get this from n8n after importing deploy-notifications.json |
+| `TELEGRAM_BOT_TOKEN` | From @BotFather |
+
+### 3. Deploy on Coolify
+
+1. Create new **Application** in Coolify
+2. Source: GitHub → `avalimo-site` repo → `main` branch
+3. Build pack: **Dockerfile**
+4. Port: **80**
+5. Domain: `avalimo.net`
+6. Deploy!
+
+### 4. Configure n8n
+
+1. Log in to `n8napp.adamj.fit`
+2. **Import** → Upload `n8n-workflows/deploy-notifications.json`
+3. **Import** → Upload `n8n-workflows/lead-nurture.json`
+4. Update Telegram chat ID in both workflows
+5. Copy webhook URL from "GitHub Webhook" node
+6. Save that as `N8N_WEBHOOK_URL` in GitHub secrets
+
+---
+
+## Workflow Branches
+
+```
+main      → Production (avalimo.net)
+staging   → Test environment (staging.avalimo.net)
+PRs       → Auto-lint check + preview comment
+```
+
+### How to Use
+
+**Small fix (e.g., typo):**
+```bash
+git checkout main
+git pull origin main
+# edit file
+git add .
+git commit -m "Fix typo in hero section"
+git push origin main
+# → Auto-deploys to production in ~30 seconds
+```
+
+**Big change (e.g., new page):**
+```bash
+git checkout staging
+git pull origin staging
+# make changes
+git add .
+git commit -m "Add new fleet page"
+git push origin staging
+# → Auto-deploys to staging for testing
+
+# Test on staging.avalimo.net
+# When ready:
+git checkout main
+git merge staging
+git push origin main
+# → Auto-deploys to production
+```
+
+---
 
 ## SEO Setup Checklist
 
-Before deploying, replace these placeholders in `index.html`:
+**Before first production deploy:**
 
-### Google Search Console
-- Go to https://search.google.com/search-console
-- Add property: `avalimo.net`
-- Choose HTML tag verification
-- Replace `YOUR_GSC_CODE_HERE` in the meta tag
+- [ ] Replace `YOUR_GSC_CODE_HERE` in `index.html` with Google Search Console verification code
+- [ ] Replace `YOUR_PIXEL_ID_HERE` in `index.html` with Facebook Pixel ID
+- [ ] Go to https://search.google.com/search-console → Add `avalimo.net`
+- [ ] Submit `sitemap.xml` in Search Console
+- [ ] Verify Google Business Profile is claimed
 
-### Facebook Pixel
-- Go to https://business.facebook.com/events_manager
-- Create pixel
-- Replace `YOUR_PIXEL_ID_HERE` in both places in the FB pixel code
+---
 
 ## File Structure
 
 ```
-├── index.html      # Main website (single-page app)
-├── Dockerfile      # Nginx container for Coolify
-├── .gitignore     # Git ignore rules
-└── README.md      # This file
+├── index.html                    # Main website
+├── Dockerfile                    # Nginx container for Coolify
+├── .gitignore                   # Git ignore rules
+├── .env.example                 # Template for secrets
+├── README.md                    # This file
+├── .github/
+│   └── workflows/
+│       ├── deploy.yml           # Main CI/CD pipeline
+│       └── pr-preview.yml       # PR lint + comment
+└── n8n-workflows/
+    ├── deploy-notifications.json  # n8n deploy alerts
+    ├── lead-nurture.json         # n8n lead auto-response
+    └── README.md               # n8n setup guide
 ```
 
-## Features
+---
 
-- ✅ SEO optimized meta tags
-- ✅ Schema.org LocalBusiness markup
-- ✅ Google Analytics 4
-- ✅ Google Search Console ready
-- ✅ Facebook Pixel ready
-- ✅ Lazy loading images
-- ✅ Booking form
-- ✅ Square payment integration
-- ✅ Flight tracking
-- ✅ Live chat widget
+## GitHub Actions Pipeline
+
+```
+Push to PR → Lint check → PR comment ✅
+Push to staging → Lint → Deploy staging → Telegram alert
+Push to main → Lint → Deploy production → Telegram alert + Email
+```
+
+**Lint checks include:**
+- Exactly 1 H1 tag
+- All images have alt text
+- Title tag exists
+- Meta description exists
+- Canonical tag exists
+- File size warning (if >150KB)
+
+---
+
+## Business Automation (n8n)
+
+| Workflow | Trigger | Action |
+|----------|---------|--------|
+| **Deploy Alert** | GitHub webhook | Telegram message |
+| **Production Email** | Deploy = production | Email to adam@avalimo.net |
+| **New Lead** | Booking form POST | Telegram + auto-reply email |
+| **Lead Follow-up** | 1 hour after lead | Follow-up email |
+| **Review Request** | Daily at 10 AM | SMS/email to past customers |
+
+---
 
 ## Domain Setup
 
-Point `avalimo.net` A record to your Coolify server IP.
+Point these A records to your Coolify server IP:
+
+```
+A  avalimo.net      → YOUR_SERVER_IP
+A  www.avalimo.net  → YOUR_SERVER_IP
+A  staging.avalimo.net → YOUR_SERVER_IP (optional)
+```
+
+SSL certificates auto-generated by Coolify (Let's Encrypt).
+
+---
+
+## Support
+
+- **GitHub Actions docs:** https://docs.github.com/en/actions
+- **Coolify docs:** https://coolify.io/docs
+- **n8n docs:** https://docs.n8n.io

@@ -1,0 +1,122 @@
+name: Deploy AvaLimo
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: 🔍 Lint HTML
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check HTML structure
+        run: |
+          echo "Checking HTML structure..."
+          # Check for exactly one H1 tag
+          H1_COUNT=$(grep -o '<h1[^>]*>' index.html | wc -l)
+          echo "H1 count: $H1_COUNT"
+          if [ "$H1_COUNT" -gt 1 ]; then
+            echo "❌ ERROR: Found $H1_COUNT H1 tags. Should be exactly 1."
+            exit 1
+          fi
+          echo "✅ H1 tags: OK"
+          
+          # Check all images have alt tags
+          MISSING_ALT=$(grep -o '<img[^>]*>' index.html | grep -v 'alt=' | wc -l)
+          echo "Images missing alt: $MISSING_ALT"
+          if [ "$MISSING_ALT" -gt 0 ]; then
+            echo "❌ ERROR: $MISSING_ALT images missing alt text."
+            exit 1
+          fi
+          echo "✅ Alt tags: OK"
+          
+          # Check title tag exists
+          if ! grep -q '<title>' index.html; then
+            echo "❌ ERROR: Missing title tag"
+            exit 1
+          fi
+          echo "✅ Title tag: OK"
+          
+          # Check meta description
+          if ! grep -q 'name="description"' index.html; then
+            echo "❌ ERROR: Missing meta description"
+            exit 1
+          fi
+          echo "✅ Meta description: OK"
+          
+          # Check canonical tag
+          if ! grep -q 'rel="canonical"' index.html; then
+            echo "❌ ERROR: Missing canonical tag"
+            exit 1
+          fi
+          echo "✅ Canonical tag: OK"
+          
+          # Check for placeholder codes
+          if grep -q 'YOUR_GSC_CODE_HERE' index.html; then
+            echo "⚠️ WARNING: Google Search Console placeholder not replaced"
+          fi
+          if grep -q 'YOUR_PIXEL_ID_HERE' index.html; then
+            echo "⚠️ WARNING: Facebook Pixel placeholder not replaced"
+          fi
+          
+          echo ""
+          echo "🎉 All checks passed!"
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
+    needs: lint
+    runs-on: ubuntu-latest
+    name: 🧪 Deploy to Staging
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Coolify Staging
+        run: |
+          echo "Deploying to staging environment..."
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          # Coolify auto-deploys on push, but we can trigger webhook if needed
+          # curl -X POST ${{ secrets.COOLIFY_STAGING_WEBHOOK }} -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}"
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    needs: lint
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy to Production
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Coolify Production
+        run: |
+          echo "Deploying to production..."
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "By: ${{ github.actor }}"
+          # Coolify auto-deploys on push to main
+
+  notify:
+    needs: [deploy-staging, deploy-production]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+    runs-on: ubuntu-latest
+    name: 📣 Send Notification
+    steps:
+      - name: Notify via webhook
+        run: |
+          ENV="${{ needs.deploy-staging.result == 'success' && 'staging' || 'production' }}"
+          curl -X POST "${{ secrets.N8N_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"event\": \"deploy\",
+              \"environment\": \"$ENV\",
+              \"repository\": \"${{ github.repository }}\",
+              \"commit\": \"${{ github.sha }}\",
+              \"author\": \"${{ github.actor }}\",
+              \"message\": \"${{ github.event.head_commit.message }}\",
+              \"url\": \"https://avalimo.net\",
+              \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+            }" || echo "Webhook notification failed (n8n may not be configured yet)"
