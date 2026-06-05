@@ -64,3 +64,4 @@ Before deploying, replace these placeholders in `index.html`:
 ## Domain Setup
 
 Point `avalimo.net` A record to your Coolify server IP.
+# Deployed on Fri Jun  5 14:58:11 CEST 2026
