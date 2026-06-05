@@ -1088,6 +1088,7 @@ var pageMeta = {
   '/faq': { title:'FAQ — AvaLimo | Frequently Asked Questions', desc:'Answers to common questions about booking, pricing, cancellations & more.' },
   '/policy': { title:'Policy — AvaLimo | Company Policy', desc:'AvaLimo company policy: booking, cancellation, refund & privacy terms.' },
   '/deposit': { title:'Pay Deposit — AvaLimo | Secure Your Reservation', desc:'Secure your AvaLimo reservation with a booking deposit. Fast & secure online payment.' },
+'/houston-airport-limo-service': { title:'Houston Airport Limo Service | IAH & Hobby Airport Transfers', desc:'Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online or call (832) 567-8050.' },
 };
 function showPage(path){
   var id = 'page-home';
@@ -1100,6 +1101,7 @@ function showPage(path){
   else if(path==='/policy') id='page-policy';
   else if(path==='/book') id='page-book';
   else if(path==='/deposit') id='page-deposit';
+  else if(path==='/houston-airport-limo-service') id='page-airport';
   for(var i=0;i<pages.length;i++) pages[i].style.display='none';
   document.getElementById(id).style.display='block';
   window.scrollTo(0,0);
