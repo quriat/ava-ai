@@ -1053,6 +1053,130 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 </section>
 </div>
 
+<div class="page" id="page-airport" style="display:none">
+<div class="page-header"><div class="container"><h1>Houston Airport <span class="gold">Limo Service</span></h1><p>Premium airport transfers to IAH &amp; Hobby Airport — 24/7 Availability</p></div></div>
+
+<section class="section" style="padding-top:0;background:var(--bg2)">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Why Choose AvaLimo for Houston Airport Transportation?</h2>
+<div class="services-grid">
+<div class="service-card"><div class="icon">💰</div><h3>Flat-Rate Pricing</h3><p>No surge fees, ever. Know your exact cost upfront with no hidden charges.</p></div>
+<div class="service-card"><div class="icon">✈️</div><h3>Flight Tracking</h3><p>We monitor your flight in real-time and adjust pickup automatically.</p></div>
+<div class="service-card"><div class="icon">👋</div><h3>Meet &amp; Greet</h3><p>Your chauffeur meets you at baggage claim with a personalized sign.</p></div>
+<div class="service-card"><div class="icon">🕐</div><h3>24/7 Availability</h3><p>Early morning or late night arrivals — we're always on standby.</p></div>
+<div class="service-card"><div class="icon">🚗</div><h3>Professional Chauffeurs</h3><p>Licensed, insured, background-checked drivers who know Houston's airports.</p></div>
+<div class="service-card"><div class="icon">🛡️</div><h3>On-Time Guarantee</h3><p>We arrive 10 minutes early, every time. Your time is valuable.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">IAH &amp; Hobby Airport Transfers</h2>
+<div class="fleet-grid" style="grid-template-columns:1fr 1fr;gap:32px">
+<div class="fleet-card">
+<div class="body" style="padding:32px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<span style="font-size:32px">🛫</span>
+<h3 style="font-size:20px">George Bush Intercontinental (IAH)</h3>
+</div>
+<p style="color:var(--text2);margin-bottom:20px">Houston's largest airport, 23 miles north of downtown. Seamless transfers to Downtown, The Woodlands, Katy, Sugar Land, and beyond.</p>
+<div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px">
+<p style="font-weight:600;margin-bottom:12px;color:var(--gold)">Popular Routes:</p>
+<ul style="list-style:none;display:grid;gap:8px;color:var(--text2);font-size:14px">
+<li>✓ IAH to Downtown Houston — ~45 minutes</li>
+<li>✓ IAH to The Woodlands — ~30 minutes</li>
+<li>✓ IAH to Sugar Land — ~55 minutes</li>
+<li>✓ IAH to Katy — ~50 minutes</li>
+<li>✓ IAH to Galleria — ~40 minutes</li>
+</ul>
+</div>
+<a href="/book" class="btn btn-gold" style="width:100%;justify-content:center">Book IAH Transfer</a>
+</div>
+</div>
+<div class="fleet-card">
+<div class="body" style="padding:32px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<span style="font-size:32px">🛬</span>
+<h3 style="font-size:20px">William P. Hobby Airport (HOU)</h3>
+</div>
+<p style="color:var(--text2);margin-bottom:20px">Houston's second airport, 11 miles southeast of downtown. Perfect for Southwest Airlines and domestic travelers.</p>
+<div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px">
+<p style="font-weight:600;margin-bottom:12px;color:var(--gold)">Popular Routes:</p>
+<ul style="list-style:none;display:grid;gap:8px;color:var(--text2);font-size:14px">
+<li>✓ Hobby to Downtown Houston — ~25 minutes</li>
+<li>✓ Hobby to Galleria — ~30 minutes</li>
+<li>✓ Hobby to Medical Center — ~35 minutes</li>
+<li>✓ Hobby to Pearland — ~20 minutes</li>
+<li>✓ Hobby to Clear Lake — ~25 minutes</li>
+</ul>
+</div>
+<a href="/book" class="btn btn-gold" style="width:100%;justify-content:center">Book Hobby Transfer</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" style="background:var(--bg2)">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Your Airport Transfer in 4 Simple Steps</h2>
+<div style="max-width:700px;margin:0 auto;display:grid;gap:24px">
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">1</div><div><h3 style="font-size:17px;margin-bottom:6px">Book Online or Call</h3><p style="color:var(--text2);font-size:14px">Reserve at avalimo.net or call (832) 567-8050. Get instant confirmation.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">2</div><div><h3 style="font-size:17px;margin-bottom:6px">Flight Tracking</h3><p style="color:var(--text2);font-size:14px">We monitor your flight in real-time. Adjustments made automatically at no charge.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">3</div><div><h3 style="font-size:17px;margin-bottom:6px">Meet &amp; Greet</h3><p style="color:var(--text2);font-size:14px">Your chauffeur meets you at baggage claim with a personalized sign.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">4</div><div><h3 style="font-size:17px;margin-bottom:6px">Relax &amp; Ride</h3><p style="color:var(--text2);font-size:14px">Sit back in luxury. We handle traffic and get you there in comfort.</p></div></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Frequently Asked Questions</h2>
+<div style="max-width:800px;margin:0 auto;display:grid;gap:20px">
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">How early should I book my airport limo?</h3>
+<p style="color:var(--text2);font-size:14px">We recommend 24 hours in advance. Call (832) 567-8050 for same-day availability.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">What if my flight is delayed?</h3>
+<p style="color:var(--text2);font-size:14px">We track flights in real-time. Your chauffeur adjusts automatically — no extra charge.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Where will my chauffeur meet me at IAH?</h3>
+<p style="color:var(--text2);font-size:14px">Domestic: baggage claim. International: customs exit. Sign with your name provided.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Do you charge extra for luggage?</h3>
+<p style="color:var(--text2);font-size:14px">Standard luggage included: 2 checked bags + 1 carry-on per passenger.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Can I book a round-trip transfer?</h3>
+<p style="color:var(--text2);font-size:14px">Absolutely! Round-trip bookings get preferred scheduling and simplified checkout.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">What's your cancellation policy?</h3>
+<p style="color:var(--text2);font-size:14px">Free cancellation up to 2 hours before pickup. Full refunds with 24-hour notice.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" style="background:var(--bg2);text-align:center">
+<div class="container">
+<div style="max-width:650px;margin:0 auto">
+<h2 style="font-size:clamp(26px,4vw,36px);margin-bottom:16px">Ready for Stress-Free Airport Transportation?</h2>
+<p style="color:var(--text2);font-size:17px;margin-bottom:32px">Join 500+ satisfied clients who trust AvaLimo for Houston airport transfers.</p>
+<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+<a href="tel:8325678050" class="btn btn-gold" style="font-size:15px;padding:14px 28px">📞 Call (832) 567-8050</a>
+<a href="/book" class="btn btn-outline" style="font-size:15px;padding:14px 28px">Book Online Now</a>
+</div>
+</div>
+</div>
+</section>
+</div>
+
+
 <!-- ─── Chat Widget ─── -->
 <button class="chat-btn" id="chatBtn" onclick="toggleChat()">
   <div class="pulse"></div>
@@ -1101,6 +1225,7 @@ function showPage(path){
   else if(path==='/policy') id='page-policy';
   else if(path==='/book') id='page-book';
   else if(path==='/deposit') id='page-deposit';
+  else if(path==='/houston-airport-limo-service') id='page-airport';
   else if(path==='/houston-airport-limo-service') id='page-airport';
   for(var i=0;i<pages.length;i++) pages[i].style.display='none';
   document.getElementById(id).style.display='block';
