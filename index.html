@@ -176,7 +176,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4)}
 .fleet-card .img-wrap{height:420px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);padding:40px;position:relative;overflow:hidden;border-radius:16px 16px 0 0}
 .fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%);pointer-events:none}
-.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s}
+.fleet-card .img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .6s}
 .fleet-card:hover .img-wrap img{transform:scale(1.08)}
 .fleet-card .tag{position:absolute;top:16px;left:16px;background:rgba(212,175,55,.15);color:var(--gold);padding:4px 14px;border-radius:50px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
 .fleet-card .body{padding:24px}
@@ -424,7 +424,7 @@ fbq('track', 'PageView');
 </script>
 <noscript>
 <img height="1" width="1" style="display:none" 
-src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ loading="lazy">
+src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
 </noscript>
 <!-- End Facebook Pixel Code -->
 </head>
@@ -469,7 +469,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ 
     </div>
     <div class="hero-image">
       <div class="glow"></div>
-      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly" width="550" height="550" loading="lazy">
+      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly">
     </div>
   </div>
 </section>
@@ -496,7 +496,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ 
     </div>
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
         <div class="body">
           <h3>Executive</h3>
           <div class="capacity">&#9679; Mercedes S-Class &middot; Up to 3 passengers</div>
@@ -505,7 +505,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ 
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
         <div class="body">
           <h3>SUV</h3>
           <div class="capacity">&#9679; Cadillac Escalade &middot; Up to 6 passengers</div>
@@ -514,7 +514,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ 
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
         <div class="body">
           <h3>Sprinter</h3>
           <div class="capacity">&#9679; Mercedes Sprinter &middot; Up to 14 passengers</div>
@@ -654,7 +654,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ 
   <div class="container">
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
         <div class="body">
           <h3>Mercedes S-Class</h3>
           <div class="capacity">&#9679; Up to 3 passengers</div>
@@ -663,7 +663,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ 
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
           <div class="capacity">&#9679; Up to 6 passengers</div>
@@ -672,7 +672,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/ 
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
           <div class="capacity">&#9679; Up to 14 passengers</div>
