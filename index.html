@@ -141,7 +141,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .hero-bg{position:absolute;inset:0;z-index:0}
 .hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.15}
 .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-.hero .container{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero .container{position:relative;z-index:1;display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center}
 .hero-text .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);color:var(--gold);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;letter-spacing:.5px;margin-bottom:32px}
 .hero-text .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
@@ -151,8 +151,8 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .hero-text p{color:var(--text2);font-size:18px;max-width:500px;line-height:1.7;margin-bottom:40px}
 .hero-btns{display:flex;gap:16px;flex-wrap:wrap}
 .hero-image{position:relative;display:flex;justify-content:center;align-items:center}
-.hero-image .glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.2) 0%,transparent 60%);filter:blur(80px)}
-.hero-image img{position:relative;z-index:1;width:100%;max-width:680px;animation:float 6s ease-in-out infinite;border-radius:16px;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.hero-image .glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.25) 0%,transparent 55%);filter:blur(100px)}
+.hero-image img{position:relative;z-index:1;width:100%;max-width:850px;animation:float 6s ease-in-out infinite;border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 100px rgba(212,175,55,.1)}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
 
 /* ─── Stats Bar ─── */
@@ -174,7 +174,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .fleet-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s;position:relative}
 .fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.fleet-card .img-wrap{height:320px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);padding:32px;position:relative;overflow:hidden;border-radius:12px 12px 0 0}
+.fleet-card .img-wrap{height:420px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);padding:40px;position:relative;overflow:hidden;border-radius:16px 16px 0 0}
 .fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%);pointer-events:none}
 .fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s}
 .fleet-card:hover .img-wrap img{transform:scale(1.08)}
@@ -347,8 +347,8 @@ footer ul li a:hover{color:var(--gold)}
   .hero .container{grid-template-columns:1fr;gap:40px;text-align:center}
   .hero-text p{margin:0 auto 32px}
   .hero-btns{justify-content:center}
-  .hero-image img{max-width:90%}
-  .fleet-card .img-wrap{height:260px}
+  .hero-image img{max-width:95%}
+  .fleet-card .img-wrap{height:350px;padding:30px}
   .hero-image{display:flex;margin-top:20px}
   .hero-image img{max-width:320px}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
