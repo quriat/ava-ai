@@ -58,7 +58,7 @@
         "fromEmail": "adam@avalimo.net",
         "toEmail": "={{ $json.customer.email }}",
         "subject": "Welcome to AvaLimo — Houston's Luxury Transportation",
-        "text": "Hi {{ $json.customer.name }},\n\nWelcome to AvaLimo — where every arrival is an occasion.\n\nI'm Adam J, the founder. Here's what makes us different:\n\n✓ Fixed pricing — what you see is what you pay\n✓ Flight tracking on every airport transfer\n✓ Professional chauffeurs, not just drivers\n✓ 24/7 availability, 365 days a year\n✓ Immaculately maintained Mercedes, Escalade, and Sprinter fleet\n\nNeed a ride? Reply or call me: (832) 990-8258\n\nBest,\nAdam J\nAvaLimo Houston\n\nP.S. Follow us @avalimo on Instagram for behind-the-scenes of our fleet."
+        "text": "Hi {{ $json.customer.name }},\n\nWelcome to AvaLimo — where every arrival is an occasion.\n\nI'm Adam J, the founder. Here's what makes us different:\n\n✓ Fixed pricing — what you see is what you pay\n✓ Flight tracking on every airport transfer\n✓ Professional chauffeurs, not just drivers\n✓ 24/7 availability, 365 days a year\n✓ Immaculately maintained Mercedes, Escalade, and Sprinter fleet\n\nNeed a ride? Reply or call me: 8325678050\n\nBest,\nAdam J\nAvaLimo Houston\n\nP.S. Follow us @avalimo on Instagram for behind-the-scenes of our fleet."
       },
       "id": "welcome-email",
       "name": "Send Welcome Email",
@@ -91,7 +91,7 @@
         "fromEmail": "adam@avalimo.net",
         "toEmail": "={{ $json.customer.email }}",
         "subject": "15% off your first ride — here's your code",
-        "text": "Hi {{ $json.customer.name }},\n\nI want to make your first AvaLimo experience unforgettable.\n\nUse code WELCOME15 for 15% off your first booking.\n\n✓ Any vehicle\n✓ Any service\n✓ Valid for 7 days\n\nBook: https://avalimo.net/book\nCode: WELCOME15\n\nQuestions? Reply or text: (832) 990-8258\n\nBest,\nAdam"
+        "text": "Hi {{ $json.customer.name }},\n\nI want to make your first AvaLimo experience unforgettable.\n\nUse code WELCOME15 for 15% off your first booking.\n\n✓ Any vehicle\n✓ Any service\n✓ Valid for 7 days\n\nBook: https://avalimo.net/book\nCode: WELCOME15\n\nQuestions? Reply or text: 8325678050\n\nBest,\nAdam"
       },
       "id": "discount-email",
       "name": "Send Discount Email",
@@ -133,7 +133,7 @@
         "fromEmail": "adam@avalimo.net",
         "toEmail": "={{ $json.customer.email }}",
         "subject": "Quick question about your AvaLimo quote",
-        "text": "Hi {{ $json.customer.name }},\n\nI noticed you requested a quote for {{ $json.customer.vehicle }} from {{ $json.customer.pickup }} to {{ $json.customer.dropoff }}.\n\nDid everything look right? Happy to adjust vehicle, time, or add special requests.\n\nJust reply or call: (832) 990-8258\n\nYour quote is held for 24 hours.\n\nBest,\nAdam"
+        "text": "Hi {{ $json.customer.name }},\n\nI noticed you requested a quote for {{ $json.customer.vehicle }} from {{ $json.customer.pickup }} to {{ $json.customer.dropoff }}.\n\nDid everything look right? Happy to adjust vehicle, time, or add special requests.\n\nJust reply or call: 8325678050\n\nYour quote is held for 24 hours.\n\nBest,\nAdam"
       },
       "id": "abandoned-1h",
       "name": "1h Follow-up",
@@ -166,7 +166,7 @@
         "fromEmail": "adam@avalimo.net",
         "toEmail": "={{ $json.customer.email }}",
         "subject": "{{ $json.customer.vehicle }} availability this weekend",
-        "text": "Hi {{ $json.customer.name }},\n\nOur {{ $json.customer.vehicle }} fleet is at 85% capacity for {{ $json.customer.time }}.\n\nI don't want you to miss out. Ready to confirm?\n\nBook: https://avalimo.net/book\nOr call: (832) 990-8258\n\nBest,\nAdam"
+        "text": "Hi {{ $json.customer.name }},\n\nOur {{ $json.customer.vehicle }} fleet is at 85% capacity for {{ $json.customer.time }}.\n\nI don't want you to miss out. Ready to confirm?\n\nBook: https://avalimo.net/book\nOr call: 8325678050\n\nBest,\nAdam"
       },
       "id": "abandoned-24h",
       "name": "24h Urgency",

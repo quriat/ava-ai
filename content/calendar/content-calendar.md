@@ -156,7 +156,7 @@ For each blog post, use this format:
 
 ```html
 <title>[Target Keyword] | AvaLimo Houston</title>
-<meta name="description" content="[Hook sentence with keyword]. Book luxury transportation with AvaLimo. 24/7 service, zero surge pricing. Call (832) 990-8258.">
+<meta name="description" content="[Hook sentence with keyword]. Book luxury transportation with AvaLimo. 24/7 service, zero surge pricing. Call 8325678050.">
 <meta name="keywords" content="[keyword 1], [keyword 2], [keyword 3], houston limo, avalimo">
 <link rel="canonical" href="https://avalimo.net/blog/[slug]">
 ```

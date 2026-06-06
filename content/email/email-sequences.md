@@ -38,7 +38,7 @@ Here's what makes us different:
 ✓ Immaculately maintained Mercedes S-Class, Escalade, and Sprinter fleet
 
 Need a ride? Reply to this email or call/text me directly:
-(832) 990-8258
+8325678050
 
 Best,
 Adam J
@@ -143,7 +143,7 @@ Use code WELCOME15 for 15% off your first booking.
 Book now: https://avalimo.net/book
 Code: WELCOME15
 
-Questions? Just reply to this email or text me at (832) 990-8258.
+Questions? Just reply to this email or text me at 8325678050.
 
 Best,
 Adam
@@ -176,7 +176,7 @@ Did everything look right? Happy to adjust:
 - Add stops?
 - Special requests (champagne, child seat, etc.)?
 
-Just reply to this email or call me: (832) 990-8258
+Just reply to this email or call me: 8325678050
 
 Your current quote is held for 24 hours with no obligation.
 
@@ -207,7 +207,7 @@ Your quote is still valid, but I can't hold the vehicle beyond
 tomorrow without a reservation.
 
 Ready to confirm? Book online (30 seconds): https://avalimo.net/book
-Or call me: (832) 990-8258
+Or call me: 8325678050
 
 Best,
 Adam
@@ -237,7 +237,7 @@ Your ride:
 {{ $json.time }}
 
 Book in 30 seconds: https://avalimo.net/book
-Or text me: (832) 990-8258
+Or text me: 8325678050
 
 No pressure either way. If this trip isn't right for AvaLimo, 
 I hope you'll think of us next time.
@@ -284,7 +284,7 @@ See you next time!
 
 Adam J
 AvaLimo Houston
-(832) 990-8258
+8325678050
 ```
 
 ---
@@ -332,7 +332,7 @@ Here's what VIP status gets you:
 ✓ Priority booking (skip the line during peak times)
 ✓ 10% off every ride, forever (code: VIP10)
 ✓ Free upgrade when available (S-Class → Escalade, etc.)
-✓ Direct line to me: (832) 990-8258
+✓ Direct line to me: 8325678050
 ✓ First access to new vehicles and services
 
 Your next ride: https://avalimo.net/book
@@ -469,7 +469,7 @@ Wedding packages start at $450 and include:
 - Dedicated chauffeur for 4-8 hours
 
 Request wedding quote: https://avalimo.net/book
-Or call me directly: (832) 990-8258
+Or call me directly: 8325678050
 
 Adam
 ```
