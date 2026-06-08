@@ -195,7 +195,7 @@ HTML = r"""<!DOCTYPE html>
   "priceRange": "$$$",
   "address": { "@type": "PostalAddress", "addressLocality": "Houston", "addressRegion": "TX", "addressCountry": "US" },
   "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
-  "sameAs": ["https://www.linkedin.com/company/avalimo"]
+  "sameAs": ["https://www.linkedin.com/in/adam-aljahdhami-550586218/"]
 }
 </script>
 <script type="application/ld+json">
