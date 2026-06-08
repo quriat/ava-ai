@@ -195,7 +195,7 @@ HTML = r"""<!DOCTYPE html>
   "priceRange": "$$$",
   "address": { "@type": "PostalAddress", "addressLocality": "Houston", "addressRegion": "TX", "addressCountry": "US" },
   "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
-  "sameAs": []
+  "sameAs": ["https://www.linkedin.com/company/avalimo"]
 }
 </script>
 <script type="application/ld+json">
@@ -943,6 +943,22 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
           <div class="meta"><span>{{ post.date }}</span><span>&#8226; {{ post.read }}</span></div>
           <div class="article-content">{{ post.content|safe }}</div>
         </div>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "{{ post.title|safe }}",
+          "description": "{{ post.summary|safe }}",
+          "url": "https://avalimo.net/blog/{{ post.slug }}",
+          "datePublished": "{{ post.date }}",
+          "dateModified": "{{ post.date }}",
+          "author": { "@type": "Person", "name": "{{ post.author }}" },
+          "publisher": { "@type": "LocalBusiness", "name": "AvaLimo", "url": "https://avalimo.net", "logo": "https://avalimo.net/static/chauffeur_service.webp" },
+          "image": "https://avalimo.net{{ post.image }}",
+          "articleBody": {{ post.content|safe|tojson }},
+          "mainEntityOfPage": { "@type": "WebPage", "@id": "https://avalimo.net/blog/{{ post.slug }}" }
+        }
+        </script>
       </div>
       {% endfor %}
     </div>
@@ -1526,8 +1542,25 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit", "houston-airport-limo-service"]
-    urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc></url>' for p in pages)
+    today = "2026-06-08"
+    pages = [
+        ("", today),
+        ("services", today),
+        ("fleet", today),
+        ("book", today),
+        ("blog", today),
+        ("flight-status", today),
+        ("contact", today),
+        ("faq", today),
+        ("policy", today),
+        ("deposit", today),
+        ("houston-airport-limo-service", today),
+    ]
+    # Add blog posts to sitemap
+    for post in BLOG_POSTS:
+        pages.append((f"blog/{post['slug']}", post['date']))
+    
+    urls = "\n".join(f'<url><loc>https://avalimo.net/{p[0]}</loc><lastmod>{p[1]}</lastmod></url>' for p in pages)
     xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {urls}
@@ -1542,7 +1575,7 @@ def index(path):
         "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7." },
         "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion." },
         "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7." },
-        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Insights & Tips", "desc": "Travel tips, airport guides, wedding advice & more from Houston's premier chauffeur service." },
+        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Guides & Travel Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service." },
         "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines." },
         "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch." },
         "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more." },
