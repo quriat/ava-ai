@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /deposit
+Disallow: /api/
+
+Sitemap: https://avalimo.net/sitemap.xml

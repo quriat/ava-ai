@@ -1,51 +1,185 @@
-<!--
-===============================================
-SEO & TRACKING SETUP CHECKLIST FOR AVALIMO.NET
-===============================================
+#!/usr/bin/env python3
+import os
+import sys
+import uuid
+import json
+import smtplib
+from email.mime.text import MIMEText
+from flask import Flask, request, jsonify, render_template_string, redirect
 
-1. Google Search Console:
-   - Go to https://search.google.com/search-console
-   - Add property: avalimo.net
-   - Copy verification code
-   - Replace YOUR_GSC_CODE_HERE in line below
+try:
+    from square.client import Square, SquareEnvironment
+except ImportError:
+    Square = None
 
-2. Facebook Pixel:
-   - Go to https://business.facebook.com/events_manager
-   - Create pixel
-   - Replace YOUR_PIXEL_ID_HERE (2 places) in the FB pixel code
+app = Flask(__name__)
 
-3. Submit Sitemap:
-   - In Search Console, go to Sitemaps
-   - Submit: sitemap.xml
+# load .env for all configs
+_env_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(_env_path):
+    with open(_env_path) as f:
+        for _line in f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                k, _, v = _line.partition("=")
+                os.environ.setdefault(k.strip(), v.strip())
 
-4. Upload this file to your server root (replace index.html)
-===============================================
--->
-<!DOCTYPE html>
+SQ_APP_ID = os.environ.get("SQUARE_APPLICATION_ID", "sandbox-sq0idb-fake")
+SQ_LOCATION_ID = os.environ.get("SQUARE_LOCATION_ID", "Lfake")
+SQ_TOKEN = os.environ.get("SQUARE_ACCESS_TOKEN", "")
+SQ_ENV = os.environ.get("SQUARE_ENVIRONMENT", "sandbox")
+AV_API_KEY = os.environ.get("AVIATIONSTACK_KEY", "")
+GA_ID = os.environ.get("GA_ID", "G-STY7CSKRMX")
+SC_ID = os.environ.get("SC_ID", "")
+FB_PIXEL_ID = os.environ.get("FB_PIXEL_ID", "")
+
+SC_META = f'<meta name="google-site-verification" content="{SC_ID}" />' if SC_ID else ""
+FB_PIXEL = f'''<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){{if(f.fbq)return;n=f.fbq=function(){{n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)}};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','{FB_PIXEL_ID}');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={FB_PIXEL_ID}&ev=PageView&noscript=1" /></noscript>''' if FB_PIXEL_ID else ""
+
+
+def send_booking_email(data: dict):
+    name = data.get("name", "?")
+    phone = data.get("phone", "?")
+    pickup = data.get("pickup", "?")
+    dropoff = data.get("dropoff", "?")
+    time = data.get("time", "?")
+    vehicle = data.get("vehicle", "?")
+    pax = data.get("pax", "1")
+    notes = data.get("notes", "")
+    service = data.get("service", "")
+    flight = data.get("flight", "")
+    email = data.get("email", "")
+
+    lines = [f"New Booking from {name}"]
+    lines.append(f"Phone: {phone}")
+    if email:
+        lines.append(f"Email: {email}")
+    lines.append(f"Service: {service or 'Not specified'}")
+    lines.append(f"Vehicle: {vehicle}")
+    lines.append(f"Passengers: {pax}")
+    lines.append(f"Pickup: {pickup}")
+    lines.append(f"Dropoff: {dropoff}")
+    lines.append(f"Time: {time}")
+    if flight:
+        lines.append(f"Flight: {flight}")
+    if notes:
+        lines.append(f"Notes: {notes}")
+
+    body = "\n".join(lines)
+    print("\n" + "=" * 50)
+    print(body)
+    print("=" * 50 + "\n")
+
+    # load .env for SMTP creds
+    env_path = os.path.join(os.path.dirname(__file__), ".env")
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, _, v = line.partition("=")
+                    os.environ.setdefault(k.strip(), v.strip())
+
+    smtp_user = os.environ.get("SMTP_USERNAME", "")
+    smtp_pass = os.environ.get("SMTP_PASSWORD", "")
+    email_to = os.environ.get("EMAIL_TO", "adam@avalimo.net")
+
+    if not smtp_user or not smtp_pass:
+        print("SMTP not configured — booking logged to stdout only")
+        return
+
+    try:
+        msg = MIMEText(body)
+        msg["From"] = smtp_user
+        msg["To"] = email_to
+        msg["Subject"] = f"New AvaLimo Booking — {name}"
+
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.send_message(msg)
+        server.quit()
+        print(f"Booking email sent to {email_to}")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+
+def send_contact_email(data: dict):
+    name = data.get("name", "?")
+    email = data.get("email", "?")
+    phone = data.get("phone", "?")
+    subject = data.get("subject", "General Inquiry")
+    message = data.get("message", "")
+
+    body = f"Contact Inquiry from {name}\nEmail: {email}\nPhone: {phone}\nSubject: {subject}\n\nMessage:\n{message}"
+    print("\n" + "=" * 50)
+    print(body)
+    print("=" * 50 + "\n")
+
+    env_path = os.path.join(os.path.dirname(__file__), ".env")
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, _, v = line.partition("=")
+                    os.environ.setdefault(k.strip(), v.strip())
+
+    smtp_user = os.environ.get("SMTP_USERNAME", "")
+    smtp_pass = os.environ.get("SMTP_PASSWORD", "")
+    email_to = os.environ.get("EMAIL_TO", "adam@avalimo.net")
+
+    if not smtp_user or not smtp_pass:
+        print("SMTP not configured — contact inquiry logged to stdout only")
+        return
+
+    try:
+        msg = MIMEText(body)
+        msg["From"] = smtp_user
+        msg["To"] = email_to
+        msg["Subject"] = f"AvaLimo Contact — {subject} from {name}"
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.send_message(msg)
+        server.quit()
+        print(f"Contact email sent to {email_to}")
+    except Exception as e:
+        print(f"Failed to send contact email: {e}")
+
+
+_blog_path = os.path.join(os.path.dirname(__file__), "blog_posts.json")
+BLOG_POSTS = json.load(open(_blog_path)) if os.path.exists(_blog_path) else []
+
+HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers</title>
-<meta name="description" content="Houston's most trusted chauffeur service. Airport transfers for IAH &amp; Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.">
+<title>{{ title }}</title>
+<meta name="description" content="{{ meta_desc }}">
 <meta name="keywords" content="Houston limo, IAH airport transfer, Hobby airport car service, luxury chauffeur Houston, corporate car service Houston, wedding limo Houston, AvaLimo">
 <meta name="robots" content="index, follow">
 <meta name="geo.region" content="US-TX">
 <meta name="geo.placename" content="Houston">
 <meta name="theme-color" content="#0a0a0a">
-<meta name="google-site-verification" content="YOUR_GSC_CODE_HERE" />
-<link rel="canonical" href="https://avalimo.net" id="canonical-url">
+<link rel="canonical" href="{{ canonical_url }}">
 <meta property="og:locale" content="en_US">
-<meta property="og:title" content="AvaLimo — Houston Premier Limo Service | IAH &amp; Hobby Airport Transfers">
-<meta property="og:description" content="Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.">
-<meta property="og:url" content="https://avalimo.net">
+<meta property="og:title" content="{{ title }}">
+<meta property="og:description" content="{{ meta_desc }}">
+<meta property="og:url" content="{{ canonical_url }}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://avalimo.net/wp-content/uploads/2026/04/chauffeur_service.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AvaLimo — Houston Premier Limo Service">
-<meta name="twitter:description" content="Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings — 24/7 with zero surge pricing.">
+<meta name="twitter:title" content="{{ title }}">
+<meta name="twitter:description" content="{{ meta_desc }}">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -141,7 +275,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .hero-bg{position:absolute;inset:0;z-index:0}
 .hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.15}
 .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-.hero .container{position:relative;z-index:1;display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center}
+.hero .container{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
 .hero-text .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);color:var(--gold);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;letter-spacing:.5px;margin-bottom:32px}
 .hero-text .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
@@ -151,8 +285,8 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .hero-text p{color:var(--text2);font-size:18px;max-width:500px;line-height:1.7;margin-bottom:40px}
 .hero-btns{display:flex;gap:16px;flex-wrap:wrap}
 .hero-image{position:relative;display:flex;justify-content:center;align-items:center}
-.hero-image .glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.25) 0%,transparent 55%);filter:blur(100px)}
-.hero-image img{position:relative;z-index:1;width:100%;max-width:850px;animation:float 6s ease-in-out infinite;border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 100px rgba(212,175,55,.1)}
+.hero-image .glow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.15) 0%,transparent 70%);filter:blur(60px)}
+.hero-image img{position:relative;z-index:1;width:100%;max-width:550px;animation:float 6s ease-in-out infinite;border-radius:12px}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
 
 /* ─── Stats Bar ─── */
@@ -174,9 +308,9 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .fleet-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s;position:relative}
 .fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.fleet-card .img-wrap{height:420px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);padding:40px;position:relative;overflow:hidden;border-radius:16px 16px 0 0}
+.fleet-card .img-wrap{height:220px;display:flex;align-items:center;justify-content:center;background:transparent;padding:24px;position:relative;overflow:hidden}
 .fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%);pointer-events:none}
-.fleet-card .img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .6s}
+.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s}
 .fleet-card:hover .img-wrap img{transform:scale(1.08)}
 .fleet-card .tag{position:absolute;top:16px;left:16px;background:rgba(212,175,55,.15);color:var(--gold);padding:4px 14px;border-radius:50px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
 .fleet-card .body{padding:24px}
@@ -347,8 +481,6 @@ footer ul li a:hover{color:var(--gold)}
   .hero .container{grid-template-columns:1fr;gap:40px;text-align:center}
   .hero-text p{margin:0 auto 32px}
   .hero-btns{justify-content:center}
-  .hero-image img{max-width:95%}
-  .fleet-card .img-wrap{height:350px;padding:30px}
   .hero-image{display:flex;margin-top:20px}
   .hero-image img{max-width:320px}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
@@ -401,32 +533,13 @@ footer ul li a:hover{color:var(--gold)}
   .nav-links a{font-size:16px}
 </style>
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-STY7CSKRMX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());gtag('config','G-STY7CSKRMX');
+gtag('js',new Date());gtag('config','{{ ga_id }}');
 </script>
-
-
-
-<!-- Facebook Pixel Code - Replace YOUR_PIXEL_ID with your actual ID from business.facebook.com -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', 'YOUR_PIXEL_ID_HERE');
-fbq('track', 'PageView');
-</script>
-<noscript>
-<img height="1" width="1" style="display:none" 
-src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
-</noscript>
-<!-- End Facebook Pixel Code -->
+{{ sc_meta }}
+{{ fb_pixel }}
 </head>
 <body>
 
@@ -469,7 +582,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
     </div>
     <div class="hero-image">
       <div class="glow"></div>
-      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly">
+      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly" width="550" height="550">
     </div>
   </div>
 </section>
@@ -496,7 +609,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
     </div>
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Executive</h3>
           <div class="capacity">&#9679; Mercedes S-Class &middot; Up to 3 passengers</div>
@@ -505,7 +618,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>SUV</h3>
           <div class="capacity">&#9679; Cadillac Escalade &middot; Up to 6 passengers</div>
@@ -514,7 +627,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Sprinter</h3>
           <div class="capacity">&#9679; Mercedes Sprinter &middot; Up to 14 passengers</div>
@@ -654,7 +767,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
   <div class="container">
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes S-Class</h3>
           <div class="capacity">&#9679; Up to 3 passengers</div>
@@ -663,7 +776,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
           <div class="capacity">&#9679; Up to 6 passengers</div>
@@ -672,7 +785,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
           <div class="capacity">&#9679; Up to 14 passengers</div>
@@ -819,166 +932,19 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="blog-grid">
-      <div class="blog-card fade-up">
-        <div class="thumb">&#9992;</div>
+      {% for post in blog_posts %}
+      <div class="blog-card fade-up"{% if post.delay is defined and post.delay and post.delay != "0s" %} style="transition-delay:{{ post.delay }}"{% endif %}>
+        <div class="thumb">{{ post.emoji|safe }}</div>
         <div class="body">
-          <div class="cat">Airport Travel</div>
-          <h3>IAH vs Hobby: Which Houston Airport Should You Fly Into?</h3>
-          <p>A complete guide to Houston's two airports — amenities, locations, and which one makes sense for your trip.</p>
+          <div class="cat">{{ post.cat }}</div>
+          <h3>{{ post.title|safe }}</h3>
+          <p>{{ post.summary|safe }}</p>
           <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>June 1, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Houston is served by two major airports: George Bush Intercontinental (IAH) and William P. Hobby (HOU). Choosing the right one can save you time, money, and stress.</p>
-            <p><strong>George Bush Intercontinental (IAH)</strong> is Houston's primary international airport, located about 23 miles north of downtown. It has five terminals and serves most major international carriers. IAH is the better choice for international flights, long-haul domestic routes, and if you're traveling to or from the north side of Houston (The Woodlands, Spring, Conroe).</p>
-            <p><strong>William P. Hobby (HOU)</strong> is smaller, closer to downtown (about 7 miles), and primarily serves domestic routes via Southwest Airlines and a few other carriers. It's much easier to navigate with shorter security lines and quicker baggage claim. Hobby is ideal for short-haul domestic flights and if you're staying in downtown, Midtown, or the Medical Center.</p>
-            <p><strong>Our recommendation:</strong> For international travel, fly into IAH. For domestic trips, especially with Southwest, Hobby is hard to beat. Either way, AvaLimo covers both airports with the same premium service — flight tracking included.</p>
-          </div>
+          <div class="meta"><span>{{ post.date }}</span><span>&#8226; {{ post.read }}</span></div>
+          <div class="article-content">{{ post.content|safe }}</div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.1s">
-        <div class="thumb">&#127542;</div>
-        <div class="body">
-          <div class="cat">Travel Tips</div>
-          <h3>10 Reasons to Book a Chauffeur for Your Next Business Trip</h3>
-          <p>From productivity to professionalism, here's why executives choose chauffeured travel over rideshares.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 28, 2026</span><span>&#8226; 6 min read</span></div>
-          <div class="article-content">
-            <p>Business travel is about efficiency, professionalism, and making the right impression. Here are 10 reasons why a professional chauffeur beats rideshares and taxis every time.</p>
-            <ol>
-              <li><strong>Work en route</strong> — A quiet, private cabin lets you take calls, answer emails, or prep for meetings.</li>
-              <li><strong>Zero waiting</strong> — Your chauffeur tracks your flight and is ready when you land.</li>
-              <li><strong>Consistent quality</strong> — Every vehicle is inspected and cleaned before each ride.</li>
-              <li><strong>Professional image</strong> — Arrive in a luxury vehicle — it speaks volumes to clients.</li>
-              <li><strong>No surge pricing</strong> — What you quote is what you pay, every time.</li>
-              <li><strong>Meet &amp; greet</strong> — Your chauffeur welcomes you at arrivals with a name sign.</li>
-              <li><strong>24/7 availability</strong> — Late flight? Early morning? We're always on.</li>
-              <li><strong>Local expertise</strong> — Our drivers know Houston traffic, shortcuts, and construction.</li>
-              <li><strong>Luggage assistance</strong> — No hauling your own bags — we handle everything.</li>
-              <li><strong>Peace of mind</strong> — Fully insured, licensed, and vetted chauffeurs.</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.2s">
-        <div class="thumb">&#128141;</div>
-        <div class="body">
-          <div class="cat">Weddings</div>
-          <h3>How to Choose the Perfect Wedding Limo in Houston</h3>
-          <p>Bride, groom, wedding party — what vehicle fits your day? Our guide to wedding transportation.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 22, 2026</span><span>&#8226; 5 min read</span></div>
-          <div class="article-content">
-            <p>Your wedding day transportation is more than just a ride — it's part of the experience. Here's how to choose the perfect vehicle for your big day.</p>
-            <p><strong>For the Bride &amp; Groom:</strong> A Mercedes S-Class offers timeless elegance. With leather seating, ambient lighting, and a whisper-quiet cabin, it's the ultimate wedding car. Perfect for getting to the ceremony in style.</p>
-            <p><strong>For the Wedding Party:</strong> A Cadillac Escalade can comfortably seat up to 6 passengers. It's spacious enough for dresses, suits, and last-minute touch-ups. The panoramic sunroof makes for amazing photos.</p>
-            <p><strong>For Large Groups:</strong> The Mercedes Sprinter seats up to 14 guests and has high ceilings so nobody crushes their hair or dress. Reclining seats and premium sound make the ride part of the celebration.</p>
-            <p><strong>Pro tip:</strong> Book your wedding transportation at least 2-3 months in advance, especially during peak season (March-June and September-November).</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.3s">
-        <div class="thumb">&#127963;</div>
-        <div class="body">
-          <div class="cat">Corporate</div>
-          <h3>Houston Corporate Travel: Why Your Company Needs a Dedicated Chauffeur Service</h3>
-          <p>Reduce travel stress and boost productivity with professional corporate transportation.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 15, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Houston is a city built on business. From the Energy Corridor to the Texas Medical Center, professionals are constantly on the move. Here's why a dedicated corporate chauffeur service makes sense for your company.</p>
-            <p><strong>Maximize billable hours.</strong> When your team travels between meetings, a chauffeur allows them to work productively instead of focusing on traffic. The vehicle becomes a mobile office.</p>
-            <p><strong>Simplify billing.</strong> With corporate accounts, all charges are consolidated into a single monthly invoice. No more expense report headaches or receipts to track.</p>
-            <p><strong>Impress clients.</strong> Picking up VIP clients in a luxury vehicle sets the right tone. It shows attention to detail and a commitment to quality that reflects well on your company.</p>
-            <p>Contact us to set up a corporate account with customized billing and priority scheduling.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.4s">
-        <div class="thumb">&#127796;</div>
-        <div class="body">
-          <div class="cat">Events</div>
-          <h3>Best Concert Venues in Houston &amp; How to Get There in Style</h3>
-          <p>From NRG to the House of Blues — your guide to Houston's top music venues.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 10, 2026</span><span>&#8226; 5 min read</span></div>
-          <div class="article-content">
-            <p>Houston has an incredible live music scene. Here are the top venues and how to arrive in style.</p>
-            <p><strong>NRG Stadium</strong> — Home to mega-concerts and events. Parking is notoriously difficult. A chauffeur drops you at the gate and picks you up at the same spot after the show.</p>
-            <p><strong>Cynthia Woods Mitchell Pavilion</strong> — Located in The Woodlands, this outdoor venue is beautiful but challenging to navigate. Let us handle the drive.</p>
-            <p><strong>House of Blues</strong> — Downtown. Valet parking is limited. Our service means no circling the block looking for parking.</p>
-            <p><strong>Smart Financial Centre</strong> — Sugar Land's premier venue. With a chauffeur, you can enjoy the show without worrying about the drive home.</p>
-            <p><strong>Pro tip:</strong> Book your ride in advance for concert nights — demand is high and prices stay the same with us (no surge!).</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.5s">
-        <div class="thumb">&#127874;</div>
-        <div class="body">
-          <div class="cat">Events</div>
-          <h3>Houston Wedding Season 2026: Top Trends &amp; Transportation Tips</h3>
-          <p>Everything you need to know about getting married in Houston this year.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 28, 2026</span><span>&#8226; 6 min read</span></div>
-          <div class="article-content">
-            <p>2026 wedding season in Houston is shaping up to be one of the biggest yet. Here are the top trends and transportation tips.</p>
-            <p><strong>Trend 1: Multi-venue weddings.</strong> Many couples are choosing separate venues for the ceremony and reception. That means more moving parts — and more need for reliable transportation between locations.</p>
-            <p><strong>Trend 2: Late-night after-parties.</strong> After the reception, the celebration continues. Having a dedicated chauffeur means the party moves seamlessly from venue to venue.</p>
-            <p><strong>Trend 3: Sustainable luxury.</strong> Couples are choosing quality over quantity. A single luxury vehicle for the wedding party is becoming more popular than a fleet of standard cars.</p>
-            <p><strong>Transportation tip:</strong> Book group transportation for your out-of-town guests. It ensures everyone arrives on time and lets them enjoy the celebration without worrying about designated drivers.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.6s">
-        <div class="thumb">&#127761;</div>
-        <div class="body">
-          <div class="cat">Airport Travel</div>
-          <h3>How Early Should You Arrive at IAH? A Complete Airport Timeline</h3>
-          <p>Everything you need to know about timing your arrival at Houston's busiest airport.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 20, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Getting to IAH with the right timing can make or break your travel day. Here's our recommended timeline based on destination and time of day.</p>
-            <p><strong>Domestic flights:</strong> Arrive 2 hours before departure. This gives you time for check-in, security (typically 15-30 minutes at IAH), and a comfortable walk to your gate.</p>
-            <p><strong>International flights:</strong> Arrive 3 hours before departure. International check-in and customs documentation take longer, and security can be more thorough.</p>
-            <p><strong>Peak times:</strong> Monday mornings (6-9 AM) and Thursday/Friday evenings (4-7 PM) are the busiest. Add 30 minutes during these windows.</p>
-            <p><strong>With AvaLimo:</strong> We build in traffic buffers so you arrive with time to spare. Your chauffeur monitors your flight and adjusts pickup time if needed.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.7s">
-        <div class="thumb">&#128664;</div>
-        <div class="body">
-          <div class="cat">Fleet</div>
-          <h3>Mercedes S-Class vs Cadillac Escalade: Which AvaLimo Vehicle Is Right for You?</h3>
-          <p>A detailed comparison of our two most popular luxury vehicles.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 12, 2026</span><span>&#8226; 5 min read</span></div>
-          <div class="article-content">
-            <p>Two of our most popular vehicles serve different purposes. Here's how to choose between the Mercedes S-Class and the Cadillac Escalade.</p>
-            <p><strong>Mercedes S-Class</strong> is the ultimate executive sedan. It seats up to 3 passengers in supreme comfort. Best for: airport transfers, business travel, romantic evenings, and when you want a quiet, refined ride.</p>
-            <p><strong>Cadillac Escalade</strong> is a full-size luxury SUV seating up to 6 passengers. Best for: groups, families, shopping trips, and when you need more space for luggage or equipment.</p>
-            <p><strong>Our take:</strong> If it's just you and one or two others, the S-Class offers a more intimate luxury experience. For groups of 3-6, the Escalade provides space without sacrificing comfort.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.8s">
-        <div class="thumb">&#128230;</div>
-        <div class="body">
-          <div class="cat">Travel Tips</div>
-          <h3>Packing for a Weekend in Houston: What to Bring &amp; Where to Go</h3>
-          <p>The ultimate Houston weekend itinerary for visitors and first-timers.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 5, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Planning a weekend in Houston? Here's what to pack and where to go for an unforgettable trip.</p>
-            <p><strong>What to pack:</strong> Light layers (Houston weather changes fast), comfortable walking shoes, an umbrella (afternoon showers are common), and nice outfits for dinner (Houstonians dress up).</p>
-            <p><strong>Where to go:</strong> The Museum District (18 museums!), Houston Zoo, Space Center Houston, Buffalo Bayou Park, and the Galleria for shopping.</p>
-            <p><strong>Where to eat:</strong> Houston is one of America's best food cities. Try Xochi for Oaxacan cuisine, Killen's BBQ for Texas brisket, and Hugo's for upscale Mexican.</p>
-            <p><strong>Getting around:</strong> Houston is spread out — a chauffeur service is the best way to explore without worrying about parking or traffic.</p>
-          </div>
-        </div>
-      </div>
+      {% endfor %}
     </div>
     <div style="text-align:center;margin-top:40px"><p style="color:var(--text3);font-size:13px">New articles published weekly. <a href="/contact" style="color:var(--gold)">Suggest a topic</a>.</p></div>
 <footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)"><div class="container"><div class="footer-grid">
@@ -1041,8 +1007,8 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
 
 <!-- ─── PAGE: DEPOSIT ─── -->
 <div class="page" id="page-deposit" style="display:none"
-     data-sq-app-id="sq0idp-3tLlKikoRR7KSuOGOo7duw"
-     data-sq-loc-id="3RXHFV03PFGZ8">
+     data-sq-app-id="{{ sq_app_id }}"
+     data-sq-loc-id="{{ sq_location_id }}">
 <div class="page-header"><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
@@ -1087,6 +1053,130 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
 </section>
 </div>
 
+<div class="page" id="page-airport" style="display:none">
+<div class="page-header"><div class="container"><h1>Houston Airport <span class="gold">Limo Service</span></h1><p>Premium airport transfers to IAH &amp; Hobby Airport — 24/7 Availability</p></div></div>
+
+<section class="section" style="padding-top:0;background:var(--bg2)">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Why Choose AvaLimo for Houston Airport Transportation?</h2>
+<div class="services-grid">
+<div class="service-card"><div class="icon">💰</div><h3>Flat-Rate Pricing</h3><p>No surge fees, ever. Know your exact cost upfront with no hidden charges.</p></div>
+<div class="service-card"><div class="icon">✈️</div><h3>Flight Tracking</h3><p>We monitor your flight in real-time and adjust pickup automatically.</p></div>
+<div class="service-card"><div class="icon">👋</div><h3>Meet &amp; Greet</h3><p>Your chauffeur meets you at baggage claim with a personalized sign.</p></div>
+<div class="service-card"><div class="icon">🕐</div><h3>24/7 Availability</h3><p>Early morning or late night arrivals — we're always on standby.</p></div>
+<div class="service-card"><div class="icon">🚗</div><h3>Professional Chauffeurs</h3><p>Licensed, insured, background-checked drivers who know Houston's airports.</p></div>
+<div class="service-card"><div class="icon">🛡️</div><h3>On-Time Guarantee</h3><p>We arrive 10 minutes early, every time. Your time is valuable.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">IAH &amp; Hobby Airport Transfers</h2>
+<div class="fleet-grid" style="grid-template-columns:1fr 1fr;gap:32px">
+<div class="fleet-card">
+<div class="body" style="padding:32px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<span style="font-size:32px">🛫</span>
+<h3 style="font-size:20px">George Bush Intercontinental (IAH)</h3>
+</div>
+<p style="color:var(--text2);margin-bottom:20px">Houston's largest airport, 23 miles north of downtown. Seamless transfers to Downtown, The Woodlands, Katy, Sugar Land, and beyond.</p>
+<div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px">
+<p style="font-weight:600;margin-bottom:12px;color:var(--gold)">Popular Routes:</p>
+<ul style="list-style:none;display:grid;gap:8px;color:var(--text2);font-size:14px">
+<li>✓ IAH to Downtown Houston — ~45 minutes</li>
+<li>✓ IAH to The Woodlands — ~30 minutes</li>
+<li>✓ IAH to Sugar Land — ~55 minutes</li>
+<li>✓ IAH to Katy — ~50 minutes</li>
+<li>✓ IAH to Galleria — ~40 minutes</li>
+</ul>
+</div>
+<a href="/book" class="btn btn-gold" style="width:100%;justify-content:center">Book IAH Transfer</a>
+</div>
+</div>
+<div class="fleet-card">
+<div class="body" style="padding:32px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<span style="font-size:32px">🛬</span>
+<h3 style="font-size:20px">William P. Hobby Airport (HOU)</h3>
+</div>
+<p style="color:var(--text2);margin-bottom:20px">Houston's second airport, 11 miles southeast of downtown. Perfect for Southwest Airlines and domestic travelers.</p>
+<div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px">
+<p style="font-weight:600;margin-bottom:12px;color:var(--gold)">Popular Routes:</p>
+<ul style="list-style:none;display:grid;gap:8px;color:var(--text2);font-size:14px">
+<li>✓ Hobby to Downtown Houston — ~25 minutes</li>
+<li>✓ Hobby to Galleria — ~30 minutes</li>
+<li>✓ Hobby to Medical Center — ~35 minutes</li>
+<li>✓ Hobby to Pearland — ~20 minutes</li>
+<li>✓ Hobby to Clear Lake — ~25 minutes</li>
+</ul>
+</div>
+<a href="/book" class="btn btn-gold" style="width:100%;justify-content:center">Book Hobby Transfer</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" style="background:var(--bg2)">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Your Airport Transfer in 4 Simple Steps</h2>
+<div style="max-width:700px;margin:0 auto;display:grid;gap:24px">
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">1</div><div><h3 style="font-size:17px;margin-bottom:6px">Book Online or Call</h3><p style="color:var(--text2);font-size:14px">Reserve at avalimo.net or call (832) 567-8050. Get instant confirmation.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">2</div><div><h3 style="font-size:17px;margin-bottom:6px">Flight Tracking</h3><p style="color:var(--text2);font-size:14px">We monitor your flight in real-time. Adjustments made automatically at no charge.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">3</div><div><h3 style="font-size:17px;margin-bottom:6px">Meet &amp; Greet</h3><p style="color:var(--text2);font-size:14px">Your chauffeur meets you at baggage claim with a personalized sign.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">4</div><div><h3 style="font-size:17px;margin-bottom:6px">Relax &amp; Ride</h3><p style="color:var(--text2);font-size:14px">Sit back in luxury. We handle traffic and get you there in comfort.</p></div></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Frequently Asked Questions</h2>
+<div style="max-width:800px;margin:0 auto;display:grid;gap:20px">
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">How early should I book my airport limo?</h3>
+<p style="color:var(--text2);font-size:14px">We recommend 24 hours in advance. Call (832) 567-8050 for same-day availability.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">What if my flight is delayed?</h3>
+<p style="color:var(--text2);font-size:14px">We track flights in real-time. Your chauffeur adjusts automatically — no extra charge.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Where will my chauffeur meet me at IAH?</h3>
+<p style="color:var(--text2);font-size:14px">Domestic: baggage claim. International: customs exit. Sign with your name provided.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Do you charge extra for luggage?</h3>
+<p style="color:var(--text2);font-size:14px">Standard luggage included: 2 checked bags + 1 carry-on per passenger.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Can I book a round-trip transfer?</h3>
+<p style="color:var(--text2);font-size:14px">Absolutely! Round-trip bookings get preferred scheduling and simplified checkout.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">What's your cancellation policy?</h3>
+<p style="color:var(--text2);font-size:14px">Free cancellation up to 2 hours before pickup. Full refunds with 24-hour notice.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" style="background:var(--bg2);text-align:center">
+<div class="container">
+<div style="max-width:650px;margin:0 auto">
+<h2 style="font-size:clamp(26px,4vw,36px);margin-bottom:16px">Ready for Stress-Free Airport Transportation?</h2>
+<p style="color:var(--text2);font-size:17px;margin-bottom:32px">Join 500+ satisfied clients who trust AvaLimo for Houston airport transfers.</p>
+<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+<a href="tel:8325678050" class="btn btn-gold" style="font-size:15px;padding:14px 28px">📞 Call (832) 567-8050</a>
+<a href="/book" class="btn btn-outline" style="font-size:15px;padding:14px 28px">Book Online Now</a>
+</div>
+</div>
+</div>
+</section>
+</div>
+
+
 <!-- ─── Chat Widget ─── -->
 <button class="chat-btn" id="chatBtn" onclick="toggleChat()">
   <div class="pulse"></div>
@@ -1122,6 +1212,7 @@ var pageMeta = {
   '/faq': { title:'FAQ — AvaLimo | Frequently Asked Questions', desc:'Answers to common questions about booking, pricing, cancellations & more.' },
   '/policy': { title:'Policy — AvaLimo | Company Policy', desc:'AvaLimo company policy: booking, cancellation, refund & privacy terms.' },
   '/deposit': { title:'Pay Deposit — AvaLimo | Secure Your Reservation', desc:'Secure your AvaLimo reservation with a booking deposit. Fast & secure online payment.' },
+'/houston-airport-limo-service': { title:'Houston Airport Limo Service | IAH & Hobby Airport Transfers', desc:'Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online or call (832) 567-8050.' },
 };
 function showPage(path){
   var id = 'page-home';
@@ -1134,6 +1225,8 @@ function showPage(path){
   else if(path==='/policy') id='page-policy';
   else if(path==='/book') id='page-book';
   else if(path==='/deposit') id='page-deposit';
+  else if(path==='/houston-airport-limo-service') id='page-airport';
+  else if(path==='/houston-airport-limo-service') id='page-airport';
   for(var i=0;i<pages.length;i++) pages[i].style.display='none';
   document.getElementById(id).style.display='block';
   window.scrollTo(0,0);
@@ -1151,14 +1244,6 @@ function showPage(path){
   if(ogTitle) ogTitle.setAttribute('content',meta.title);
   var ogDesc=document.querySelector('meta[property="og:description"]');
   if(ogDesc) ogDesc.setAttribute('content',meta.desc);
-  var ogUrl=document.querySelector('meta[property="og:url"]');
-  if(ogUrl) ogUrl.setAttribute('content','https://avalimo.net'+path);
-  var canon=document.getElementById('canonical-url');
-  if(canon) canon.setAttribute('href','https://avalimo.net'+path);
-  var twitterTitle=document.querySelector('meta[name="twitter:title"]');
-  if(twitterTitle) twitterTitle.setAttribute('content',meta.title);
-  var twitterDesc=document.querySelector('meta[name="twitter:description"]');
-  if(twitterDesc) twitterDesc.setAttribute('content',meta.desc);
   // init Square card on deposit page
   if(path==='/deposit') setTimeout(initSquareCard,300);
 }
@@ -1426,4 +1511,187 @@ function processSquarePayment(){
 }
 </script>
 </body>
-</html>
+</html>"""
+
+@app.route("/index.html")
+@app.route("/index.htm")
+@app.route("/home")
+@app.route("/index")
+def redirect_home():
+    return redirect("/", code=301)
+
+@app.route("/robots.txt")
+def robots_txt():
+    return "User-agent: *\nAllow: /\nSitemap: https://avalimo.net/sitemap.xml", 200, {"Content-Type": "text/plain"}
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit", "houston-airport-limo-service"]
+    urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc></url>' for p in pages)
+    xml = f'''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{urls}
+</urlset>'''
+    return xml, 200, {"Content-Type": "application/xml"}
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def index(path):
+    page_meta = {
+        "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds." },
+        "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7." },
+        "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion." },
+        "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7." },
+        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Insights & Tips", "desc": "Travel tips, airport guides, wedding advice & more from Houston's premier chauffeur service." },
+        "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines." },
+        "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch." },
+        "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more." },
+        "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms." },
+        "deposit": { "title": "Pay Deposit — AvaLimo | Secure Your Reservation", "desc": "Secure your AvaLimo reservation with a booking deposit. Fast & secure online payment." },
+        "houston-airport-limo-service": { "title": "Houston Airport Limo Service | IAH & Hobby Airport Transfers | AvaLimo", "desc": "Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online in 60 seconds. Call (832) 567-8050." },
+    }
+    meta = page_meta.get(path, page_meta[""])
+    canonical = f"https://avalimo.net/{path}" if path else "https://avalimo.net"
+    html = HTML.replace("{{ sq_app_id }}", SQ_APP_ID).replace("{{ sq_location_id }}", SQ_LOCATION_ID).replace("{{ ga_id }}", GA_ID).replace("{{ sc_meta }}", SC_META).replace("{{ fb_pixel }}", FB_PIXEL)
+    html = html.replace("{{ title }}", meta["title"]).replace("{{ meta_desc }}", meta["desc"]).replace("{{ canonical_url }}", canonical)
+    return render_template_string(html, blog_posts=BLOG_POSTS)
+
+
+@app.route("/api/book", methods=["POST"])
+def book_ride():
+    data = request.get_json() or {}
+    send_booking_email(data)
+    return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})
+
+
+@app.route("/api/contact", methods=["POST"])
+def contact():
+    data = request.get_json() or {}
+    send_contact_email(data)
+    return jsonify({"status": "ok", "message": "Message sent! We'll get back to you shortly."})
+
+
+@app.route("/api/flight")
+def flight_track():
+    q = request.args.get("q", "").upper().strip().replace(" ", "")
+    if not q:
+        return jsonify({"status": "error", "message": "No flight number provided"}), 400
+
+    if AV_API_KEY:
+        try:
+            import requests as req
+            resp = req.get("https://api.aviationstack.com/v1/flights", params={
+                "access_key": AV_API_KEY, "flight_iata": q
+            }, timeout=10)
+            data = resp.json()
+            if data.get("data"):
+                f = data["data"][0]
+                dep = f.get("departure", {})
+                arr = f.get("arrival", {})
+                status = f.get("flight_status", "unknown")
+                gate = arr.get("gate") or dep.get("gate") or "—"
+                term = arr.get("terminal") or dep.get("terminal") or "—"
+                d_iata = dep.get("iata") or "?"
+                a_iata = arr.get("iata") or "?"
+                now = dep.get("estimated") or dep.get("scheduled") or ""
+                if now and "T" in now:
+                    now = now.split("T")[1][:5]
+                est = arr.get("estimated") or arr.get("scheduled") or ""
+                if est and "T" in est:
+                    est = est.split("T")[1][:5]
+                sched = dep.get("scheduled") or ""
+                if sched and "T" in sched:
+                    sched = sched.split("T")[1][:5]
+                return jsonify({
+                    "flight": q, "airline": f.get("airline", {}).get("name", "?"),
+                    "route": f"{d_iata} → {a_iata}",
+                    "sched": sched, "est": est,
+                    "status": status,
+                    "gate": gate, "term": term
+                })
+            else:
+                return jsonify({"status": "error", "message": f"No data for flight {q}"}), 404
+        except Exception as e:
+            return jsonify({"status": "error", "message": f"API error: {e}"}), 502
+    else:
+        return jsonify({"status": "error", "message": "Flight tracking API key not configured. Add AVIATIONSTACK_KEY to your .env"}), 503
+
+
+@app.route("/api/deposit", methods=["POST"])
+def process_deposit():
+    data = request.get_json() or {}
+    amount = data.get("amount", "0")
+    email = data.get("email", "")
+    name = data.get("name", "")
+
+    print(f"\n{'='*50}")
+    print(f"Deposit request: ${amount} from {name} ({email})")
+    print(f"{'='*50}\n")
+
+    return jsonify({
+        "status": "ok",
+        "message": f"Deposit of ${amount} received! Your booking is secured.",
+        "amount": amount,
+    })
+
+
+@app.route("/api/square-pay", methods=["POST"])
+def square_pay():
+    data = request.get_json() or {}
+    source_id = data.get("source_id", "")
+    amount_cents = data.get("amount", 0)
+    name = data.get("name", "")
+    email = data.get("email", "")
+
+    if not source_id:
+        return jsonify({"status": "error", "message": "Missing payment source."}), 400
+    if not amount_cents or amount_cents < 50:
+        return jsonify({"status": "error", "message": "Minimum deposit is $0.50."}), 400
+
+    print(f"\n{'='*50}")
+    print(f"Square payment request: ${amount_cents/100:.2f} from {name} ({email})")
+
+    if not Square or not SQ_TOKEN:
+        print("Square SDK not configured — payment simulated")
+        print(f"{'='*50}\n")
+        return jsonify({
+            "status": "ok",
+            "message": "Payment authorized (demo mode). Set SQUARE_ACCESS_TOKEN in .env for live payments.",
+            "payment_id": "sim_" + uuid.uuid4().hex[:12],
+        })
+
+    try:
+        env = SquareEnvironment.SANDBOX if SQ_ENV == "sandbox" else SquareEnvironment.PRODUCTION
+        client = Square(token=SQ_TOKEN, environment=env)
+        result = client.payments.create(
+            source_id=source_id,
+            idempotency_key=uuid.uuid4().hex,
+            amount_money={"amount": amount_cents, "currency": "USD"},
+            buyer_email_address=email or None,
+            note=f"AvaLimo deposit from {name}",
+            reference_id="deposit",
+        )
+
+        if result.is_success():
+            pid = result.body["payment"]["id"]
+            status = result.body["payment"]["status"]
+            print(f"  Payment {pid} — {status}")
+            print(f"{'='*50}\n")
+            return jsonify({"status": "ok", "message": f"Payment {status}. ID: {pid}", "payment_id": pid})
+        else:
+            errs = result.errors or []
+            detail = errs[0]["detail"] if errs else "Payment declined"
+            print(f"  Payment failed: {detail}")
+            print(f"{'='*50}\n")
+            return jsonify({"status": "error", "message": detail}), 402
+
+    except Exception as e:
+        print(f"  Square error: {e}")
+        print(f"{'='*50}\n")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+if __name__ == "__main__":
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 5002
+    print(f"AvaLimo site running on http://127.0.0.1:{port}")
+    app.run(host="0.0.0.0", port=port, debug=True)
