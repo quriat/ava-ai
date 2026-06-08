@@ -34,7 +34,7 @@ SEO & TRACKING SETUP CHECKLIST FOR AVALIMO.NET
 <meta name="geo.placename" content="Houston">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="google-site-verification" content="YOUR_GSC_CODE_HERE" />
-<link rel="canonical" href="https://avalimo.net">
+<link rel="canonical" href="https://avalimo.net" id="canonical-url">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="AvaLimo — Houston Premier Limo Service | IAH &amp; Hobby Airport Transfers">
 <meta property="og:description" content="Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.">
@@ -1151,6 +1151,14 @@ function showPage(path){
   if(ogTitle) ogTitle.setAttribute('content',meta.title);
   var ogDesc=document.querySelector('meta[property="og:description"]');
   if(ogDesc) ogDesc.setAttribute('content',meta.desc);
+  var ogUrl=document.querySelector('meta[property="og:url"]');
+  if(ogUrl) ogUrl.setAttribute('content','https://avalimo.net'+path);
+  var canon=document.getElementById('canonical-url');
+  if(canon) canon.setAttribute('href','https://avalimo.net'+path);
+  var twitterTitle=document.querySelector('meta[name="twitter:title"]');
+  if(twitterTitle) twitterTitle.setAttribute('content',meta.title);
+  var twitterDesc=document.querySelector('meta[name="twitter:description"]');
+  if(twitterDesc) twitterDesc.setAttribute('content',meta.desc);
   // init Square card on deposit page
   if(path==='/deposit') setTimeout(initSquareCard,300);
 }

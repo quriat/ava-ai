@@ -5,7 +5,7 @@ import uuid
 import json
 import smtplib
 from email.mime.text import MIMEText
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify, render_template_string, redirect
 
 try:
     from square.client import Square, SquareEnvironment
@@ -168,11 +168,11 @@ HTML = r"""<!DOCTYPE html>
 <meta name="geo.region" content="US-TX">
 <meta name="geo.placename" content="Houston">
 <meta name="theme-color" content="#0a0a0a">
-<link rel="canonical" href="https://avalimo.net">
+<link rel="canonical" href="{{ canonical_url }}">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="{{ title }}">
 <meta property="og:description" content="{{ meta_desc }}">
-<meta property="og:url" content="https://avalimo.net">
+<meta property="og:url" content="{{ canonical_url }}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://avalimo.net/wp-content/uploads/2026/04/chauffeur_service.png">
 <meta property="og:image:width" content="1200">
@@ -1513,6 +1513,13 @@ function processSquarePayment(){
 </body>
 </html>"""
 
+@app.route("/index.html")
+@app.route("/index.htm")
+@app.route("/home")
+@app.route("/index")
+def redirect_home():
+    return redirect("/", code=301)
+
 @app.route("/robots.txt")
 def robots_txt():
     return "User-agent: *\nAllow: /\nSitemap: https://avalimo.net/sitemap.xml", 200, {"Content-Type": "text/plain"}
@@ -1544,8 +1551,9 @@ def index(path):
         "houston-airport-limo-service": { "title": "Houston Airport Limo Service | IAH & Hobby Airport Transfers | AvaLimo", "desc": "Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online in 60 seconds. Call (832) 567-8050." },
     }
     meta = page_meta.get(path, page_meta[""])
+    canonical = f"https://avalimo.net/{path}" if path else "https://avalimo.net"
     html = HTML.replace("{{ sq_app_id }}", SQ_APP_ID).replace("{{ sq_location_id }}", SQ_LOCATION_ID).replace("{{ ga_id }}", GA_ID).replace("{{ sc_meta }}", SC_META).replace("{{ fb_pixel }}", FB_PIXEL)
-    html = html.replace("{{ title }}", meta["title"]).replace("{{ meta_desc }}", meta["desc"])
+    html = html.replace("{{ title }}", meta["title"]).replace("{{ meta_desc }}", meta["desc"]).replace("{{ canonical_url }}", canonical)
     return render_template_string(html, blog_posts=BLOG_POSTS)
 
 
