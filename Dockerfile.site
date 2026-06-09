@@ -1,10 +1,13 @@
-# Flask Backend with Gunicorn
+# Flask Backend with Nginx Reverse Proxy
 FROM python:3.11-slim
 
-WORKDIR /app
+# Install nginx and supervisor
+RUN apt-get update && apt-get install -y nginx supervisor && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 RUN pip install --no-cache-dir flask gunicorn
+
+WORKDIR /app
 
 # Copy application files
 COPY site_app.py /app/
@@ -12,11 +15,20 @@ COPY site_app.py /app/
 # Create trips.json file
 RUN echo '[]' > /app/trips.json
 
-# Copy static files (optional, for serving assets)
+# Copy static files
 COPY static /app/static/ 2>/dev/null || true
 
-# Expose port
-EXPOSE 5002
+# Copy nginx config
+COPY nginx.conf /etc/nginx/sites-available/default
 
-# Run Flask with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "2", "--timeout", "120", "site_app:app"]
+# Create nginx symlink
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Copy supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose port
+EXPOSE 80
+
+# Start both nginx and gunicorn
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
