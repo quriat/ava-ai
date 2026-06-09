@@ -195,7 +195,7 @@ HTML = r"""<!DOCTYPE html>
   "priceRange": "$$$",
   "address": { "@type": "PostalAddress", "addressLocality": "Houston", "addressRegion": "TX", "addressCountry": "US" },
   "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
-  "sameAs": []
+  "sameAs": ["https://www.linkedin.com/in/adam-aljahdhami-550586218/"]
 }
 </script>
 <script type="application/ld+json">
@@ -943,6 +943,22 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
           <div class="meta"><span>{{ post.date }}</span><span>&#8226; {{ post.read }}</span></div>
           <div class="article-content">{{ post.content|safe }}</div>
         </div>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "{{ post.title|safe }}",
+          "description": "{{ post.summary|safe }}",
+          "url": "https://avalimo.net/blog/{{ post.slug }}",
+          "datePublished": "{{ post.date }}",
+          "dateModified": "{{ post.date }}",
+          "author": { "@type": "Person", "name": "{{ post.author }}" },
+          "publisher": { "@type": "LocalBusiness", "name": "AvaLimo", "url": "https://avalimo.net", "logo": "https://avalimo.net/static/chauffeur_service.webp" },
+          "image": "https://avalimo.net{{ post.image }}",
+          "articleBody": {{ post.content|safe|tojson }},
+          "mainEntityOfPage": { "@type": "WebPage", "@id": "https://avalimo.net/blog/{{ post.slug }}" }
+        }
+        </script>
       </div>
       {% endfor %}
     </div>
@@ -1526,8 +1542,25 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit", "houston-airport-limo-service"]
-    urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc></url>' for p in pages)
+    today = "2026-06-08"
+    pages = [
+        ("", today),
+        ("services", today),
+        ("fleet", today),
+        ("book", today),
+        ("blog", today),
+        ("flight-status", today),
+        ("contact", today),
+        ("faq", today),
+        ("policy", today),
+        ("deposit", today),
+        ("houston-airport-limo-service", today),
+    ]
+    # Add blog posts to sitemap
+    for post in BLOG_POSTS:
+        pages.append((f"blog/{post['slug']}", post['date']))
+    
+    urls = "\n".join(f'<url><loc>https://avalimo.net/{p[0]}</loc><lastmod>{p[1]}</lastmod></url>' for p in pages)
     xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {urls}
@@ -1542,7 +1575,7 @@ def index(path):
         "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7." },
         "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion." },
         "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7." },
-        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Insights & Tips", "desc": "Travel tips, airport guides, wedding advice & more from Houston's premier chauffeur service." },
+        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Guides & Travel Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service." },
         "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines." },
         "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch." },
         "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more." },
@@ -1689,6 +1722,262 @@ def square_pay():
         print(f"  Square error: {e}")
         print(f"{'='*50}\n")
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+# Trip Management API (for Telegram bot integration)
+TRIPS_FILE = os.path.join(os.path.dirname(__file__), "trips.json")
+
+def load_trips():
+    """Load all trips from JSON file"""
+    if os.path.exists(TRIPS_FILE):
+        with open(TRIPS_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_trips(trips):
+    """Save all trips to JSON file"""
+    with open(TRIPS_FILE, 'w') as f:
+        json.dump(trips, f, indent=2)
+
+@app.route("/api/trips", methods=["POST"])
+def create_trip():
+    """Create a new trip from Telegram bot"""
+    data = request.get_json() or {}
+    
+    # Validate required fields
+    required = ['customer_name', 'pickup_location', 'dropoff_location']
+    missing = [f for f in required if not data.get(f)]
+    if missing:
+        return jsonify({
+            "status": "error",
+            "message": f"Missing required fields: {', '.join(missing)}"
+        }), 400
+    
+    # Create trip record
+    trip = {
+        "id": str(uuid.uuid4()),
+        "customer_name": data.get("customer_name", ""),
+        "pickup_location": data.get("pickup_location", ""),
+        "dropoff_location": data.get("dropoff_location", ""),
+        "pickup_time": data.get("pickup_time", ""),
+        "vehicle_type": data.get("vehicle_type", "Standard"),
+        "driver": data.get("driver", "Unassigned"),
+        "status": "pending",
+        "created_at": str(uuid.uuid4().node),  # Simple timestamp
+        "source": "telegram_bot"
+    }
+    
+    # Save to file
+    trips = load_trips()
+    trips.append(trip)
+    save_trips(trips)
+    
+    print(f"\n{'='*50}")
+    print(f"New Trip Created via Telegram Bot")
+    print(f"Customer: {trip['customer_name']}")
+    print(f"Route: {trip['pickup_location']} → {trip['dropoff_location']}")
+    print(f"Time: {trip['pickup_time']}")
+    print(f"Vehicle: {trip['vehicle_type']}")
+    print(f"Driver: {trip['driver']}")
+    print(f"{'='*50}\n")
+    
+    return jsonify({
+        "status": "success",
+        "message": "Trip created successfully",
+        "trip_id": trip["id"]
+    }), 201
+
+@app.route("/api/trips", methods=["GET"])
+def get_trips():
+    """Get all trips (for admin dashboard)"""
+    trips = load_trips()
+    # Sort by created_at descending
+    trips.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    return jsonify({
+        "status": "success",
+        "trips": trips,
+        "count": len(trips)
+    })
+
+@app.route("/api/trips/<trip_id>", methods=["PUT"])
+def update_trip(trip_id):
+    """Update a trip (change status, driver, etc.)"""
+    data = request.get_json() or {}
+    trips = load_trips()
+    
+    # Find and update trip
+    for trip in trips:
+        if trip["id"] == trip_id:
+            # Update allowed fields
+            if "status" in data:
+                trip["status"] = data["status"]
+            if "driver" in data:
+                trip["driver"] = data["driver"]
+            if "notes" in data:
+                trip["notes"] = data["notes"]
+            
+            save_trips(trips)
+            return jsonify({
+                "status": "success",
+                "message": "Trip updated successfully",
+                "trip": trip
+            })
+    
+    return jsonify({
+        "status": "error",
+        "message": "Trip not found"
+    }), 404
+
+@app.route("/admin/trips")
+def admin_trips_page():
+    """Admin page to view and manage trips"""
+    trips = load_trips()
+    trips.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    
+    html = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Trip Management | AvaLimo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; }
+        .header { background: #1a1a2e; color: white; padding: 20px; }
+        .header h1 { font-size: 24px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-card h3 { color: #666; font-size: 14px; margin-bottom: 10px; }
+        .stat-card .number { font-size: 32px; font-weight: bold; color: #1a1a2e; }
+        .trip-table { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; color: #333; }
+        tr:hover { background: #f8f9fa; }
+        .status { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-completed { background: #d1ecf1; color: #0c5460; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-confirm { background: #28a745; color: white; }
+        .btn-complete { background: #17a2b8; color: white; }
+        .btn-cancel { background: #dc3545; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .actions { display: flex; gap: 8px; }
+        .empty { text-align: center; padding: 60px; color: #666; }
+        .refresh-btn { background: #1a1a2e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px; }
+        @media (max-width: 768px) {
+            .stats { grid-template-columns: 1fr 1fr; }
+            table { font-size: 12px; }
+            th, td { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 AvaLimo Trip Management</h1>
+    </div>
+    <div class="container">
+        <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Trips</h3>
+                <div class="number">''' + str(len(trips)) + '''</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <div class="number">''' + str(sum(1 for t in trips if t.get('status') == 'pending')) + '''</div>
+            </div>
+            <div class="stat-card">
+                <h3>Confirmed</h3>
+                <div class="number">''' + str(sum(1 for t in trips if t.get('status') == 'confirmed')) + '''</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <div class="number">''' + str(sum(1 for t in trips if t.get('status') == 'completed')) + '''</div>
+            </div>
+        </div>
+        
+        <div class="trip-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Route</th>
+                        <th>Time</th>
+                        <th>Vehicle</th>
+                        <th>Driver</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+'''
+    
+    for trip in trips:
+        status_class = f"status-{trip.get('status', 'pending')}"
+        html += f'''
+                    <tr>
+                        <td><code>{trip['id'][:8]}</code></td>
+                        <td><strong>{trip.get('customer_name', 'N/A')}</strong></td>
+                        <td>{trip.get('pickup_location', 'N/A')} → {trip.get('dropoff_location', 'N/A')}</td>
+                        <td>{trip.get('pickup_time', 'N/A')}</td>
+                        <td>{trip.get('vehicle_type', 'Standard')}</td>
+                        <td>{trip.get('driver', 'Unassigned')}</td>
+                        <td><span class="status {status_class}">{trip.get('status', 'pending').upper()}</span></td>
+                        <td class="actions">
+                            <button class="btn btn-confirm" onclick="updateTrip('{trip['id']}', 'confirmed')">✓</button>
+                            <button class="btn btn-complete" onclick="updateTrip('{trip['id']}', 'completed')">✓✓</button>
+                            <button class="btn btn-cancel" onclick="updateTrip('{trip['id']}', 'cancelled')">✗</button>
+                        </td>
+                    </tr>
+        '''
+    
+    if not trips:
+        html += '''
+                    <tr>
+                        <td colspan="8" class="empty">
+                            <h3>No trips yet</h3>
+                            <p>Trips from Telegram will appear here</p>
+                        </td>
+                    </tr>
+        '''
+    
+    html += '''
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        async function updateTrip(tripId, newStatus) {
+            try {
+                const response = await fetch('/api/trips/' + tripId, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({status: newStatus})
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (e) {
+                alert('Error updating trip');
+            }
+        }
+    </script>
+</body>
+</html>
+'''
+    
+    return render_template_string(html)
 
 
 if __name__ == "__main__":
