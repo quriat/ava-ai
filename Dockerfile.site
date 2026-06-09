@@ -1,0 +1,20 @@
+# Flask Backend Only (No Nginx)
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Python dependencies
+RUN pip install --no-cache-dir flask gunicorn
+
+# Copy application files
+COPY site_app.py /app/
+COPY static /app/static/ 2>/dev/null || true
+
+# Create trips.json file
+RUN echo '[]' > /app/trips.json
+
+# Expose port 80
+EXPOSE 80
+
+# Run Flask with Gunicorn on port 80
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "2", "--timeout", "120", "site_app:app"]

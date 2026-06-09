@@ -1,0 +1,240 @@
+{
+  "name": "AvaLimo Competitor Keyword Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "seconds": 0,
+              "minutes": 0,
+              "hours": 24
+            }
+          ]
+        }
+      },
+      "id": "daily-trigger",
+      "name": "Daily Check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Define competitors and their target pages\nconst competitors = [\n  {\n    name: 'Elite Limo Houston',\n    domain: 'elitelimohouston.com',\n    pages: [\n      '/houston-airport-transfers',\n      '/corporate-car-service',\n      '/wedding-limo'\n    ]\n  },\n  {\n    name: 'Limo Star Houston',\n    domain: 'limostarhouston.com',\n    pages: [\n      '/services',\n      '/airport-transportation',\n      '/wedding-limo-service'\n    ]\n  },\n  {\n    name: 'Avante Limo',\n    domain: 'avantelimos.com',\n    pages: [\n      '/houston-airport-limo',\n      '/corporate-transportation',\n      '/wedding-limousine'\n    ]\n  }\n];\n\n// Keywords to track across all competitors\nconst keywords = [\n  'houston limo service',\n  'iah airport transfer',\n  'hobby airport car service',\n  'corporate car service houston',\n  'wedding limo houston',\n  'luxury car service houston',\n  'houston chauffeur service',\n  'sugar land limo',\n  'the woodlands car service',\n  'houston airport shuttle'\n];\n\n// Return items for each competitor\nreturn competitors.map(comp => ({\n  json: {\n    competitor: comp,\n    keywords: keywords,\n    date: new Date().toISOString()\n  }\n}));"
+      },
+      "id": "competitor-list",
+      "name": "Load Competitors",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://www.google.com/search?q=' + encodeURIComponent($json.competitor.name + ' ' + $json.keywords[0]) + '\u0026num=10' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+          ]
+        }
+      },
+      "id": "google-search",
+      "name": "Search Google",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse Google search results HTML to extract rankings\nconst html = $input.first().json.data;\nconst competitor = $input.first().json.competitor;\nconst keywords = $input.first().json.keywords;\n\n// Simple rank extraction (simplified - would need proper SERP API for accuracy)\nconst results = [];\nconst domain = competitor.domain;\n\n// Check if competitor domain appears in results\nconst hasRanking = html.includes(domain);\nconst position = hasRanking ? html.indexOf(domain) : -1;\n\n// Rank estimation (very rough - use SERP API for production)\nlet estimatedRank = 'Not in top 10';\nif (hasRanking) {\n  const snippet = html.substring(Math.max(0, position - 200), position + 200);\n  if (snippet.includes('result-stats')) estimatedRank = '1-3';\n  else if (snippet.includes('Ads')) estimatedRank = 'Ad placement';\n  else estimatedRank = '4-10';\n}\n\nreturn [{\n  json: {\n    date: new Date().toISOString(),\n    competitor: competitor.name,\n    domain: domain,\n    keyword: keywords[0],\n    inResults: hasRanking,\n    estimatedPosition: estimatedRank,\n    fullHtml: html.substring(0, 500) // For debugging\n  }\n}];"
+      },
+      "id": "parse-results",
+      "name": "Parse Results",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "tracker@avalimo.net",
+        "toEmail": "adam@avalimo.net",
+        "subject": "Daily Competitor Keyword Report - AvaLimo",
+        "text": "AvaLimo Competitor Keyword Tracker Report\n\nDate: {{ $json.date }}\n\nCompetitor: {{ $json.competitor }}\nDomain: {{ $json.domain }}\n\nKeyword: {{ $json.keyword }}\nIn Top 10: {{ $json.inResults ? 'Yes' : 'No' }}\nEstimated Position: {{ $json.estimatedPosition }}\n\n---\n\nNote: For accurate rankings, connect a SERP API (DataForSEO, SerpApi, or similar).\nThis workflow uses a basic scraper for demonstration.\n\nNext steps:\n1. Sign up for SerpApi at https://serpapi.com\n2. Replace the Google search HTTP node with SerpApi node\n3. Get daily accurate ranking data\n"
+      },
+      "id": "email-report",
+      "name": "Email Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Competitor Alert: {{ $json.competitor }} ranking for '{{ $json.keyword }}' at position {{ $json.estimatedPosition }}",
+        "additionalFields": {}
+      },
+      "id": "telegram-alert",
+      "name": "Telegram Summary",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1050, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.inResults }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-ranking",
+      "name": "Is Ranking?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [850, 500]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "options": {},
+        "table": {
+          "mode": "list",
+          "value": "competitor_rankings"
+        },
+        "columns": {
+          "matching": [
+            {
+              "column": "date",
+              "value": "={{ $json.date }}"
+            },
+            {
+              "column": "competitor",
+              "value": "={{ $json.competitor }}"
+            },
+            {
+              "column": "domain",
+              "value": "={{ $json.domain }}"
+            },
+            {
+              "column": "keyword",
+              "value": "={{ $json.keyword }}"
+            },
+            {
+              "column": "in_results",
+              "value": "={{ $json.inResults }}"
+            },
+            {
+              "column": "position",
+              "value": "={{ $json.estimatedPosition }}"
+            }
+          ]
+        }
+      },
+      "id": "save-ranking",
+      "name": "Save to DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Daily Check": {
+      "main": [
+        [
+          {
+            "node": "Load Competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Competitors": {
+      "main": [
+        [
+          {
+            "node": "Search Google",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Google": {
+      "main": [
+        [
+          {
+            "node": "Parse Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Results": {
+      "main": [
+        [
+          {
+            "node": "Email Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Ranking?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Report": {
+      "main": [
+        [
+          {
+            "node": "Save to DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Ranking?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["avalimo", "seo", "competitors", "ranking"]
+}
