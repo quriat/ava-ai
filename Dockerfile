@@ -1,22 +1,22 @@
-# Static site served with Nginx
-FROM nginx:alpine
+# Flask Backend with Gunicorn
+FROM python:3.11-slim
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/avalimo.conf
+# Install Python dependencies
+RUN pip install --no-cache-dir flask gunicorn
 
-# Copy only website files to nginx html root
-COPY index.html /usr/share/nginx/html/
-COPY houston-airport-limo-service.html /usr/share/nginx/html/
-COPY robots.txt /usr/share/nginx/html/
-COPY sitemap.xml /usr/share/nginx/html/
+# Copy application files
+COPY site_app.py /app/
 
-# Copy directories
-COPY blog /usr/share/nginx/html/blog/
-COPY houston-airport-limo-service /usr/share/nginx/html/houston-airport-limo-service/
-COPY static /usr/share/nginx/html/static/
+# Create trips.json file
+RUN echo '[]' > /app/trips.json
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Copy static files (optional, for serving assets)
+COPY static /app/static/ 2>/dev/null || true
+
+# Expose port
+EXPOSE 5002
+
+# Run Flask with Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "2", "--timeout", "120", "site_app:app"]
