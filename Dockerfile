@@ -1,30 +1,22 @@
-# Flask backend with Nginx reverse proxy
-FROM python:3.11-slim
+# Static site served with Nginx
+FROM nginx:alpine
 
-WORKDIR /app
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/avalimo.conf
 
-# Install Python dependencies
-RUN pip install --no-cache-dir flask gunicorn
+# Copy only website files to nginx html root
+COPY index.html /usr/share/nginx/html/
+COPY houston-airport-limo-service.html /usr/share/nginx/html/
+COPY robots.txt /usr/share/nginx/html/
+COPY sitemap.xml /usr/share/nginx/html/
 
-# Copy application files
-COPY site_app.py /app/
-COPY index.html /app/static/
-COPY houston-airport-limo-service.html /app/static/
-COPY robots.txt /app/static/
-COPY sitemap.xml /app/static/
-COPY blog /app/static/blog/
-COPY houston-airport-limo-service /app/static/houston-airport-limo-service/
-COPY static /app/static/static/
-COPY nginx.conf /etc/nginx/sites-enabled/avalimo
+# Copy directories
+COPY blog /usr/share/nginx/html/blog/
+COPY houston-airport-limo-service /usr/share/nginx/html/houston-airport-limo-service/
+COPY static /usr/share/nginx/html/static/
 
-# Create trips.json file
-RUN touch /app/trips.json && echo '[]' > /app/trips.json
-
-# Expose port
-EXPOSE 5002
-
-# Run Flask with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "2", "site_app:app"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
