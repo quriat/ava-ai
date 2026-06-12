@@ -154,7 +154,15 @@ def send_contact_email(data: dict):
 
 
 _blog_path = os.path.join(os.path.dirname(__file__), "blog_posts.json")
-BLOG_POSTS = json.load(open(_blog_path)) if os.path.exists(_blog_path) else []
+def _get_blog_posts():
+    if os.path.exists(_blog_path):
+        try:
+            with open(_blog_path) as f:
+                return json.load(f)
+        except Exception:
+            return []
+    return []
+BLOG_POSTS = _get_blog_posts()
 
 HTML = r"""<!DOCTYPE html>
 <html lang="en">
@@ -927,19 +935,32 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 </div>
 
 <!-- ─── PAGE: BLOG ─── -->
-<div class="page" id="page-blog" style="display:none">
-<div class="page-header"><div class="container"><h2>Our <span class="gold">Blog</span></h2><p>Insights, guides, and news from Houston's premier limo service.</p></div></div>
+<div class="page" id="page-blog" style="{% if featured_post %}display:block{% else %}display:none{% endif %}">
+{% if featured_post %}
+<div id="blog-featured" data-slug="{{ featured_post.slug }}">
+<div class="container" style="padding-top:100px">
+  <a href="/blog" class="btn btn-outline" style="margin-bottom:20px">← Back to Blog</a>
+  <div class="blog-article-full">
+    <div class="cat" style="color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">{{ featured_post.cat }}</div>
+    <h1 style="font-size:2rem;margin:0 0 10px;line-height:1.3">{{ featured_post.title|safe }}</h1>
+    <div class="meta" style="color:var(--text3);font-size:13px;margin-bottom:24px">{{ featured_post.date }} • {{ featured_post.read }}</div>
+    <div class="article-body" style="font-size:15px;line-height:1.8;color:var(--text2)">{{ featured_post.content|safe }}</div>
+  </div>
+</div>
+</div>
+{% endif %}
+<div class="page-header"{% if featured_post %} style="padding-top:40px"{% endif %}><div class="container"><h2>Our <span class="gold">Blog</span></h2><p>{% if featured_post %}More articles from our blog{% else %}Insights, guides, and news from Houston's premier limo service.{% endif %}</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="blog-grid">
       {% for post in blog_posts %}
-      <div class="blog-card fade-up"{% if post.delay is defined and post.delay and post.delay != "0s" %} style="transition-delay:{{ post.delay }}"{% endif %}>
+      <div class="blog-card fade-up" data-slug="{{ post.slug }}"{% if post.delay is defined and post.delay and post.delay != "0s" %} style="transition-delay:{{ post.delay }}"{% endif %}>
         <div class="thumb">{{ post.emoji|safe }}</div>
         <div class="body">
           <div class="cat">{{ post.cat }}</div>
           <h3>{{ post.title|safe }}</h3>
           <p>{{ post.summary|safe }}</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
+          <a href="/blog/{{ post.slug }}" class="btn btn-outline" style="padding:8px 20px;font-size:12px">Read More</a>
           <div class="meta"><span>{{ post.date }}</span><span>&#8226; {{ post.read }}</span></div>
           <div class="article-content">{{ post.content|safe }}</div>
         </div>
@@ -1230,11 +1251,36 @@ var pageMeta = {
   '/deposit': { title:'Pay Deposit — AvaLimo | Secure Your Reservation', desc:'Secure your AvaLimo reservation with a booking deposit. Fast & secure online payment.' },
 '/houston-airport-limo-service': { title:'Houston Airport Limo Service | IAH & Hobby Airport Transfers', desc:'Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online or call (832) 567-8050.' },
 };
+var blogSlug=null;
+function openArticleBySlug(slug){
+  var featured=document.getElementById('blog-featured');
+  if(featured&&featured.getAttribute('data-slug')===slug){
+    window.scrollTo(0,featured.offsetTop-80);
+    return;
+  }
+  var cards=document.querySelectorAll('.blog-card[data-slug]');
+  for(var i=0;i<cards.length;i++){
+    var card=cards[i];
+    var content=card.querySelector('.article-content');
+    var btn=card.querySelector('.btn');
+    if(card.getAttribute('data-slug')===slug){
+      if(content&&!content.classList.contains('open')){
+        content.classList.add('open');
+        if(btn) btn.textContent='Hide Article';
+      }
+    } else {
+      if(content) content.classList.remove('open');
+      if(btn) btn.textContent='Read More';
+    }
+  }
+}
 function showPage(path){
   var id = 'page-home';
+  blogSlug=null;
   if(path==='/services') id='page-services';
   else if(path==='/fleet') id='page-fleet';
   else if(path==='/blog') id='page-blog';
+  else if(path.indexOf('/blog/')===0&&path.length>6){id='page-blog';blogSlug=path.substring(6);}
   else if(path==='/flight-status') id='page-flight';
   else if(path==='/contact') id='page-contact';
   else if(path==='/faq') id='page-faq';
@@ -1242,10 +1288,12 @@ function showPage(path){
   else if(path==='/book') id='page-book';
   else if(path==='/deposit') id='page-deposit';
   else if(path==='/houston-airport-limo-service') id='page-airport';
-  else if(path==='/houston-airport-limo-service') id='page-airport';
+  var featured=document.getElementById('blog-featured');
+  if(featured) featured.style.display=path==='/blog'?'block':(blogSlug&&featured.getAttribute('data-slug')===blogSlug?'block':'none');
   for(var i=0;i<pages.length;i++) pages[i].style.display='none';
   document.getElementById(id).style.display='block';
   window.scrollTo(0,0);
+  if(blogSlug) openArticleBySlug(blogSlug);
   // active nav link
   var links=document.querySelectorAll('.nav-links a');
   for(var i=0;i<links.length;i++){
@@ -1585,9 +1633,19 @@ def index(path):
     }
     meta = page_meta.get(path, page_meta[""])
     canonical = f"https://avalimo.net/{path}" if path else "https://avalimo.net"
+    posts = _get_blog_posts()
+    featured_post = None
+    if path.startswith("blog/") and len(path) > 5:
+        slug = path[5:]
+        for p in posts:
+            if p.get("slug") == slug:
+                meta = {"title": p["title"] + " — AvaLimo", "desc": p.get("summary", "")}
+                canonical = f"https://avalimo.net/blog/{slug}"
+                featured_post = p
+                break
     html = HTML.replace("{{ sq_app_id }}", SQ_APP_ID).replace("{{ sq_location_id }}", SQ_LOCATION_ID).replace("{{ ga_id }}", GA_ID).replace("{{ sc_meta }}", SC_META).replace("{{ fb_pixel }}", FB_PIXEL)
     html = html.replace("{{ title }}", meta["title"]).replace("{{ meta_desc }}", meta["desc"]).replace("{{ canonical_url }}", canonical)
-    return render_template_string(html, blog_posts=BLOG_POSTS)
+    return render_template_string(html, blog_posts=posts, featured_post=featured_post)
 
 
 @app.route("/api/book", methods=["POST"])
