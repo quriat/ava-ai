@@ -185,8 +185,8 @@ HTML = r"""<!DOCTYPE html>
 <meta property="og:title" content="{{ title }}">
 <meta property="og:description" content="{{ meta_desc }}">
 <meta property="og:url" content="{{ canonical_url }}">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://avalimo.net/static/chauffeur_service.webp">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:image" content="{{ og_image }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -1879,26 +1879,33 @@ def sitemap_xml():
 @app.route("/<path:path>")
 def index(path):
     page_meta = {
-        "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds." },
-        "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7." },
-        "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion." },
-        "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7." },
-        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Guides & Travel Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service." },
-        "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines." },
-        "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch." },
-        "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more." },
-        "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms." },
-        "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations." },
-        "sugar-land-limo": { "title": "Sugar Land Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Sugar Land, TX. Airport transfers to IAH & Hobby, corporate travel, weddings — 24/7. Book online." },
-        "the-woodlands-limo": { "title": "The Woodlands Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in The Woodlands, TX. IAH airport transfers, concert transportation, corporate travel — 24/7." },
-        "katy-limo": { "title": "Katy Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Katy, TX. Airport transfers, Energy Corridor corporate travel, weddings & events — 24/7." },
-        "missouri-city-limo": { "title": "Missouri City Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Missouri City, TX. Hobby & IAH airport transfers, Medical Center transportation — 24/7." },
-        "pearland-limo": { "title": "Pearland Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Pearland, TX. Minutes from Hobby Airport, corporate travel to Med Center, weddings & events — 24/7." },
-        "galveston-limo": { "title": "Galveston Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Galveston, TX. Cruise terminal transfers, beach event transportation, IAH & Hobby airport service — 24/7." },
-        "league-city-limo": { "title": "League City Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in League City, TX. NASA/Clear Lake area corporate travel, Hobby & IAH airport transfers — 24/7." },
-        "baytown-limo": { "title": "Baytown Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Baytown, TX. IAH airport transfers, corporate travel for petrochemical industry, weddings & events — 24/7." },
-        "spring-limo": { "title": "Spring Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Spring, TX. IAH airport transfers (just 15 min), corporate travel, concert transportation — 24/7." },
-        "cypress-limo": { "title": "Cypress Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Cypress, TX. IAH & Hobby airport transfers, corporate travel to Energy Corridor, weddings — 24/7." },
+        "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Guides & Travel Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "sugar-land-limo": { "title": "Sugar Land Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Sugar Land, TX. Airport transfers to IAH & Hobby, corporate travel, weddings — 24/7. Book online.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "the-woodlands-limo": { "title": "The Woodlands Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in The Woodlands, TX. IAH airport transfers, concert transportation, corporate travel — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "katy-limo": { "title": "Katy Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Katy, TX. Airport transfers, Energy Corridor corporate travel, weddings & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "missouri-city-limo": { "title": "Missouri City Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Missouri City, TX. Hobby & IAH airport transfers, Medical Center transportation — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "pearland-limo": { "title": "Pearland Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Pearland, TX. Minutes from Hobby Airport, corporate travel to Med Center, weddings & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "galveston-limo": { "title": "Galveston Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Galveston, TX. Cruise terminal transfers, beach event transportation, IAH & Hobby airport service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "league-city-limo": { "title": "League City Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in League City, TX. NASA/Clear Lake area corporate travel, Hobby & IAH airport transfers — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "baytown-limo": { "title": "Baytown Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Baytown, TX. IAH airport transfers, corporate travel for petrochemical industry, weddings & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "spring-limo": { "title": "Spring Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Spring, TX. IAH airport transfers (just 15 min), corporate travel, concert transportation — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "cypress-limo": { "title": "Cypress Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Cypress, TX. IAH & Hobby airport transfers, corporate travel to Energy Corridor, weddings — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "company-policy": { "title": "Company Policy — AvaLimo | Houston Limo Service", "desc": "AvaLimo company policy: booking terms, cancellation rules, refund policy, and privacy practices for Houston limo service.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "terms-and-conditions": { "title": "Terms and Conditions — AvaLimo | Houston Limo Service", "desc": "Read AvaLimo terms and conditions. By booking our Houston limo service, you agree to these policies.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "cancellation-policy": { "title": "Cancellation Policy — AvaLimo | Houston Transportation", "desc": "AvaLimo cancellation policy for Houston limo reservations. Learn about refunds, notice periods, and no-show fees.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "book-your-ride": { "title": "Book Your Ride — AvaLimo | Online Limo Reservation", "desc": "Book your Houston luxury limo ride online in 30 seconds. Airport transfers, corporate travel, weddings, and special events.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "booking-confirmed": { "title": "Booking Confirmed — AvaLimo | Houston Limo Service", "desc": "Your AvaLimo reservation has been received. A confirmation email has been sent with your trip details.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "pay-deposit": { "title": "Pay Deposit — AvaLimo | Secure Online Payment", "desc": "Pay your AvaLimo reservation deposit securely online. We accept all major credit cards.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
+        "houston-airport-limo-service": { "title": "Houston Airport Limo Service | IAH & Hobby Airport Transfers | AvaLimo", "desc": "Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online in 60 seconds. Call (832) 567-8050.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.webp" },
     }
     city_aliases = {
         "sugar-land": "sugar-land-limo",
@@ -1916,16 +1923,20 @@ def index(path):
         return redirect(f"/{city_aliases[path]}", 301)
     meta = page_meta.get(path, page_meta[""])
     canonical_path = f"/{path}" if path else ""
+    og_type = meta.get("og_type", "website")
+    og_image = meta.get("og_image", "https://avalimo.net/static/chauffeur_service.webp")
     if path.startswith("blog/") and len(path) > 5:
         slug = path[5:]
         for p in BLOG_POSTS:
             if p.get("slug") == slug:
                 meta = {"title": p["title"] + " — AvaLimo", "desc": p.get("summary", "")}
                 canonical_path = f"/blog/{slug}"
+                og_type = "article"
+                og_image = f"https://avalimo.net{p.get('image', '/static/chauffeur_service.webp')}"
                 break
     canonical_url = f"https://avalimo.net{canonical_path}"
     html = HTML.replace("{{ sq_app_id }}", SQ_APP_ID).replace("{{ sq_location_id }}", SQ_LOCATION_ID).replace("{{ ga_id }}", GA_ID).replace("{{ sc_meta }}", SC_META).replace("{{ fb_pixel }}", FB_PIXEL)
-    html = html.replace("{{ title }}", meta["title"]).replace("{{ meta_desc }}", meta["desc"]).replace("{{ canonical_url }}", canonical_url)
+    html = html.replace("{{ title }}", meta["title"]).replace("{{ meta_desc }}", meta["desc"]).replace("{{ canonical_url }}", canonical_url).replace("{{ og_type }}", og_type).replace("{{ og_image }}", og_image)
     return render_template_string(html, blog_posts=BLOG_POSTS)
 
 
