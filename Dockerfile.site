@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir flask gunicorn
 
 # Copy application files
 COPY site_app.py /app/
+COPY blog_posts.json /app/
 COPY static /app/static/ 2>/dev/null || true
 
 # Create trips.json file
