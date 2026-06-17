@@ -410,35 +410,35 @@ function openArticleBySlug(slug){
     var card=cards[i];
     var content=card.querySelector('.article-content');
     var btn=card.querySelector('.btn');
+    var titleEl=card.querySelector('h3');
     if(card.getAttribute('data-slug')===slug){
       content.classList.add('open');
       if(btn) btn.textContent='Hide Article';
+      if(titleEl){var h=document.getElementById('blog-page-title');if(h) h.innerHTML=titleEl.innerHTML;}
     } else {
       content.classList.remove('open');
       if(btn) btn.textContent='Read More';
     }
   }
 }
+function getCurPages(){return document.querySelectorAll('.page');}
 var pageTimer=null;
 function showPage(path,noFade){
+  var curPages=getCurPages();
   var id = 'page-home';
   blogSlug=null;
-  else if(path==='/houston-airport-limo-service') id='page-houston-airport';
-  var nextPage=document.getElementById(id);
-  if(!nextPage) return;
-
-  var prevPages=[];
-  for(var i=0;i<pages.length;i++){if(pages[i].style.display!='none') prevPages.push(pages[i]);}
+  var key = path.replace(/^\//,'');
   if(path==='/services') id='page-services';
   else if(path==='/fleet') id='page-fleet';
   else if(path==='/blog') id='page-blog';
-  else if(path.indexOf('/blog/')===0&&path.length>6){id='page-blog';blogSlug=path.substring(6);}
+  else if(path.indexOf('/blog/')===0&&path.length>6){id='page-blog';blogSlug=path.substring(6);key='blog';}
   else if(path==='/flight-status') id='page-flight';
   else if(path==='/contact') id='page-contact';
   else if(path==='/faq') id='page-faq';
   else if(path==='/policy') id='page-policy';
   else if(path==='/book') id='page-book';
   else if(path==='/deposit') id='page-deposit';
+  else if(path==='/houston-airport'||path==='/houston-airport-limo-service') id='page-houston-airport';
   // City page aliases (with and without -limo)
   else if(path==='/sugar-land'||path==='/sugar-land-limo') id='page-sugar-land';
   else if(path==='/the-woodlands'||path==='/the-woodlands-limo') id='page-woodlands';
@@ -451,16 +451,28 @@ function showPage(path,noFade){
   else if(path==='/spring'||path==='/spring-limo') id='page-spring';
   else if(path==='/cypress'||path==='/cypress-limo') id='page-cypress';
   var nextPage=document.getElementById(id);
+  if(!nextPage){
+    fetch('/api/page/'+key).then(function(r){if(!r.ok)return;return r.text();}).then(function(html){
+      if(!html)return;
+      var d=document.createElement('div');d.innerHTML=html;
+      var p=d.querySelector('.page');
+      if(p) document.querySelector('.mobile-cta').before(p);
+      showPage(path,noFade);
+    });
+    return;
+  }
+  curPages=getCurPages();
+  var prevPages=[];
+  for(var i=0;i<curPages.length;i++){if(curPages[i].style.display!='none'&&curPages[i]!==nextPage) prevPages.push(curPages[i]);}
   if(noFade){
-    for(var i=0;i<pages.length;i++) pages[i].style.display='none';
+    for(var i=0;i<curPages.length;i++) curPages[i].style.display='none';
     nextPage.style.display='block';
     nextPage.classList.remove('fade-out');
   } else {
-    // fade out previous pages
     prevPages.forEach(function(p){p.classList.add('fade-out');});
     clearTimeout(pageTimer);
     pageTimer=setTimeout(function(){
-      for(var i=0;i<pages.length;i++) pages[i].style.display='none';
+      for(var i=0;i<curPages.length;i++) curPages[i].style.display='none';
       nextPage.style.display='block';
       nextPage.classList.remove('fade-out');
       setTimeout(function(){window.scrollTo(0,0);},20);
@@ -972,7 +984,7 @@ PAGE_CONTENT = {
     </div>
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.webp" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.webp" alt="AvaLimo Mercedes S-Class luxury sedan chauffeur service Houston" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Executive</h3>
           <div class="capacity">&#9679; Mercedes S-Class &middot; Up to 3 passengers</div>
@@ -981,7 +993,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.webp" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.webp" alt="AvaLimo Cadillac Escalade luxury SUV chauffeur service Houston" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>SUV</h3>
           <div class="capacity">&#9679; Cadillac Escalade &middot; Up to 6 passengers</div>
@@ -990,7 +1002,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.webp" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.webp" alt="AvaLimo Mercedes Sprinter passenger van group transportation Houston" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Sprinter</h3>
           <div class="capacity">&#9679; Mercedes Sprinter &middot; Up to 14 passengers</div>
@@ -1135,7 +1147,7 @@ PAGE_CONTENT = {
 <!-- Footer -->
 </div>''',
     "services": r'''<div class="page" id="page-services">
-<div class="page-header"><div class="container"><h2>Our <span class="gold">Services</span></h2><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
+<div class="page-header"><div class="container"><h1>Our <span class="gold">Services</span></h1><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="services-grid" style="max-width:900px;margin:0 auto">
@@ -1153,12 +1165,12 @@ PAGE_CONTENT = {
 </section>
 </div>''',
     "fleet": r'''<div class="page" id="page-fleet">
-<div class="page-header"><div class="container"><h2>Our <span class="gold">Fleet</span></h2><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
+<div class="page-header"><div class="container"><h1>Our <span class="gold">Fleet</span></h1><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.webp" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.webp" alt="AvaLimo Mercedes S-Class luxury sedan chauffeur service Houston" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes S-Class</h3>
           <div class="capacity">&#9679; Up to 3 passengers</div>
@@ -1167,7 +1179,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.webp" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.webp" alt="AvaLimo Cadillac Escalade luxury SUV chauffeur service Houston" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
           <div class="capacity">&#9679; Up to 6 passengers</div>
@@ -1176,7 +1188,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.webp" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.webp" alt="AvaLimo Mercedes Sprinter passenger van group transportation Houston" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
           <div class="capacity">&#9679; Up to 14 passengers</div>
@@ -1189,7 +1201,7 @@ PAGE_CONTENT = {
 </section>
 </div>''',
     "contact": r'''<div class="page" id="page-contact" style="display:none">
-<div class="page-header"><div class="container"><h2>Get in <span class="gold">Touch</span></h2><p>We're here 24/7 to help with your transportation needs.</p></div></div>
+<div class="page-header"><div class="container"><h1>Get in <span class="gold">Touch</span></h1><p>We're here 24/7 to help with your transportation needs.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="contact-grid">
@@ -1216,7 +1228,7 @@ PAGE_CONTENT = {
 </section>
 </div>''',
     "faq": r'''<div class="page" id="page-faq" style="display:none">
-<div class="page-header"><div class="container"><h2>Frequently Asked <span class="gold">Questions</span></h2></div></div>
+<div class="page-header"><div class="container"><h1>Frequently Asked <span class="gold">Questions</span></h1></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="faq-list">
@@ -1234,7 +1246,7 @@ PAGE_CONTENT = {
 </section>
 </div>''',
     "policy": r'''<div class="page" id="page-policy" style="display:none">
-<div class="page-header"><div class="container"><h2>Company <span class="gold">Policy</span></h2></div></div>
+<div class="page-header"><div class="container"><h1>Company <span class="gold">Policy</span></h1></div></div>
 <section class="section" style="padding-top:0"><div class="container" style="max-width:800px">
 <div class="fade-up" style="color:var(--text2);font-size:15px;line-height:1.9">
 <h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Booking &amp; Reservations</h3>
@@ -1252,7 +1264,7 @@ PAGE_CONTENT = {
 </div></div></section>
 </div>''',
     "book": r'''<div class="page" id="page-book">
-<div class="page-header"><div class="container"><h2>Book Your <span class="gold">Ride</span></h2><p>Get a price in seconds — then complete your booking.</p></div></div>
+<div class="page-header"><div class="container"><h1>Book Your <span class="gold">Ride</span></h1><p>Get a price in seconds — then complete your booking.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="booking-wrap fade-up" style="max-width:700px">
@@ -1310,7 +1322,7 @@ PAGE_CONTENT = {
 </section>
 </div>''',
     "blog": r'''<div class="page" id="page-blog">
-<div class="page-header"><div class="container"><h2>Our <span class="gold">Blog</span></h2><p>Insights, guides, and news from Houston's premier limo service.</p></div></div>
+    <div class="page-header"><div class="container">{% if featured_post %}<h1 id="blog-page-title">{{ featured_post.title|safe }}</h1><p>{{ featured_post.summary|safe }}</p>{% else %}<h1 id="blog-page-title">Our <span class="gold">Blog</span></h1><p>Insights, guides, and news from Houston's premier limo service.</p>{% endif %}</div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="blog-grid">
@@ -1358,7 +1370,7 @@ PAGE_CONTENT = {
 </div>
 </div>''',
     "flight-status": r'''<div class="page" id="page-flight">
-<div class="page-header"><div class="container"><h2>Flight <span class="gold">Status</span></h2><p>Track your flight in real-time. We monitor every flight for our airport transfer clients.</p></div></div>
+<div class="page-header"><div class="container"><h1>Flight <span class="gold">Status</span></h1><p>Track your flight in real-time. We monitor every flight for our airport transfer clients.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="flight-card fade-up">
@@ -1401,7 +1413,7 @@ PAGE_CONTENT = {
     "deposit": r'''<div class="page" id="page-deposit"
      data-sq-app-id="{{ sq_app_id }}"
      data-sq-loc-id="{{ sq_location_id }}">
-<div class="page-header"><div class="container"><h2>Pay <span class="gold">Online</span></h2><p>Secure your reservation with a deposit or pay your balance.</p></div></div>
+<div class="page-header"><div class="container"><h1>Pay <span class="gold">Online</span></h1><p>Secure your reservation with a deposit or pay your balance.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="deposit-flow fade-up">
@@ -2158,6 +2170,12 @@ def sitemap_xml():
     </urlset>'''
         return xml, 200, {"Content-Type": "application/xml"}
 
+@app.route("/api/page/<content_key>")
+def api_page_content(content_key):
+    if content_key not in PAGE_CONTENT:
+        abort(404)
+    return PAGE_CONTENT[content_key]
+
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
@@ -2210,6 +2228,7 @@ def index(path):
             return redirect(f"/{legacy_redirects[path]}", 301)
 
         meta = None
+        featured_post = None
         canonical_path = ""
         og_type = "website"
         og_image = "https://avalimo.net/static/chauffeur_service.webp"
@@ -2224,6 +2243,7 @@ def index(path):
                     og_type = "article"
                     og_image = f"https://avalimo.net{p.get('image', '/static/chauffeur_service.webp')}"
                     content_key = "blog"
+                    featured_post = p
                     break
             if meta is None:
                 content_key = "404"
@@ -2252,6 +2272,7 @@ def index(path):
             "sq_app_id": SQ_APP_ID,
             "sq_location_id": SQ_LOCATION_ID,
             "blog_posts": BLOG_POSTS,
+            "featured_post": featured_post,
         }
         html = render_template_string(
             BASE_HEADER + PAGE_CONTENT[content_key] + COMMON_FOOTER,
