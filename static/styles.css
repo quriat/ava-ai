@@ -220,9 +220,14 @@ ul { list-style: none; }
 .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
 .hero-image { position: relative; display: flex; justify-content: center; align-items: center; }
 .hero-image .glow {
-  position: absolute; width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(200,168,97,0.12), transparent 70%);
-  border-radius: 50%; filter: blur(60px);
+  position: absolute; width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(200,168,97,0.18), rgba(200,168,97,0.04) 50%, transparent 70%);
+  border-radius: 50%; filter: blur(70px);
+}
+.hero-image .glow-2 {
+  position: absolute; width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(200,168,97,0.08), transparent 60%);
+  border-radius: 50%; filter: blur(50px); top: 60%; left: 20%;
 }
 .hero-image img {
   position: relative; z-index: 1; border-radius: 16px;
@@ -264,14 +269,15 @@ ul { list-style: none; }
 }
 .fleet-card:hover { border-color: rgba(200,168,97,0.2); transform: translateY(-4px); }
 .fleet-card .img-wrap {
-  height: 300px; overflow: hidden; background: var(--bg2); position: relative;
+  height: 360px; overflow: hidden; background: var(--bg2); position: relative;
 }
-@media (max-width: 900px) { .fleet-card .img-wrap { height: 220px; } }
-@media (max-width: 600px) { .fleet-card .img-wrap { height: 200px; } }
+@media (max-width: 900px) { .fleet-card .img-wrap { height: 300px; } }
+@media (max-width: 600px) { .fleet-card .img-wrap { height: 260px; } }
 .fleet-card .img-wrap img {
   width: 100%; height: 100%; object-fit: cover;
   transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
 }
+.fleet-card:nth-child(3) .img-wrap img { object-position: center 25%; }
 .fleet-card:hover .img-wrap img { transform: scale(1.05); }
 .fleet-card .img-wrap .tag {
   position: absolute; top: 12px; left: 12px; z-index: 2;
@@ -290,23 +296,31 @@ ul { list-style: none; }
 .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .service-card {
   background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
-  border-radius: var(--radius); padding: 28px;
-  transition: all 0.4s ease;
+  border-radius: var(--radius); padding: 32px;
+  transition: all 0.4s ease; position: relative; overflow: hidden;
 }
-.service-card:hover { border-color: rgba(200,168,97,0.15); transform: translateY(-3px); }
+.service-card:hover { border-color: rgba(200,168,97,0.15); transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.service-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.service-card:hover::after { opacity: 1; }
 .service-card .icon { font-size: 36px; margin-bottom: 16px; line-height: 1; }
-.service-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-.service-card p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.service-card .icon svg { width: 28px; height: 28px; color: var(--gold); }
+.service-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+.service-card p { font-size: 14px; color: var(--text2); line-height: 1.7; }
 @media (max-width: 768px) { .services-grid { grid-template-columns: 1fr; } }
 
 /* ─── Testimonials ─── */
 .test-carousel { overflow: hidden; position: relative; }
 .test-track { display: flex; transition: transform 0.6s ease; }
 .test-card {
-  min-width: 100%; padding: 40px; text-align: center;
+  min-width: 100%; padding: 50px 40px; text-align: center;
 }
-.test-card .stars { font-size: 20px; color: var(--gold); margin-bottom: 16px; letter-spacing: 2px; }
-.test-card p { font-size: 16px; color: var(--text2); line-height: 1.7; max-width: 600px; margin: 0 auto 24px; font-style: italic; }
+.test-card .quote-icon { font-size: 48px; color: rgba(200,168,97,0.15); line-height: 1; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+.test-card .stars { font-size: 24px; color: var(--gold); margin-bottom: 16px; letter-spacing: 3px; }
+.test-card p { font-size: 18px; color: var(--text2); line-height: 1.8; max-width: 650px; margin: 0 auto 24px; font-style: italic; }
 .test-card .author { display: flex; align-items: center; gap: 12px; justify-content: center; }
 .test-card .author .avatar {
   width: 40px; height: 40px; border-radius: 50%;

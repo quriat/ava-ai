@@ -1143,6 +1143,7 @@ PAGE_CONTENT = {
     </div>
     <div class="hero-image">
       <div class="glow"></div>
+      <div class="glow-2"></div>
       <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly" width="550" height="550" class="float-anim">
     </div>
   </div>
@@ -1244,18 +1245,21 @@ PAGE_CONTENT = {
     <div class="test-carousel fade-up">
       <div class="test-track" id="testTrack">
         <div class="test-card">
+          <div class="quote-icon">"</div>
           <div class="stars">★★★★★</div>
-          <p>"Service was impeccable. Our chauffeur was professional and the car was spotless."</p>
+          <p>Service was impeccable. Our chauffeur was professional and the car was spotless.</p>
           <div class="author"><div class="avatar">JR</div><div><div class="name">James R.</div><div class="title">Airport Transfer</div></div></div>
         </div>
         <div class="test-card">
+          <div class="quote-icon">"</div>
           <div class="stars">★★★★★</div>
-          <p>"Best limo service in Houston! On time, very polite, and the vehicle was amazingly comfortable."</p>
+          <p>Best limo service in Houston! On time, very polite, and the vehicle was amazingly comfortable.</p>
           <div class="author"><div class="avatar">SM</div><div><div class="name">Sarah M.</div><div class="title">Corporate Client</div></div></div>
         </div>
         <div class="test-card">
+          <div class="quote-icon">"</div>
           <div class="stars">★★★★★</div>
-          <p>"From easy booking to arrival — everything was perfect. Thank you AvaLimo!"</p>
+          <p>From easy booking to arrival — everything was perfect. Thank you AvaLimo!</p>
           <div class="author"><div class="avatar">MB</div><div><div class="name">Michael B.</div><div class="title">Wedding</div></div></div>
         </div>
       </div>
