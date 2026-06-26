@@ -324,6 +324,10 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 <svg class="w-3 h-3" data-lucide="phone"></svg>
 <span class="hidden sm:inline">(832) 567-8050</span>
 </a>
+<a href="tel:+18329908258" class="flex items-center gap-2 text-xs text-white/50 hover:text-gold transition-colors">
+<svg class="w-3 h-3" data-lucide="bot"></svg>
+<span>AI (832) 990-8258</span>
+</a>
 <a href="mailto:adam@avalimo.net" class="hidden md:flex items-center gap-2 text-xs text-white/50 hover:text-gold transition-colors">
 <svg class="w-3 h-3" data-lucide="mail"></svg>
 adam@avalimo.net
@@ -390,6 +394,10 @@ Book Now
 <a href="tel:+18325678050" class="bg-gradient-to-r from-gold to-gold-dark text-dark text-sm font-semibold px-8 py-3 rounded-full flex items-center gap-2">
 <svg class="w-4 h-4" data-lucide="phone"></svg>
 (832) 567-8050
+</a>
+<a href="tel:+18329908258" class="text-sm text-white/40 hover:text-gold transition-colors mt-2 flex items-center gap-2">
+<svg class="w-4 h-4" data-lucide="bot"></svg>
+AI Booking: (832) 990-8258
 </a>
 </div>
 """
@@ -975,6 +983,8 @@ function botReply(msg){
   // Append phone CTA unless reply already has the number
   if(reply.indexOf('567-8050')===-1)
     reply+='<br><br>&#128222; <a href="tel:+18325678050" style="color:#C8A861;text-decoration:underline">Call (832) 567-8050</a> for immediate help.';
+  if(reply.indexOf('990-8258')===-1)
+    reply+='<br>&#129302; <a href="tel:+18329908258" style="color:#C8A861;text-decoration:underline">AI Booking (832) 990-8258</a>';
 
   var msgs=document.getElementById('chatMessages');
   var d=document.createElement('div');
