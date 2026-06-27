@@ -192,6 +192,7 @@ BASE_HEADER = r"""<!DOCTYPE html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ title }}">
 <meta name="twitter:description" content="{{ meta_desc }}">
+<meta name="twitter:image" content="{{ og_image }}">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -226,22 +227,15 @@ BASE_HEADER = r"""<!DOCTYPE html>
   }
 }
 </script>
+{% if breadcrumb_items %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://avalimo.net/" },
-    { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://avalimo.net/services" },
-    { "@type": "ListItem", "position": 3, "name": "Fleet", "item": "https://avalimo.net/fleet" },
-{ "@type": "ListItem", "position": 4, "name": "Book", "item": "https://avalimo.net/book" },
-  { "@type": "ListItem", "position": 5, "name": "Pay Deposit", "item": "https://avalimo.net/deposit" },
-  { "@type": "ListItem", "position": 6, "name": "Blog", "item": "https://avalimo.net/blog" },
-  { "@type": "ListItem", "position": 7, "name": "Contact", "item": "https://avalimo.net/contact" },
-  { "@type": "ListItem", "position": 8, "name": "FAQ", "item": "https://avalimo.net/faq" }
-  ]
+  "itemListElement": {{ breadcrumb_items | tojson | safe }}
 }
 </script>
+{% endif %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -273,9 +267,9 @@ BASE_HEADER = r"""<!DOCTYPE html>
 <script src="https://web.squarecdn.com/v1/square.js" defer></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
@@ -571,7 +565,6 @@ var pageMeta = {
   '/services': { title:'Services — AvaLimo | Houston Limo & Chauffeur Service', desc:'Airport transfers, corporate travel, wedding limo, event transportation & more. Houston\'s premium chauffeur service — 24/7.' },
   '/fleet': { title:'Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans', desc:'Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston\'s finest luxury fleet for any occasion.' },
   '/book': { title:'Book a Ride — AvaLimo | Online Reservation', desc:'Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.' },
-  '/deposit': { title:'Pay Deposit — AvaLimo | Secure Your Booking', desc:'Secure your AvaLimo reservation with a deposit. Refundable with 24-hour cancellation. Pay online via Square.' },
   '/blog': { title:'Blog — AvaLimo | Houston Limo Service Insights & Tips', desc:'Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston\'s premier chauffeur service.' },
   '/flight-status': { title:'Flight Status — AvaLimo | Real-Time Flight Tracker', desc:'Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.' },
   '/contact': { title:'Contact — AvaLimo | Houston Limo Service', desc:'Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.' },
@@ -1349,6 +1342,7 @@ PAGE_CONTENT = {
 <div class="page-header"><div class="container"><h1>Our <span class="gold">Services</span></h1><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
+    <h2 style="position:absolute;width:1px;height:1px;overflow:hidden">Services We Offer</h2>
     <div class="services-grid" style="max-width:900px;margin:0 auto">
       <div class="service-card fade-up"><div class="icon"><i data-lucide="plane" class="w-6 h-6"></i></div><h3>Airport Transfers</h3><p>Professional IAH &amp; Hobby transfers with real-time flight tracking, meet &amp; greet, and luggage assistance. We monitor your flight so we're always on time.</p></div>
       <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon"><i data-lucide="briefcase" class="w-6 h-6"></i></div><h3>Corporate Travel</h3><p>Executive transportation for business meetings, client entertainment, and team travel. Impress with punctuality and professionalism.</p></div>
@@ -1367,6 +1361,7 @@ PAGE_CONTENT = {
 <div class="page-header"><div class="container"><h1>Our <span class="gold">Fleet</span></h1><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
+    <h2 style="position:absolute;width:1px;height:1px;overflow:hidden">Our Vehicles</h2>
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
         <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="AvaLimo Mercedes S-Class luxury sedan chauffeur service Houston" loading="lazy" width="640" height="640"></div>
@@ -1399,7 +1394,7 @@ PAGE_CONTENT = {
   </div>
 </section>
 </div>''',
-    "contact": r'''<div class="page" id="page-contact" style="display:none">
+    "contact": r'''<div class="page" id="page-contact">
 <div class="page-header"><div class="container"><h1>Get in <span class="gold">Touch</span></h1><p>We're here 24/7 to help with your transportation needs.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
@@ -1425,7 +1420,7 @@ PAGE_CONTENT = {
   </div>
 </section>
 </div>''',
-    "faq": r'''<div class="page" id="page-faq" style="display:none">
+    "faq": r'''<div class="page" id="page-faq">
 <div class="page-header"><div class="container"><h1>Frequently Asked <span class="gold">Questions</span></h1></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
@@ -1443,21 +1438,21 @@ PAGE_CONTENT = {
   </div>
 </section>
 </div>''',
-    "policy": r'''<div class="page" id="page-policy" style="display:none">
+    "policy": r'''<div class="page" id="page-policy">
 <div class="page-header"><div class="container"><h1>Company <span class="gold">Policy</span></h1></div></div>
 <section class="section" style="padding-top:0"><div class="container" style="max-width:800px">
 <div class="fade-up" style="color:var(--text2);font-size:15px;line-height:1.9">
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Booking &amp; Reservations</h3>
+<h2 style="color:var(--text);margin:32px 0 12px;font-size:20px">Booking &amp; Reservations</h2>
 <p>All reservations require a valid credit card to secure the booking. A deposit may be required for certain services or peak periods. By booking with AvaLimo, you agree to these terms.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Cancellation Policy</h3>
+<h2 style="color:var(--text);margin:32px 0 12px;font-size:20px">Cancellation Policy</h2>
 <p>Cancellations made 24 hours or more before the scheduled pickup time receive a full refund. Cancellations within 24 hours may incur a charge of up to 50% of the fare. No-shows are charged in full.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Waiting Time</h3>
+<h2 style="color:var(--text);margin:32px 0 12px;font-size:20px">Waiting Time</h2>
 <p>Airport pickups include 60 minutes of complimentary waiting time from the moment your flight lands. For all other pickups, a 15-minute grace period is included. Additional waiting time is billed at $1 per minute.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Smoking &amp; Cleanliness</h3>
+<h2 style="color:var(--text);margin:32px 0 12px;font-size:20px">Smoking &amp; Cleanliness</h2>
 <p>All AvaLimo vehicles are strictly non-smoking (including vaping). A cleaning fee of $250 will be charged for any violations. Please treat our vehicles with respect.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Liability</h3>
+<h2 style="color:var(--text);margin:32px 0 12px;font-size:20px">Liability</h2>
 <p>AvaLimo is fully insured and licensed. We are not responsible for items left in vehicles. Clients are responsible for any damage caused to vehicles during the rental period.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Privacy</h3>
+<h2 style="color:var(--text);margin:32px 0 12px;font-size:20px">Privacy</h2>
 <p>We respect your privacy. Personal information collected during booking is used solely for providing our services and will never be shared with third parties without your consent.</p>
 </div></div></section>
 </div>''',
@@ -2351,9 +2346,10 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
+        _today = _dt.date.today().isoformat()
         pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit", "houston-airport-limo-service", "sugar-land-limo", "the-woodlands-limo", "katy-limo", "missouri-city-limo", "pearland-limo", "galveston-limo", "league-city-limo", "baytown-limo", "spring-limo", "cypress-limo"]
-        blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc></url>' for p in BLOG_POSTS if p.get("slug"))
-        urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc></url>' for p in pages)
+        blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>' for p in BLOG_POSTS if p.get("slug"))
+        urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>{"daily" if p == "" else "weekly"}</changefreq><priority>{"1.0" if p == "" else "0.8"}</priority></url>' for p in pages)
         xml = f'''<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     {urls}
@@ -2451,6 +2447,30 @@ def index(path):
             og_image = "https://avalimo.net/static/chauffeur_service.png"
 
         canonical_url = f"https://avalimo.net{canonical_path}"
+        # Dynamic breadcrumb
+        breadcrumb_map = {
+            "services": "Services", "fleet": "Fleet", "book": "Book a Ride",
+            "deposit": "Pay Deposit", "blog": "Blog", "flight-status": "Flight Status",
+            "contact": "Contact", "faq": "FAQ", "policy": "Company Policy",
+            "houston-airport-limo-service": "Houston Airport Limo Service",
+            "sugar-land-limo": "Sugar Land Limo Service",
+            "the-woodlands-limo": "The Woodlands Limo Service",
+            "katy-limo": "Katy Limo Service",
+            "missouri-city-limo": "Missouri City Limo Service",
+            "pearland-limo": "Pearland Limo Service",
+            "galveston-limo": "Galveston Limo Service",
+            "league-city-limo": "League City Limo Service",
+            "baytown-limo": "Baytown Limo Service",
+            "spring-limo": "Spring Limo Service",
+            "cypress-limo": "Cypress Limo Service",
+        }
+        breadcrumb_items = [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://avalimo.net/"}]
+        if path and path != "404":
+            if path.startswith("blog/") and featured_post:
+                breadcrumb_items.append({"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://avalimo.net/blog"})
+                breadcrumb_items.append({"@type": "ListItem", "position": 3, "name": featured_post["title"], "item": f"https://avalimo.net/{path}"})
+            elif path in breadcrumb_map:
+                breadcrumb_items.append({"@type": "ListItem", "position": 2, "name": breadcrumb_map[path], "item": f"https://avalimo.net/{path}"})
         ctx = {
             "title": meta["title"],
             "meta_desc": meta["desc"],
@@ -2464,6 +2484,7 @@ def index(path):
             "sq_location_id": SQ_LOCATION_ID,
             "blog_posts": BLOG_POSTS,
             "featured_post": featured_post,
+            "breadcrumb_items": breadcrumb_items,
         }
         html = render_template_string(
             BASE_HEADER + PAGE_CONTENT[content_key] + COMMON_FOOTER,
