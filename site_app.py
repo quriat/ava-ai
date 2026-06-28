@@ -1128,9 +1128,13 @@ PAGE_CONTENT = {
       <h1>Houston Premier <span class="gold">Limo Service</span></h1>
       <p class="subheadline" style="font-size:18px;color:var(--text2);max-width:520px">Arrive in Absolute Luxury. Houston's most trusted chauffeur service for IAH & Hobby airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.</p>
       <div class="hero-btns">
-        <a href="/book" class="btn btn-gold">Book Houston Airport Transfer</a>
+        <a href="/book" class="btn btn-gold">Reserve Your Ride</a>
         <a href="/fleet" class="btn btn-outline">View Fleet</a>
-        <a href="tel:+18325678050" class="btn btn-outline">Call (832) 567-8050</a>
+      </div>
+      <div class="hero-badge-bottom">
+        <span><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Airport transfers from $89</span>
+        <span><i data-lucide="shield" class="w-3.5 h-3.5"></i> Licensed &amp; Insured</span>
+        <span><i data-lucide="star" class="w-3.5 h-3.5"></i> 4.9★ — 500+ reviews</span>
       </div>
     </div>
     <div class="hero-image">
@@ -1144,7 +1148,7 @@ PAGE_CONTENT = {
 <section class="stats-bar">
   <div class="container">
     <div class="stats-grid">
-      <div class="stat-item fade-up" style="transition-delay:0.1s"><div class="stat-number">500+</div><div class="stat-label">Happy Clients</div></div>
+      <div class="stat-item fade-up" style="transition-delay:0.1s"><div class="stat-number">2,400+</div><div class="stat-label">Rides Completed</div></div>
       <div class="stat-item fade-up" style="transition-delay:0.2s"><div class="stat-number">4.9★</div><div class="stat-label">Avg Rating</div></div>
       <div class="stat-item fade-up" style="transition-delay:0.3s"><div class="stat-number">24/7</div><div class="stat-label">Available</div></div>
       <div class="stat-item fade-up" style="transition-delay:0.4s"><div class="stat-number">$0</div><div class="stat-label">Surge Fees</div></div>
@@ -1162,9 +1166,8 @@ PAGE_CONTENT = {
       <p>AvaLimo has been Houston's premier chauffeur service since 2013. We combine old-world professionalism with modern convenience to deliver a flawless transportation experience every time.</p>
       <p>We <strong>track your flight in real-time</strong> so we're always there when you land — early, delayed, or on time. Our <strong>flat-rate pricing means zero surge fees</strong>, ever. Every chauffeur is fully vetted, licensed, and trained to provide white-glove service. And our fleet is immaculately maintained, from the Mercedes S-Class sedan to the Cadillac Escalade SUV and Mercedes Sprinter passenger van.</p>
       <p style="text-align:center;margin-top:28px">
-        <a href="/book" class="btn btn-gold">Book Houston Airport Transfer</a>
+        <a href="/book" class="btn btn-gold">Reserve Your Ride</a>
         <a href="/contact" class="btn btn-outline" style="margin-left:12px">Get a Quote</a>
-        <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
       </p>
     </div>
   </div>
@@ -1179,7 +1182,7 @@ PAGE_CONTENT = {
     </div>
     <div class="fleet-grid">
       <div class="fleet-card fade-up" style="transition-delay:0.1s">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="AvaLimo Mercedes S-Class luxury sedan chauffeur service Houston" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes S-Class</h3>
           <div class="capacity">&#9679; Up to 3 passengers</div>
@@ -1188,7 +1191,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:0.2s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="AvaLimo Cadillac Escalade luxury SUV chauffeur service Houston" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
           <div class="capacity">&#9679; Up to 6 passengers</div>
@@ -1197,7 +1200,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:0.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="AvaLimo Mercedes Sprinter passenger van group transportation Houston" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
           <div class="capacity">&#9679; Up to 14 passengers</div>
@@ -1364,7 +1367,7 @@ PAGE_CONTENT = {
     <h2 style="position:absolute;width:1px;height:1px;overflow:hidden">Our Vehicles</h2>
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="AvaLimo Mercedes S-Class luxury sedan chauffeur service Houston" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes S-Class</h3>
           <div class="capacity">&#9679; Up to 3 passengers</div>
@@ -1373,7 +1376,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="AvaLimo Cadillac Escalade luxury SUV chauffeur service Houston" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
           <div class="capacity">&#9679; Up to 6 passengers</div>
@@ -1382,7 +1385,7 @@ PAGE_CONTENT = {
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="AvaLimo Mercedes Sprinter passenger van group transportation Houston" loading="lazy" width="640" height="640"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
           <div class="capacity">&#9679; Up to 14 passengers</div>
