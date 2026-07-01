@@ -1,0 +1,12 @@
+[
+  {
+    "role": "user",
+    "content": "Hello, what can you do?",
+    "timestamp": "2026-05-20T10:21:23.407666"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! I'm Ava AI, your helpful AI assistant. Let me first check if I remember anything about you from previous conversations.Great to meet you! I have a wide range of capabilities and tools at my disposal to help you with various tasks:\n\n## \ud83e\udde0 **Core Abilities**\n- Answer questions on virtually any topic with detailed, thorough responses\n- Think through complex problems step-by-step\n- Remember important information about you across our conversations\n- Communicate in any language you prefer\n\n## \ud83d\udd27 **Tools I Can Use**\n- **\ud83d\udcca Calculator** - Perform any mathematical calculations or computations\n- **\ud83c\udf10 Web Search** - Find current information, news, or research any topic online\n- **\ud83d\udcc4 Web Fetch** - Read and summarize content from specific web pages or links\n- **\ud83d\udce7 Email** - Send emails through Gmail (if configured)\n- **\ud83d\udcc5 Calendar** - Check your Google Calendar events for any date\n- **\ud83d\udcbe Memory** - Save and recall important facts about you for future conversations\n\n## \ud83d\ude80 **What I Can Help With**\n- Research and analysis on any topic\n- Math problems and calculations\n- Reading and summarizing articles or documents\n- Planning and scheduling\n- Writing and communication\n- Technical explanations\n- Creative projects\n- And much more!\n\nI'm proactive and thorough - if I can use my tools to make something easier or more helpful for you, I'll do it automatically. Just tell me what you'd like to work on, and I'll get started right away!\n\nWhat would you like to explore or get help with today?",
+    "timestamp": "2026-05-20T10:21:23.408864"
+  }
+]
