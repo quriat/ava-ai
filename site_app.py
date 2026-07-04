@@ -268,8 +268,7 @@ BASE_HEADER = r"""<!DOCTYPE html>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
@@ -297,7 +296,6 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 .loader-logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:500;letter-spacing:0.08em;color:#C8A861;}
 .loader-bar-track{width:160px;height:1px;background:rgba(255,255,255,0.1);overflow:hidden;}
 .loader-bar-fill{width:0%;height:100%;background:#C8A861;transition:width 0.08s linear;}
-.grain{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 </style>
 </head>
 <body>
@@ -306,8 +304,6 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 <div class="loader-logo">AVALIMO</div>
 <div class="loader-bar-track"><div class="loader-bar-fill" id="loaderBar"></div></div>
 </div>
-<!-- Grain -->
-<div class="grain"></div>
 <div id="scrollBar"></div>
 
 <!-- ─── Top Bar ─── -->
@@ -519,23 +515,6 @@ var loadInt = setInterval(function() {
   }
 }, 60);
 
-// ============ LENIS SMOOTH SCROLL ============
-var lenis = new Lenis({ duration: 1.2, easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smoothWheel: true, wheelMultiplier: 1, touchMultiplier: 1.5 });
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add(function(time) { lenis.raf(time * 1000); });
-gsap.ticker.lagSmoothing(0);
-
-document.querySelectorAll('a[href^="/"]').forEach(function(a) {
-  a.addEventListener('click', function(e) {
-    var href = a.getAttribute('href');
-    if (href && href.length > 1 && href.indexOf('#') === 0) {
-      e.preventDefault();
-      var t = document.querySelector(href);
-      if (t) lenis.scrollTo(t, { offset: -100 });
-    }
-  });
-});
-
 // ============ MOBILE MENU ============
 var mobileMenu = document.getElementById('mobileMenu');
 var menuToggle = document.getElementById('menuToggle');
@@ -681,55 +660,55 @@ function showPage(path,noFade){
   if(path==='/deposit') setTimeout(initSquareCard,300);
 }
 
-// ─── Nav scroll + progress bar ───
+// ─── Nav scroll + progress bar (RAF-throttled) ───
 var nav=document.getElementById('nav');
 var lastScroll=0;
+var _scrollTicking=false;
 window.addEventListener('scroll',function(){
-  var s=window.scrollY;
-  if(s>100){
-    nav.style.background='rgba(10,10,10,0.85)';
-    nav.style.backdropFilter='blur(20px)';
-    nav.style.borderBottom='1px solid rgba(255,255,255,0.04)';
-  } else {
-    nav.style.background='transparent';
-    nav.style.backdropFilter='none';
-    nav.style.borderBottom='none';
+  if(!_scrollTicking){
+    requestAnimationFrame(function(){
+      var s=window.scrollY;
+      if(s>100){
+        nav.style.background='rgba(10,10,10,0.85)';
+        nav.style.backdropFilter='blur(20px)';
+        nav.style.borderBottom='1px solid rgba(255,255,255,0.04)';
+      } else {
+        nav.style.background='transparent';
+        nav.style.backdropFilter='none';
+        nav.style.borderBottom='none';
+      }
+      nav.style.transform=s>lastScroll&&s>300?'translateY(-100%)':'translateY(0)';
+      lastScroll=s;
+      var bar=document.getElementById('scrollBar');
+      if(bar){
+        var h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+        bar.style.width=(s/h*100)+'%';
+      }
+      _scrollTicking=false;
+    });
+    _scrollTicking=true;
   }
-  nav.style.transform=s>lastScroll&&s>300?'translateY(-100%)':'translateY(0)';
-  lastScroll=s;
-  var bar=document.getElementById('scrollBar');
-  if(bar){
-    var h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
-    bar.style.width=(window.scrollY/h*100)+'%';
-  }
-});
+},{passive:true});
 
 
 
 // ─── Initial load ───
 showPage(location.pathname,true);
+
+// ─── Scroll reveal (IntersectionObserver) ───
 setTimeout(function(){
-  document.querySelectorAll('.fade-up').forEach(function(el,i){
-    setTimeout(function(){el.classList.add('visible')},i*100);
-  });
+  var fadeEls=document.querySelectorAll('.fade-up');
+  if('IntersectionObserver' in window){
+    var fadeObs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){e.target.classList.add('visible');fadeObs.unobserve(e.target);}
+      });
+    },{threshold:0.12});
+    fadeEls.forEach(function(el){fadeObs.observe(el);});
+  } else {
+    fadeEls.forEach(function(el){el.classList.add('visible');});
+  }
 },100);
-
-// ─── GSAP Scroll Reveals ───
-gsap.registerPlugin(ScrollTrigger);
-document.querySelectorAll('.fade-up').forEach(function(el) {
-  gsap.to(el, {
-    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-    opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', overwrite: 'auto'
-  });
-});
-
-// ─── Parallax gold glows ───
-document.querySelectorAll('.gold-glow').forEach(function(g) {
-  gsap.to(g, {
-    scrollTrigger: { trigger: g.parentElement, start: 'top bottom', end: 'bottom top', scrub: 1 },
-    y: -60, ease: 'none'
-  });
-});
 
 // ─── Testimonial carousel ───
 (function(){

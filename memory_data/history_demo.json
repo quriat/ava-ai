@@ -1,0 +1,22 @@
+[
+  {
+    "role": "user",
+    "content": "Research n8n workflow automation and give me key points",
+    "timestamp": "2026-05-20T10:04:21.454978"
+  },
+  {
+    "role": "assistant",
+    "content": "I'll research n8n workflow automation for you and provide key insights.Let me try a different search approach:",
+    "timestamp": "2026-05-20T10:04:21.456239"
+  },
+  {
+    "role": "user",
+    "content": "Send an email to quriat@gmail.com with subject Test and body This is a test from Ava AI",
+    "timestamp": "2026-05-20T10:04:28.989358"
+  },
+  {
+    "role": "assistant",
+    "content": "I'll send that email for you right away.\u2705 Email sent successfully! I've sent the test email to quriat@gmail.com with the subject \"Test\" and the message \"This is a test from Ava AI\".",
+    "timestamp": "2026-05-20T10:04:28.989898"
+  }
+]
