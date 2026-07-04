@@ -1120,7 +1120,13 @@ PAGE_CONTENT = {
 <div class="page" id="page-home">
 
 <section class="hero">
-  <div class="hero-bg"><div class="hero-grid"></div></div>
+  <div class="hero-bg"></div>
+  <video autoplay muted loop playsinline preload="auto" poster="/static/chauffeur_service.png">
+    <source src="/static/hero-video.m4v" type="video/mp4">
+  </video>
+  <div class="hero-aurora"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grid"></div>
   <div class="hero-moving"><span></span><span></span><span></span></div>
   <div class="container">
     <div class="hero-text">
@@ -1138,6 +1144,10 @@ PAGE_CONTENT = {
       <div class="glow-2"></div>
       <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly" width="550" height="550" class="float-anim">
     </div>
+  </div>
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
   </div>
 </section>
 
