@@ -341,9 +341,8 @@ ul { list-style: none; }
 @media (max-width: 900px) { .fleet-card .img-wrap { height: 280px; } }
 @media (max-width: 600px) { .fleet-card .img-wrap { height: 220px; } }
 .fleet-card .img-wrap img {
-  width: 100%; height: 100%; object-fit: contain;
+  width: 100%; height: 100%; object-fit: cover;
   transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
-  padding: 10px;
 }
 .fleet-card:hover .img-wrap img { transform: scale(1.05); }
 .fleet-card .img-wrap .tag {
