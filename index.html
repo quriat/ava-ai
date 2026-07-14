@@ -226,6 +226,7 @@ footer ul a:hover{color:var(--gold)}
 .chat-btn:hover{transform:scale(1.1);box-shadow:0 8px 36px rgba(201,168,76,.5)}
 .chat-pulse{position:absolute;inset:0;border-radius:50%;background:var(--gold);opacity:.4;z-index:-1;animation:chatPulse 2s infinite}
 @keyframes chatPulse{0%{transform:scale(1);opacity:.4}100%{transform:scale(1.5);opacity:0}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .chat-box{position:fixed;bottom:90px;right:24px;width:360px;max-height:500px;background:var(--card);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;display:none;z-index:999;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .chat-box.open{display:flex;flex-direction:column}
 .chat-header{padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:10px}
@@ -405,11 +406,38 @@ footer ul a:hover{color:var(--gold)}
 {% elif content_key == 'deposit' %}
 <div class="page-header"><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
 <section class="section" style="padding-top:0"><div class="container"><div class="deposit-wrap">
-<div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Deposit Amount</label><div class="deposit-amounts"><button data-amt="50">$50</button><button data-amt="100">$100</button><button data-amt="250" class="active">$250</button><button data-amt="500">$500</button><button data-amt="1000">$1,000</button><button data-amt="custom">Custom</button></div><input id="custom-amt" type="number" placeholder="Enter amount" style="display:none;width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none;margin-top:8px"></div>
-<div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Cardholder Name</label><input id="card-name" type="text" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
-<div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Email for Receipt</label><input id="card-email" type="email" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
-<div id="square-card"></div>
-<p style="color:var(--text3);font-size:12px;text-align:center;margin-top:12px">🔒 Secured by Square. Your card info never touches our server.</p>
+<div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Deposit Amount</label>
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+  <span style="font-size:20px;font-weight:700;color:var(--gold)">$</span>
+  <input id="dep-amount" type="number" value="250" min="1" style="width:120px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:18px;font-family:var(--font-sans);outline:none" oninput="updateDepositPresets(this.value)">
+  <span style="color:var(--text3);font-size:13px">Refundable with 24h cancellation</span>
+</div>
+<div class="deposit-amounts" style="margin-bottom:16px">
+  <button onclick="setDeposit(50)" id="dep-50">$50</button>
+  <button onclick="setDeposit(100)" id="dep-100">$100</button>
+  <button onclick="setDeposit(250)" id="dep-250" class="active">$250</button>
+  <button onclick="setDeposit(500)" id="dep-500">$500</button>
+  <button onclick="setDeposit(1000)" id="dep-1000">$1,000</button>
+  <button onclick="setDeposit(0)" id="dep-custom">Custom</button>
+</div>
+</div>
+<div class="pay-fields">
+<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Cardholder Name</label><input id="dep-name" type="text" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
+<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Email for Receipt</label><input id="dep-email" type="email" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
+<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Card Details</label><div id="square-card" style="padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);min-height:56px"></div></div>
+<div id="sq-errors" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:12px;text-align:center"></div>
+<button class="btn btn-gold" style="width:100%;justify-content:center;padding:16px;font-size:16px" id="dep-pay-btn" onclick="processSquarePayment()">Pay Deposit</button>
+<p style="color:var(--text3);font-size:12px;text-align:center;margin-top:16px">🔒 Secured by Square. Your card info never touches our server.</p>
+</div>
+<div id="dep-processing" style="display:none;text-align:center;padding:40px 20px">
+  <div style="font-size:32px;margin-bottom:16px;animation:spin 1s linear infinite">&#8635;</div>
+  <p style="color:var(--text2)">Processing your payment...</p>
+</div>
+<div id="dep-thanks" style="display:none;text-align:center;padding:20px">
+  <div style="font-size:48px;margin-bottom:12px">&#10003;</div>
+  <h3 style="font-family:var(--font-serif);font-size:24px;margin-bottom:8px">Deposit <span class="gold">Received</span></h3>
+  <p style="color:var(--text2);font-size:14px" id="dep-thanks-msg">Your booking is secured. You'll receive a confirmation email shortly.</p>
+</div>
 </div></div></section>
 
 {% elif content_key == '404' %}
@@ -703,15 +731,90 @@ function trackFlight(){
 }
 document.getElementById('flight-input')&&document.getElementById('flight-input').addEventListener('keydown',function(e){if(e.key==='Enter')trackFlight()});
 
-// ─── Deposit ───
-document.querySelectorAll('.deposit-amounts button').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.deposit-amounts button').forEach(function(b){b.classList.remove('active')});
-    this.classList.add('active');
-    var custom=document.getElementById('custom-amt');
-    if(this.dataset.amt==='custom'){custom.style.display='block';custom.focus()}else{custom.style.display='none'}
+// ─── Deposit / Square Payment ───
+var sqCard=null;
+function initSquareCard(){
+  if(!document.getElementById('square-card')) return;
+  var appId='{{ sq_app_id }}';
+  var locId='{{ sq_location_id }}';
+  if(!appId||appId===''||!locId||locId==='') return;
+  if(!window.Square){setTimeout(initSquareCard,500);return;}
+  if(sqCard) return;
+  var payments=window.Square.payments(appId,locId);
+  payments.card().then(function(c){
+    sqCard=c;
+    sqCard.attach('#square-card');
+  }).catch(function(e){console.error('Square card init error:',e)});
+}
+initSquareCard();
+
+function setDeposit(amount){
+  document.querySelectorAll('.deposit-amounts button').forEach(function(b){b.classList.remove('active')});
+  if(amount===0){document.getElementById('dep-custom').classList.add('active');return;}
+  document.getElementById('dep-amount').value=amount;
+  document.getElementById('dep-'+amount).classList.add('active');
+}
+
+function updateDepositPresets(val){
+  document.querySelectorAll('.deposit-amounts button').forEach(function(b){b.classList.remove('active')});
+  var presets=[50,100,250,500,1000];
+  if(presets.indexOf(parseInt(val))>=0) document.getElementById('dep-'+parseInt(val)).classList.add('active');
+  else document.getElementById('dep-custom').classList.add('active');
+}
+
+function processSquarePayment(){
+  var btn=document.getElementById('dep-pay-btn');
+  var amount=document.getElementById('dep-amount').value;
+  if(!amount||parseFloat(amount)<=0){alert('Enter a valid deposit amount.');return;}
+  var name=document.getElementById('dep-name').value.trim();
+  if(!name){alert('Enter the cardholder name.');return;}
+  if(!sqCard){alert('Square is loading. Please wait.');return;}
+  btn.disabled=true;btn.textContent='Processing...';
+  document.getElementById('sq-errors').style.display='none';
+  document.getElementById('dep-processing').style.display='block';
+
+  sqCard.tokenize().then(function(res){
+    if(res.status==='OK'){
+      var cents=Math.round(parseFloat(amount)*100);
+      fetch('/api/square-pay',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          source_id:res.token,
+          amount:cents,
+          name:name,
+          email:document.getElementById('dep-email').value
+        })
+      }).then(function(r){return r.json()}).then(function(d){
+        document.getElementById('dep-processing').style.display='none';
+        if(d.status==='ok'){
+          document.querySelector('.pay-fields').style.display='none';
+          document.getElementById('dep-thanks-msg').textContent='Payment of $'+amount+' received. '+d.message;
+          document.getElementById('dep-thanks').style.display='block';
+        } else {
+          btn.disabled=false;btn.textContent='Pay Deposit';
+          var errEl=document.getElementById('sq-errors');
+          errEl.textContent=d.message||'Payment failed. Try again.';
+          errEl.style.display='block';
+        }
+      }).catch(function(){
+        btn.disabled=false;btn.textContent='Pay Deposit';
+        document.getElementById('dep-processing').style.display='none';
+        alert('Network error. Please try again.');
+      });
+    } else {
+      btn.disabled=false;btn.textContent='Pay Deposit';
+      document.getElementById('dep-processing').style.display='none';
+      var errEl=document.getElementById('sq-errors');
+      errEl.textContent=res.errors&&res.errors[0]?res.errors[0].detail:'Card information is invalid.';
+      errEl.style.display='block';
+    }
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='Pay Deposit';
+    document.getElementById('dep-processing').style.display='none';
+    alert('Square error. Please try again.');
   });
-});
+}
 </script>
 
 {% if ga_id %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','{{ ga_id }}');</script>{% endif %}
