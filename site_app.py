@@ -325,7 +325,12 @@ def index(path):
         featured_post=featured_post,
     )
     status_code = 404 if content_key == "404" else 200
-    return rendered, status_code
+    resp = app.make_response((rendered, status_code))
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    resp.headers["X-Version"] = "v2.0-video-gloss"
+    return resp
 
 
 def _fire_n8n_reminder(data):
