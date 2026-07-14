@@ -191,16 +191,16 @@ BASE_HTML = open(_INDEX_PATH, encoding="utf-8").read() if os.path.exists(_INDEX_
 
 
 PAGE_META = {
-    "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH &amp; Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.", "og_type": "website", "og_image": "https://avalimo.net/wp-content/uploads/2026/04/chauffeur_service.png" },
-    "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "blog": { "title": "Blog — AvaLimo | Houston Limo Service Insights & Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-    "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+    "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "blog": { "title": "Blog — AvaLimo | Houston Limo Service Insights & Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
 }
 
 
@@ -229,7 +229,7 @@ def index(path):
     featured_post = None
     canonical_path = ""
     og_type = "website"
-    og_image = "https://avalimo.net/wp-content/uploads/2026/04/chauffeur_service.png"
+    og_image = "https://avalimo.net/static/cadillac_escalade.png"
     content_key = path
 
     legacy_redirects = {
@@ -273,7 +273,7 @@ def index(path):
                 meta = {"title": p["title"] + " — AvaLimo", "desc": p.get("summary", "")}
                 canonical_path = f"/blog/{slug}"
                 og_type = "article"
-                og_image = f"https://avalimo.net{p.get('image', '/static/chauffeur_service.png')}"
+                og_image = f"https://avalimo.net{p.get('image', '/static/cadillac_escalade.png')}"
                 content_key = "blog"
                 featured_post = p
                 break
@@ -289,7 +289,7 @@ def index(path):
         meta = {"title": "Page Not Found — AvaLimo", "desc": "Sorry, the page you requested could not be found."}
         canonical_path = ""
         og_type = "website"
-        og_image = "https://avalimo.net/wp-content/uploads/2026/04/chauffeur_service.png"
+        og_image = "https://avalimo.net/static/cadillac_escalade.png"
 
     canonical_url = f"https://avalimo.net{canonical_path}"
 
