@@ -323,6 +323,7 @@ def index(path):
         sq_location_id=SQ_LOCATION_ID,
         blog_posts_html=blog_cards,
         featured_post=featured_post,
+        content_key=content_key,
     )
     status_code = 404 if content_key == "404" else 200
     resp = app.make_response((rendered, status_code))
