@@ -4,20 +4,8 @@ import sys
 import uuid
 import json
 import smtplib
-import threading
 from email.mime.text import MIMEText
-import datetime as _dt
-import time
-import re
-import pickle
-import base64
-import urllib.request
 from flask import Flask, request, jsonify, render_template_string, redirect
-
-try:
-    import requests as _req
-except ImportError:
-    _req = None
 
 try:
     from square.client import Square, SquareEnvironment
@@ -166,20 +154,28 @@ def send_contact_email(data: dict):
 
 
 _blog_path = os.path.join(os.path.dirname(__file__), "blog_posts.json")
-BLOG_POSTS = json.load(open(_blog_path)) if os.path.exists(_blog_path) else []
+def _get_blog_posts():
+    if os.path.exists(_blog_path):
+        try:
+            with open(_blog_path) as f:
+                return json.load(f)
+        except Exception:
+            return []
+    return []
+BLOG_POSTS = _get_blog_posts()
 
-BASE_HEADER = r"""<!DOCTYPE html>
+HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ title }}</title>
 <meta name="description" content="{{ meta_desc }}">
-<meta name="keywords" content="Houston limo, IAH airport transfer, Hobby airport car service, luxury chauffeur Houston, corporate car service Houston, wedding limo Houston, AvaLimo">
+
 <meta name="robots" content="index, follow">
 <meta name="geo.region" content="US-TX">
 <meta name="geo.placename" content="Houston">
-<meta name="theme-color" content="#0A0A0A">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="canonical" href="{{ canonical_url }}">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="{{ title }}">
@@ -197,20 +193,17 @@ BASE_HEADER = r"""<!DOCTYPE html>
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "AvaLimo",
-  "image": "https://avalimo.net/static/chauffeur_service.png",
+  "image": "https://avalimo.net/wp-content/uploads/2026/04/chauffeur_service.png",
   "url": "https://avalimo.net",
   "telephone": "+18325678050",
   "email": "adam@avalimo.net",
   "description": "Houston premier limo service offering airport transfers, corporate travel, weddings, and event transportation.",
-  "areaServed": ["Houston","IAH","Hobby Airport","Sugar Land","The Woodlands","Katy","Pearland","Missouri City","Galveston","League City","Baytown","Spring","Cypress"],
+  "areaServed": ["Houston","IAH","Hobby Airport","Sugar Land","The Woodlands","Katy","Pearland"],
   "openingHours": "Mo-Su 00:00-24:00",
   "priceRange": "$$$",
   "address": { "@type": "PostalAddress", "addressLocality": "Houston", "addressRegion": "TX", "addressCountry": "US" },
   "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
-  "sameAs": [],
-  "geo": { "@type": "GeoCoordinates", "latitude": 29.7604, "longitude": -95.3698 },
-  "hasMap": "https://maps.google.com/?q=Houston+TX",
-  "paymentAccepted": ["Cash", "Credit Card", "Debit Card"]
+  "sameAs": ["https://www.linkedin.com/in/adam-aljahdhami-550586218/"]
 }
 </script>
 <script type="application/ld+json">
@@ -226,258 +219,1000 @@ BASE_HEADER = r"""<!DOCTYPE html>
   }
 }
 </script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://avalimo.net/" },
-    { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://avalimo.net/services" },
-    { "@type": "ListItem", "position": 3, "name": "Fleet", "item": "https://avalimo.net/fleet" },
-{ "@type": "ListItem", "position": 4, "name": "Book", "item": "https://avalimo.net/book" },
-  { "@type": "ListItem", "position": 5, "name": "Pay Deposit", "item": "https://avalimo.net/deposit" },
-  { "@type": "ListItem", "position": 6, "name": "Blog", "item": "https://avalimo.net/blog" },
-  { "@type": "ListItem", "position": 7, "name": "Contact", "item": "https://avalimo.net/contact" },
-  { "@type": "ListItem", "position": 8, "name": "FAQ", "item": "https://avalimo.net/faq" }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    { "@type": "Question", "name": "How do I book a ride?", "acceptedAnswer": { "@type": "Answer", "text": "You can book online using our booking form, call us at (832) 567-8050, or email adam@avalimo.net. Online booking is fastest — just fill in your details and we'll confirm within minutes." } },
-    { "@type": "Question", "name": "Do you service both IAH and Hobby airports?", "acceptedAnswer": { "@type": "Answer", "text": "Yes! We cover both George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports. We also serve all surrounding areas including Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring, and Cypress." } },
-    { "@type": "Question", "name": "Do you track flights for airport pickups?", "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. We monitor your flight in real-time so we're always there when you land — even if your flight is early or delayed. No extra charge." } },
-    { "@type": "Question", "name": "What vehicles do you offer?", "acceptedAnswer": { "@type": "Answer", "text": "Our fleet includes the Mercedes S-Class (up to 3 passengers), Cadillac Escalade SUV (up to 6 passengers), and Mercedes Sprinter (up to 14 passengers). All vehicles are immaculately maintained." } },
-    { "@type": "Question", "name": "How much does it cost?", "acceptedAnswer": { "@type": "Answer", "text": "Pricing depends on vehicle type, distance, and duration. We offer transparent flat-rate pricing with zero surge fees. Contact us for a quote — we typically respond within minutes." } },
-    { "@type": "Question", "name": "Do you require a deposit?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, a booking deposit is required to secure your reservation. The deposit is fully refundable with 24-hour cancellation notice. See our Company Policy for details." } },
-    { "@type": "Question", "name": "Can I cancel or modify my booking?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can cancel or modify your booking up to 24 hours before the scheduled pickup time for a full refund. Late cancellations may incur a fee." } },
-    { "@type": "Question", "name": "Are your drivers licensed and insured?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every AvaLimo chauffeur is fully licensed, insured, and professionally trained. We conduct thorough background checks and regular vehicle inspections." } },
-    { "@type": "Question", "name": "Do you provide car seats for children?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, we can provide car seats upon request. Please let us know at the time of booking so we can ensure proper installation." } }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  "itemListElement": [
-    { "@type": "Review", "position": 1, "itemReviewed": { "@type": "LocalBusiness", "name": "AvaLimo" }, "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "author": { "@type": "Person", "name": "James R." }, "reviewBody": "Service was impeccable. Our chauffeur was professional and the car was spotless." },
-    { "@type": "Review", "position": 2, "itemReviewed": { "@type": "LocalBusiness", "name": "AvaLimo" }, "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "author": { "@type": "Person", "name": "Sarah M." }, "reviewBody": "Best limo service in Houston! On time, very polite, and the vehicle was amazingly comfortable." },
-    { "@type": "Review", "position": 3, "itemReviewed": { "@type": "LocalBusiness", "name": "AvaLimo" }, "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "author": { "@type": "Person", "name": "Michael B." }, "reviewBody": "From easy booking to arrival — everything was perfect. Thank you AvaLimo!" }
-  ]
-}
-</script>
 <script src="https://web.squarecdn.com/v1/square.js" defer></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="/static/styles.css">
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: { sans: ['"Inter"', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
-      colors: { dark: '#0A0A0A', surface: '#141414', gold: '#C8A861', 'gold-light': '#D4BA7A', 'gold-dark': '#A68B45' }
-    }
-  }
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;
+  --bg2:#111;
+  --bg3:#1a1a1a;
+  --card:#151515;
+  --gold:#D4AF37;
+  --gold-light:#E8C84A;
+  --gold-dark:#B8962E;
+  --text:#f0f0f0;
+  --text2:#999;
+  --text3:#666;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 4px 30px rgba(0,0,0,0.5);
+  --maxw:1200px;
 }
-</script>
+/* Square card theming */
+#square-card iframe{color-scheme:dark}
+#square-card{--sq-color-input:#f0f0f0;--sq-color-placeholder:#666;--sq-color-focused:#D4AF37;--sq-color-error:#ff6b6b}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--gold);text-decoration:none;transition:color .3s}
+a:hover{color:var(--gold-light)}
+img{max-width:100%;height:auto}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.gold{color:var(--gold)}
+
+/* ─── Nav ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;transition:all .4s ease;background:transparent}
+nav.scrolled{background:rgba(10,10,10,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:10px 0;box-shadow:0 1px 0 rgba(212,175,55,.1)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#fff;display:flex;align-items:center;gap:10px}
+.nav-logo span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:20px;list-style:none}
+.nav-links a{color:#fff;font-size:13px;font-weight:500;letter-spacing:.2px;position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--gold);transition:width .3s}
+.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{display:flex;align-items:center;gap:12px}
+.nav-cta .phone{color:#fff;font-weight:600;font-size:15px;letter-spacing:-.3px}
+.nav-cta .phone small{color:rgba(255,255,255,.6);font-weight:400;font-size:12px;display:block;text-align:right}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:50px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .3s;font-family:inherit;letter-spacing:.3px}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#111;box-shadow:0 4px 20px rgba(212,175,55,.3)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,175,55,.4)}
+.btn-outline{background:transparent;border:1.5px solid rgba(212,175,55,.4);color:var(--gold)}
+.btn-outline:hover{background:rgba(212,175,55,.1);border-color:var(--gold)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);backdrop-filter:blur(10px)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;background:none;border:none}
+.hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+
+/* ─── Hero ─── */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:120px 0 80px}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,175,55,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,255,255,.03) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(212,175,55,.05) 0%,transparent 50%);pointer-events:none}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.15}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.hero .container{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-text .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);color:var(--gold);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;letter-spacing:.5px;margin-bottom:32px}
+.hero-text .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-text h1{font-size:clamp(40px,5.5vw,80px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
+.hero-text h1 .line{display:block}
+.hero-text h1 .line:last-child{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold-dark) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-text p{color:var(--text2);font-size:18px;max-width:500px;line-height:1.7;margin-bottom:40px}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap}
+.hero-image{position:relative;display:flex;justify-content:center;align-items:center}
+.hero-image .glow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.15) 0%,transparent 70%);filter:blur(60px)}
+.hero-image img{position:relative;z-index:1;width:100%;max-width:550px;animation:float 6s ease-in-out infinite;border-radius:12px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+
+/* ─── Stats Bar ─── */
+.stats-bar{background:var(--bg2);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);padding:40px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.stat-item{text-align:center;border-right:1px solid rgba(255,255,255,.05);padding:0 20px}
+.stat-item:last-child{border-right:none}
+.stat-number{font-size:36px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:4px}
+.stat-label{color:var(--text2);font-size:14px;font-weight:500}
+
+/* ─── Sections ─── */
+.section{padding:100px 0}
+.section-header{text-align:center;margin-bottom:64px}
+.section-header .subtitle{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.section-header h2{font-size:clamp(32px,4vw,52px);font-weight:800;letter-spacing:-1.5px;line-height:1.15}
+.section-header p{color:var(--text2);max-width:560px;margin:16px auto 0;font-size:16px;line-height:1.7}
+
+/* ─── Fleet ─── */
+.fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.fleet-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s;position:relative}
+.fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.fleet-card .img-wrap{height:220px;display:flex;align-items:center;justify-content:center;background:transparent;padding:24px;position:relative;overflow:hidden}
+.fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%);pointer-events:none}
+.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s}
+.fleet-card:hover .img-wrap img{transform:scale(1.08)}
+.fleet-card .tag{position:absolute;top:16px;left:16px;background:rgba(212,175,55,.15);color:var(--gold);padding:4px 14px;border-radius:50px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.fleet-card .body{padding:24px}
+.fleet-card .body h3{font-size:20px;font-weight:700;margin-bottom:4px}
+.fleet-card .body .capacity{color:var(--text3);font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.fleet-card .body p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:20px}
+.fleet-card .body .btn{padding:10px 24px;font-size:13px}
+
+/* ─── Services ─── */
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.service-card{background:var(--card);border-radius:var(--radius);padding:36px 28px;border:1px solid rgba(255,255,255,.04);transition:all .4s;text-align:center}
+.service-card:hover{transform:translateY(-6px);border-color:rgba(212,175,55,.15);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.service-card .icon{width:64px;height:64px;border-radius:16px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
+.service-card h3{font-size:18px;font-weight:700;margin-bottom:10px}
+.service-card p{color:var(--text2);font-size:14px;line-height:1.7}
+
+/* ─── Testimonials ─── */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.test-card{background:var(--card);border-radius:var(--radius);padding:32px;border:1px solid rgba(255,255,255,.04)}
+.test-card .stars{color:var(--gold);font-size:16px;margin-bottom:16px;letter-spacing:2px}
+.test-card p{color:var(--text2);font-size:15px;line-height:1.7;margin-bottom:20px;font-style:italic}
+.test-card .author{display:flex;align-items:center;gap:12px}
+.test-card .author .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#111}
+.test-card .author .name{font-weight:600;font-size:14px}
+.test-card .author .title{color:var(--text3);font-size:12px}
+
+/* ─── Booking ─── */
+.booking-section{background:var(--bg2);position:relative;overflow:hidden}
+.booking-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.06) 0%,transparent 60%)}
+.booking-wrap{max-width:800px;margin:0 auto;position:relative;z-index:1}
+.booking-form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.booking-form .full{grid-column:1/-1}
+.booking-form label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:.3px}
+.booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-size:14px;font-family:inherit;transition:all .3s;outline:none}
+.booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.1)}
+.booking-form textarea{resize:vertical;min-height:80px}
+.booking-form select option{background:#111;color:var(--text)}
+
+/* ─── Contact ─── */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.contact-info h3{font-size:28px;font-weight:700;margin-bottom:16px}
+.contact-info p{color:var(--text2);margin-bottom:32px;max-width:400px}
+.contact-item{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.contact-item .ci-icon{width:48px;height:48px;border-radius:12px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.contact-item .ci-text{font-weight:500}
+.contact-item .ci-sub{color:var(--text2);font-size:13px}
+
+
+/* ─── FAQ ─── */
+.faq-list{max-width:800px;margin:0 auto}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.06);padding:0}
+.faq-q{padding:24px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:600;font-size:16px;transition:color .3s;gap:24px}
+.faq-q:hover{color:var(--gold)}
+.faq-q .arrow{font-size:12px;transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
+.faq-a{padding:0 0 24px;color:var(--text2);font-size:15px;line-height:1.8;display:none}
+.faq-item.open .faq-a{display:block}
+
+/* ─── Footer ─── */
+footer{background:var(--bg2);border-top:1px solid rgba(255,255,255,.04);padding:60px 0 30px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+footer h4{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text);margin-bottom:20px}
+footer p{color:var(--text2);font-size:14px;line-height:1.8}
+footer ul{list-style:none}
+footer ul li{margin-bottom:10px}
+footer ul li a{color:var(--text2);font-size:14px;transition:color .3s}
+footer ul li a:hover{color:var(--gold)}
+.footer-bottom{padding-top:24px;border-top:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-bottom p{color:var(--text3);font-size:13px}
+.footer-bottom .areas{color:var(--text3);font-size:12px;text-align:right;max-width:400px}
+
+/* ─── Page Header ─── */
+.page-header{padding:160px 0 60px;text-align:center;position:relative}
+.page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.06) 0%,transparent 60%)}
+.page-header h1{font-size:clamp(36px,4vw,56px);font-weight:900;letter-spacing:-1.5px;position:relative;z-index:1}
+.page-header p{color:var(--text2);max-width:500px;margin:12px auto 0;position:relative;z-index:1}
+
+/* ─── Animations ─── */
+.fade-up{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.22,1,.36,1)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-in{opacity:0;transition:opacity .8s}
+.fade-in.visible{opacity:1}
+
+/* ─── Blog ─── */
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.blog-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s}
+.blog-card:hover{transform:translateY(-6px);border-color:rgba(212,175,55,.15);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.blog-card .thumb{height:200px;background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.02));display:flex;align-items:center;justify-content:center;font-size:42px}
+.blog-card .body{padding:24px}
+.blog-card .body .cat{color:var(--gold);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.blog-card .body h3{font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.4}
+.blog-card .body p{color:var(--text2);font-size:13px;line-height:1.7;margin-bottom:16px}
+.blog-card .body .meta{color:var(--text3);font-size:12px;display:flex;gap:16px}
+.blog-card .body .article-content{display:none;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);margin-top:16px}
+.blog-card .body .article-content.open{display:block}
+.blog-card .body .article-content p{color:var(--text);font-size:14px;line-height:1.8;margin-bottom:16px}
+.blog-card .body .article-content ul{color:var(--text2);font-size:14px;line-height:1.8;padding-left:20px;margin-bottom:16px}
+.blog-card .body .article-content li{margin-bottom:8px}
+
+/* ─── Flight Status ─── */
+.flight-card{background:var(--card);border-radius:var(--radius);border:1px solid rgba(255,255,255,.04);padding:40px;max-width:600px;margin:0 auto}
+.flight-card .input-group{display:flex;gap:12px;margin-bottom:24px}
+.flight-card .input-group input{flex:1;padding:16px 20px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-size:16px;font-family:inherit;outline:none;transition:border-color .3s}
+.flight-card .input-group input:focus{border-color:var(--gold)}
+.flight-card .input-group input::placeholder{color:var(--text3)}
+.flight-result{display:none}
+.flight-result.visible{display:block}
+.flight-result .fr-row{display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.flight-result .fr-row:last-child{border:none}
+.flight-result .fr-label{color:var(--text2);font-size:14px}
+.flight-result .fr-value{font-weight:600;font-size:14px;text-align:right}
+.flight-result .status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:50px;font-size:12px;font-weight:600}
+.status-badge.on-time{background:rgba(76,175,80,.15);color:#4CAF50}
+.status-badge.delayed{background:rgba(255,152,0,.15);color:#FF9800}
+.status-badge.landed{background:rgba(33,150,243,.15);color:#2196F3}
+.flight-result .fr-map{height:200px;border-radius:var(--radius-sm);margin-top:20px;background:linear-gradient(135deg,rgba(212,175,55,.05),rgba(212,175,55,.01));display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px;overflow:hidden;position:relative}
+.flight-result .fr-map svg{width:100%;height:100%}
+
+/* ─── Deposit ─── */
+.deposit-wrap{max-width:520px;margin:0 auto}
+.deposit-card{background:var(--card);border-radius:var(--radius);border:1px solid rgba(255,255,255,.04);padding:40px}
+.deposit-card .amount-display{text-align:center;padding:32px;margin-bottom:24px;background:rgba(212,175,55,.05);border-radius:var(--radius-sm);border:1px solid rgba(212,175,55,.1)}
+.deposit-card .amount-display .currency{font-size:14px;color:var(--text2);font-weight:500}
+.deposit-card .amount-display .number{font-size:48px;font-weight:900;color:var(--gold);letter-spacing:-2px}
+.deposit-card .amount-display .number input{font-size:48px;font-weight:900;color:var(--gold);background:transparent;border:none;outline:none;width:180px;text-align:center;font-family:inherit}
+.deposit-card .amount-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.deposit-card .amount-presets button{padding:12px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;font-family:inherit}
+.deposit-card .amount-presets button:hover,.deposit-card .amount-presets button.active{background:rgba(212,175,55,.1);border-color:var(--gold);color:var(--gold)}
+.deposit-card .pay-fields label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:.3px}
+.deposit-card .pay-fields input{width:100%;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:all .3s;margin-bottom:16px}
+.deposit-card .pay-fields input:focus{border-color:var(--gold)}
+.deposit-card .pay-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ─── Chat Widget ─── */
+.chat-btn{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border:none;cursor:pointer;z-index:9999;box-shadow:0 4px 24px rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .3s}
+.chat-btn:hover{transform:scale(1.1);box-shadow:0 8px 36px rgba(212,175,55,.5)}
+.chat-btn .pulse{position:absolute;inset:0;border-radius:50%;border:2px solid var(--gold);animation:chatPulse 2s infinite}
+@keyframes chatPulse{0%{transform:scale(1);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.chat-widget{position:fixed;bottom:100px;right:24px;width:360px;max-height:520px;background:var(--card);border-radius:var(--radius);border:1px solid rgba(212,175,55,.15);box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:9998;display:none;flex-direction:column;overflow:hidden;backdrop-filter:blur(20px)}
+.chat-widget.open{display:flex}
+.chat-header{padding:18px 20px;background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.02));border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:12px}
+.chat-header .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:16px}
+.chat-header .info{flex:1}
+.chat-header .info .name{font-weight:600;font-size:14px}
+.chat-header .info .status{color:#4CAF50;font-size:11px;display:flex;align-items:center;gap:4px}
+.chat-header .info .status::before{content:'';width:6px;height:6px;border-radius:50%;background:#4CAF50}
+.chat-header .close-btn{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;min-height:280px;max-height:320px}
+.chat-msg{max-width:85%;padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.5;animation:msgIn .3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg.bot{align-self:flex-start;background:rgba(255,255,255,.06);border-bottom-left-radius:4px}
+.chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#111;font-weight:500;border-bottom-right-radius:4px}
+.chat-input-wrap{display:flex;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.04)}
+.chat-input-wrap input{flex:1;padding:10px 16px;border-radius:50px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-size:14px;font-family:inherit;outline:none}
+.chat-input-wrap input:focus{border-color:var(--gold)}
+.chat-input-wrap button{width:40px;height:40px;border-radius:50%;background:var(--gold);border:none;color:#111;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s;flex-shrink:0}
+.chat-input-wrap button:hover{transform:scale(1.1)}
+
+/* ─── Mobile responsive additions ─── */
+@media(max-width:900px){
+  .blog-grid{grid-template-columns:1fr}
+  .deposit-card .amount-presets{grid-template-columns:repeat(2,1fr)}
+  .deposit-card .pay-row{grid-template-columns:1fr}
+  .chat-widget{width:calc(100vw - 32px);right:16px;bottom:90px;max-height:70vh}
+  .flight-card .input-group{flex-direction:column}
+}
+@media(max-width:900px){
+  .hero .container{grid-template-columns:1fr;gap:40px;text-align:center}
+  .hero-text p{margin:0 auto 32px}
+  .hero-btns{justify-content:center}
+  .hero-image{display:flex;margin-top:20px}
+  .hero-image img{max-width:320px}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
+  .stat-item{border-right:none}
+  .fleet-grid,.services-grid,.test-grid{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr;gap:40px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .booking-form{grid-template-columns:1fr}
+  .nav-links{display:none;position:fixed;top:0;right:0;bottom:0;width:280px;background:rgba(10,10,10,.98);backdrop-filter:blur(20px);flex-direction:column;padding:80px 40px;gap:24px;z-index:999;box-shadow:-10px 0 40px rgba(0,0,0,.5)}
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:18px}
+  .hamburger{display:flex;z-index:1000}
+  .hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .hamburger.active span:nth-child(2){opacity:0}
+  .hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .nav-cta .phone{display:none}
+  .nav-cta .btn{padding:10px 20px;font-size:13px}
+}
+@media(max-width:600px){
+  .hero .container{gap:24px}
+  .hero-text h1{font-size:clamp(28px,10vw,36px)}
+  .hero-text p{font-size:15px}
+  .hero-image img{max-width:260px}
+
+  .section{padding:60px 0}
+  .section-header h2{font-size:clamp(24px,8vw,30px)}
+  .section-header p{font-size:14px}
+  .stats-grid{gap:16px}
+  .stat-number{font-size:28px}
+  .stat-label{font-size:12px}
+  .footer-grid{grid-template-columns:1fr;gap:24px}
+
+  .page-header{padding:120px 0 40px}
+  .page-header h1{font-size:clamp(24px,8vw,30px)}
+  .page-header p{font-size:14px}
+  .booking-form{padding:0}
+  .fleet-card .img-wrap{height:180px}
+  .blog-card .thumb{height:160px}
+  .btn{padding:12px 24px;font-size:13px}
+  .nav-links{width:100%}
+}
+@media(max-width:400px){
+  .hero-image img{max-width:200px}
+  .hero .btn{padding:10px 20px;font-size:12px;white-space:nowrap}
+  .hero-btns{gap:10px}
+  .container{padding:0 16px}
+  .section{padding:40px 0}
+  .page-header{padding:100px 0 30px}
+  .nav-links{padding:80px 24px}
+  .nav-links a{font-size:16px}
+</style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 gtag('js',new Date());gtag('config','{{ ga_id }}');
 </script>
-{{ sc_meta|safe }}
-{{ fb_pixel|safe }}
-<style>
-.loader-screen{position:fixed;inset:0;background:#0A0A0A;z-index:100000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
-.loader-logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:500;letter-spacing:0.08em;color:#C8A861;}
-.loader-bar-track{width:160px;height:1px;background:rgba(255,255,255,0.1);overflow:hidden;}
-.loader-bar-fill{width:0%;height:100%;background:#C8A861;transition:width 0.08s linear;}
-.grain{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-</style>
+{{ sc_meta }}
+{{ fb_pixel }}
 </head>
 <body>
-<!-- Loader -->
-<div class="loader-screen" id="loader">
-<div class="loader-logo">AVALIMO</div>
-<div class="loader-bar-track"><div class="loader-bar-fill" id="loaderBar"></div></div>
-</div>
-<!-- Grain -->
-<div class="grain"></div>
-<div id="scrollBar"></div>
-
-<!-- ─── Top Bar ─── -->
-<div class="fixed top-0 left-0 w-full z-[9999] bg-dark/90 backdrop-blur-md border-b border-white/[0.04]">
-<div class="max-w-[1400px] mx-auto px-6 md:px-12 py-2.5 flex items-center justify-between">
-<div class="flex items-center gap-4 md:gap-6">
-<a href="tel:+18325678050" class="flex items-center gap-2 text-xs text-white/50 hover:text-gold transition-colors">
-<svg class="w-3 h-3" data-lucide="phone"></svg>
-<span class="hidden sm:inline">(832) 567-8050</span>
-</a>
-<a href="mailto:adam@avalimo.net" class="hidden md:flex items-center gap-2 text-xs text-white/50 hover:text-gold transition-colors">
-<svg class="w-3 h-3" data-lucide="mail"></svg>
-adam@avalimo.net
-</a>
-</div>
-<div class="flex items-center gap-4 md:gap-6">
-<span class="flex items-center gap-1.5 text-xs text-white/50">
-<svg class="w-3 h-3" data-lucide="map-pin"></svg>
-Houston, TX
-</span>
-<span class="flex items-center gap-1.5 text-xs text-emerald-400">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-Available 24/7
-</span>
-</div>
-</div>
-</div>
 
 <!-- ─── Nav ─── -->
-<nav id="nav" class="fixed top-[41px] left-0 w-full z-[9998] transition-all duration-500">
-<div class="max-w-[1400px] mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
-<a href="/" class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center">
-<span class="font-serif text-gold text-sm font-semibold">A</span>
-</div>
-<span class="font-serif text-xl font-medium tracking-wide text-white">Avalimo</span>
-</a>
-<ul class="hidden lg:flex items-center gap-9">
-<li><a href="/" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">Home</a></li>
-<li><a href="/services" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">Services</a></li>
-<li><a href="/fleet" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">Fleet</a></li>
-<li><a href="/book" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">Book</a></li>
-<li><a href="/deposit" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">Pay Deposit</a></li>
-<li><a href="/blog" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">Blog</a></li>
-<li><a href="/contact" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">Contact</a></li>
-<li><a href="/faq" class="text-[13px] text-white/60 hover:text-white transition-colors tracking-wide">FAQ</a></li>
-</ul>
-<div class="flex items-center gap-4">
-<a href="tel:+18325678050" class="bg-gradient-to-r from-gold to-gold-dark text-dark text-[13px] font-semibold px-6 py-2.5 rounded-full hidden sm:flex items-center gap-2 hover:shadow-lg hover:shadow-gold/25 transition-all">
-<svg class="w-3.5 h-3.5" data-lucide="phone"></svg>
-Book Now
-</a>
-<button class="lg:hidden text-white p-2" id="menuToggle">
-<svg class="w-5 h-5" data-lucide="menu"></svg>
-</button>
-</div>
+<nav id="nav">
+<div class="container">
+  <a href="/" class="nav-logo">Ava<span>Limo</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="/">Home</a></li>
+    <li><a href="/services">Services</a></li>
+    <li><a href="/fleet">Fleet</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="/flight-status">Flight Status</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/faq">FAQ</a></li>
+    <li><a href="/deposit">Pay Deposit</a></li>
+  </ul>
+  <div class="nav-cta">
+    <div class="phone"><a href="tel:+18325678050">(832) 567-8050</a> <small>24/7 Dispatch</small></div>
+    <a href="/book" class="btn btn-gold">Book Now</a>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
 </div>
 </nav>
 
-<!-- ─── Mobile Menu ─── -->
-<div class="fixed inset-0 z-[9997] bg-dark/98 backdrop-blur-xl flex flex-col items-center justify-center gap-7 opacity-0 pointer-events-none transition-opacity duration-400" id="mobileMenu">
-<button class="absolute top-16 right-6 text-white/60 hover:text-white p-2" id="menuClose">
-<svg class="w-6 h-6" data-lucide="x"></svg>
-</button>
-<a href="/" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">Home</a>
-<a href="/services" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">Services</a>
-<a href="/fleet" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">Fleet</a>
-<a href="/book" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">Book</a>
-<a href="/deposit" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">Pay Deposit</a>
-<a href="/blog" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">Blog</a>
-<a href="/contact" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">Contact</a>
-<a href="/faq" class="text-2xl font-serif text-white/70 hover:text-gold transition-colors mobile-link">FAQ</a>
-<div class="gold-line w-16 my-2"></div>
-<a href="tel:+18325678050" class="bg-gradient-to-r from-gold to-gold-dark text-dark text-sm font-semibold px-8 py-3 rounded-full flex items-center gap-2">
-<svg class="w-4 h-4" data-lucide="phone"></svg>
-(832) 567-8050
-</a>
-</div>
-"""
+<!-- ─── PAGE: HOME ─── -->
+<div class="page" id="page-home">
 
-COMMON_FOOTER = r"""<footer class="border-t border-white/[0.04] py-14">
-<div class="max-w-[1400px] mx-auto px-6 md:px-12">
-<div class="grid md:grid-cols-4 gap-10 md:gap-8 mb-12">
-<div>
-<div class="flex items-center gap-3 mb-5">
-<div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center">
-<span class="font-serif text-gold text-sm font-semibold">A</span>
-</div>
-<span class="font-serif text-xl font-medium tracking-wide">Avalimo</span>
-</div>
-<p class="text-xs text-white/30 leading-relaxed mb-5">Premium black car and limousine service in Houston, Texas. Serving IAH, Hobby, and the greater Houston area.</p>
-<div class="flex items-center gap-3">
-<a href="tel:+18325678050" class="w-8 h-8 rounded-full bg-white/[0.04] flex items-center justify-center text-white/30 hover:text-gold hover:bg-gold/10 transition-all"><svg class="w-3.5 h-3.5" data-lucide="phone"></svg></a>
-<a href="mailto:adam@avalimo.net" class="w-8 h-8 rounded-full bg-white/[0.04] flex items-center justify-center text-white/30 hover:text-gold hover:bg-gold/10 transition-all"><svg class="w-3.5 h-3.5" data-lucide="mail"></svg></a>
-<a href="/contact" class="w-8 h-8 rounded-full bg-white/[0.04] flex items-center justify-center text-white/30 hover:text-gold hover:bg-gold/10 transition-all"><svg class="w-3.5 h-3.5" data-lucide="map-pin"></svg></a>
-</div>
-</div>
-<div>
-<h4 class="text-xs font-semibold tracking-wider uppercase text-white/50 mb-5">Quick Links</h4>
-<ul class="space-y-3">
-<li><a href="/" class="text-sm text-white/30 hover:text-gold transition-colors">Home</a></li>
-<li><a href="/services" class="text-sm text-white/30 hover:text-gold transition-colors">Services</a></li>
-<li><a href="/fleet" class="text-sm text-white/30 hover:text-gold transition-colors">Fleet</a></li>
-<li><a href="/book" class="text-sm text-white/30 hover:text-gold transition-colors">Book Now</a></li>
-<li><a href="/deposit" class="text-sm text-white/30 hover:text-gold transition-colors">Pay Deposit</a></li>
-<li><a href="/blog" class="text-sm text-white/30 hover:text-gold transition-colors">Blog</a></li>
-<li><a href="/contact" class="text-sm text-white/30 hover:text-gold transition-colors">Contact</a></li>
-<li><a href="/faq" class="text-sm text-white/30 hover:text-gold transition-colors">FAQ</a></li>
-<li><a href="/policy" class="text-sm text-white/30 hover:text-gold transition-colors">Policy</a></li>
-</ul>
-</div>
-<div>
-<h4 class="text-xs font-semibold tracking-wider uppercase text-white/50 mb-5">Services</h4>
-<ul class="space-y-3">
-<li><a href="/services" class="text-sm text-white/30 hover:text-gold transition-colors">Airport Transfers</a></li>
-<li><a href="/services" class="text-sm text-white/30 hover:text-gold transition-colors">Corporate Travel</a></li>
-<li><a href="/services" class="text-sm text-white/30 hover:text-gold transition-colors">Weddings</a></li>
-<li><a href="/services" class="text-sm text-white/30 hover:text-gold transition-colors">Events &amp; Nights Out</a></li>
-<li><a href="/houston-airport-limo-service" class="text-sm text-white/30 hover:text-gold transition-colors">Airport Limo Service</a></li>
-</ul>
-</div>
-<div>
-<h4 class="text-xs font-semibold tracking-wider uppercase text-white/50 mb-5">Service Areas</h4>
-<ul class="space-y-3">
-<li><a href="/sugar-land-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Sugar Land</a></li>
-<li><a href="/the-woodlands-limo" class="text-sm text-white/30 hover:text-gold transition-colors">The Woodlands</a></li>
-<li><a href="/katy-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Katy</a></li>
-<li><a href="/missouri-city-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Missouri City</a></li>
-<li><a href="/pearland-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Pearland</a></li>
-<li><a href="/galveston-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Galveston</a></li>
-<li><a href="/league-city-limo" class="text-sm text-white/30 hover:text-gold transition-colors">League City</a></li>
-<li><a href="/baytown-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Baytown</a></li>
-<li><a href="/spring-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Spring</a></li>
-<li><a href="/cypress-limo" class="text-sm text-white/30 hover:text-gold transition-colors">Cypress</a></li>
-</ul>
-</div>
-</div>
-<div class="h-[1px] bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-8"></div>
-<div class="flex flex-col md:flex-row items-center justify-between gap-4">
-<p class="text-xs text-white/20">&copy; 2026 AvaLimo. All rights reserved.</p>
-<div class="text-xs text-white/20 text-center md:text-right">Serving Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring &amp; Cypress.</div>
-</div>
-</div>
+<section class="hero">
+  <div class="hero-bg"><div class="hero-grid"></div></div>
+  <div class="container">
+    <div class="hero-text">
+      <div class="badge"><span class="dot"></span> Houston's Premier Chauffeur Service</div>
+      <h1><span class="line">Arrive in</span> <span class="line">Absolute Luxury</span></h1>
+      <p>Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.</p>
+      <div class="hero-btns">
+        <a href="/book" class="btn btn-gold">Book Your Ride</a>
+        <a href="/fleet" class="btn btn-outline">View Fleet</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="glow"></div>
+      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly" width="550" height="550">
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item fade-up"><div class="stat-number">500+</div><div class="stat-label">Happy Clients</div></div>
+      <div class="stat-item fade-up"><div class="stat-number">4.9★</div><div class="stat-label">Avg Rating</div></div>
+      <div class="stat-item fade-up"><div class="stat-number">24/7</div><div class="stat-label">Available</div></div>
+      <div class="stat-item fade-up"><div class="stat-number">$0</div><div class="stat-label">Surge Fees</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Fleet Preview -->
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="subtitle">Our Fleet</div>
+      <h2>Choose Your <span class="gold">Vehicle</span></h2>
+      <p>Select from our meticulously maintained fleet of luxury vehicles. Every ride is immaculately cleaned and prepared for your arrival.</p>
+    </div>
+    <div class="fleet-grid">
+      <div class="fleet-card fade-up">
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
+        <div class="body">
+          <h3>Executive</h3>
+          <div class="capacity">&#9679; Mercedes S-Class &middot; Up to 3 passengers</div>
+          <p>The pinnacle of executive comfort. Perfect for corporate travel and airport transfers.</p>
+          <a href="/book" class="btn btn-gold">Book Now</a>
+        </div>
+      </div>
+      <div class="fleet-card fade-up" style="transition-delay:.15s">
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
+        <div class="body">
+          <h3>SUV</h3>
+          <div class="capacity">&#9679; Cadillac Escalade &middot; Up to 6 passengers</div>
+          <p>Spacious luxury SUV ideal for groups, families, or when you need extra comfort.</p>
+          <a href="/book" class="btn btn-gold">Book Now</a>
+        </div>
+      </div>
+      <div class="fleet-card fade-up" style="transition-delay:.3s">
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
+        <div class="body">
+          <h3>Sprinter</h3>
+          <div class="capacity">&#9679; Mercedes Sprinter &middot; Up to 14 passengers</div>
+          <p>The ultimate group vehicle. High ceilings, plush seating, full luxury amenities.</p>
+          <a href="/book" class="btn btn-gold">Book Now</a>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:40px"><a href="/fleet" class="btn btn-outline">View Full Fleet &rarr;</a></div>
+  </div>
+</section>
+
+<!-- Services Preview -->
+<section class="section" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="subtitle">Services</div>
+      <h2>Every Occasion, <span class="gold">Covered</span></h2>
+      <p>From airport pickups to weddings, we provide premium transportation for every occasion across Houston.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card fade-up"><div class="icon">&#9992;</div><h3>Airport Transfers</h3><p>IAH &amp; Hobby Airport. Flight tracking included, meet &amp; greet available.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">&#128188;</div><h3>Corporate Travel</h3><p>Impress clients with punctual, professional chauffeur service across Houston.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">&#128141;</div><h3>Wedding Limo</h3><p>Make your biggest day unforgettable with a grand, elegant arrival.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.3s"><div class="icon">&#127916;</div><h3>Events &amp; Nights Out</h3><p>Concerts, sports, prom, galas — all your special event transportation needs.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.4s"><div class="icon">&#127925;</div><h3>Bachelorette &amp; Parties</h3><p>BYOB party buses and Sprinter vans for the bride tribe and group nights out.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.5s"><div class="icon">&#127963;</div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wineries and Houston craft breweries — safe and stylish.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="subtitle">Testimonials</div>
+      <h2>What Our Clients <span class="gold">Say</span></h2>
+    </div>
+    <div class="test-grid">
+      <div class="test-card fade-up">
+        <div class="stars">★★★★★</div>
+        <p>"Service was impeccable. Our chauffeur was professional and the car was spotless."</p>
+        <div class="author"><div class="avatar">JR</div><div><div class="name">James R.</div><div class="title">Airport Transfer</div></div></div>
+      </div>
+      <div class="test-card fade-up" style="transition-delay:.15s">
+        <div class="stars">★★★★★</div>
+        <p>"Best limo service in Houston! On time, very polite, and the vehicle was amazingly comfortable."</p>
+        <div class="author"><div class="avatar">SM</div><div><div class="name">Sarah M.</div><div class="title">Corporate Client</div></div></div>
+      </div>
+      <div class="test-card fade-up" style="transition-delay:.3s">
+        <div class="stars">★★★★★</div>
+        <p>"From easy booking to arrival — everything was perfect. Thank you AvaLimo!"</p>
+        <div class="author"><div class="avatar">MB</div><div><div class="name">Michael B.</div><div class="title">Wedding</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Booking CTA -->
+<section class="section booking-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="subtitle">Book Now</div>
+      <h2>Ready to <span class="gold">Ride?</span></h2>
+      <p>Book online in 30 seconds — or call (832) 567-8050</p>
+    </div>
+    <div class="booking-wrap fade-up">
+      <form class="booking-form" id="bookingForm">
+        <div class="full"><label>Name</label><input type="text" id="b-name" required></div>
+        <div><label>Phone</label><input type="tel" id="b-phone" required></div>
+        <div><label>Email</label><input type="email" id="b-email"></div>
+        <div><label>Pickup Location</label><input type="text" id="b-pickup" required></div>
+        <div><label>Dropoff Location</label><input type="text" id="b-dropoff" required></div>
+        <div><label>Date &amp; Time</label><input type="datetime-local" id="b-time" required></div>
+        <div><label>Vehicle</label><select id="b-vehicle"><option value="Sedan">Sedan (1-3 pax)</option><option value="SUV">SUV (1-6 pax)</option><option value="Sprinter">Sprinter (1-14 pax)</option></select></div>
+        <div><label>Passengers</label><input type="number" id="b-pax" min="1" max="14" value="1"></div>
+        <div class="full"><label>Special Requests</label><textarea id="b-notes" rows="3"></textarea></div>
+        <div class="full" style="text-align:center;margin-top:8px"><button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Get a Quote</button></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+      <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+      <div><h4>Services</h4><ul><li><a href="/services">Airport Transfers</a></li><li><a href="/services">Corporate Travel</a></li><li><a href="/services">Weddings</a></li><li><a href="/services">Events</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li><li><a href="/contact">Houston, TX</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 AvaLimo. All rights reserved.</p>
+      <div class="areas">Serving Houston, IAH, Hobby Airport, Sugar Land, The Woodlands, Katy &amp; Pearland.</div>
+    </div>
+  </div>
 </footer>
 
-
-
-<!-- ─── Mobile Sticky CTA ─── -->
-<div class="mobile-cta">
-  <a href="tel:+18325678050" class="mcta-call">&#128222; Call Now</a>
-  <a href="/book" class="mcta-book">Book Your Ride</a>
 </div>
 
-<!-- ─── Exit-Intent Popup ─── -->
-<div class="exit-popup" id="exitPopup">
-  <div class="exit-popup-inner">
-    <button class="exit-popup-close" onclick="closeExitPopup()">&times;</button>
-    <div style="font-size:48px;margin-bottom:12px">&#128663;</div>
-    <h3 style="font-size:22px;margin-bottom:8px">Ready to Ride in <span class="gold">Luxury</span>?</h3>
-    <p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:20px">Book now and get a <strong style="color:var(--gold)">free upgrade</strong> on your first ride. Mention code <strong style="color:var(--gold)">AVALIMO10</strong> when booking.</p>
-    <a href="/book" class="btn btn-gold" style="font-size:15px;padding:14px 40px;width:100%;justify-content:center" onclick="closeExitPopup()">Book Your Free Upgrade</a>
-    <p style="color:var(--text3);font-size:12px;margin-top:12px">Or call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a></p>
+<!-- ─── PAGE: SERVICES ─── -->
+<div class="page" id="page-services" style="display:none">
+<div class="page-header"><div class="container"><h2>Our <span class="gold">Services</span></h2><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="services-grid" style="max-width:900px;margin:0 auto">
+      <div class="service-card fade-up"><div class="icon">&#9992;</div><h3>Airport Transfers</h3><p>Professional IAH &amp; Hobby transfers with real-time flight tracking, meet &amp; greet, and luggage assistance. We monitor your flight so we're always on time.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">&#128188;</div><h3>Corporate Travel</h3><p>Executive transportation for business meetings, client entertainment, and team travel. Impress with punctuality and professionalism.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">&#128141;</div><h3>Wedding Transportation</h3><p>Make your entrance and exit unforgettable. White glove service for the wedding party, family, and guests. Photo-worthy arrivals.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.3s"><div class="icon">&#127916;</div><h3>Concerts &amp; Events</h3><p>Toyota Center, Shell Energy Stadium, 713 Music Hall, NRG — arrive in style and skip the parking hassle. We'll be waiting when the show ends.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.4s"><div class="icon">&#127954;</div><h3>Sporting Events</h3><p>Astros, Rockets, Texans, Dynamo, Dash — tailgate in luxury and leave the driving to us. Door-to-door service for game day.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.5s"><div class="icon">&#127874;</div><h3>Prom &amp; Quinceañera</h3><p>Safe, stylish transportation for life's milestone celebrations. Stretch limos, SUVs, and Sprinter vans available.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.6s"><div class="icon">&#127925;</div><h3>Bachelorette &amp; Parties</h3><p>BYOB-friendly Sprinter vans and party buses for the bride tribe, birthday bashes, and group nights out in Houston.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.7s"><div class="icon">&#127863;</div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wine tours and Houston brewery crawls. Safe, social, and completely customized to your group.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.8s"><div class="icon">&#128652;</div><h3>Group Transportation</h3><p>Corporate offsites, conventions, weddings, and large parties. Mercedes Sprinter vans seat up to 14 in full luxury comfort.</p></div>
+    </div>
+  </div>
+</section>
+<footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)">
+<div class="container">
+  <div class="footer-grid">
+    <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+    <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+    <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li></ul></div>
+    <div><h4>Policy</h4><ul><li><a href="/policy">Company Policy</a></li><li><a href="/faq">FAQ</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>&copy; 2026 AvaLimo. All rights reserved.</p><div class="areas">Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy &amp; Pearland.</div></div>
+</div>
+</footer>
+</div>
+
+<!-- ─── PAGE: FLEET ─── -->
+<div class="page" id="page-fleet" style="display:none">
+<div class="page-header"><div class="container"><h2>Our <span class="gold">Fleet</span></h2><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="fleet-grid">
+      <div class="fleet-card fade-up">
+        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
+        <div class="body">
+          <h3>Mercedes S-Class</h3>
+          <div class="capacity">&#9679; Up to 3 passengers</div>
+          <p>The pinnacle of executive comfort. Features leather seating, ambient lighting, and a quiet cabin — perfect for airport transfers and corporate travel.</p>
+          <a href="/book" class="btn btn-gold">Book Now</a>
+        </div>
+      </div>
+      <div class="fleet-card fade-up" style="transition-delay:.15s">
+        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
+        <div class="body">
+          <h3>Cadillac Escalade</h3>
+          <div class="capacity">&#9679; Up to 6 passengers</div>
+          <p>Our most popular choice. Spacious, powerful, and packed with premium amenities. Ideal for groups, families, and VIP airport transfers.</p>
+          <a href="/book" class="btn btn-gold">Book Now</a>
+        </div>
+      </div>
+      <div class="fleet-card fade-up" style="transition-delay:.3s">
+        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
+        <div class="body">
+          <h3>Mercedes Sprinter</h3>
+          <div class="capacity">&#9679; Up to 14 passengers</div>
+          <p>The ultimate group vehicle. High ceilings, plush reclining seats, ambient lighting, and premium sound system. Perfect for weddings, tours, and groups.</p>
+          <a href="/book" class="btn btn-gold">Book Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)">
+<div class="container"><div class="footer-grid">
+  <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+  <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+  <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li></ul></div>
+  <div><h4>Policy</h4><ul><li><a href="/policy">Company Policy</a></li><li><a href="/faq">FAQ</a></li></ul></div>
+</div><div class="footer-bottom"><p>&copy; 2026 AvaLimo. All rights reserved.</p><div class="areas">Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy &amp; Pearland.</div></div></div>
+</footer>
+</div>
+
+<!-- ─── PAGE: CONTACT ─── -->
+<div class="page" id="page-contact" style="display:none">
+<div class="page-header"><div class="container"><h2>Get in <span class="gold">Touch</span></h2><p>We're here 24/7 to help with your transportation needs.</p></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info fade-up">
+        <h3>Let's Talk <span class="gold">Luxury</span></h3>
+        <p>Whether you need an airport pickup at 3 AM or a wedding procession for 50 guests, we've got you covered. Call, email, or stop by — we're always ready.</p>
+        <div class="contact-item"><div class="ci-icon">&#128222;</div><div><div class="ci-text"><a href="tel:+18325678050">(832) 567-8050</a></div><div class="ci-sub">24/7 Dispatch &bull; Always answered</div></div></div>
+        <div class="contact-item"><div class="ci-icon">&#9993;</div><div><div class="ci-text"><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></div><div class="ci-sub">We reply within 1 hour</div></div></div>
+        <div class="contact-item"><div class="ci-icon">&#128205;</div><div><div class="ci-text">Houston, Texas</div><div class="ci-sub">Serving the entire Greater Houston area</div></div></div>
+
+      </div>
+      <div class="fade-up" style="transition-delay:.2s">
+        <form class="booking-form" id="contactForm">
+          <div class="full"><label>Your Name</label><input type="text" id="c-name" required></div>
+          <div><label>Email</label><input type="email" id="c-email" required></div>
+          <div><label>Phone</label><input type="tel" id="c-phone"></div>
+          <div class="full"><label>Subject</label><select id="c-subject"><option>General Inquiry</option><option>Book a Ride</option><option>Corporate Account</option><option>Event Quote</option><option>Partnership</option></select></div>
+          <div class="full"><label>Message</label><textarea id="c-message" rows="5" required></textarea></div>
+          <div class="full"><button type="submit" class="btn btn-gold">Send Message</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)"><div class="container"><div class="footer-grid">
+  <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+  <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+  <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li></ul></div>
+  <div><h4>Policy</h4><ul><li><a href="/policy">Company Policy</a></li><li><a href="/faq">FAQ</a></li></ul></div>
+</div><div class="footer-bottom"><p>&copy; 2026 AvaLimo. All rights reserved.</p><div class="areas">Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy &amp; Pearland.</div></div></div></footer>
+</div>
+
+<!-- ─── PAGE: FAQ ─── -->
+<div class="page" id="page-faq" style="display:none">
+<div class="page-header"><div class="container"><h2>Frequently Asked <span class="gold">Questions</span></h2></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="faq-list">
+      <div class="faq-item fade-up"><div class="faq-q"><span>How do I book a ride?</span><span class="arrow">&#9660;</span></div><div class="faq-a">You can book online using our booking form, call us at (832) 567-8050, or email adam@avalimo.net. Online booking is fastest — just fill in your details and we'll confirm within minutes.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.1s"><div class="faq-q"><span>Do you service both IAH and Hobby airports?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes! We cover both George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports. We also serve all surrounding areas including Sugar Land, The Woodlands, Katy, and Pearland.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.2s"><div class="faq-q"><span>Do you track flights for airport pickups?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Absolutely. We monitor your flight in real-time so we're always there when you land — even if your flight is early or delayed. No extra charge.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.3s"><div class="faq-q"><span>What vehicles do you offer?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Our fleet includes the Mercedes S-Class (up to 3 passengers), Cadillac Escalade SUV (up to 6 passengers), and Mercedes Sprinter (up to 14 passengers). All vehicles are immaculately maintained.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.4s"><div class="faq-q"><span>How much does it cost?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Pricing depends on vehicle type, distance, and duration. We offer transparent flat-rate pricing with zero surge fees. Contact us for a quote — we typically respond within minutes.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.5s"><div class="faq-q"><span>Do you require a deposit?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, a booking deposit is required to secure your reservation. The deposit is fully refundable with 24-hour cancellation notice. See our Company Policy for details.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.6s"><div class="faq-q"><span>Can I cancel or modify my booking?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. You can cancel or modify your booking up to 24 hours before the scheduled pickup time for a full refund. Late cancellations may incur a fee.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.7s"><div class="faq-q"><span>Are your drivers licensed and insured?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. Every AvaLimo chauffeur is fully licensed, insured, and professionally trained. We conduct thorough background checks and regular vehicle inspections.</div></div>
+      <div class="faq-item fade-up" style="transition-delay:.8s"><div class="faq-q"><span>Do you provide car seats for children?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, we can provide car seats upon request. Please let us know at the time of booking so we can ensure proper installation.</div></div>
+    </div>
+  </div>
+</section>
+<footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)"><div class="container"><div class="footer-grid">
+  <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+  <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+  <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li></ul></div>
+  <div><h4>Policy</h4><ul><li><a href="/policy">Company Policy</a></li><li><a href="/faq">FAQ</a></li></ul></div>
+</div><div class="footer-bottom"><p>&copy; 2026 AvaLimo. All rights reserved.</p><div class="areas">Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy &amp; Pearland.</div></div></div></footer>
+</div>
+
+<!-- ─── PAGE: POLICY ─── -->
+<div class="page" id="page-policy" style="display:none">
+<div class="page-header"><div class="container"><h2>Company <span class="gold">Policy</span></h2></div></div>
+<section class="section" style="padding-top:0"><div class="container" style="max-width:800px">
+<div class="fade-up" style="color:var(--text2);font-size:15px;line-height:1.9">
+<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Booking &amp; Reservations</h3>
+<p>All reservations require a valid credit card to secure the booking. A deposit may be required for certain services or peak periods. By booking with AvaLimo, you agree to these terms.</p>
+<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Cancellation Policy</h3>
+<p>Cancellations made 24 hours or more before the scheduled pickup time receive a full refund. Cancellations within 24 hours may incur a charge of up to 50% of the fare. No-shows are charged in full.</p>
+<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Waiting Time</h3>
+<p>Airport pickups include 60 minutes of complimentary waiting time from the moment your flight lands. For all other pickups, a 15-minute grace period is included. Additional waiting time is billed at $1 per minute.</p>
+<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Smoking &amp; Cleanliness</h3>
+<p>All AvaLimo vehicles are strictly non-smoking (including vaping). A cleaning fee of $250 will be charged for any violations. Please treat our vehicles with respect.</p>
+<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Liability</h3>
+<p>AvaLimo is fully insured and licensed. We are not responsible for items left in vehicles. Clients are responsible for any damage caused to vehicles during the rental period.</p>
+<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Privacy</h3>
+<p>We respect your privacy. Personal information collected during booking is used solely for providing our services and will never be shared with third parties without your consent.</p>
+</div></div></section>
+<footer style="background:var(--bg2);border-top:1px solid rgba(255,255,255,.04)"><div class="container"><div class="footer-grid">
+  <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+  <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+  <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li></ul></div>
+  <div><h4>Policy</h4><ul><li><a href="/policy">Company Policy</a></li><li><a href="/faq">FAQ</a></li></ul></div>
+</div><div class="footer-bottom"><p>&copy; 2026 AvaLimo. All rights reserved.</p><div class="areas">Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy &amp; Pearland.</div></div></div></footer>
+</div>
+
+<!-- ─── PAGE: BOOK ─── -->
+<div class="page" id="page-book" style="display:none">
+<div class="page-header"><div class="container"><h2>Book Your <span class="gold">Ride</span></h2><p>Fill out the form and we'll confirm your ride within minutes.</p></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="booking-wrap fade-up" style="max-width:700px">
+      <form class="booking-form" id="bookForm">
+        <div class="full"><label>Full Name</label><input type="text" id="bk-name" required></div>
+        <div><label>Phone</label><input type="tel" id="bk-phone" required></div>
+        <div><label>Email</label><input type="email" id="bk-email"></div>
+        <div class="full"><label>Pickup Location</label><input type="text" id="bk-pickup" placeholder="Address, airport, hotel, etc." required></div>
+        <div class="full"><label>Dropoff Location</label><input type="text" id="bk-dropoff" placeholder="Address, airport, venue, etc." required></div>
+        <div><label>Date &amp; Time</label><input type="datetime-local" id="bk-time" required></div>
+        <div><label>Vehicle Type</label><select id="bk-vehicle"><option value="Sedan">Sedan (1-3 pax) — Mercedes S-Class</option><option value="SUV">SUV (1-6 pax) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14 pax) — Mercedes Sprinter</option><option value="Unsure">Not sure — Recommend me</option></select></div>
+        <div><label>Passengers</label><input type="number" id="bk-pax" min="1" max="14" value="1"></div>
+        <div><label>Service Type</label><select id="bk-service"><option>Airport Transfer</option><option>Corporate Travel</option><option>Wedding</option><option>Event / Concert</option><option>Night Out</option><option>Wine Tour</option><option>Other</option></select></div>
+        <div><label>Flight # (if airport)</label><input type="text" id="bk-flight" placeholder="e.g. UA1234"></div>
+        <div class="full"><label>Special Requests</label><textarea id="bk-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
+        <div class="full" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+          <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 40px">Submit Booking</button>
+          <a href="tel:+18325678050" class="btn btn-outline" style="font-size:16px;padding:16px 40px">Call (832) 567-8050</a>
+        </div>
+      </form>
+      <div id="bk-thanks" style="display:none;text-align:center;padding:60px 20px">
+        <div style="font-size:64px;margin-bottom:20px">&#10003;</div>
+        <h2 style="font-size:28px;margin-bottom:12px">Booking <span class="gold">Submitted</span></h2>
+        <p style="color:var(--text2);max-width:450px;margin:0 auto">We've received your request. Our team will confirm your ride within minutes. You can also call us anytime at (832) 567-8050.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ─── PAGE: BLOG ─── -->
+<div class="page" id="page-blog" style="{% if featured_post %}display:block{% else %}display:none{% endif %}">
+{% if featured_post %}
+<div id="blog-featured" data-slug="{{ featured_post.slug }}">
+<div class="container" style="padding-top:100px">
+  <a href="/blog" class="btn btn-outline" style="margin-bottom:20px">← Back to Blog</a>
+  <div class="blog-article-full">
+    <div class="cat" style="color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">{{ featured_post.cat }}</div>
+    <h1 style="font-size:2rem;margin:0 0 10px;line-height:1.3">{{ featured_post.title|safe }}</h1>
+    <div class="meta" style="color:var(--text3);font-size:13px;margin-bottom:24px">{{ featured_post.date }} • {{ featured_post.read }}</div>
+    <div class="article-body" style="font-size:15px;line-height:1.8;color:var(--text2)">{{ featured_post.content|safe }}</div>
   </div>
 </div>
+</div>
+{% endif %}
+<div class="page-header"{% if featured_post %} style="padding-top:40px"{% endif %}><div class="container"><h2>Our <span class="gold">Blog</span></h2><p>{% if featured_post %}More articles from our blog{% else %}Insights, guides, and news from Houston's premier limo service.{% endif %}</p></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="blog-grid">
+      {% for post in blog_posts %}
+      <div class="blog-card fade-up" data-slug="{{ post.slug }}"{% if post.delay is defined and post.delay and post.delay != "0s" %} style="transition-delay:{{ post.delay }}"{% endif %}>
+        <div class="thumb">{{ post.emoji|safe }}</div>
+        <div class="body">
+          <div class="cat">{{ post.cat }}</div>
+          <h3>{{ post.title|safe }}</h3>
+          <p>{{ post.summary|safe }}</p>
+          <a href="/blog/{{ post.slug }}" class="btn btn-outline" style="padding:8px 20px;font-size:12px">Read More</a>
+          <div class="meta"><span>{{ post.date }}</span><span>&#8226; {{ post.read }}</span></div>
+          <div class="article-content">{{ post.content|safe }}</div>
+        </div>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "{{ post.title|safe }}",
+          "description": "{{ post.summary|safe }}",
+          "url": "https://avalimo.net/blog/{{ post.slug }}",
+          "datePublished": "{{ post.date }}",
+          "dateModified": "{{ post.date }}",
+          "author": { "@type": "Person", "name": "{{ post.author }}" },
+          "publisher": { "@type": "LocalBusiness", "name": "AvaLimo", "url": "https://avalimo.net", "logo": "https://avalimo.net/static/chauffeur_service.webp" },
+          "image": "https://avalimo.net{{ post.image }}",
+          "articleBody": {{ post.content|safe|tojson }},
+          "mainEntityOfPage": { "@type": "WebPage", "@id": "https://avalimo.net/blog/{{ post.slug }}" }
+        }
+        </script>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:40px"><p style="color:var(--text3);font-size:13px">New articles published weekly. <a href="/contact" style="color:var(--gold)">Suggest a topic</a>.</p></div>
+<footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)"><div class="container"><div class="footer-grid">
+  <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+  <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/blog">Blog</a></li></ul></div>
+  <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li></ul></div>
+  <div><h4>Info</h4><ul><li><a href="/faq">FAQ</a></li><li><a href="/policy">Policy</a></li><li><a href="/flight-status">Flight Status</a></li></ul></div>
+</div><div class="footer-bottom"><p>&copy; 2026 AvaLimo. All rights reserved.</p><div class="areas">Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy &amp; Pearland.</div></div></div></footer>
+</div>
+</div>
+
+<!-- ─── PAGE: FLIGHT STATUS ─── -->
+<div class="page" id="page-flight" style="display:none">
+<div class="page-header"><div class="container"><h2>Flight <span class="gold">Status</span></h2><p>Track your flight in real-time. We monitor every flight for our airport transfer clients.</p></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="flight-card fade-up">
+      <h3 style="margin-bottom:8px;font-size:20px">Track a Flight</h3>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:20px">Enter the airline and flight number to see real-time status.</p>
+      <div class="input-group">
+        <input type="text" id="flight-input" placeholder="e.g. UA1234, AA5678, WN901" style="text-transform:uppercase">
+        <button class="btn btn-gold" onclick="trackFlight()">Track</button>
+      </div>
+      <div class="flight-result" id="flight-result">
+        <div class="fr-row"><span class="fr-label">Flight</span><span class="fr-value" id="fr-number">UA 1234</span></div>
+        <div class="fr-row"><span class="fr-label">Airline</span><span class="fr-value" id="fr-airline">United Airlines</span></div>
+        <div class="fr-row"><span class="fr-label">Route</span><span class="fr-value" id="fr-route">ORD &rarr; IAH</span></div>
+        <div class="fr-row"><span class="fr-label">Scheduled</span><span class="fr-value" id="fr-sched">2:30 PM</span></div>
+        <div class="fr-row"><span class="fr-label">Estimated</span><span class="fr-value" id="fr-est">2:28 PM</span></div>
+        <div class="fr-row"><span class="fr-label">Status</span><span class="fr-value"><span class="status-badge on-time" id="fr-status">&#9679; On Time</span></span></div>
+        <div class="fr-row"><span class="fr-label">Gate</span><span class="fr-value" id="fr-gate">C12</span></div>
+        <div class="fr-row"><span class="fr-label">Terminal</span><span class="fr-value" id="fr-term">C</span></div>
+        <div class="fr-map" id="fr-map">
+          <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#D4AF37" stop-opacity=".1"/><stop offset="50%" stop-color="#D4AF37" stop-opacity=".4"/><stop offset="100%" stop-color="#D4AF37" stop-opacity=".1"/></linearGradient></defs>
+            <rect width="400" height="160" fill="rgba(212,175,55,.03)" rx="12"/>
+            <path d="M30 130 Q80 80 130 90 Q180 100 220 70 Q260 40 310 50 Q350 55 370 40" fill="none" stroke="url(#routeGrad)" stroke-width="2" stroke-dasharray="6 4"/>
+            <circle cx="30" cy="130" r="6" fill="#D4AF37" opacity=".8"/>
+            <text x="30" y="150" fill="#999" font-size="10" text-anchor="middle">Origin</text>
+            <circle cx="370" cy="40" r="6" fill="#D4AF37"/>
+            <text x="370" y="30" fill="#D4AF37" font-size="10" text-anchor="middle">IAH</text>
+            <circle cx="220" cy="70" r="4" fill="#D4AF37" opacity=".5"/>
+            <text x="220" y="64" fill="#666" font-size="9" text-anchor="middle">&#9992; in flight</text>
+          </svg>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:16px;background:rgba(212,175,55,.05);border-radius:var(--radius-sm);border:1px solid rgba(212,175,55,.1)">
+        <p style="color:var(--text2);font-size:13px">&#9432; Flight data powered by <a href="https://aviationstack.com" target="_blank" rel="noopener" style="color:var(--gold)">AviationStack</a>. Enter any airline flight number to track live status.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)"><div class="container"><div class="footer-grid">
+  <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort — every time.</p></div>
+  <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+  <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li></ul></div>
+  <div><h4>Info</h4><ul><li><a href="/faq">FAQ</a></li><li><a href="/policy">Policy</a></li><li><a href="/flight-status">Flight Status</a></li></ul></div>
+</div><div class="footer-bottom"><p>&copy; 2026 AvaLimo. All rights reserved.</p><div class="areas">Houston, IAH, Hobby, Sugar Land, The Woodlands, Katy &amp; Pearland.</div></div></div></footer>
+</div>
+
+<!-- ─── PAGE: DEPOSIT ─── -->
+<div class="page" id="page-deposit" style="display:none"
+     data-sq-app-id="{{ sq_app_id }}"
+     data-sq-loc-id="{{ sq_location_id }}">
+<div class="page-header"><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="deposit-wrap fade-up">
+      <div class="deposit-card">
+        <div class="amount-display">
+          <div class="currency">Deposit Amount</div>
+          <div class="number">$<input type="text" id="dep-amount" value="100" oninput="updateDepositPresets(this.value)"></div>
+          <div style="color:var(--text3);font-size:13px;margin-top:4px">Refundable with 24h cancellation</div>
+        </div>
+        <div class="amount-presets">
+          <button onclick="setDeposit(50)" id="dep-50">$50</button>
+          <button onclick="setDeposit(100)" id="dep-100" class="active">$100</button>
+          <button onclick="setDeposit(250)" id="dep-250">$250</button>
+          <button onclick="setDeposit(500)" id="dep-500">$500</button>
+          <button onclick="setDeposit(1000)" id="dep-1000">$1,000</button>
+          <button onclick="setDeposit(0)" id="dep-custom">Custom</button>
+        </div>
+        <div class="pay-fields">
+          <label>Cardholder Name</label>
+          <input type="text" id="dep-name" placeholder="John Doe">
+          <label>Email for Receipt</label>
+          <input type="email" id="dep-email" placeholder="you@example.com">
+          <label>Card Details</label>
+          <div id="square-card" style="padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:16px;min-height:56px"></div>
+          <div id="sq-errors" style="color:#ff6b6b;font-size:13px;margin-bottom:12px;display:none"></div>
+          <button class="btn btn-gold" style="width:100%;justify-content:center;padding:16px;font-size:16px;margin-top:8px" id="dep-pay-btn" onclick="processSquarePayment()">Pay Deposit</button>
+          <p style="color:var(--text3);font-size:12px;text-align:center;margin-top:16px">&#128274; Secured by Square. Your card info never touches our server.</p>
+        </div>
+        <div id="dep-processing" style="display:none;text-align:center;padding:40px 20px">
+          <div style="font-size:32px;margin-bottom:16px;animation:spin 1s linear infinite">&#8635;</div>
+          <p style="color:var(--text2)">Processing your payment...</p>
+        </div>
+        <div id="dep-thanks" style="display:none;text-align:center;padding:20px">
+          <div style="font-size:48px;margin-bottom:12px">&#10003;</div>
+          <h3 style="margin-bottom:8px">Deposit <span class="gold">Received</span></h3>
+          <p style="color:var(--text2);font-size:14px" id="dep-thanks-msg">Your booking is secured. You'll receive a confirmation email shortly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="page" id="page-airport" style="display:none">
+<div class="page-header"><div class="container"><h1>Houston Airport <span class="gold">Limo Service</span></h1><p>Premium airport transfers to IAH &amp; Hobby Airport — 24/7 Availability</p></div></div>
+
+<section class="section" style="padding-top:0;background:var(--bg2)">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Why Choose AvaLimo for Houston Airport Transportation?</h2>
+<div class="services-grid">
+<div class="service-card"><div class="icon">💰</div><h3>Flat-Rate Pricing</h3><p>No surge fees, ever. Know your exact cost upfront with no hidden charges.</p></div>
+<div class="service-card"><div class="icon">✈️</div><h3>Flight Tracking</h3><p>We monitor your flight in real-time and adjust pickup automatically.</p></div>
+<div class="service-card"><div class="icon">👋</div><h3>Meet &amp; Greet</h3><p>Your chauffeur meets you at baggage claim with a personalized sign.</p></div>
+<div class="service-card"><div class="icon">🕐</div><h3>24/7 Availability</h3><p>Early morning or late night arrivals — we're always on standby.</p></div>
+<div class="service-card"><div class="icon">🚗</div><h3>Professional Chauffeurs</h3><p>Licensed, insured, background-checked drivers who know Houston's airports.</p></div>
+<div class="service-card"><div class="icon">🛡️</div><h3>On-Time Guarantee</h3><p>We arrive 10 minutes early, every time. Your time is valuable.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">IAH &amp; Hobby Airport Transfers</h2>
+<div class="fleet-grid" style="grid-template-columns:1fr 1fr;gap:32px">
+<div class="fleet-card">
+<div class="body" style="padding:32px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<span style="font-size:32px">🛫</span>
+<h3 style="font-size:20px">George Bush Intercontinental (IAH)</h3>
+</div>
+<p style="color:var(--text2);margin-bottom:20px">Houston's largest airport, 23 miles north of downtown. Seamless transfers to Downtown, The Woodlands, Katy, Sugar Land, and beyond.</p>
+<div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px">
+<p style="font-weight:600;margin-bottom:12px;color:var(--gold)">Popular Routes:</p>
+<ul style="list-style:none;display:grid;gap:8px;color:var(--text2);font-size:14px">
+<li>✓ IAH to Downtown Houston — ~45 minutes</li>
+<li>✓ IAH to The Woodlands — ~30 minutes</li>
+<li>✓ IAH to Sugar Land — ~55 minutes</li>
+<li>✓ IAH to Katy — ~50 minutes</li>
+<li>✓ IAH to Galleria — ~40 minutes</li>
+</ul>
+</div>
+<a href="/book" class="btn btn-gold" style="width:100%;justify-content:center">Book IAH Transfer</a>
+</div>
+</div>
+<div class="fleet-card">
+<div class="body" style="padding:32px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<span style="font-size:32px">🛬</span>
+<h3 style="font-size:20px">William P. Hobby Airport (HOU)</h3>
+</div>
+<p style="color:var(--text2);margin-bottom:20px">Houston's second airport, 11 miles southeast of downtown. Perfect for Southwest Airlines and domestic travelers.</p>
+<div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px">
+<p style="font-weight:600;margin-bottom:12px;color:var(--gold)">Popular Routes:</p>
+<ul style="list-style:none;display:grid;gap:8px;color:var(--text2);font-size:14px">
+<li>✓ Hobby to Downtown Houston — ~25 minutes</li>
+<li>✓ Hobby to Galleria — ~30 minutes</li>
+<li>✓ Hobby to Medical Center — ~35 minutes</li>
+<li>✓ Hobby to Pearland — ~20 minutes</li>
+<li>✓ Hobby to Clear Lake — ~25 minutes</li>
+</ul>
+</div>
+<a href="/book" class="btn btn-gold" style="width:100%;justify-content:center">Book Hobby Transfer</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" style="background:var(--bg2)">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Your Airport Transfer in 4 Simple Steps</h2>
+<div style="max-width:700px;margin:0 auto;display:grid;gap:24px">
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">1</div><div><h3 style="font-size:17px;margin-bottom:6px">Book Online or Call</h3><p style="color:var(--text2);font-size:14px">Reserve at avalimo.net or call (832) 567-8050. Get instant confirmation.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">2</div><div><h3 style="font-size:17px;margin-bottom:6px">Flight Tracking</h3><p style="color:var(--text2);font-size:14px">We monitor your flight in real-time. Adjustments made automatically at no charge.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">3</div><div><h3 style="font-size:17px;margin-bottom:6px">Meet &amp; Greet</h3><p style="color:var(--text2);font-size:14px">Your chauffeur meets you at baggage claim with a personalized sign.</p></div></div>
+<div style="display:flex;gap:20px;align-items:flex-start"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111;flex-shrink:0">4</div><div><h3 style="font-size:17px;margin-bottom:6px">Relax &amp; Ride</h3><p style="color:var(--text2);font-size:14px">Sit back in luxury. We handle traffic and get you there in comfort.</p></div></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 style="text-align:center;margin-bottom:48px">Frequently Asked Questions</h2>
+<div style="max-width:800px;margin:0 auto;display:grid;gap:20px">
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">How early should I book my airport limo?</h3>
+<p style="color:var(--text2);font-size:14px">We recommend 24 hours in advance. Call (832) 567-8050 for same-day availability.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">What if my flight is delayed?</h3>
+<p style="color:var(--text2);font-size:14px">We track flights in real-time. Your chauffeur adjusts automatically — no extra charge.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Where will my chauffeur meet me at IAH?</h3>
+<p style="color:var(--text2);font-size:14px">Domestic: baggage claim. International: customs exit. Sign with your name provided.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Do you charge extra for luggage?</h3>
+<p style="color:var(--text2);font-size:14px">Standard luggage included: 2 checked bags + 1 carry-on per passenger.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">Can I book a round-trip transfer?</h3>
+<p style="color:var(--text2);font-size:14px">Absolutely! Round-trip bookings get preferred scheduling and simplified checkout.</p>
+</div>
+<div style="background:var(--card);padding:24px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)">
+<h3 style="font-size:15px;margin-bottom:8px;color:var(--gold)">What's your cancellation policy?</h3>
+<p style="color:var(--text2);font-size:14px">Free cancellation up to 2 hours before pickup. Full refunds with 24-hour notice.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" style="background:var(--bg2);text-align:center">
+<div class="container">
+<div style="max-width:650px;margin:0 auto">
+<h2 style="font-size:clamp(26px,4vw,36px);margin-bottom:16px">Ready for Stress-Free Airport Transportation?</h2>
+<p style="color:var(--text2);font-size:17px;margin-bottom:32px">Join 500+ satisfied clients who trust AvaLimo for Houston airport transfers.</p>
+<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+<a href="tel:8325678050" class="btn btn-gold" style="font-size:15px;padding:14px 28px">📞 Call (832) 567-8050</a>
+<a href="/book" class="btn btn-outline" style="font-size:15px;padding:14px 28px">Book Online Now</a>
+</div>
+</div>
+</div>
+</section>
+</div>
+
 
 <!-- ─── Chat Widget ─── -->
 <button class="chat-btn" id="chatBtn" onclick="toggleChat()">
@@ -501,62 +1236,6 @@ COMMON_FOOTER = r"""<footer class="border-t border-white/[0.04] py-14">
 </div>
 
 <script>
-// ============ LOADER ============
-var loader = document.getElementById('loader');
-var loaderBar = document.getElementById('loaderBar');
-var loadProgress = 0;
-var loadInt = setInterval(function() {
-  loadProgress += Math.random() * 18 + 6;
-  if (loadProgress > 100) loadProgress = 100;
-  if (loaderBar) loaderBar.style.width = loadProgress + '%';
-  if (loadProgress >= 100) {
-    clearInterval(loadInt);
-    setTimeout(function() {
-      gsap.to(loader, { yPercent: -100, duration: 0.7, ease: 'power4.inOut', onComplete: function() { loader.style.display = 'none'; } });
-    }, 200);
-  }
-}, 60);
-
-// ============ LENIS SMOOTH SCROLL ============
-var lenis = new Lenis({ duration: 1.2, easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smoothWheel: true });
-function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-requestAnimationFrame(raf);
-gsap.ticker.add(function(time) { lenis.raf(time * 1000); });
-gsap.ticker.lagSmoothing(0);
-
-document.querySelectorAll('a[href^="/"]').forEach(function(a) {
-  a.addEventListener('click', function(e) {
-    var href = a.getAttribute('href');
-    if (href && href.length > 1 && href.indexOf('#') === 0) {
-      e.preventDefault();
-      var t = document.querySelector(href);
-      if (t) lenis.scrollTo(t, { offset: -100 });
-    }
-  });
-});
-
-// ============ MOBILE MENU ============
-var mobileMenu = document.getElementById('mobileMenu');
-var menuToggle = document.getElementById('menuToggle');
-var menuClose = document.getElementById('menuClose');
-if (menuToggle) menuToggle.addEventListener('click', function() {
-  mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
-  mobileMenu.classList.add('opacity-100');
-  gsap.from('.mobile-link', { y: 25, opacity: 0, stagger: 0.07, duration: 0.4, ease: 'power3.out', delay: 0.1 });
-});
-function closeMobile() {
-  mobileMenu.classList.add('opacity-0', 'pointer-events-none');
-  mobileMenu.classList.remove('opacity-100');
-}
-if (menuClose) menuClose.addEventListener('click', closeMobile);
-document.querySelectorAll('.mobile-link').forEach(function(l) { l.addEventListener('click', closeMobile); });
-
-// ============ LUCIDE ICONS ============
-lucide.createIcons();
-
-// ============ IMAGE LAZY ============
-document.querySelectorAll('img').forEach(function(i) { if (i.complete) i.classList.add('loaded'); });
-
 // ─── Router ───
 var pages = document.querySelectorAll('.page');
 var pageMeta = {
@@ -564,112 +1243,64 @@ var pageMeta = {
   '/services': { title:'Services — AvaLimo | Houston Limo & Chauffeur Service', desc:'Airport transfers, corporate travel, wedding limo, event transportation & more. Houston\'s premium chauffeur service — 24/7.' },
   '/fleet': { title:'Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans', desc:'Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston\'s finest luxury fleet for any occasion.' },
   '/book': { title:'Book a Ride — AvaLimo | Online Reservation', desc:'Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.' },
-  '/deposit': { title:'Pay Deposit — AvaLimo | Secure Your Booking', desc:'Secure your AvaLimo reservation with a deposit. Refundable with 24-hour cancellation. Pay online via Square.' },
-  '/blog': { title:'Blog — AvaLimo | Houston Limo Service Insights & Tips', desc:'Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston\'s premier chauffeur service.' },
+  '/blog': { title:'Blog — AvaLimo | Houston Limo Service Insights & Tips', desc:'Travel tips, airport guides, wedding advice & more from Houston\'s premier chauffeur service.' },
   '/flight-status': { title:'Flight Status — AvaLimo | Real-Time Flight Tracker', desc:'Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.' },
   '/contact': { title:'Contact — AvaLimo | Houston Limo Service', desc:'Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.' },
   '/faq': { title:'FAQ — AvaLimo | Frequently Asked Questions', desc:'Answers to common questions about booking, pricing, cancellations & more.' },
   '/policy': { title:'Policy — AvaLimo | Company Policy', desc:'AvaLimo company policy: booking, cancellation, refund & privacy terms.' },
-  '/deposit': { title:'Pay Online — AvaLimo | Secure Payment Portal', desc:'Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.' },
-  '/sugar-land-limo': { title:'Sugar Land Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Sugar Land, TX. Airport transfers to IAH & Hobby, corporate travel, weddings — 24/7. Book online.' },
-  '/the-woodlands-limo': { title:'The Woodlands Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in The Woodlands, TX. IAH airport transfers, concert transportation, corporate travel — 24/7.' },
-  '/katy-limo': { title:'Katy Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Katy, TX. Airport transfers, Energy Corridor corporate travel, weddings & events — 24/7.' },
-  '/missouri-city-limo': { title:'Missouri City Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Missouri City, TX. Hobby & IAH airport transfers, Medical Center transportation — 24/7.' },
-  '/pearland-limo': { title:'Pearland Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Pearland, TX. Minutes from Hobby Airport, corporate travel to Med Center, weddings & events — 24/7.' },
-  '/galveston-limo': { title:'Galveston Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Galveston, TX. Cruise terminal transfers, beach event transportation, IAH & Hobby airport service — 24/7.' },
-  '/league-city-limo': { title:'League City Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in League City, TX. NASA/Clear Lake area corporate travel, Hobby & IAH airport transfers — 24/7.' },
-  '/baytown-limo': { title:'Baytown Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Baytown, TX. IAH airport transfers, corporate travel for petrochemical industry, weddings & events — 24/7.' },
-  '/spring-limo': { title:'Spring Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Spring, TX. IAH airport transfers (just 15 min), corporate travel, concert transportation — 24/7.' },
-  '/cypress-limo': { title:'Cypress Limo Service — AvaLimo | Premier Chauffeur', desc:'Premium limo service in Cypress, TX. IAH & Hobby airport transfers, corporate travel to Energy Corridor, weddings — 24/7.' },
-  '/houston-airport-limo-service': { title:'Houston Airport Limo Service | IAH & Hobby Transfers | AvaLimo', desc:'Premium airport limo service in Houston. Flat-rate IAH & Hobby transfers with flight tracking, meet & greet, 24/7 availability.' },
+  '/deposit': { title:'Pay Deposit — AvaLimo | Secure Your Reservation', desc:'Secure your AvaLimo reservation with a booking deposit. Fast & secure online payment.' },
+'/houston-airport-limo-service': { title:'Houston Airport Limo Service | IAH & Hobby Airport Transfers', desc:'Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online or call (832) 567-8050.' },
 };
-var blogSlug = null;
+var blogSlug=null;
 function openArticleBySlug(slug){
+  var featured=document.getElementById('blog-featured');
+  if(featured&&featured.getAttribute('data-slug')===slug){
+    window.scrollTo(0,featured.offsetTop-80);
+    return;
+  }
   var cards=document.querySelectorAll('.blog-card[data-slug]');
   for(var i=0;i<cards.length;i++){
     var card=cards[i];
     var content=card.querySelector('.article-content');
     var btn=card.querySelector('.btn');
-    var titleEl=card.querySelector('h3');
     if(card.getAttribute('data-slug')===slug){
-      content.classList.add('open');
-      if(btn) btn.textContent='Hide Article';
-      if(titleEl){var h=document.getElementById('blog-page-title');if(h) h.innerHTML=titleEl.innerHTML;}
+      if(content&&!content.classList.contains('open')){
+        content.classList.add('open');
+        if(btn) btn.textContent='Hide Article';
+      }
     } else {
-      content.classList.remove('open');
+      if(content) content.classList.remove('open');
       if(btn) btn.textContent='Read More';
     }
   }
 }
-function getCurPages(){return document.querySelectorAll('.page');}
-var pageTimer=null;
-function showPage(path,noFade){
-  var curPages=getCurPages();
+function showPage(path){
   var id = 'page-home';
   blogSlug=null;
-  var key = path.replace(/^\//,'');
   if(path==='/services') id='page-services';
   else if(path==='/fleet') id='page-fleet';
   else if(path==='/blog') id='page-blog';
-  else if(path.indexOf('/blog/')===0&&path.length>6){id='page-blog';blogSlug=path.substring(6);key='blog';}
+  else if(path.indexOf('/blog/')===0&&path.length>6){id='page-blog';blogSlug=path.substring(6);}
   else if(path==='/flight-status') id='page-flight';
   else if(path==='/contact') id='page-contact';
   else if(path==='/faq') id='page-faq';
   else if(path==='/policy') id='page-policy';
   else if(path==='/book') id='page-book';
   else if(path==='/deposit') id='page-deposit';
-  else if(path==='/houston-airport'||path==='/houston-airport-limo-service') id='page-houston-airport';
-  // City page aliases (with and without -limo)
-  else if(path==='/sugar-land'||path==='/sugar-land-limo') id='page-sugar-land';
-  else if(path==='/the-woodlands'||path==='/the-woodlands-limo') id='page-woodlands';
-  else if(path==='/katy'||path==='/katy-limo') id='page-katy';
-  else if(path==='/missouri-city'||path==='/missouri-city-limo') id='page-missouri-city';
-  else if(path==='/pearland'||path==='/pearland-limo') id='page-pearland';
-  else if(path==='/galveston'||path==='/galveston-limo') id='page-galveston';
-  else if(path==='/league-city'||path==='/league-city-limo') id='page-league-city';
-  else if(path==='/baytown'||path==='/baytown-limo') id='page-baytown';
-  else if(path==='/spring'||path==='/spring-limo') id='page-spring';
-  else if(path==='/cypress'||path==='/cypress-limo') id='page-cypress';
-  var nextPage=document.getElementById(id);
-  if(!nextPage){
-    fetch('/api/page/'+key).then(function(r){if(!r.ok)return;return r.text();}).then(function(html){
-      if(!html)return;
-      var d=document.createElement('div');d.innerHTML=html;
-      var p=d.querySelector('.page');
-      if(p) document.querySelector('.mobile-cta').before(p);
-      showPage(path,noFade);
-    });
-    return;
-  }
-  curPages=getCurPages();
-  var prevPages=[];
-  for(var i=0;i<curPages.length;i++){if(curPages[i].style.display!='none'&&curPages[i]!==nextPage) prevPages.push(curPages[i]);}
-  if(noFade){
-    for(var i=0;i<curPages.length;i++) curPages[i].style.display='none';
-    nextPage.style.display='block';
-    nextPage.classList.remove('fade-out');
-  } else {
-    prevPages.forEach(function(p){p.classList.add('fade-out');});
-    clearTimeout(pageTimer);
-    pageTimer=setTimeout(function(){
-      for(var i=0;i<curPages.length;i++) curPages[i].style.display='none';
-      nextPage.style.display='block';
-      nextPage.classList.remove('fade-out');
-      setTimeout(function(){window.scrollTo(0,0);},20);
-    },280);
-  }
+  else if(path==='/houston-airport-limo-service') id='page-airport';
+  var featured=document.getElementById('blog-featured');
+  if(featured) featured.style.display=path==='/blog'?'block':(blogSlug&&featured.getAttribute('data-slug')===blogSlug?'block':'none');
+  for(var i=0;i<pages.length;i++) pages[i].style.display='none';
+  document.getElementById(id).style.display='block';
+  window.scrollTo(0,0);
   if(blogSlug) openArticleBySlug(blogSlug);
   // active nav link
-  var links=document.querySelectorAll('#nav ul a, .mobile-link');
+  var links=document.querySelectorAll('.nav-links a');
   for(var i=0;i<links.length;i++){
-    var lh=links[i].getAttribute('href');
-    links[i].classList.toggle('active',lh===path||(path.startsWith('/blog')&&lh==='/blog')||(path.indexOf('-limo')>0&&lh==='/'));
+    links[i].classList.toggle('active',links[i].getAttribute('href')===path);
   }
-  // re-init icons on lazy-loaded pages
-  if(typeof lucide!=='undefined') lucide.createIcons();
   // page meta
   var meta=pageMeta[path]||pageMeta['/'];
-  if(path.startsWith('/blog/')) meta=pageMeta['/blog'];
   document.title=meta.title;
   var descEl=document.querySelector('meta[name="description"]');
   if(descEl) descEl.setAttribute('content',meta.desc);
@@ -681,104 +1312,58 @@ function showPage(path,noFade){
   if(path==='/deposit') setTimeout(initSquareCard,300);
 }
 
-// ─── Nav scroll + progress bar ───
+// ─── Nav scroll ───
 var nav=document.getElementById('nav');
-var lastScroll=0;
-window.addEventListener('scroll',function(){
-  var s=window.scrollY;
-  if(s>100){
-    nav.style.background='rgba(10,10,10,0.85)';
-    nav.style.backdropFilter='blur(20px)';
-    nav.style.borderBottom='1px solid rgba(255,255,255,0.04)';
-  } else {
-    nav.style.background='transparent';
-    nav.style.backdropFilter='none';
-    nav.style.borderBottom='none';
-  }
-  nav.style.transform=s>lastScroll&&s>300?'translateY(-100%)':'translateY(0)';
-  lastScroll=s;
-  var bar=document.getElementById('scrollBar');
-  if(bar){
-    var h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
-    bar.style.width=(window.scrollY/h*100)+'%';
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>60)});
+
+// ─── Hamburger ───
+var hamburger=document.getElementById('hamburger');
+var navLinks=document.getElementById('navLinks');
+hamburger.addEventListener('click',function(){hamburger.classList.toggle('active');navLinks.classList.toggle('open')});
+navLinks.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){hamburger.classList.remove('active');navLinks.classList.remove('open')})});
+
+// ─── Client-side routing ───
+function navigate(path){
+  history.pushState(null,'',path);
+  showPage(path);
+  // Animate fade-ups on new page
+  setTimeout(function(){
+    document.querySelectorAll('#page-'+path.replace('/','')+' .fade-up').forEach(function(el,i){
+      setTimeout(function(){el.classList.add('visible')},i*100);
+    });
+  },50);
+}
+
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a');
+  if(!a) return;
+  var href=a.getAttribute('href');
+  if(href && href.startsWith('/') && !href.startsWith('//')){
+    e.preventDefault();
+    navigate(href);
   }
 });
 
-
+window.addEventListener('popstate',function(){showPage(location.pathname)});
 
 // ─── Initial load ───
-showPage(location.pathname,true);
+showPage(location.pathname);
 setTimeout(function(){
   document.querySelectorAll('.fade-up').forEach(function(el,i){
     setTimeout(function(){el.classList.add('visible')},i*100);
   });
 },100);
 
-// ─── GSAP Scroll Reveals ───
-gsap.registerPlugin(ScrollTrigger);
-document.querySelectorAll('.fade-up').forEach(function(el) {
-  gsap.to(el, {
-    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-    opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', overwrite: 'auto'
+// ─── Scroll animations ───
+var observer=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
   });
-});
-
-// ─── Parallax gold glows ───
-document.querySelectorAll('.gold-glow').forEach(function(g) {
-  gsap.to(g, {
-    scrollTrigger: { trigger: g.parentElement, start: 'top bottom', end: 'bottom top', scrub: 1 },
-    y: -60, ease: 'none'
-  });
-});
-
-// ─── Testimonial carousel ───
-(function(){
-  var track=document.getElementById('testTrack');
-  var dots=document.getElementById('testDots');
-  if(!track||!dots) return;
-  var slides=track.children,len=slides.length,idx=0;
-  for(var i=0;i<len;i++){
-    var d=document.createElement('button');
-    d.className='test-dot'+(i===0?' active':'');
-    d.setAttribute('data-index',i);
-    d.addEventListener('click',function(){go(parseInt(this.getAttribute('data-index')));clearInterval(timer);timer=setInterval(auto,5000);});
-    dots.appendChild(d);
-  }
-  function go(i){
-    idx=(i+len)%len;
-    track.style.transform='translateX(-'+(idx*100)+'%)';
-    dots.querySelectorAll('.test-dot').forEach(function(d,i){d.classList.toggle('active',i===idx)});
-  }
-  var timer=setInterval(auto,5000);
-  function auto(){go(idx+1);}
-})();
-
-// ─── Stat Counter ───
-(function(){
-  var counted=false;
-  var statObserver=new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if(entry.isIntersecting&&!counted){
-        counted=true;
-        document.querySelectorAll('.stat-number').forEach(function(el){
-          var txt=el.textContent.trim();
-          var num=parseFloat(txt.replace(/[^0-9.]/g,''));
-          if(!num) return;
-          var suffix=txt.replace(/[0-9.]/g,'');
-          var step=Math.max(1,Math.floor(num/40));
-          var cur=0;
-          var timer=setInterval(function(){
-            cur+=step;
-            if(cur>=num){cur=num;clearInterval(timer);}
-            el.innerHTML='<span class="count">'+Math.floor(cur)+'</span>'+suffix;
-          },30);
-        });
-        statObserver.disconnect();
-      }
-    });
-  },{threshold:.5});
-  document.querySelectorAll('.stats-bar').forEach(function(el){statObserver.observe(el)});
-})();
+},{threshold:.15});
+document.querySelectorAll('.fade-up').forEach(function(el){observer.observe(el)});
 
 // ─── FAQ accordion ───
 document.addEventListener('click',function(e){
@@ -790,61 +1375,28 @@ document.addEventListener('click',function(e){
 });
 
 // ─── Booking form ───
-document.getElementById('hpFormExpand')&&document.getElementById('hpFormExpand').addEventListener('submit',function(e){
+document.getElementById('bookingForm')&&document.getElementById('bookingForm').addEventListener('submit',function(e){
   e.preventDefault();
-  this.querySelector('button[type="submit"]').disabled=true;
-  var body={
-    name:val('hp-name'),phone:val('hp-phone'),email:val('hp-email'),
-    pickup:val('hp-pickup'),dropoff:val('hp-dropoff'),time:val('hp-time'),
-    vehicle:val('hp-vehicle'),pax:val('hp-pax'),flight:val('hp-flight'),notes:val('hp-notes')
-  };
+  var name=document.getElementById('b-name').value;
+  var phone=document.getElementById('b-phone').value;
+  var body={name:name,phone:phone,email:val('b-email'),pickup:val('b-pickup'),dropoff:val('b-dropoff'),time:val('b-time'),vehicle:val('b-vehicle'),pax:val('b-pax'),notes:val('b-notes')};
   fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
   .then(function(r){return r.json()})
-  .then(function(d){
-    document.getElementById('hpQuoteCard').style.display='none';
-    document.getElementById('hpFormExpand').style.display='none';
-    document.getElementById('hp-thanks').style.display='block';
-  })
-  .catch(function(err){
-    this.querySelector('button[type="submit"]').disabled=false;
-    alert('Error submitting. Please call (832) 567-8050.');
-  }.bind(this));
+  .then(function(d){alert(d.message||'Booking submitted!');this.reset()}.bind(this))
+  .catch(function(err){alert('Error submitting booking. Please call (832) 567-8050.')});
 });
 
-// ─── Quick Booking ───
-function setPickup(loc){
-  document.getElementById('q-pickup').value=loc;
-  document.getElementById('q-pickup').focus();
-}
-function expandForm(){
-  document.getElementById('quoteFormExpand').classList.add('show');
-  document.getElementById('quoteFormExpand').scrollIntoView({behavior:'smooth',block:'start'});
-}
-function hpExpandForm(){
-  document.getElementById('hpFormExpand').classList.add('show');
-  document.getElementById('hpFormExpand').scrollIntoView({behavior:'smooth',block:'start'});
-}
 // ─── Book page form ───
 document.getElementById('bookForm')&&document.getElementById('bookForm').addEventListener('submit',function(e){
   e.preventDefault();
-  this.querySelector('button[type="submit"]').disabled=true;
-  var body={
-    name:val('bk-name'),phone:val('bk-phone'),email:val('bk-email'),
-    pickup:val('q-pickup'),dropoff:val('q-dropoff'),time:val('q-time'),
-    vehicle:val('q-vehicle'),pax:val('bk-pax'),service:val('bk-service'),
-    flight:val('bk-flight'),notes:val('bk-notes')
-  };
+  var body={name:val('bk-name'),phone:val('bk-phone'),email:val('bk-email'),pickup:val('bk-pickup'),dropoff:val('bk-dropoff'),time:val('bk-time'),vehicle:val('bk-vehicle'),pax:val('bk-pax'),service:val('bk-service'),flight:val('bk-flight'),notes:val('bk-notes')};
   fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
   .then(function(r){return r.json()})
   .then(function(d){
-    document.getElementById('quoteCard').style.display='none';
-    document.getElementById('quoteFormExpand').style.display='none';
+    document.getElementById('bookForm').style.display='none';
     document.getElementById('bk-thanks').style.display='block';
   })
-  .catch(function(err){
-    this.querySelector('button[type="submit"]').disabled=false;
-    alert('Error submitting. Please call (832) 567-8050.');
-  }.bind(this));
+  .catch(function(err){alert('Error submitting. Please call (832) 567-8050.')});
 });
 
 // ─── Contact form ───
@@ -884,97 +1436,17 @@ function sendChat(){
 
 function botReply(msg){
   var m=msg.toLowerCase();
-  function w(word){return new RegExp('\\b'+word+'\\b','i').test(m);}
+  function w(word){return new RegExp('\\b'+word+'\\b').test(m);}
   function p(phrase){return m.includes(phrase);}
-  function a(words){return words.some(function(x){return p(x)||w(x);});}
   var reply='';
-  // ─── Booking ───
-  if(p('car seat')||p('child seat')||p('baby seat')||p('booster'))
-    reply='Yes, we provide car seats and booster seats free of charge. Just mention it when you book and we\'ll have one installed and ready.';
-  else if(p('how do i book')||p('how to book')||p('how can i book')||p('book a ride')||p('make a reservation'))
-    reply='Booking is easy! Head to <a href="/book" style="color:#C8A861">avalimo.net/book</a>, fill in your trip details, and we\'ll confirm within minutes. Or call (832) 567-8050 for instant help.';
-  else if(a(['book','ride','reservation','booking'])&&!a(['cancel','refund','deposit']))
-    reply='You can book online at <a href="/book" style="color:#C8A861">our booking page</a> or call (832) 567-8050. We typically confirm within 5-10 minutes during business hours!';
-  // ─── Pricing ───
-  else if(p('how much')||p('how much does it cost')||p('what is the price'))
-    reply='Pricing depends on the vehicle and distance. Sedans start around $85, SUVs from $110, Sprinters from $160. We offer flat rates — no surge pricing ever. <a href="/book" style="color:#C8A861">Get a custom quote</a> or call (832) 567-8050.';
-  else if(w('price')||w('cost')||w('rate')||w('fare')||w('cheap')||w('expensive'))
-    reply='We offer transparent flat-rate pricing — no surge fees, no hidden charges. Sedans start at $85, SUVs at $110, Sprinters at $160. <a href="/book" style="color:#C8A861">Get your quote</a> or call (832) 567-8050.';
-  // ─── Airport ───
-  else if(p('how early')||p('what time should i')&&(p('airport')||p('iah')||p('hobby')))
-    reply='For domestic flights, arrive at IAH 2 hours early; for international, 3 hours. Hobby is smaller — 90 minutes is usually plenty. We track your flight and adjust pickup if delays occur.';
-  else if(a(['airport','iah','hobby','flight','layover','connecting']))
-    reply='We cover both IAH and Hobby airports with complimentary flight tracking. Your chauffeur monitors your flight in real-time and adjusts for delays. Book at <a href="/book" style="color:#C8A861">avalimo.net/book</a>';
-  // ─── Fleet ───
-  else if(p('s class vs escalade')||p('which vehicle')||p('what should i choose')||p('recommend'))
-    reply='For 1-3 passengers we recommend the Mercedes S-Class (executive luxury). For 4-6 the Cadillac Escalade (spacious SUV). For groups of 7-14 the Mercedes Sprinter. <a href="/fleet" style="color:#C8A861">View our fleet</a>';
-  else if(w('s-class')||w('sclass')||w('mercedes')||p('sedan'))
-    reply='The Mercedes S-Class seats up to 3 passengers. It\'s our executive sedan — quiet, refined, perfect for airport transfers and corporate travel. <a href="/fleet" style="color:#C8A861">View details</a>';
-  else if(w('escalade')||w('suv')||w('cadillac'))
-    reply='The Cadillac Escalade seats up to 6 passengers. Spacious luxury SUV with a panoramic sunroof — great for groups, families, and nights out. <a href="/fleet" style="color:#C8A861">View details</a>';
-  else if(w('sprinter')||w('van')||w('bus')||w('group')&&w('vehicle'))
-    reply='The Mercedes Sprinter seats up to 14 passengers with high ceilings and reclining seats. Perfect for weddings, corporate groups, and wine tours. <a href="/fleet" style="color:#C8A861">View details</a>';
-  else if(a(['fleet','vehicle','car','suv','sedan']))
-    reply='Our fleet: Mercedes S-Class (3 pax), Cadillac Escalade (6 pax), and Mercedes Sprinter (14 pax). All impeccably maintained. <a href="/fleet" style="color:#C8A861">View the full fleet</a>';
-  // ─── Cancellation / Policy ───
-  else if(w('cancel')||w('refund')||w('deposit')||p('change my')||p('modify'))
-    reply='You can cancel or modify up to 24 hours before pickup for a full refund. Late cancellations may incur a fee. See our <a href="/policy" style="color:#C8A861">Policy page</a> for full details.';
-  // ─── Weddings ───
-  else if(a(['wedding','bride','groom','bridal','wedding party']))
-    reply='Congratulations! We offer Mercedes S-Class for the couple and Sprinters/Escalades for the wedding party. Book at least 2-3 months ahead for peak season. <a href="/book" style="color:#C8A861">Inquire now</a>';
-  // ─── Corporate ───
-  else if(a(['corporate','business','meeting','executive','office','client']))
-    reply='We offer corporate accounts with consolidated monthly billing. Perfect for client transportation, executive travel, and team off-sites. <a href="/book" style="color:#C8A861">Set up corporate account</a>';
-  // ─── Events ───
-  else if(a(['concert','event','game','sports','astros','rockets','texans','concert']))
-    reply='We service all Houston venues: NRG Stadium, Toyota Center, Minute Maid Park, Cynthia Woods Pavilion, Smart Financial Centre, and more. No surge pricing for event nights!';
-  // ─── Wine tours / Groups ───
-  else if(a(['wine','brewery','tour','hill country','winery']))
-    reply='Our Sprinter vans are perfect for wine tours and brewery crawls. Safe, social, and customized to your group. BYOB-friendly! <a href="/book" style="color:#C8A861">Plan your tour</a>';
-  else if(a(['group','party','bachelorette','bachelor','birthday','prom','quince']))
-    reply='We handle groups of all sizes! Our Sprinter (up to 14 pax) is perfect for bachelorettes, proms, birthday parties, and group nights out. BYOB-friendly and fully reclining seats.';
-  // ─── Hours / Contact ───
-  else if(a(['hour','available','24','late','early','midnight','open']))
-    reply='We operate 24/7 — 365 days a year. Late night flight? Early morning pickup? We\'re always available. Book anytime at <a href="/book" style="color:#C8A861">avalimo.net/book</a>';
-  else if(p('phone')||p('call')||p('contact')||p('reach')||p('number')||p('email'))
-    reply='Call or text: <strong>(832) 567-8050</strong>. Email: adam@avalimo.net. We\'re available 24/7 and respond fast!';
-  // ─── Payment ───
-  else if(a(['pay','payment','credit','card','cash','tip','deposit']))
-    reply='We accept all major credit cards. A booking deposit secures your reservation. Payment is handled securely online. Tipping is appreciated but never required.';
-  // ─── Service area ───
-  else if(a(['sugar land','katy','woodlands','missouri city','pearland','cypress','heights','downtown','area','houston']))
-    reply='We serve all of Greater Houston including IAH, Hobby, Downtown, The Galleria, Medical Center, Sugar Land, Katy, The Woodlands, Missouri City, Pearland, and more. Where do you need a ride?';
-  else if(a(['austin','san antonio','dallas','galveston','college station','beaumont','corpus']))
-    reply='We primarily operate in the Houston area. For long-distance trips to Austin, San Antonio, Dallas, or elsewhere, we can provide a quote — just <a href="/book" style="color:#C8A861">submit a booking request</a> or call (832) 567-8050 and we\'ll check availability for you.';
-  // ─── Drivers ───
-  else if(a(['driver','chauffeur','licensed','insured','background','safety','covid']))
-    reply='Every AvaLimo chauffeur is fully licensed, insured, background-checked, and professionally trained. All vehicles are sanitized before every ride.';
-  // ─── Compare / why us ───
-  else if(a(['uber','lyft','taxi','rideshare','vs','compare','difference','better']))
-    reply='Unlike rideshares, we offer: flight tracking, no surge pricing, professional chauffeurs, guaranteed vehicle quality, meet & greet service, and consistent luxury — every time.';
-  // ─── Greetings ───
-  else if(w('hello')||w('hi')||w('hey')||w('good morning')||w('good evening')||w('yo')||w('sup'))
-    reply='Hey there! I\'m the AvaLimo assistant. Ask me anything about booking, pricing, our fleet, airport transfers, corporate travel, or weddings. How can I help?';
-  // ─── Help ───
-  else if(a(['help','what can you','what do you','option','service','offer']))
-    reply='I can help with: booking a ride, pricing & quotes, fleet info, airport transfers (IAH/Hobby), corporate accounts, weddings & events, group transportation, wine tours, and our cancellation policy. Just ask!';
-  // ─── Fallback with suggestion ───
-  else {
-    var suggestions=[
-      'booking a ride',
-      'pricing',
-      'airport transfers',
-      'our fleet',
-      'weddings',
-      'corporate travel'
-    ];
-    var s=suggestions[Math.floor(Math.random()*suggestions.length)];
-    reply='I\'m not sure I understood that. Try asking about <strong>'+s+'</strong>! Or call us at (832) 567-8050 for immediate help.';
-  }
-
-  // Append phone CTA unless reply already has the number
-  if(reply.indexOf('567-8050')===-1)
-    reply+='<br><br>&#128222; <a href="tel:+18325678050" style="color:#C8A861;text-decoration:underline">Call (832) 567-8050</a> for immediate help.';
+  if(p('car seat')||p('child seat')||p('baby seat')||p('booster')) reply='Yes, we offer car seats and booster seats upon request. Just let us know when you book and we\'ll have one installed and ready for you.';
+  else if(w('book')||w('ride')||w('reservation')) reply='You can book online at <a href="/book" style="color:#D4AF37">our booking page</a> or call (832) 567-8050. We confirm within minutes!';
+  else if(w('price')||w('cost')||w('rate')||w('fare')) reply='Our rates start at $100 for sedans and SUVs. Pricing depends on vehicle and distance. <a href="/book" style="color:#D4AF37">Get a free quote</a> or call (832) 567-8050.';
+  else if(w('airport')||w('iah')||w('hobby')||w('flight')) reply='We serve both IAH and Hobby airports with flight tracking included. We monitor your flight so we\'re always on time. Book at <a href="/book" style="color:#D4AF37">avalimo.net/book</a>';
+  else if(w('fleet')||w('vehicle')||w('car')||w('s-class')||w('escalade')||w('sprinter')) reply='Our fleet: Mercedes S-Class (3 pax), Cadillac Escalade (6 pax), and Mercedes Sprinter (14 pax). <a href="/fleet" style="color:#D4AF37">View the full fleet</a>';
+  else if(w('cancel')||w('refund')||w('deposit')) reply='You can cancel up to 24 hours before for a full refund. See our <a href="/policy" style="color:#D4AF37">Policy page</a> for details.';
+  else if(w('hello')||w('hi')||w('hey')) reply='Hello! How can I help you today? You can ask about booking, pricing, our fleet, airport transfers, or anything else!';
+  else reply='Thanks for your message! For quick help, call us at (832) 567-8050 or <a href="/book" style="color:#D4AF37">book online here</a>. How else can I assist?';
 
   var msgs=document.getElementById('chatMessages');
   var d=document.createElement('div');
@@ -982,6 +1454,13 @@ function botReply(msg){
   d.innerHTML=reply;
   msgs.appendChild(d);
   msgs.scrollTop=msgs.scrollHeight;
+}
+
+// ─── Blog article toggle ───
+function toggleArticle(btn){
+  var content=btn.parentElement.querySelector('.article-content');
+  content.classList.toggle('open');
+  btn.textContent=content.classList.contains('open')?'Hide Article':'Read More';
 }
 
 // ─── Flight Tracking ───
@@ -1044,7 +1523,7 @@ function updateDepositPresets(val){
 function processSquarePayment(){
   var btn=document.getElementById('dep-pay-btn');
   var amount=document.getElementById('dep-amount').value;
-  if(!amount||parseFloat(amount)<=0){alert('Enter a valid amount.');return;}
+  if(!amount||parseFloat(amount)<=0){alert('Enter a valid deposit amount.');return;}
   var name=document.getElementById('dep-name').value.trim();
   if(!name){alert('Enter the cardholder name.');return;}
   if(!sqCard){alert('Square is loading. Please wait.');return;}
@@ -1062,1408 +1541,127 @@ function processSquarePayment(){
           source_id:res.token,
           amount:cents,
           name:name,
-          email:document.getElementById('dep-email').value,
-          ref:document.getElementById('dep-ref').value
+          email:document.getElementById('dep-email').value
         })
       }).then(function(r){return r.json()}).then(function(d){
         document.getElementById('dep-processing').style.display='none';
         if(d.status==='ok'){
           document.querySelector('.pay-fields').style.display='none';
-          document.getElementById('dep-thanks-msg').textContent='$'+amount+' received. '+d.message;
+          document.getElementById('dep-thanks-msg').textContent='Payment of $'+amount+' received. '+d.message;
           document.getElementById('dep-thanks').style.display='block';
         } else {
-          btn.disabled=false;btn.textContent='Try Again';
+          btn.disabled=false;btn.textContent='Pay Deposit';
           var errEl=document.getElementById('sq-errors');
           errEl.textContent=d.message||'Payment failed. Try again.';
           errEl.style.display='block';
         }
       }).catch(function(){
-        btn.disabled=false;btn.textContent='Try Again';
+        btn.disabled=false;btn.textContent='Pay Deposit';
         document.getElementById('dep-processing').style.display='none';
         alert('Network error. Please try again.');
       });
     } else {
-      btn.disabled=false;btn.textContent='Try Again';
+      btn.disabled=false;btn.textContent='Pay Deposit';
       document.getElementById('dep-processing').style.display='none';
       var errEl=document.getElementById('sq-errors');
       errEl.textContent=res.errors&&res.errors[0]?res.errors[0].detail:'Card information is invalid.';
       errEl.style.display='block';
     }
   }).catch(function(e){
-    btn.disabled=false;btn.textContent='Try Again';
+    btn.disabled=false;btn.textContent='Pay Deposit';
     document.getElementById('dep-processing').style.display='none';
     console.error('Tokenize error:',e);
   });
 }
-
-// ─── Exit-Intent Popup ───
-var exitShown=false;
-function showExitPopup(){
-  if(exitShown) return;
-  exitShown=true;
-  document.getElementById('exitPopup').classList.add('show');
-}
-function closeExitPopup(){
-  document.getElementById('exitPopup').classList.remove('show');
-}
-document.addEventListener('mouseleave',function(e){
-  if(e.clientY<=0&&!exitShown) showExitPopup();
-});
 </script>
 </body>
 </html>"""
 
-PAGE_CONTENT = {
-    "": r'''
-<div class="page" id="page-home">
-
-<section class="hero">
-  <div class="hero-bg"><div class="hero-grid"></div></div>
-  <div class="hero-moving"><span></span><span></span><span></span></div>
-  <div class="container">
-    <div class="hero-text">
-      <div class="badge"><span class="dot"></span> Houston's Premier Chauffeur Service</div>
-      <h1>Houston Premier <span class="gold">Limo Service</span></h1>
-      <p class="subheadline" style="font-size:18px;color:var(--text2);max-width:520px">Arrive in Absolute Luxury. Houston's most trusted chauffeur service for IAH & Hobby airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.</p>
-      <div class="hero-btns">
-        <a href="/book" class="btn btn-gold">Book Houston Airport Transfer</a>
-        <a href="/fleet" class="btn btn-outline">View Fleet</a>
-        <a href="tel:+18325678050" class="btn btn-outline">Call (832) 567-8050</a>
-      </div>
-    </div>
-    <div class="hero-image">
-      <div class="glow"></div>
-      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly" width="550" height="550" class="float-anim">
-    </div>
-  </div>
-</section>
-
-<section class="stats-bar">
-  <div class="container">
-    <div class="stats-grid">
-      <div class="stat-item fade-up" style="transition-delay:0.1s"><div class="stat-number">500+</div><div class="stat-label">Happy Clients</div></div>
-      <div class="stat-item fade-up" style="transition-delay:0.2s"><div class="stat-number">4.9★</div><div class="stat-label">Avg Rating</div></div>
-      <div class="stat-item fade-up" style="transition-delay:0.3s"><div class="stat-number">24/7</div><div class="stat-label">Available</div></div>
-      <div class="stat-item fade-up" style="transition-delay:0.4s"><div class="stat-number">$0</div><div class="stat-label">Surge Fees</div></div>
-    </div>
-  </div>
-</section>
-
-<section class="section" style="background:var(--bg2)">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="subtitle">About Us</div>
-      <h2>Houston's Trusted <span class="gold">Limo Service</span></h2>
-    </div>
-    <div class="fade-up" style="max-width:900px;margin:0 auto;color:var(--text2);line-height:1.9;font-size:16px">
-      <p>AvaLimo has been Houston's premier chauffeur service since 2013. We combine old-world professionalism with modern convenience to deliver a flawless transportation experience every time.</p>
-      <p>We <strong>track your flight in real-time</strong> so we're always there when you land — early, delayed, or on time. Our <strong>flat-rate pricing means zero surge fees</strong>, ever. Every chauffeur is fully vetted, licensed, and trained to provide white-glove service. And our fleet is immaculately maintained, from the Mercedes S-Class sedan to the Cadillac Escalade SUV and Mercedes Sprinter passenger van.</p>
-      <p style="text-align:center;margin-top:28px">
-        <a href="/book" class="btn btn-gold">Book Houston Airport Transfer</a>
-        <a href="/contact" class="btn btn-outline" style="margin-left:12px">Get a Quote</a>
-        <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="subtitle">Our Fleet</div>
-      <h2>Choose Your <span class="gold">Vehicle</span></h2>
-      <p>Select from our meticulously maintained fleet of luxury vehicles. Every ride is immaculately cleaned and prepared for your arrival.</p>
-    </div>
-    <div class="fleet-grid">
-      <div class="fleet-card fade-up" style="transition-delay:0.1s">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="AvaLimo Mercedes S-Class luxury sedan chauffeur service Houston" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Mercedes S-Class</h3>
-          <div class="capacity">&#9679; Up to 3 passengers</div>
-          <p>The pinnacle of executive comfort. Leather seating, ambient lighting, whisper-quiet cabin — perfect for airport transfers and corporate travel.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
-        </div>
-      </div>
-      <div class="fleet-card fade-up" style="transition-delay:0.2s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="AvaLimo Cadillac Escalade luxury SUV chauffeur service Houston" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Cadillac Escalade</h3>
-          <div class="capacity">&#9679; Up to 6 passengers</div>
-          <p>Spacious luxury SUV ideal for groups, families, or when you need extra room. Premium leather, entertainment system, and panoramic sunroof.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
-        </div>
-      </div>
-      <div class="fleet-card fade-up" style="transition-delay:0.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="AvaLimo Mercedes Sprinter passenger van group transportation Houston" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Mercedes Sprinter</h3>
-          <div class="capacity">&#9679; Up to 14 passengers</div>
-          <p>The ultimate group vehicle. High ceilings, plush reclining seats, ambient lighting, and premium sound system. Perfect for weddings and tours.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
-        </div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:40px"><a href="/fleet" class="btn btn-outline">View Full Fleet &rarr;</a></div>
-  </div>
-</section>
-
-<section class="section" style="background:var(--bg2)">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="subtitle">Services</div>
-      <h2>Every Occasion, <span class="gold">Covered</span></h2>
-      <p>From airport pickups to weddings, we provide premium transportation for every occasion across Houston.</p>
-    </div>
-    <div class="services-grid">
-      <div class="service-card fade-up" style="transition-delay:0.1s"><div class="icon"><i data-lucide="plane"></i></div><h3>Airport Transfers</h3><p>IAH &amp; Hobby Airport. Flight tracking included, meet &amp; greet with luggage assistance.</p></div>
-      <div class="service-card fade-up" style="transition-delay:0.2s"><div class="icon"><i data-lucide="briefcase"></i></div><h3>Corporate Travel</h3><p>Impress clients with punctual, professional chauffeur service across the Energy Corridor and Galleria.</p></div>
-      <div class="service-card fade-up" style="transition-delay:0.3s"><div class="icon"><i data-lucide="heart"></i></div><h3>Wedding Limo</h3><p>Red-carpet service, complimentary champagne, and flexible timing for photo stops. Make your day unforgettable.</p></div>
-      <div class="service-card fade-up" style="transition-delay:0.4s"><div class="icon"><i data-lucide="music"></i></div><h3>Events &amp; Nights Out</h3><p>Concerts at Toyota Center, Astros games, prom, galas — safe, stylish transportation for every occasion.</p></div>
-      <div class="service-card fade-up" style="transition-delay:0.5s"><div class="icon"><i data-lucide="sparkles"></i></div><h3>Bachelorette &amp; Parties</h3><p>BYOB-friendly Sprinter vans for the bride tribe, birthday bashes, and group nights out in Houston.</p></div>
-      <div class="service-card fade-up" style="transition-delay:0.6s"><div class="icon"><i data-lucide="wine"></i></div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wine tours and Houston craft brewery crawls. Safe, social, and completely customized.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="subtitle">Testimonials</div>
-      <h2>What Our Clients <span class="gold">Say</span></h2>
-    </div>
-    <div class="test-carousel fade-up">
-      <div class="test-track" id="testTrack">
-        <div class="test-card">
-          <div class="stars">★★★★★</div>
-          <p>"Service was impeccable. Our chauffeur was professional and the car was spotless."</p>
-          <div class="author"><div class="avatar">JR</div><div><div class="name">James R.</div><div class="title">Airport Transfer</div></div></div>
-        </div>
-        <div class="test-card">
-          <div class="stars">★★★★★</div>
-          <p>"Best limo service in Houston! On time, very polite, and the vehicle was amazingly comfortable."</p>
-          <div class="author"><div class="avatar">SM</div><div><div class="name">Sarah M.</div><div class="title">Corporate Client</div></div></div>
-        </div>
-        <div class="test-card">
-          <div class="stars">★★★★★</div>
-          <p>"From easy booking to arrival — everything was perfect. Thank you AvaLimo!"</p>
-          <div class="author"><div class="avatar">MB</div><div><div class="name">Michael B.</div><div class="title">Wedding</div></div></div>
-        </div>
-      </div>
-      <div class="test-dots" id="testDots"></div>
-    </div>
-  </div>
-</section>
-
-<section class="section reviews-section">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="subtitle">Reviews</div>
-      <h2>What Google <span class="gold">Says</span></h2>
-      <p>Our clients consistently rate us 5 stars for quality, punctuality, and service.</p>
-    </div>
-    <div class="reviews-summary fade-up">
-      <div class="avg-rating">5.0 <span>/ 5</span></div>
-      <div class="big-stars">★★★★★</div>
-      <div class="total-reviews">Based on Google reviews</div>
-    </div>
-    <div class="reviews-grid fade-up">
-      <div class="rev-card">
-        <div class="rev-stars">★★★★★</div>
-        <p>"Incredible service from start to finish. The vehicle was immaculate and our driver was professional and courteous. Will definitely use again!"</p>
-        <div class="rev-author">— David M.</div>
-        <div class="rev-date">2 weeks ago</div>
-      </div>
-      <div class="rev-card">
-        <div class="rev-stars">★★★★★</div>
-        <p>"Best airport transfer experience I've ever had. Flight was delayed and they were still waiting when I arrived. So glad I found AvaLimo."</p>
-        <div class="rev-author">— Jennifer K.</div>
-        <div class="rev-date">1 month ago</div>
-      </div>
-      <div class="rev-card">
-        <div class="rev-stars">★★★★★</div>
-        <p>"Used them for my wedding — absolutely perfect. The S-Class was stunning and the chauffeur helped with everything. Couldn't recommend more."</p>
-        <div class="rev-author">— Michael &amp; Sarah T.</div>
-        <div class="rev-date">3 weeks ago</div>
-      </div>
-    </div>
-    <div class="rev-cta fade-up">
-      <p>Love AvaLimo? Help others discover us by leaving a review on Google.</p>
-      <a href="https://g.page/r/CVgUaFV7t4-8EBM/review" target="_blank" rel="noopener" class="btn btn-gold google-icon">&#9733; Write a Review on Google</a>
-    </div>
-  </div>
-</section>
-
-<section class="section booking-section">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="subtitle">Book Now</div>
-      <h2>Ready to <span class="gold">Ride?</span></h2>
-      <p>Book online in 30 seconds — or call (832) 567-8050</p>
-    </div>
-    <div class="booking-wrap fade-up">
-      <div class="quote-card" id="hpQuoteCard">
-        <h3><i data-lucide="search" style="width:18px;height:18px"></i> Quick Booking</h3>
-        <div class="booking-form" style="margin-bottom:16px">
-          <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-          <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-          <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-          <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-        </div>
-        <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue <i data-lucide="chevron-down" style="width:16px;height:16px"></i></button>
-      </div>
-      <form class="booking-form quote-form-expand" id="hpFormExpand">
-        <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-        <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-        <div><label>Email</label><input type="email" id="hp-email"></div>
-        <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-        <div><label>Flight Number (optional)</label><input type="text" id="hp-flight" placeholder="e.g. UA1234"></div>
-        <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-        <div class="full" style="text-align:center;margin-top:8px">
-          <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-        </div>
-      </form>
-      <div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-        <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-        <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-        <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-</div>''',
-    "services": r'''<div class="page" id="page-services">
-<div class="page-header"><div class="container"><h1>Our <span class="gold">Services</span></h1><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="services-grid" style="max-width:900px;margin:0 auto">
-      <div class="service-card fade-up"><div class="icon"><i data-lucide="plane" class="w-6 h-6"></i></div><h3>Airport Transfers</h3><p>Professional IAH &amp; Hobby transfers with real-time flight tracking, meet &amp; greet, and luggage assistance. We monitor your flight so we're always on time.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon"><i data-lucide="briefcase" class="w-6 h-6"></i></div><h3>Corporate Travel</h3><p>Executive transportation for business meetings, client entertainment, and team travel. Impress with punctuality and professionalism.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon"><i data-lucide="heart" class="w-6 h-6"></i></div><h3>Wedding Transportation</h3><p>Make your entrance and exit unforgettable. White glove service for the wedding party, family, and guests. Photo-worthy arrivals.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.3s"><div class="icon"><i data-lucide="music" class="w-6 h-6"></i></div><h3>Concerts &amp; Events</h3><p>Toyota Center, Shell Energy Stadium, 713 Music Hall, NRG — arrive in style and skip the parking hassle. We'll be waiting when the show ends.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.4s"><div class="icon"><i data-lucide="trophy" class="w-6 h-6"></i></div><h3>Sporting Events</h3><p>Astros, Rockets, Texans, Dynamo, Dash — tailgate in luxury and leave the driving to us. Door-to-door service for game day.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.5s"><div class="icon"><i data-lucide="graduation-cap" class="w-6 h-6"></i></div><h3>Prom &amp; Quinceañera</h3><p>Safe, stylish transportation for life's milestone celebrations. Stretch limos, SUVs, and Sprinter vans available.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.6s"><div class="icon"><i data-lucide="sparkles" class="w-6 h-6"></i></div><h3>Bachelorette &amp; Parties</h3><p>BYOB-friendly Sprinter vans and party buses for the bride tribe, birthday bashes, and group nights out in Houston.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.7s"><div class="icon"><i data-lucide="wine" class="w-6 h-6"></i></div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wine tours and Houston brewery crawls. Safe, social, and completely customized to your group.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.8s"><div class="icon"><i data-lucide="bus" class="w-6 h-6"></i></div><h3>Group Transportation</h3><p>Corporate offsites, conventions, weddings, and large parties. Mercedes Sprinter vans seat up to 14 in full luxury comfort.</p></div>
-    </div>
-  </div>
-</section>
-</div>''',
-    "fleet": r'''<div class="page" id="page-fleet">
-<div class="page-header"><div class="container"><h1>Our <span class="gold">Fleet</span></h1><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="fleet-grid">
-      <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="AvaLimo Mercedes S-Class luxury sedan chauffeur service Houston" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Mercedes S-Class</h3>
-          <div class="capacity">&#9679; Up to 3 passengers</div>
-          <p>The pinnacle of executive comfort. Features leather seating, ambient lighting, and a quiet cabin — perfect for airport transfers and corporate travel.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
-        </div>
-      </div>
-      <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="AvaLimo Cadillac Escalade luxury SUV chauffeur service Houston" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Cadillac Escalade</h3>
-          <div class="capacity">&#9679; Up to 6 passengers</div>
-          <p>Our most popular choice. Spacious, powerful, and packed with premium amenities. Ideal for groups, families, and VIP airport transfers.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
-        </div>
-      </div>
-      <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="AvaLimo Mercedes Sprinter passenger van group transportation Houston" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Mercedes Sprinter</h3>
-          <div class="capacity">&#9679; Up to 14 passengers</div>
-          <p>The ultimate group vehicle. High ceilings, plush reclining seats, ambient lighting, and premium sound system. Perfect for weddings, tours, and groups.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-</div>''',
-    "contact": r'''<div class="page" id="page-contact" style="display:none">
-<div class="page-header"><div class="container"><h1>Get in <span class="gold">Touch</span></h1><p>We're here 24/7 to help with your transportation needs.</p></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="contact-grid">
-      <div class="contact-info fade-up">
-        <h3>Let's Talk <span class="gold">Luxury</span></h3>
-        <p>Whether you need an airport pickup at 3 AM or a wedding procession for 50 guests, we've got you covered. Call, email, or stop by — we're always ready.</p>
-        <div class="contact-item"><div class="ci-icon"><i data-lucide="phone" class="w-5 h-5 text-gold"></i></div><div><div class="ci-text"><a href="tel:+18325678050">(832) 567-8050</a></div><div class="ci-sub">24/7 Dispatch &bull; Always answered</div></div></div>
-        <div class="contact-item"><div class="ci-icon"><i data-lucide="mail" class="w-5 h-5 text-gold"></i></div><div><div class="ci-text"><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></div><div class="ci-sub">We reply within 1 hour</div></div></div>
-        <div class="contact-item"><div class="ci-icon"><i data-lucide="map-pin" class="w-5 h-5 text-gold"></i></div><div><div class="ci-text">Houston, Texas</div><div class="ci-sub">Serving the entire Greater Houston area</div></div></div>
-      </div>
-      <div class="fade-up" style="transition-delay:.2s">
-        <form class="booking-form" id="contactForm">
-          <div class="full"><label>Your Name</label><input type="text" id="c-name" required></div>
-          <div><label>Email</label><input type="email" id="c-email" required></div>
-          <div><label>Phone</label><input type="tel" id="c-phone"></div>
-          <div class="full"><label>Subject</label><select id="c-subject"><option>General Inquiry</option><option>Book a Ride</option><option>Corporate Account</option><option>Event Quote</option><option>Partnership</option></select></div>
-          <div class="full"><label>Message</label><textarea id="c-message" rows="5" required></textarea></div>
-          <div class="full"><button type="submit" class="btn btn-gold">Send Message</button></div>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
-</div>''',
-    "faq": r'''<div class="page" id="page-faq" style="display:none">
-<div class="page-header"><div class="container"><h1>Frequently Asked <span class="gold">Questions</span></h1></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="faq-list">
-      <div class="faq-item fade-up"><div class="faq-q"><span>How do I book a ride?</span><span class="arrow">&#9660;</span></div><div class="faq-a">You can book online using our booking form, call us at (832) 567-8050, or email adam@avalimo.net. Online booking is fastest — just fill in your details and we'll confirm within minutes.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.1s"><div class="faq-q"><span>Do you service both IAH and Hobby airports?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes! We cover both George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports. We also serve all surrounding areas including Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring, and Cypress.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.2s"><div class="faq-q"><span>Do you track flights for airport pickups?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Absolutely. We monitor your flight in real-time so we're always there when you land — even if your flight is early or delayed. No extra charge.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.3s"><div class="faq-q"><span>What vehicles do you offer?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Our fleet includes the Mercedes S-Class (up to 3 passengers), Cadillac Escalade SUV (up to 6 passengers), and Mercedes Sprinter (up to 14 passengers). All vehicles are immaculately maintained.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.4s"><div class="faq-q"><span>How much does it cost?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Pricing depends on vehicle type, distance, and duration. We offer transparent flat-rate pricing with zero surge fees. Contact us for a quote — we typically respond within minutes.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.5s"><div class="faq-q"><span>Do you require a deposit?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, a booking deposit is required to secure your reservation. The deposit is fully refundable with 24-hour cancellation notice. See our Company Policy for details.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.6s"><div class="faq-q"><span>Can I cancel or modify my booking?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. You can cancel or modify your booking up to 24 hours before the scheduled pickup time for a full refund. Late cancellations may incur a fee.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.7s"><div class="faq-q"><span>Are your drivers licensed and insured?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. Every AvaLimo chauffeur is fully licensed, insured, and professionally trained. We conduct thorough background checks and regular vehicle inspections.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.8s"><div class="faq-q"><span>Do you provide car seats for children?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, we can provide car seats upon request. Please let us know at the time of booking so we can ensure proper installation.</div></div>
-    </div>
-  </div>
-</section>
-</div>''',
-    "policy": r'''<div class="page" id="page-policy" style="display:none">
-<div class="page-header"><div class="container"><h1>Company <span class="gold">Policy</span></h1></div></div>
-<section class="section" style="padding-top:0"><div class="container" style="max-width:800px">
-<div class="fade-up" style="color:var(--text2);font-size:15px;line-height:1.9">
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Booking &amp; Reservations</h3>
-<p>All reservations require a valid credit card to secure the booking. A deposit may be required for certain services or peak periods. By booking with AvaLimo, you agree to these terms.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Cancellation Policy</h3>
-<p>Cancellations made 24 hours or more before the scheduled pickup time receive a full refund. Cancellations within 24 hours may incur a charge of up to 50% of the fare. No-shows are charged in full.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Waiting Time</h3>
-<p>Airport pickups include 60 minutes of complimentary waiting time from the moment your flight lands. For all other pickups, a 15-minute grace period is included. Additional waiting time is billed at $1 per minute.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Smoking &amp; Cleanliness</h3>
-<p>All AvaLimo vehicles are strictly non-smoking (including vaping). A cleaning fee of $250 will be charged for any violations. Please treat our vehicles with respect.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Liability</h3>
-<p>AvaLimo is fully insured and licensed. We are not responsible for items left in vehicles. Clients are responsible for any damage caused to vehicles during the rental period.</p>
-<h3 style="color:var(--text);margin:32px 0 12px;font-size:20px">Privacy</h3>
-<p>We respect your privacy. Personal information collected during booking is used solely for providing our services and will never be shared with third parties without your consent.</p>
-</div></div></section>
-</div>''',
-    "book": r'''<div class="page" id="page-book">
-<div class="page-header"><div class="container"><h1>Book Your <span class="gold">Ride</span></h1><p>Get a price in seconds — then complete your booking.</p></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="booking-wrap fade-up" style="max-width:700px">
-
-      <!-- Quick Booking Form -->
-      <div class="quote-card" id="quoteCard">
-        <h3><i data-lucide="search" style="width:18px;height:18px;display:inline;vertical-align:middle"></i> Quick Booking</h3>
-        <div class="quote-presets">
-          <button type="button" onclick="setPickup('IAH - George Bush Intercontinental')"><i data-lucide="plane" style="width:12px;height:12px;display:inline;vertical-align:middle"></i> IAH Airport</button>
-          <button type="button" onclick="setPickup('HOU - William P. Hobby')"><i data-lucide="plane" style="width:12px;height:12px;display:inline;vertical-align:middle"></i> Hobby Airport</button>
-          <button type="button" onclick="setPickup('Downtown Houston')"><i data-lucide="building-2" style="width:12px;height:12px;display:inline;vertical-align:middle"></i> Downtown</button>
-          <button type="button" onclick="setPickup('The Galleria')"><i data-lucide="shopping-bag" style="width:12px;height:12px;display:inline;vertical-align:middle"></i> Galleria</button>
-          <button type="button" onclick="setPickup('Texas Medical Center')"><i data-lucide="stethoscope" style="width:12px;height:12px;display:inline;vertical-align:middle"></i> Med Center</button>
-        </div>
-        <div class="booking-form" style="margin-bottom:16px">
-          <div class="full"><label>Pickup Location</label><input type="text" id="q-pickup" placeholder="Address, airport, hotel..." required></div>
-          <div class="full"><label>Dropoff Location</label><input type="text" id="q-dropoff" placeholder="Address, airport, venue..." required></div>
-          <div><label>Date &amp; Time</label><input type="datetime-local" id="q-time" required></div>
-          <div><label>Vehicle</label><select id="q-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-        </div>
-        <button class="btn btn-primary" onclick="expandForm()" id="getQuoteBtn" style="width:100%;font-size:16px;padding:16px">Continue <i data-lucide="chevron-down" style="width:16px;height:16px;vertical-align:middle"></i></button>
-      </div>
-
-      <!-- Full Form -->
-      <div class="quote-form-expand" id="quoteFormExpand">
-        <form class="booking-form" id="bookForm">
-          <div class="full"><label>Full Name</label><input type="text" id="bk-name" required></div>
-          <div><label>Phone</label><input type="tel" id="bk-phone" required></div>
-          <div><label>Email</label><input type="email" id="bk-email"></div>
-          <div><label>Service Type</label><select id="bk-service"><option>Airport Transfer</option><option>Corporate Travel</option><option>Wedding</option><option>Event / Concert</option><option>Night Out</option><option>Wine Tour</option><option>Other</option></select></div>
-          <div><label>Passengers</label><input type="number" id="bk-pax" min="1" max="14" value="1"></div>
-          <div><label>Flight # (if airport)</label><input type="text" id="bk-flight" placeholder="e.g. UA1234"></div>
-          <div class="full"><label>Special Requests</label><textarea id="bk-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-          <div class="full" style="margin-top:8px">
-            <button type="submit" class="btn btn-gold" style="width:100%;font-size:16px;padding:16px">Submit Booking Request</button>
-          </div>
-        </form>
-        <div class="trust-row">
-          <span><i data-lucide="shield-check" style="width:12px;height:12px;display:inline;vertical-align:middle;color:var(--gold)"></i> No surge pricing</span>
-          <span><i data-lucide="clock" style="width:12px;height:12px;display:inline;vertical-align:middle;color:var(--gold)"></i> Confirm in minutes</span>
-          <span><i data-lucide="plane" style="width:12px;height:12px;display:inline;vertical-align:middle;color:var(--gold)"></i> Flight tracking included</span>
-          <span><i data-lucide="phone" style="width:12px;height:12px;display:inline;vertical-align:middle;color:var(--gold)"></i> <a href="tel:+18325678050" style="color:var(--text3);text-decoration:underline">(832) 567-8050</a></span>
-        </div>
-      </div>
-
-      <!-- Thank you -->
-      <div id="bk-thanks" style="display:none;text-align:center;padding:60px 20px">
-        <div style="font-size:64px;margin-bottom:20px">&#10003;</div>
-        <h2 style="font-size:28px;margin-bottom:12px">Booking <span class="gold">Submitted</span></h2>
-        <p style="color:var(--text2);max-width:450px;margin:0 auto">We've received your request. Our team will confirm your ride within minutes. You can also call us anytime at <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a>.</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-</div>''',
-    "blog": r'''<div class="page" id="page-blog">
-<div class="page-header"><div class="container">{% if featured_post %}<h1 id="blog-page-title">{{ featured_post.title|safe }}</h1><p>{{ featured_post.summary|safe }}</p>{% else %}<h1 id="blog-page-title">Our <span class="gold">Blog</span></h1><p>Insights, guides, and news from Houston's premier limo service.</p>{% endif %}</div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="blog-grid">
-      {% for post in blog_posts %}
-      <div class="blog-card fade-up" data-slug="{{ post.slug }}"{% if post.delay is defined and post.delay and post.delay != "0s" %} style="transition-delay:{{ post.delay }}"{% endif %}>
-        <div class="thumb">{{ post.emoji|safe }}</div>
-        <div class="body">
-          <div class="cat">{{ post.cat }}</div>
-          <h3>{{ post.title|safe }}</h3>
-          <p>{{ post.summary|safe }}</p>
-          <a href="/blog/{{ post.slug }}" class="btn btn-outline" style="padding:8px 20px;font-size:12px">Read More</a>
-          <div class="meta"><span>{{ post.date }}</span><span>&#8226; {{ post.read }}</span></div>
-          <div class="article-content">{{ post.content|safe }}</div>
-        </div>
-      </div>
-      {% endfor %}
-      <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "itemListElement": [
-          {% for post in blog_posts %}
-          {
-            "@type": "Article",
-            "position": {{ loop.index }},
-            "headline": {{ post.title|tojson }},
-            "description": {{ post.summary|tojson }},
-            "datePublished": {{ post.date|tojson }},
-            "author": { "@type": "Organization", "name": "AvaLimo" },
-            "publisher": { "@type": "Organization", "name": "AvaLimo" },
-            "url": "https://avalimo.net/blog/{{ post.slug }}"
-          }{% if not loop.last %},{% endif %}
-          {% endfor %}
-        ]
-      }
-      </script>
-    </div>
-    <div style="text-align:center;margin-top:40px"><p style="color:var(--text3);font-size:13px">New articles published weekly. <a href="/contact" style="color:var(--gold)">Suggest a topic</a>.</p></div>
-</div>''',
-    "flight-status": r'''<div class="page" id="page-flight">
-<div class="page-header"><div class="container"><h1>Flight <span class="gold">Status</span></h1><p>Track your flight in real-time. We monitor every flight for our airport transfer clients.</p></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="flight-card fade-up">
-      <h3 style="margin-bottom:8px;font-size:20px">Track a Flight</h3>
-      <p style="color:var(--text2);font-size:14px;margin-bottom:20px">Enter the airline and flight number to see real-time status.</p>
-      <div class="input-group">
-        <input type="text" id="flight-input" placeholder="e.g. UA1234, AA5678, WN901" style="text-transform:uppercase">
-        <button class="btn btn-gold" onclick="trackFlight()">Track</button>
-      </div>
-      <div class="flight-result" id="flight-result">
-        <div class="fr-row"><span class="fr-label">Flight</span><span class="fr-value" id="fr-number">UA 1234</span></div>
-        <div class="fr-row"><span class="fr-label">Airline</span><span class="fr-value" id="fr-airline">United Airlines</span></div>
-        <div class="fr-row"><span class="fr-label">Route</span><span class="fr-value" id="fr-route">ORD &rarr; IAH</span></div>
-        <div class="fr-row"><span class="fr-label">Scheduled</span><span class="fr-value" id="fr-sched">2:30 PM</span></div>
-        <div class="fr-row"><span class="fr-label">Estimated</span><span class="fr-value" id="fr-est">2:28 PM</span></div>
-        <div class="fr-row"><span class="fr-label">Status</span><span class="fr-value"><span class="status-badge on-time" id="fr-status">&#9679; On Time</span></span></div>
-        <div class="fr-row"><span class="fr-label">Gate</span><span class="fr-value" id="fr-gate">C12</span></div>
-        <div class="fr-row"><span class="fr-label">Terminal</span><span class="fr-value" id="fr-term">C</span></div>
-        <div class="fr-map" id="fr-map">
-          <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#C8A861" stop-opacity=".1"/><stop offset="50%" stop-color="#C8A861" stop-opacity=".4"/><stop offset="100%" stop-color="#C8A861" stop-opacity=".1"/></linearGradient></defs>
-            <rect width="400" height="160" fill="rgba(200,168,97,.03)" rx="12"/>
-            <path d="M30 130 Q80 80 130 90 Q180 100 220 70 Q260 40 310 50 Q350 55 370 40" fill="none" stroke="url(#routeGrad)" stroke-width="2" stroke-dasharray="6 4"/>
-            <circle cx="30" cy="130" r="6" fill="#C8A861" opacity=".8"/>
-            <text x="30" y="150" fill="#999" font-size="10" text-anchor="middle">Origin</text>
-            <circle cx="370" cy="40" r="6" fill="#C8A861"/>
-            <text x="370" y="30" fill="#C8A861" font-size="10" text-anchor="middle">IAH</text>
-            <circle cx="220" cy="70" r="4" fill="#C8A861" opacity=".5"/>
-            <text x="220" y="64" fill="#666" font-size="9" text-anchor="middle">&#9992; in flight</text>
-          </svg>
-        </div>
-      </div>
-      <div style="margin-top:20px;padding:16px;background:rgba(200,168,97,.05);border-radius:var(--radius-sm);border:1px solid rgba(200,168,97,.1)">
-        <p style="color:var(--text2);font-size:13px">&#9432; Flight data powered by <a href="https://aviationstack.com" target="_blank" rel="noopener" style="color:var(--gold)">AviationStack</a>. Enter any airline flight number to track live status.</p>
-      </div>
-    </div>
-  </div>
-</section>
-</div>''',
-    "deposit": r'''<div class="page" id="page-deposit"
-     data-sq-app-id="{{ sq_app_id }}"
-     data-sq-loc-id="{{ sq_location_id }}">
-<div class="page-header"><div class="container"><h1>Pay <span class="gold">Online</span></h1><p>Secure your reservation with a deposit or pay your balance.</p></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="deposit-flow fade-up">
-      <div class="deposit-info">
-        <h3><i data-lucide="credit-card" style="width:20px;height:20px;display:inline;vertical-align:middle"></i> Payment Details</h3>
-        <ul>
-          <li><span class="d-icon"><i data-lucide="check-circle" style="width:14px;height:14px;color:var(--gold)"></i></span> Deposits are fully refundable with 24h cancellation</li>
-          <li><span class="d-icon"><i data-lucide="shield" style="width:14px;height:14px;color:var(--gold)"></i></span> Secured by Square — your card never touches our server</li>
-          <li><span class="d-icon"><i data-lucide="mail" style="width:14px;height:14px;color:var(--gold)"></i></span> Receipt emailed to you instantly</li>
-          <li><span class="d-icon"><i data-lucide="banknote" style="width:14px;height:14px;color:var(--gold)"></i></span> No processing fees — what you see is what you pay</li>
-        </ul>
-        <p style="color:var(--text3);font-size:13px;margin-top:20px">Have a question? Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a></p>
-      </div>
-      <div class="deposit-card">
-        <div class="amount-display">
-          <div class="currency">Payment Amount</div>
-          <div class="number">$<input type="text" id="dep-amount" value="100" oninput="updateDepositPresets(this.value)"></div>
-          <div style="color:var(--text3);font-size:13px;margin-top:4px">Deposit — refundable with 24h notice</div>
-        </div>
-        <div class="amount-presets">
-          <button onclick="setDeposit(50)" id="dep-50">$50</button>
-          <button onclick="setDeposit(100)" id="dep-100" class="active">$100</button>
-          <button onclick="setDeposit(250)" id="dep-250">$250</button>
-          <button onclick="setDeposit(500)" id="dep-500">$500</button>
-          <button onclick="setDeposit(1000)" id="dep-1000">$1,000</button>
-          <button onclick="setDeposit(0)" id="dep-custom">Custom</button>
-        </div>
-        <div class="pay-fields">
-          <label>Booking Reference (optional)</label>
-          <input type="text" id="dep-ref" placeholder="e.g. Booking #1234">
-          <label>Cardholder Name</label>
-          <input type="text" id="dep-name" placeholder="John Doe" required>
-          <label>Email for Receipt</label>
-          <input type="email" id="dep-email" placeholder="you@example.com" required>
-          <label>Card Details</label>
-          <div id="square-card" style="padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:16px;min-height:56px"></div>
-          <div id="sq-errors" style="color:#ff6b6b;font-size:13px;margin-bottom:12px;display:none"></div>
-          <button class="btn btn-gold" style="width:100%;justify-content:center;padding:16px;font-size:16px;margin-top:8px" id="dep-pay-btn" onclick="processSquarePayment()">Pay Now</button>
-          <p style="color:var(--text3);font-size:12px;text-align:center;margin-top:16px">&#128274; Secured by Square &bull; No card data stored</p>
-        </div>
-        <div id="dep-processing" style="display:none;text-align:center;padding:40px 20px">
-          <div style="font-size:32px;margin-bottom:16px;animation:spin 1s linear infinite">&#8635;</div>
-          <p style="color:var(--text2)">Processing your payment...</p>
-        </div>
-        <div id="dep-thanks" style="display:none;text-align:center;padding:20px">
-          <div style="font-size:48px;margin-bottom:12px">&#10003;</div>
-          <h3 style="margin-bottom:8px">Payment <span class="gold">Received</span></h3>
-          <p style="color:var(--text2);font-size:14px" id="dep-thanks-msg">Your payment is confirmed. You'll receive a receipt via email shortly.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-</div>''',
-    "houston-airport-limo-service": r'''    <div class="page" id="page-houston-airport">
-    <div class="page-header"><div class="container"><h1>Houston Airport Limo Service — <span class="gold">AvaLimo</span></h1><p>Premium flat-rate transfers to IAH &amp; Hobby Airport with flight tracking.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">IAH &amp; Hobby Airport Transfers</h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">AvaLimo specializes in Houston airport limo service for George Bush Intercontinental (IAH) and William P. Hobby (HOU). We monitor your flight in real time, adjust for delays at no extra charge, and greet you at arrivals with professional signage and luggage assistance.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">Whether you are flying in for business, heading out on vacation, or managing corporate travel for a team, our Mercedes S-Class, Cadillac Escalade and Sprinter fleet provides consistent luxury. Flat-rate pricing means no surge fees — ever.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">What You Get</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>Real-time flight tracking for IAH and Hobby arrivals</li>
-                <li>Meet &amp; greet service at baggage claim</li>
-                <li>Flat-rate, transparent pricing with no surge fees</li>
-                <li>24/7 dispatch — early flights and red-eyes covered</li>
-                <li>Corporate accounts with consolidated billing</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Airport Transfer</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Explore: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/sugar-land-limo">Sugar Land</a> · <a href="/the-woodlands-limo">The Woodlands</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">Downtown to IAH</span><span style="font-weight:600">~30 min</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">Downtown to Hobby</span><span style="font-weight:600">~20 min</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "sugar-land-limo": r'''    <div class="page" id="page-sugar-land">
-    <div class="page-header"><div class="container"><h1>Sugar Land Limo Service — <span class="gold">AvaLimo</span></h1><p>Premium chauffeur service for Sugar Land, Telfair, and the Fort Bend business corridor.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Sugar Land Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Sugar Land sits between IAH and Hobby, making it a natural hub for executives, families, and visitors who demand reliable luxury transportation. AvaLimo provides professional Sugar Land limo service for airport transfers, corporate offices along Highway 59, and celebrations at venues such as the Sugar Land Marriott and Constellation Field.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">Our chauffeurs know the fastest routes through Fort Bend County and deliver the same white-glove service for a 5:00 AM IAH departure or a late-night return from a gala. Every ride is flat-rate, so you never worry about surge pricing.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Sugar Land Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>Early-morning IAH and Hobby airport transfers with flight tracking</li>
-            <li>Corporate travel for offices near Highway 59 and the Galleria</li>
-            <li>Wedding limo service for Sugar Land venues and receptions</li>
-            <li>Nights out and events at Sugar Land Town Square</li>
-            <li>Reliable transport for concerts and games in downtown Houston</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Sugar Land Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~45 min / 48 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~35 min / 30 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "the-woodlands-limo": r'''    <div class="page" id="page-woodlands">
-    <div class="page-header"><div class="container"><h1>The Woodlands Limo Service — <span class="gold">AvaLimo</span></h1><p>Luxury transportation for The Woodlands, Spring, Conroe, and North Houston.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">The Woodlands Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">The Woodlands combines corporate campuses, world-class entertainment, and quiet residential neighborhoods — and AvaLimo connects them all. We provide The Woodlands limo service for executives heading to the ExxonMobil campus, groups attending concerts at Cynthia Woods Mitchell Pavilion, and families flying in and out of IAH.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">With IAH just 25 minutes away, our chauffeurs keep your schedule intact. Every vehicle is immaculately maintained, and our flight-tracking technology means we are ready when you land, even if your flight is early or delayed.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular The Woodlands Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>IAH airport transfers for Woodlands residents and visitors</li>
-            <li>Corporate car service to ExxonMobil and Hughes Landing</li>
-            <li>Concert transportation to Cynthia Woods Mitchell Pavilion</li>
-            <li>Wedding and special-event transport throughout Montgomery County</li>
-            <li>Group Sprinter service for golf outings and corporate retreats</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book The Woodlands Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~25 min / 22 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~45 min / 42 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "katy-limo": r'''    <div class="page" id="page-katy">
-    <div class="page-header"><div class="container"><h1>Katy Limo Service — <span class="gold">AvaLimo</span></h1><p>Executive limo service for Katy, Cinco Ranch, and West Houston.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Katy Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Katy is one of Houston's fastest-growing communities and a gateway to the Energy Corridor. AvaLimo offers Katy limo service for professionals commuting to BP, Shell, and other West Houston energy offices, as well as airport transfers to IAH and Hobby for families in Cinco Ranch and Seven Meadows.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">Whether you are heading to a board meeting, a wedding at a local venue, or a flight before sunrise, our chauffeurs provide on-time, discreet service in a meticulously cleaned luxury vehicle.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Katy Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>Daily corporate travel to the Houston Energy Corridor</li>
-            <li>IAH and Hobby airport transfers for Katy families</li>
-            <li>Wedding limo service for Katy-area venues</li>
-            <li>Group transportation for school events and sports teams</li>
-            <li>Nights out and special occasions in West Houston</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Katy Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~40 min / 42 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~40 min / 35 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "missouri-city-limo": r'''    <div class="page" id="page-missouri-city">
-    <div class="page-header"><div class="container"><h1>Missouri City Limo Service — <span class="gold">AvaLimo</span></h1><p>Premium chauffeur service for Missouri City, Sienna Plantation, and Southwest Houston.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Missouri City Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Missouri City and Sienna Plantation residents are minutes from Hobby Airport and a short drive to the Texas Medical Center. AvaLimo delivers Missouri City limo service for airport transfers, medical appointments, corporate commutes to downtown, and elegant transportation for weddings and special events.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">We understand the value of punctuality for medical visits and early flights. Our flat-rate pricing and 24/7 dispatch mean you can book with confidence any time of day.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Missouri City Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>Hobby Airport transfers just 25 minutes from Missouri City</li>
-            <li>Texas Medical Center appointments and patient transport</li>
-            <li>Corporate travel to downtown and the Galleria</li>
-            <li>Wedding and quinceañera limo service</li>
-            <li>Date nights and events around Southwest Houston</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Missouri City Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~25 min / 18 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~40 min / 40 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "pearland-limo": r'''    <div class="page" id="page-pearland">
-    <div class="page-header"><div class="container"><h1>Pearland Limo Service — <span class="gold">AvaLimo</span></h1><p>Limo service for Pearland, Friendswood, and South Houston.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Pearland Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Pearland's location near Hobby Airport and the Texas Medical Center makes it ideal for frequent flyers and healthcare professionals. AvaLimo provides Pearland limo service for quick Hobby transfers, reliable Medical Center commutes, and stylish transportation for weddings and Pearland Town Center events.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">From a 5:00 AM departure to a post-concert pickup at NRG Stadium, our chauffeurs keep you on schedule with professional, flat-rate service and zero surge fees.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Pearland Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>Hobby Airport transfers only 15 minutes from Pearland</li>
-            <li>Daily Medical Center transportation for patients and staff</li>
-            <li>Corporate travel to downtown Houston and the Port</li>
-            <li>Wedding and reception limo service</li>
-            <li>Event transport for NRG Stadium, Toyota Center, and more</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Pearland Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~15 min / 10 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~40 min / 35 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "galveston-limo": r'''    <div class="page" id="page-galveston">
-    <div class="page-header"><div class="container"><h1>Galveston Limo Service — <span class="gold">AvaLimo</span></h1><p>Luxury transportation for Galveston Island and the Texas Gulf Coast.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Galveston Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Galveston is a top destination for cruises, beach weddings, and coastal conferences. AvaLimo offers Galveston limo service from IAH and Hobby to the Port of Galveston cruise terminal, plus chauffeured transportation for events at Moody Gardens, The Strand, and beachfront venues.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">Traveling with a group? Our Mercedes Sprinter seats up to 14 with luggage space, making it perfect for cruise parties and wedding groups. We track your flight and coordinate ship departure times so your transfer is seamless.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Galveston Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>Cruise terminal transfers to and from the Port of Galveston</li>
-            <li>Beach wedding and reception transportation</li>
-            <li>IAH and Hobby airport transfers for island visitors</li>
-            <li>Corporate transport for conferences at Moody Gardens</li>
-            <li>Nights out and group events on The Strand</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Galveston Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~45 min / 40 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~1 hr 15 min / 70 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "league-city-limo": r'''    <div class="page" id="page-league-city">
-    <div class="page-header"><div class="container"><h1>League City Limo Service — <span class="gold">AvaLimo</span></h1><p>Executive limo service for League City, Clear Lake, and the NASA area.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">League City Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">League City and Clear Lake are home to NASA's Johnson Space Center, aerospace firms, and waterfront communities. AvaLimo provides League City limo service for corporate clients, airport transfers to Hobby and IAH, and luxury transport for weddings and events around Bay Area Houston.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">Our chauffeurs are familiar with security and timing requirements for government and aerospace travelers, and our flat-rate pricing keeps budgeting simple for corporate accounts.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular League City Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>NASA / Johnson Space Center corporate transportation</li>
-            <li>Hobby and IAH airport transfers with flight tracking</li>
-            <li>Galveston cruise terminal transfers through Clear Lake</li>
-            <li>Wedding and event service in League City and Kemah</li>
-            <li>Group Sprinter transport for aerospace teams</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book League City Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~25 min / 20 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~50 min / 50 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "baytown-limo": r'''    <div class="page" id="page-baytown">
-    <div class="page-header"><div class="container"><h1>Baytown Limo Service — <span class="gold">AvaLimo</span></h1><p>Premium chauffeur service for Baytown, La Porte, and East Houston.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Baytown Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Baytown anchors Houston's petrochemical and industrial corridor. AvaLimo delivers Baytown limo service for energy-sector executives, IAH airport transfers, and refined transportation for weddings, galas, and special events throughout East Harris County.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">With IAH only 30 minutes away, our service is ideal for plant managers, visiting clients, and professionals who need reliable early-morning or late-night transport. All rides are flat-rate and chauffeured by vetted professionals.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Baytown Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>IAH airport transfers only 30 minutes from Baytown</li>
-            <li>Corporate travel for petrochemical and industrial clients</li>
-            <li>Executive transport for visiting VIPs and auditors</li>
-            <li>Wedding and gala transportation in East Houston</li>
-            <li>Group service for team offsites and events</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Baytown Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~30 min / 28 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~35 min / 30 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "spring-limo": r'''    <div class="page" id="page-spring">
-    <div class="page-header"><div class="container"><h1>Spring Limo Service — <span class="gold">AvaLimo</span></h1><p>Limo service for Spring, Klein, and North Houston.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Spring Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Spring's location just 15 minutes from George Bush Intercontinental Airport makes it one of the best-connected suburbs for air travel. AvaLimo provides Spring limo service for IAH transfers, corporate travel to The Woodlands and downtown, and concert transportation to Cynthia Woods Mitchell Pavilion.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">Whether you are catching a red-eye, entertaining a client, or heading to a show, our chauffeurs ensure you arrive relaxed and on time. We track every flight and adjust pickup automatically.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Spring Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>IAH Airport transfers just 15 minutes from Spring</li>
-            <li>Corporate travel to The Woodlands and downtown Houston</li>
-            <li>Concert transportation to Cynthia Woods Mitchell Pavilion</li>
-            <li>Wedding and special-event limo service</li>
-            <li>Nights out and group transport for any occasion</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Spring Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~15 min / 10 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~40 min / 35 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "cypress-limo": r'''    <div class="page" id="page-cypress">
-    <div class="page-header"><div class="container"><h1>Cypress Limo Service — <span class="gold">AvaLimo</span></h1><p>Luxury transportation for Cypress, Bridgeland, and Northwest Houston.</p></div></div>
-    <section class="section" style="padding-top:0">
-      <div class="container">
-        <div class="contact-grid" style="grid-template-columns:1fr 1fr;align-items:start">
-          <div class="fade-up">
-            <h2 style="font-size:24px;margin-bottom:16px">Cypress Limo Service by <span class="gold">AvaLimo</span></h2>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:16px">Cypress is one of Houston's most desirable suburbs and a short drive from the Energy Corridor. AvaLimo offers Cypress limo service for airport transfers to IAH and Hobby, corporate travel to West Houston business districts, and elegant wedding and event transportation throughout Northwest Houston.</p>
-            <p style="color:var(--text2);line-height:1.8;margin-bottom:20px">Our fleet gives Cypress residents the same premium experience found in downtown Houston: quiet Mercedes S-Class sedans, spacious Cadillac Escalades, and group-ready Sprinter vans — all backed by 24/7 dispatch.</p>
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:24px">
-              <h3 style="font-size:16px;margin-bottom:12px">Popular Cypress Use Cases</h3>
-              <ul style="color:var(--text2);line-height:1.9;padding-left:20px">
-                <li>IAH and Hobby airport transfers for Cypress families</li>
-            <li>Corporate car service to the Energy Corridor and Galleria</li>
-            <li>Wedding and reception limo service</li>
-            <li>Event and concert transportation across Houston</li>
-            <li>Group Sprinter service for corporate outings and golf trips</li>
-              </ul>
-            </div>
-            <div style="margin-top:4px">
-              <a href="/book" class="btn btn-gold">Book Cypress Limo</a>
-              <a href="tel:+18325678050" class="btn btn-outline" style="margin-left:12px">Call (832) 567-8050</a>
-            </div>
-            <p style="margin-top:20px;font-size:14px;color:var(--text3)">Also see: <a href="/services">Services</a> · <a href="/fleet">Fleet</a> · <a href="/book">Book</a> · <a href="/blog">Blog</a> · <a href="/houston-airport-limo-service">Houston Airport Limo Service</a></p>
-          </div>
-          <div class="fade-up" style="transition-delay:.15s">
-            <div style="background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.04);margin-bottom:20px">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To IAH Airport</span><span style="font-weight:600">~35 min / 35 mi</span></div>
-          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:var(--text2)">To Hobby Airport</span><span style="font-weight:600">~45 min / 40 mi</span></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0"><span style="color:var(--text2)">24/7 Availability</span><span style="font-weight:600;color:var(--gold)">Always</span></div>
-            </div>
-    <div class="quote-card" id="hpQuoteCard">
-  <h3>&#128270; Quick Booking</h3>
-  <div class="booking-form" style="margin-bottom:16px">
-    <div class="full"><label>Pickup Location</label><input type="text" id="hp-pickup" placeholder="Address, airport, hotel..." required></div>
-    <div class="full"><label>Dropoff Location</label><input type="text" id="hp-dropoff" placeholder="Address, airport, venue..." required></div>
-    <div><label>Date &amp; Time</label><input type="datetime-local" id="hp-time" required></div>
-    <div><label>Vehicle</label><select id="hp-vehicle"><option value="Sedan">Sedan (1-3) — Mercedes S-Class</option><option value="SUV">SUV (1-6) — Cadillac Escalade</option><option value="Sprinter">Sprinter (1-14) — Mercedes Sprinter</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="hpExpandForm()" style="width:100%;font-size:16px;padding:16px">Continue &darr;</button>
-</div>
-<form class="booking-form quote-form-expand" id="hpFormExpand">
-  <div class="full"><label>Your Name</label><input type="text" id="hp-name" required></div>
-  <div><label>Phone</label><input type="tel" id="hp-phone" required></div>
-  <div><label>Email</label><input type="email" id="hp-email"></div>
-  <div><label>Passengers</label><input type="number" id="hp-pax" min="1" max="14" value="1"></div>
-  <div class="full"><label>Special Requests</label><textarea id="hp-notes" rows="3" placeholder="Car seats, luggage details, extra stops, etc."></textarea></div>
-  <div class="full" style="text-align:center;margin-top:8px">
-    <button type="submit" class="btn btn-gold" style="font-size:16px;padding:16px 48px">Submit Booking Request</button>
-  </div>
-</form>
-<div id="hp-thanks" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px">&#10003;</div>
-  <h3 style="margin-bottom:8px">Booking <span class="gold">Submitted</span></h3>
-  <p style="color:var(--text2);font-size:14px">We'll confirm your ride shortly. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> for immediate assistance.</p>
-</div>
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>''',
-    "404": r'''<div class="page" id="page-not-found">
-<div class="page-header"><div class="container"><h1>Page Not Found</h1><p>Sorry, we couldn't find the page you were looking for.</p></div></div>
-<section class="section" style="padding-top:0">
-  <div class="container" style="text-align:center">
-    <div class="fade-up" style="max-width:600px;margin:0 auto">
-      <p style="color:var(--text2);font-size:16px;line-height:1.8;margin-bottom:24px">The page may have moved or no longer exists. You can return to our homepage, book a ride, or contact us for help.</p>
-      <a href="/" class="btn btn-gold">Go Home</a>
-      <a href="/book" class="btn btn-outline" style="margin-left:12px">Book a Ride</a>
-      <a href="/contact" class="btn btn-outline" style="margin-left:12px">Contact Us</a>
-    </div>
-  </div>
-</section>
-</div>''',
-}
+@app.route("/index.html")
+@app.route("/index.htm")
+@app.route("/home")
+@app.route("/index")
+def redirect_home():
+    return redirect("/", code=301)
 
 @app.route("/robots.txt")
 def robots_txt():
-        return "User-agent: *\nAllow: /\nSitemap: https://avalimo.net/sitemap.xml", 200, {"Content-Type": "text/plain"}
+    return "User-agent: *\nAllow: /\nSitemap: https://avalimo.net/sitemap.xml", 200, {"Content-Type": "text/plain"}
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-        pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit", "houston-airport-limo-service", "sugar-land-limo", "the-woodlands-limo", "katy-limo", "missouri-city-limo", "pearland-limo", "galveston-limo", "league-city-limo", "baytown-limo", "spring-limo", "cypress-limo"]
-        blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc></url>' for p in BLOG_POSTS if p.get("slug"))
-        urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc></url>' for p in pages)
-        xml = f'''<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    {urls}
-    {blog_urls}
-    </urlset>'''
-        return xml, 200, {"Content-Type": "application/xml"}
-
-@app.route("/api/page/<content_key>")
-def api_page_content(content_key):
-    if content_key not in PAGE_CONTENT:
-        abort(404)
-    return PAGE_CONTENT[content_key]
+    today = "2026-06-08"
+    pages = [
+        ("", today),
+        ("services", today),
+        ("fleet", today),
+        ("book", today),
+        ("blog", today),
+        ("flight-status", today),
+        ("contact", today),
+        ("faq", today),
+        ("policy", today),
+        ("deposit", today),
+        ("houston-airport-limo-service", today),
+    ]
+    # Add blog posts to sitemap
+    for post in BLOG_POSTS:
+        pages.append((f"blog/{post['slug']}", post['date']))
+    
+    urls = "\n".join(f'<url><loc>https://avalimo.net/{p[0]}</loc><lastmod>{p[1]}</lastmod></url>' for p in pages)
+    xml = f'''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{urls}
+</urlset>'''
+    return xml, 200, {"Content-Type": "application/xml"}
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
-        page_meta = {
-            "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "blog": { "title": "Blog — AvaLimo | Houston Limo Service Guides & Travel Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "sugar-land-limo": { "title": "Sugar Land Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Sugar Land, TX. Airport transfers to IAH & Hobby, corporate travel, weddings — 24/7. Book online.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "the-woodlands-limo": { "title": "The Woodlands Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in The Woodlands, TX. IAH airport transfers, concert transportation, corporate travel — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "katy-limo": { "title": "Katy Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Katy, TX. Airport transfers, Energy Corridor corporate travel, weddings & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "missouri-city-limo": { "title": "Missouri City Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Missouri City, TX. Hobby & IAH airport transfers, Medical Center transportation — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "pearland-limo": { "title": "Pearland Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Pearland, TX. Minutes from Hobby Airport, corporate travel to Med Center, weddings & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "galveston-limo": { "title": "Galveston Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Galveston, TX. Cruise terminal transfers, beach event transportation, IAH & Hobby airport service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "league-city-limo": { "title": "League City Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in League City, TX. NASA/Clear Lake area corporate travel, Hobby & IAH airport transfers — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "baytown-limo": { "title": "Baytown Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Baytown, TX. IAH airport transfers, corporate travel for petrochemical industry, weddings & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "spring-limo": { "title": "Spring Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Spring, TX. IAH airport transfers (just 15 min), corporate travel, concert transportation — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "cypress-limo": { "title": "Cypress Limo Service — AvaLimo | Premier Chauffeur", "desc": "Premium limo service in Cypress, TX. IAH & Hobby airport transfers, corporate travel to Energy Corridor, weddings — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-            "houston-airport-limo-service": { "title": "Houston Airport Limo Service | IAH & Hobby Airport Transfers | AvaLimo", "desc": "Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online in 60 seconds. Call (832) 567-8050.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
-        }
-        city_aliases = {
-            "sugar-land": "sugar-land-limo",
-            "the-woodlands": "the-woodlands-limo",
-            "katy": "katy-limo",
-            "missouri-city": "missouri-city-limo",
-            "pearland": "pearland-limo",
-            "galveston": "galveston-limo",
-            "league-city": "league-city-limo",
-            "baytown": "baytown-limo",
-            "spring": "spring-limo",
-            "cypress": "cypress-limo",
-        }
-        legacy_redirects = {
-            "company-policy": "policy",
-            "terms-and-conditions": "policy",
-            "cancellation-policy": "policy",
-            "book-your-ride": "book",
-            "booking-confirmed": "book",
-            "pay-deposit": "deposit",
-        }
-        if path in city_aliases:
-            return redirect(f"/{city_aliases[path]}", 301)
-        if path in legacy_redirects:
-            return redirect(f"/{legacy_redirects[path]}", 301)
+    page_meta = {
+        "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "blog": { "title": "Blog — AvaLimo | Houston Limo Service Guides & Travel Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "deposit": { "title": "Pay Deposit — AvaLimo | Secure Your Reservation", "desc": "Secure your AvaLimo reservation with a booking deposit. Fast & secure online payment.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "houston-airport-limo-service": { "title": "Houston Airport Limo Service | IAH & Hobby Airport Transfers | AvaLimo", "desc": "Premium airport limo service in Houston. Flat-rate transfers to IAH & Hobby Airport. Flight tracking, meet & greet, 24/7 availability. Book online in 60 seconds. Call (832) 567-8050.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "company-policy": { "title": "Company Policy — AvaLimo | Houston Limo Service", "desc": "AvaLimo company policy: booking terms, cancellation rules, refund policy, and privacy practices for Houston limo service.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "terms-and-conditions": { "title": "Terms and Conditions — AvaLimo | Houston Limo Service", "desc": "Read AvaLimo terms and conditions. By booking our Houston limo service, you agree to these policies.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "cancellation-policy": { "title": "Cancellation Policy — AvaLimo | Houston Transportation", "desc": "AvaLimo cancellation policy for Houston limo reservations. Learn about refunds, notice periods, and no-show fees.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "book-your-ride": { "title": "Book Your Ride — AvaLimo | Online Limo Reservation", "desc": "Book your Houston luxury limo ride online in 30 seconds. Airport transfers, corporate travel, weddings, and special events.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "booking-confirmed": { "title": "Booking Confirmed — AvaLimo | Houston Limo Service", "desc": "Your AvaLimo reservation has been received. A confirmation email has been sent with your trip details.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+        "pay-deposit": { "title": "Pay Deposit — AvaLimo | Secure Online Payment", "desc": "Pay your AvaLimo reservation deposit securely online. We accept all major credit cards.", "og_type": "website", "og_image": "https://avalimo.net/static/chauffeur_service.png" },
+    }
+    meta = page_meta.get(path, page_meta[""])
+    canonical = f"https://avalimo.net/{path}" if path else "https://avalimo.net"
+    posts = _get_blog_posts()
+    featured_post = None
+    og_type = meta.get("og_type", "website")
+    og_image = meta.get("og_image", "https://avalimo.net/static/chauffeur_service.png")
+    if path.startswith("blog/") and len(path) > 5:
+        slug = path[5:]
+        for p in posts:
+            if p.get("slug") == slug:
+                meta = {"title": p["title"] + " — AvaLimo", "desc": p.get("summary", "")}
+                canonical = f"https://avalimo.net/blog/{slug}"
+                og_type = "article"
+                og_image = f"https://avalimo.net{p.get('image', '/static/chauffeur_service.png')}"
+                featured_post = p
+                break
+    html = HTML.replace("{{ sq_app_id }}", SQ_APP_ID).replace("{{ sq_location_id }}", SQ_LOCATION_ID).replace("{{ ga_id }}", GA_ID).replace("{{ sc_meta }}", SC_META).replace("{{ fb_pixel }}", FB_PIXEL)
+    html = html.replace("{{ title }}", meta["title"]).replace("{{ meta_desc }}", meta["desc"]).replace("{{ canonical_url }}", canonical).replace("{{ og_type }}", og_type).replace("{{ og_image }}", og_image)
+    return render_template_string(html, blog_posts=posts, featured_post=featured_post)
 
-        meta = None
-        featured_post = None
-        canonical_path = ""
-        og_type = "website"
-        og_image = "https://avalimo.net/static/chauffeur_service.png"
-        content_key = path
 
-        if path.startswith("blog/") and len(path) > 5:
-            slug = path[5:]
-            for p in BLOG_POSTS:
-                if p.get("slug") == slug:
-                    meta = {"title": p["title"] + " — AvaLimo", "desc": p.get("summary", "")}
-                    canonical_path = f"/blog/{slug}"
-                    og_type = "article"
-                    og_image = f"https://avalimo.net{p.get('image', '/static/chauffeur_service.png')}"
-                    content_key = "blog"
-                    featured_post = p
-                    break
-            if meta is None:
-                content_key = "404"
-        elif path in page_meta:
-            meta = page_meta[path]
-            canonical_path = f"/{path}" if path else ""
-        else:
-            content_key = "404"
-
-        if meta is None:
-            meta = {"title": "Page Not Found — AvaLimo", "desc": "Sorry, the page you requested could not be found."}
-            canonical_path = ""
-            og_type = "website"
-            og_image = "https://avalimo.net/static/chauffeur_service.png"
-
-        canonical_url = f"https://avalimo.net{canonical_path}"
-        ctx = {
-            "title": meta["title"],
-            "meta_desc": meta["desc"],
-            "canonical_url": canonical_url,
-            "og_type": og_type,
-            "og_image": og_image,
-            "ga_id": GA_ID,
-            "sc_meta": SC_META,
-            "fb_pixel": FB_PIXEL,
-            "sq_app_id": SQ_APP_ID,
-            "sq_location_id": SQ_LOCATION_ID,
-            "blog_posts": BLOG_POSTS,
-            "featured_post": featured_post,
-        }
-        html = render_template_string(
-            BASE_HEADER + PAGE_CONTENT[content_key] + COMMON_FOOTER,
-            **ctx,
-        )
-        status_code = 404 if content_key == "404" else 200
-        return html, status_code
 @app.route("/api/book", methods=["POST"])
 def book_ride():
     data = request.get_json() or {}
     send_booking_email(data)
-    threading.Thread(target=_fire_n8n_reminder, args=(data,), daemon=True).start()
-    threading.Thread(target=_fire_n8n_review, args=(data,), daemon=True).start()
     return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})
 
 
@@ -2594,154 +1792,260 @@ def square_pay():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-# ── Calendar Reminder Scheduler ────────────────────────────────────────
+# Trip Management API (for Telegram bot integration)
+TRIPS_FILE = os.path.join(os.path.dirname(__file__), "trips.json")
 
-_NOTIFIED_EVENTS: set = set()
+def load_trips():
+    """Load all trips from JSON file"""
+    if os.path.exists(TRIPS_FILE):
+        with open(TRIPS_FILE, 'r') as f:
+            return json.load(f)
+    return []
 
+def save_trips(trips):
+    """Save all trips to JSON file"""
+    with open(TRIPS_FILE, 'w') as f:
+        json.dump(trips, f, indent=2)
 
-def _ensure_google_files():
-    for var, name in [("GOOGLE_CREDENTIALS_B64", "credentials.json"),
-                      ("GOOGLE_TOKEN_B64", "token.json")]:
-        val = os.environ.get(var)
-        if val:
-            path = os.path.join(os.path.dirname(__file__), name)
-            if not os.path.exists(path):
-                with open(path, "wb") as f:
-                    f.write(base64.b64decode(val))
+@app.route("/api/trips", methods=["POST"])
+def create_trip():
+    """Create a new trip from Telegram bot"""
+    data = request.get_json() or {}
+    
+    # Validate required fields
+    required = ['customer_name', 'pickup_location', 'dropoff_location']
+    missing = [f for f in required if not data.get(f)]
+    if missing:
+        return jsonify({
+            "status": "error",
+            "message": f"Missing required fields: {', '.join(missing)}"
+        }), 400
+    
+    # Create trip record
+    trip = {
+        "id": str(uuid.uuid4()),
+        "customer_name": data.get("customer_name", ""),
+        "pickup_location": data.get("pickup_location", ""),
+        "dropoff_location": data.get("dropoff_location", ""),
+        "pickup_time": data.get("pickup_time", ""),
+        "vehicle_type": data.get("vehicle_type", "Standard"),
+        "driver": data.get("driver", "Unassigned"),
+        "status": "pending",
+        "created_at": str(uuid.uuid4().node),  # Simple timestamp
+        "source": "telegram_bot"
+    }
+    
+    # Save to file
+    trips = load_trips()
+    trips.append(trip)
+    save_trips(trips)
+    
+    print(f"\n{'='*50}")
+    print(f"New Trip Created via Telegram Bot")
+    print(f"Customer: {trip['customer_name']}")
+    print(f"Route: {trip['pickup_location']} → {trip['dropoff_location']}")
+    print(f"Time: {trip['pickup_time']}")
+    print(f"Vehicle: {trip['vehicle_type']}")
+    print(f"Driver: {trip['driver']}")
+    print(f"{'='*50}\n")
+    
+    return jsonify({
+        "status": "success",
+        "message": "Trip created successfully",
+        "trip_id": trip["id"]
+    }), 201
 
+@app.route("/api/trips", methods=["GET"])
+def get_trips():
+    """Get all trips (for admin dashboard)"""
+    trips = load_trips()
+    # Sort by created_at descending
+    trips.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    return jsonify({
+        "status": "success",
+        "trips": trips,
+        "count": len(trips)
+    })
 
-def _send_textbelt_sms(phone: str, message: str):
-    key = os.environ.get("TEXTBELT_KEY", "textbelt")
-    payload = json.dumps({"phone": phone, "message": message, "key": key}).encode()
-    try:
-        req = urllib.request.Request(
-            "https://textbelt.com/text",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            result = json.loads(resp.read())
-        if result.get("success"):
-            print(f"SMS sent to {phone} (quota: {result.get('quotaRemaining', '?')})", file=sys.stderr, flush=True)
-        else:
-            print(f"SMS failed to {phone}: {result.get('error', 'unknown')}", file=sys.stderr, flush=True)
-    except Exception as e:
-        print(f"SMS error for {phone}: {e}", file=sys.stderr, flush=True)
+@app.route("/api/trips/<trip_id>", methods=["PUT"])
+def update_trip(trip_id):
+    """Update a trip (change status, driver, etc.)"""
+    data = request.get_json() or {}
+    trips = load_trips()
+    
+    # Find and update trip
+    for trip in trips:
+        if trip["id"] == trip_id:
+            # Update allowed fields
+            if "status" in data:
+                trip["status"] = data["status"]
+            if "driver" in data:
+                trip["driver"] = data["driver"]
+            if "notes" in data:
+                trip["notes"] = data["notes"]
+            
+            save_trips(trips)
+            return jsonify({
+                "status": "success",
+                "message": "Trip updated successfully",
+                "trip": trip
+            })
+    
+    return jsonify({
+        "status": "error",
+        "message": "Trip not found"
+    }), 404
 
-
-def _check_calendar_reminders():
-    try:
-        from google.auth.transport.requests import Request as GAuthReq
-        from google.oauth2.credentials import Credentials
-        from googleapiclient.discovery import build
-    except ImportError:
-        print("Google API libs not installed — calendar reminders disabled", file=sys.stderr, flush=True)
-        return
-
-    creds_file = os.path.join(os.path.dirname(__file__), "credentials.json")
-    token_file = os.path.join(os.path.dirname(__file__), "token.json")
-    if not os.path.exists(creds_file):
-        print("credentials.json not found — calendar reminders disabled", file=sys.stderr, flush=True)
-        return
-
-    creds = None
-    if os.path.exists(token_file):
-        with open(token_file, "rb") as f:
-            creds = pickle.load(f)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            try:
-                creds.refresh(GAuthReq())
-            except Exception as e:
-                print(f"Calendar token refresh failed: {e}", file=sys.stderr, flush=True)
-                return
-        else:
-            print("Calendar not authenticated — run locally to re-auth", file=sys.stderr, flush=True)
-            return
-        with open(token_file, "wb") as f:
-            pickle.dump(creds, f)
-
-    try:
-        service = build("calendar", "v3", credentials=creds)
-    except Exception as e:
-        print(f"Calendar build failed: {e}", file=sys.stderr, flush=True)
-        return
-
-    now = _dt.datetime.now(_dt.timezone.utc)
-    tomorrow_start = (now + _dt.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    tomorrow_end = tomorrow_start + _dt.timedelta(days=1)
-
-    try:
-        events = (
-            service.events()
-            .list(
-                calendarId="primary",
-                timeMin=tomorrow_start.isoformat(),
-                timeMax=tomorrow_end.isoformat(),
-                singleEvents=True,
-                orderBy="startTime",
-            )
-            .execute()
-        )
-    except Exception as e:
-        print(f"Calendar fetch failed: {e}", file=sys.stderr, flush=True)
-        return
-
-    for ev in events.get("items", []):
-        eid = ev.get("id", "")
-        if eid in _NOTIFIED_EVENTS:
-            continue
-        summary = (ev.get("summary") or "").strip()
-        description = (ev.get("description") or "")
-        start = ev.get("start", {})
-
-        phone = ""
-        phone_match = re.search(r"(?:Phone|phone|PHONE)\s*[:=]\s*([+\d\s\-().]+)", description)
-        if phone_match:
-            phone = phone_match.group(1).strip()
-            phone = "+" + re.sub(r"[^\d]", "", phone[1:]) if phone.startswith("+") else re.sub(r"[^\d]", "", phone)
-            if phone and len(phone) < 10:
-                phone = ""
-
-        if not phone:
-            print(f"Skipping '{summary}' — no phone number in description", file=sys.stderr, flush=True)
-            continue
-
-        pickup_str = ""
-        if "dateTime" in start:
-            dt = _dt.datetime.fromisoformat(start["dateTime"].replace("Z", "+00:00"))
-            pickup_str = dt.strftime("%I:%M %p")
-
-        pickup_loc = ""
-        loc_match = re.search(r"(?:Pickup|pickup|PICKUP)\s*(?::|=)\s*(.+)", description)
-        if loc_match:
-            pickup_loc = loc_match.group(1).strip()
-        if not pickup_loc:
-            pickup_loc = ev.get("location", "")
-
-        msg = (
-            f"Hi {summary}, this is AvaLimo confirming your "
-            f"{'pickup at ' + pickup_loc + ' ' if pickup_loc else ''}"
-            f"tomorrow at {pickup_str}. "
-            f"Reply or call (832) 567-8050 for changes."
-        )
-        _send_textbelt_sms(phone, msg)
-        _NOTIFIED_EVENTS.add(eid)
-        print(f"Reminder SMS sent for '{summary}' to {phone}", file=sys.stderr, flush=True)
-
-
-def _reminder_loop():
-    while True:
-        try:
-            _check_calendar_reminders()
-        except Exception as e:
-            print(f"Reminder check error: {e}", file=sys.stderr, flush=True)
-        time.sleep(3600)
-
-
-_ensure_google_files()
-threading.Thread(target=_reminder_loop, daemon=True).start()
-print("Calendar reminder scheduler started", file=sys.stderr, flush=True)
+@app.route("/admin/trips")
+def admin_trips_page():
+    """Admin page to view and manage trips"""
+    trips = load_trips()
+    trips.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    
+    html = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Trip Management | AvaLimo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; }
+        .header { background: #1a1a2e; color: white; padding: 20px; }
+        .header h1 { font-size: 24px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-card h3 { color: #666; font-size: 14px; margin-bottom: 10px; }
+        .stat-card .number { font-size: 32px; font-weight: bold; color: #1a1a2e; }
+        .trip-table { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; color: #333; }
+        tr:hover { background: #f8f9fa; }
+        .status { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-completed { background: #d1ecf1; color: #0c5460; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-confirm { background: #28a745; color: white; }
+        .btn-complete { background: #17a2b8; color: white; }
+        .btn-cancel { background: #dc3545; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .actions { display: flex; gap: 8px; }
+        .empty { text-align: center; padding: 60px; color: #666; }
+        .refresh-btn { background: #1a1a2e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px; }
+        @media (max-width: 768px) {
+            .stats { grid-template-columns: 1fr 1fr; }
+            table { font-size: 12px; }
+            th, td { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 AvaLimo Trip Management</h1>
+    </div>
+    <div class="container">
+        <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Trips</h3>
+                <div class="number">''' + str(len(trips)) + '''</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <div class="number">''' + str(sum(1 for t in trips if t.get('status') == 'pending')) + '''</div>
+            </div>
+            <div class="stat-card">
+                <h3>Confirmed</h3>
+                <div class="number">''' + str(sum(1 for t in trips if t.get('status') == 'confirmed')) + '''</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <div class="number">''' + str(sum(1 for t in trips if t.get('status') == 'completed')) + '''</div>
+            </div>
+        </div>
+        
+        <div class="trip-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Route</th>
+                        <th>Time</th>
+                        <th>Vehicle</th>
+                        <th>Driver</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+'''
+    
+    for trip in trips:
+        status_class = f"status-{trip.get('status', 'pending')}"
+        html += f'''
+                    <tr>
+                        <td><code>{trip['id'][:8]}</code></td>
+                        <td><strong>{trip.get('customer_name', 'N/A')}</strong></td>
+                        <td>{trip.get('pickup_location', 'N/A')} → {trip.get('dropoff_location', 'N/A')}</td>
+                        <td>{trip.get('pickup_time', 'N/A')}</td>
+                        <td>{trip.get('vehicle_type', 'Standard')}</td>
+                        <td>{trip.get('driver', 'Unassigned')}</td>
+                        <td><span class="status {status_class}">{trip.get('status', 'pending').upper()}</span></td>
+                        <td class="actions">
+                            <button class="btn btn-confirm" onclick="updateTrip('{trip['id']}', 'confirmed')">✓</button>
+                            <button class="btn btn-complete" onclick="updateTrip('{trip['id']}', 'completed')">✓✓</button>
+                            <button class="btn btn-cancel" onclick="updateTrip('{trip['id']}', 'cancelled')">✗</button>
+                        </td>
+                    </tr>
+        '''
+    
+    if not trips:
+        html += '''
+                    <tr>
+                        <td colspan="8" class="empty">
+                            <h3>No trips yet</h3>
+                            <p>Trips from Telegram will appear here</p>
+                        </td>
+                    </tr>
+        '''
+    
+    html += '''
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        async function updateTrip(tripId, newStatus) {
+            try {
+                const response = await fetch('/api/trips/' + tripId, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({status: newStatus})
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (e) {
+                alert('Error updating trip');
+            }
+        }
+    </script>
+</body>
+</html>
+'''
+    
+    return render_template_string(html)
 
 
 if __name__ == "__main__":
