@@ -222,28 +222,30 @@ HTML = r"""<!DOCTYPE html>
 <script src="https://web.squarecdn.com/v1/square.js" defer></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0a0a;
-  --bg2:#111;
-  --bg3:#1a1a1a;
-  --card:#151515;
-  --gold:#D4AF37;
-  --gold-light:#E8C84A;
-  --gold-dark:#B8962E;
-  --text:#f0f0f0;
-  --text2:#999;
-  --text3:#666;
-  --radius:16px;
-  --radius-sm:10px;
+  --bg:#0a0a0b;
+  --bg2:#141416;
+  --bg3:#1a1a1d;
+  --card:#1a1a1d;
+  --gold:#c9a463;
+  --gold-light:#e6c88a;
+  --gold-dark:#8c744a;
+  --text:#f2f1ec;
+  --text2:#9a9a9f;
+  --text3:#6c6c72;
+  --radius:6px;
+  --radius-sm:2px;
   --shadow:0 4px 30px rgba(0,0,0,0.5);
-  --maxw:1200px;
+  --maxw:1180px;
+  --hairline:rgba(255,255,255,0.08);
+  --hairline-strong:rgba(255,255,255,0.14);
 }
 /* Square card theming */
 #square-card iframe{color-scheme:dark}
-#square-card{--sq-color-input:#f0f0f0;--sq-color-placeholder:#666;--sq-color-focused:#D4AF37;--sq-color-error:#ff6b6b}
+#square-card{--sq-color-input:#f0f0f0;--sq-color-placeholder:#666;--sq-color-focused:#c9a463;--sq-color-error:#ff6b6b}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:var(--gold);text-decoration:none;transition:color .3s}
@@ -253,122 +255,115 @@ img{max-width:100%;height:auto}
 .gold{color:var(--gold)}
 
 /* ─── Nav ─── */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;transition:all .4s ease;background:rgba(10,10,10,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-nav.scrolled{background:rgba(10,10,10,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:10px 0;box-shadow:0 1px 0 rgba(212,175,55,.1)}
-nav .container{display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#fff;display:flex;align-items:center;gap:10px}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:26px 32px;max-width:var(--maxw);margin:0 auto;transition:all .4s}
+.nav-logo{font-family:'Fraunces',serif;font-weight:500;font-size:22px;letter-spacing:.5px;color:var(--text);text-decoration:none}
 .nav-logo span{color:var(--gold)}
-.nav-links{display:flex;align-items:center;gap:20px;list-style:none}
-.nav-links a{color:#fff;font-size:13px;font-weight:500;letter-spacing:.2px;position:relative;padding:4px 0}
-.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--gold);transition:width .3s}
-.nav-links a:hover,.nav-links a.active{color:#fff}
-.nav-links a:hover::after,.nav-links a.active::after{width:100%}
-.nav-cta{display:flex;align-items:center;gap:12px}
-.nav-cta .phone{color:#fff;font-weight:600;font-size:15px;letter-spacing:-.3px}
-.nav-cta .phone small{color:rgba(255,255,255,.6);font-weight:400;font-size:12px;display:block;text-align:right}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:50px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .3s;font-family:inherit;letter-spacing:.3px}
-.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#111;box-shadow:0 4px 20px rgba(212,175,55,.3)}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,175,55,.4)}
-.btn-outline{background:transparent;border:1.5px solid rgba(212,175,55,.4);color:var(--gold)}
-.btn-outline:hover{background:rgba(212,175,55,.1);border-color:var(--gold)}
-.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);backdrop-filter:blur(10px)}
-.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:13.5px;letter-spacing:.3px;transition:color .25s;padding:4px 0}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:22px}
+.nav-cta .phone{color:var(--text2);font-size:13.5px}
+.nav-cta .phone b{color:var(--text);font-weight:500}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:2px;font-weight:600;font-size:13px;border:none;cursor:pointer;transition:all .3s;font-family:inherit;letter-spacing:.3px;text-decoration:none}
+.btn-gold{background:linear-gradient(180deg,var(--gold-light),var(--gold) 60%,var(--gold-dark));color:#1a1408;box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 8px 20px -8px rgba(201,164,99,.5)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-outline{border:1px solid var(--hairline-strong);color:var(--text);background:rgba(255,255,255,.02);border-radius:2px;padding:15px 28px;font-size:13.5px}
+.btn-outline:hover{border-color:var(--gold);background:rgba(201,164,99,.06)}
 
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;background:none;border:none}
 .hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
 
 /* ─── Hero ─── */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:120px 0 80px}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,175,55,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,255,255,.03) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(212,175,55,.05) 0%,transparent 50%);pointer-events:none;z-index:2}
-.hero::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:1;pointer-events:none}
-.hero-bg{position:absolute;inset:0;z-index:0}
-.hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.4}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:2}
-.hero .container{position:relative;z-index:3;text-align:center}
-.hero-text .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);color:var(--gold);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;letter-spacing:.5px;margin-bottom:32px}
-.hero-text .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-text h1{font-size:clamp(40px,5.5vw,80px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
-.hero-text h1 .line{display:block}
-.hero-text h1 .line:last-child{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold-dark) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-text p{color:var(--text2);font-size:18px;max-width:560px;line-height:1.7;margin-bottom:40px;margin-left:auto;margin-right:auto}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.hero{position:relative;overflow:hidden;padding:64px 32px 110px;background:radial-gradient(ellipse 900px 500px at 82% -10%,rgba(201,164,99,.10) 0%,transparent 60%),radial-gradient(ellipse 700px 400px at 10% 110%,rgba(255,255,255,.05) 0%,transparent 60%),linear-gradient(180deg,#0d0d0f 0%,#0a0a0b 55%,#08080a 100%)}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.035) 48%,transparent 56%);pointer-events:none}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding-top:40px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--gold);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:26px}
+.eyebrow::before{content:'';width:28px;height:1px;background:var(--gold-dark)}
+.hero h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(42px,6vw,74px);line-height:1.02;letter-spacing:-.5px;max-width:780px;color:var(--text)}
+.hero h1 em{font-style:italic;font-weight:400;color:var(--gold-light)}
+.hero-sub{max-width:520px;margin-top:26px;color:var(--text2);font-size:16.5px;line-height:1.65}
+.hero-actions{display:flex;gap:16px;margin-top:42px}
+.btn-primary{background:linear-gradient(180deg,var(--gold-light),var(--gold) 55%,var(--gold-dark));color:#1a1408;font-weight:600;padding:15px 28px;border-radius:2px;text-decoration:none;font-size:13.5px;letter-spacing:.3px;box-shadow:0 10px 30px -10px rgba(201,164,99,.55);display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-primary:hover{transform:translateY(-2px)}
 
-/* ─── Stats Bar ─── */
-.stats-bar{background:var(--bg2);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);padding:40px 0}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
-.stat-item{text-align:center;border-right:1px solid rgba(255,255,255,.05);padding:0 20px}
-.stat-item:last-child{border-right:none}
-.stat-number{font-size:36px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:4px}
-.stat-label{color:var(--text2);font-size:14px;font-weight:500}
+/* ─── Stats Strip ─── */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);margin-top:88px;border-top:1px solid var(--hairline)}
+.stat{padding:26px 0 0;border-right:1px solid var(--hairline)}
+.stat:last-child{border-right:none}
+.stat-num{font-family:'Fraunces',serif;font-size:34px;color:var(--gold-light);font-weight:500}
+.stat-label{color:var(--text3);font-size:12px;letter-spacing:.5px;text-transform:uppercase;margin-top:6px}
 
 /* ─── Sections ─── */
 .section{padding:100px 0}
-.section-header{text-align:center;margin-bottom:64px}
-.section-header .subtitle{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
-.section-header h2{font-size:clamp(32px,4vw,52px);font-weight:800;letter-spacing:-1.5px;line-height:1.15}
-.section-header p{color:var(--text2);max-width:560px;margin:16px auto 0;font-size:16px;line-height:1.7}
+.section-header{max-width:640px;margin-bottom:64px;text-align:center;margin-left:auto;margin-right:auto}
+.section-eyebrow{color:var(--gold);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:16px}
+.section-header .subtitle{color:var(--gold);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:16px}
+.section-header h2{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(30px,3.6vw,42px);color:var(--text);letter-spacing:-.3px}
+.section-header p{color:var(--text2);margin-top:16px;font-size:15.5px;line-height:1.6;max-width:520px;margin-left:auto;margin-right:auto}
 
 /* ─── Fleet ─── */
-.fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.fleet-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s;position:relative}
-.fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(212,175,55,.06)}
-.fleet-card .img-wrap{height:280px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a 0%,#0a0a0a 50%,#1a1a1a 100%);padding:32px;position:relative;overflow:hidden}
-.fleet-card .img-wrap::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 40%,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
-.fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.08) 0%,transparent 70%);pointer-events:none}
-.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s;filter:drop-shadow(0 8px 24px rgba(0,0,0,.5))}
-.fleet-card:hover .img-wrap img{transform:scale(1.08)}
-.fleet-card .tag{position:absolute;top:16px;left:16px;background:rgba(212,175,55,.15);color:var(--gold);padding:4px 14px;border-radius:50px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
-.fleet-card .body{padding:24px}
-.fleet-card .body h3{font-size:20px;font-weight:700;margin-bottom:4px}
-.fleet-card .body .capacity{color:var(--text3);font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.fleet-card .body p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:20px}
-.fleet-card .body .btn{padding:10px 24px;font-size:13px}
+.fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.car-card{position:relative;background:linear-gradient(165deg,var(--bg3) 0%,var(--card) 45%,#101012 100%);border:1px solid var(--hairline);border-radius:6px;overflow:hidden;transition:border-color .35s,transform .35s}
+.car-card:hover{border-color:var(--hairline-strong);transform:translateY(-4px)}
+.car-media{position:relative;height:230px;background:radial-gradient(ellipse 140% 90% at 50% 100%,rgba(0,0,0,.65),transparent 60%),#0d0d0e;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.car-media img{width:100%;height:100%;object-fit:cover;object-position:center;filter:contrast(1.08) saturate(1.05) brightness(0.96);transition:transform .6s ease}
+.car-card:hover .car-media img{transform:scale(1.06)}
+.gloss-sweep{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.16) 46%,rgba(255,255,255,.02) 52%,transparent 66%);transform:translateX(-120%);transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.car-card:hover .gloss-sweep{transform:translateX(20%)}
+.car-badge{position:absolute;top:16px;left:16px;z-index:2;background:rgba(10,10,11,.72);backdrop-filter:blur(6px);border:1px solid var(--hairline-strong);color:var(--gold-light);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;border-radius:2px}
+.car-body{padding:26px}
+.car-body h3{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--text)}
+.car-meta{color:var(--gold);font-size:12.5px;letter-spacing:.3px;margin-top:6px}
+.car-desc{color:var(--text2);font-size:14px;line-height:1.6;margin-top:14px}
+.car-foot{display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding-top:20px;border-top:1px solid var(--hairline)}
+.car-link{color:var(--gold-light);font-size:13px;text-decoration:none;letter-spacing:.3px}
+.car-link:after{content:' →'}
 
 /* ─── Services ─── */
-.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.service-card{background:var(--card);border-radius:var(--radius);padding:36px 28px;border:1px solid rgba(255,255,255,.04);transition:all .4s;text-align:center}
-.service-card:hover{transform:translateY(-6px);border-color:rgba(212,175,55,.15);box-shadow:0 20px 60px rgba(0,0,0,.3),0 0 30px rgba(212,175,55,.04)}
-.service-card .icon{width:64px;height:64px;border-radius:16px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
-.service-card h3{font-size:18px;font-weight:700;margin-bottom:10px}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.service-card{background:linear-gradient(165deg,var(--bg3) 0%,var(--card) 45%,#101012 100%);border-radius:6px;padding:36px 28px;border:1px solid var(--hairline);transition:all .35s;text-align:center}
+.service-card:hover{transform:translateY(-4px);border-color:var(--hairline-strong)}
+.service-card .icon{width:64px;height:64px;border-radius:2px;background:rgba(201,164,99,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;border:1px solid var(--hairline)}
+.service-card h3{font-family:'Fraunces',serif;font-size:20px;font-weight:500;margin-bottom:10px;color:var(--text)}
 .service-card p{color:var(--text2);font-size:14px;line-height:1.7}
 
 /* ─── Testimonials ─── */
-.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.test-card{background:var(--card);border-radius:var(--radius);padding:32px;border:1px solid rgba(255,255,255,.04)}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.test-card{background:linear-gradient(165deg,var(--bg3) 0%,var(--card) 45%,#101012 100%);border-radius:6px;padding:32px;border:1px solid var(--hairline);transition:border-color .35s}
+.test-card:hover{border-color:var(--hairline-strong)}
 .test-card .stars{color:var(--gold);font-size:16px;margin-bottom:16px;letter-spacing:2px}
 .test-card p{color:var(--text2);font-size:15px;line-height:1.7;margin-bottom:20px;font-style:italic}
 .test-card .author{display:flex;align-items:center;gap:12px}
-.test-card .author .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#111}
-.test-card .author .name{font-weight:600;font-size:14px}
+.test-card .author .avatar{width:44px;height:44px;border-radius:2px;background:linear-gradient(180deg,var(--gold-light),var(--gold) 55%,var(--gold-dark));display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;color:#1a1408}
+.test-card .author .name{font-weight:500;font-size:14px;color:var(--text)}
 .test-card .author .title{color:var(--text3);font-size:12px}
 
 /* ─── Booking ─── */
-.booking-section{background:var(--bg2);position:relative;overflow:hidden}
-.booking-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.06) 0%,transparent 60%)}
-.booking-wrap{max-width:800px;margin:0 auto;position:relative;z-index:1}
+.booking-section{background:var(--bg2);position:relative;overflow:hidden;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
+.booking-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,164,99,.06) 0%,transparent 60%)}
+.booking-wrap{max-width:700px;margin:0 auto;position:relative;z-index:1}
 .booking-form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .booking-form .full{grid-column:1/-1}
-.booking-form label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:.3px}
-.booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-size:14px;font-family:inherit;transition:all .3s;outline:none}
-.booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.1)}
+.booking-form label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px;letter-spacing:.3px}
+.booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:14px 18px;border-radius:2px;border:1px solid var(--hairline);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:inherit;transition:all .3s;outline:none}
+.booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{border-color:var(--gold)}
 .booking-form textarea{resize:vertical;min-height:80px}
-.booking-form select option{background:#111;color:var(--text)}
+.booking-form select option{background:var(--bg);color:var(--text)}
 
 /* ─── Contact ─── */
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px}
-.contact-info h3{font-size:28px;font-weight:700;margin-bottom:16px}
+.contact-info h3{font-size:28px;font-weight:500;font-family:'Fraunces',serif;margin-bottom:16px}
 .contact-info p{color:var(--text2);margin-bottom:32px;max-width:400px}
 .contact-item{display:flex;align-items:center;gap:16px;margin-bottom:20px}
-.contact-item .ci-icon{width:48px;height:48px;border-radius:12px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.contact-item .ci-text{font-weight:500}
+.contact-item .ci-icon{width:48px;height:48px;border-radius:2px;background:rgba(201,164,99,.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--hairline)}
+.contact-item .ci-text{font-weight:500;color:var(--text)}
 .contact-item .ci-sub{color:var(--text2);font-size:13px}
 
 
 /* ─── FAQ ─── */
 .faq-list{max-width:800px;margin:0 auto}
 .faq-item{border-bottom:1px solid rgba(255,255,255,.06);padding:0}
-.faq-q{padding:24px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:600;font-size:16px;transition:color .3s;gap:24px}
+.faq-q{padding:24px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:500;font-size:16px;transition:color .3s;gap:24px;color:var(--text)}
 .faq-q:hover{color:var(--gold)}
 .faq-q .arrow{font-size:12px;transition:transform .3s;flex-shrink:0}
 .faq-item.open .faq-q .arrow{transform:rotate(180deg)}
@@ -376,23 +371,22 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .faq-item.open .faq-a{display:block}
 
 /* ─── Footer ─── */
-footer{background:var(--bg2);border-top:1px solid rgba(255,255,255,.04);padding:60px 0 30px}
+footer{background:var(--bg2);border-top:1px solid var(--hairline);padding:60px 0 30px}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
-footer h4{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text);margin-bottom:20px}
+footer h4{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text);margin-bottom:20px}
 footer p{color:var(--text2);font-size:14px;line-height:1.8}
 footer ul{list-style:none}
 footer ul li{margin-bottom:10px}
 footer ul li a{color:var(--text2);font-size:14px;transition:color .3s}
 footer ul li a:hover{color:var(--gold)}
-.footer-bottom{padding-top:24px;border-top:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-bottom{padding-top:24px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
 .footer-bottom p{color:var(--text3);font-size:13px}
 .footer-bottom .areas{color:var(--text3);font-size:12px;text-align:right;max-width:400px}
 
 /* ─── Page Header ─── */
-.page-header{padding:160px 0 60px;text-align:center;position:relative}
-.page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.06) 0%,transparent 60%)}
-.page-header h1{font-size:clamp(36px,4vw,56px);font-weight:900;letter-spacing:-1.5px;position:relative;z-index:1}
-.page-header p{color:var(--text2);max-width:500px;margin:12px auto 0;position:relative;z-index:1}
+.page-header{padding:140px 0 50px;text-align:center;position:relative;background:radial-gradient(ellipse 900px 300px at 50% 0%,rgba(201,164,99,.06) 0%,transparent 60%)}
+.page-header h1,.page-header h2{font-family:'Fraunces',serif;font-size:clamp(32px,3.6vw,44px);font-weight:500;letter-spacing:-.5px;position:relative;z-index:1;color:var(--text)}
+.page-header p{color:var(--text2);max-width:500px;margin:12px auto 0;position:relative;z-index:1;font-size:15px}
 
 /* ─── Animations ─── */
 .fade-up{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.22,1,.36,1)}
@@ -475,60 +469,59 @@ footer ul li a:hover{color:var(--gold)}
 .chat-input-wrap button{width:40px;height:40px;border-radius:50%;background:var(--gold);border:none;color:#111;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s;flex-shrink:0}
 .chat-input-wrap button:hover{transform:scale(1.1)}
 
-/* ─── Mobile responsive additions ─── */
+/* Mobile responsive */
 @media(max-width:900px){
+  .nav-links{display:none;position:fixed;top:0;right:0;bottom:0;width:280px;background:rgba(10,10,11,.98);flex-direction:column;padding:80px 40px;gap:24px;z-index:999;box-shadow:-10px 0 40px rgba(0,0,0,.5)}
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:18px;color:var(--text)}
+  .hamburger{display:flex;z-index:1000}
+  .hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .hamburger.active span:nth-child(2){opacity:0}
+  .hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .nav-cta .phone{display:none}
+  .stat-strip{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2){border-right:none}
+  .fleet-grid,.services-grid,.test-grid{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr;gap:40px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .booking-form{grid-template-columns:1fr}
   .blog-grid{grid-template-columns:1fr}
   .deposit-card .amount-presets{grid-template-columns:repeat(2,1fr)}
   .deposit-card .pay-row{grid-template-columns:1fr}
   .chat-widget{width:calc(100vw - 32px);right:16px;bottom:90px;max-height:70vh}
   .flight-card .input-group{flex-direction:column}
 }
-@media(max-width:900px){
-  .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
-  .stat-item{border-right:none}
-  .fleet-grid,.services-grid,.test-grid{grid-template-columns:1fr}
-  .contact-grid{grid-template-columns:1fr;gap:40px}
-  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
-  .booking-form{grid-template-columns:1fr}
-  .nav-links{display:none;position:fixed;top:0;right:0;bottom:0;width:280px;background:rgba(10,10,10,.98);backdrop-filter:blur(20px);flex-direction:column;padding:80px 40px;gap:24px;z-index:999;box-shadow:-10px 0 40px rgba(0,0,0,.5)}
-  .nav-links.open{display:flex}
-  .nav-links a{font-size:18px}
-  .hamburger{display:flex;z-index:1000}
-  .hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-  .hamburger.active span:nth-child(2){opacity:0}
-  .hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-  .nav-cta .phone{display:none}
-  .nav-cta .btn{padding:10px 20px;font-size:13px}
-}
 @media(max-width:600px){
-  .hero-text h1{font-size:clamp(28px,10vw,36px)}
-  .hero-text p{font-size:15px}
-
+  .hero{padding:40px 24px 80px}
+  .hero h1{font-size:clamp(28px,10vw,36px)}
+  .hero-sub{font-size:15px}
+  .hero-actions{gap:12px}
+  .hero-actions .btn-primary,.hero-actions .btn-outline{padding:12px 22px;font-size:12.5px}
   .section{padding:60px 0}
-  .section-header h2{font-size:clamp(24px,8vw,30px)}
+  .section-header h2{font-size:clamp(24px,7vw,28px)}
   .section-header p{font-size:14px}
-  .stats-grid{gap:16px}
-  .stat-number{font-size:28px}
-  .stat-label{font-size:12px}
+  .stat-strip{margin-top:48px}
+  .stat-num{font-size:26px}
+  .stat-label{font-size:11px}
   .footer-grid{grid-template-columns:1fr;gap:24px}
-
-  .page-header{padding:120px 0 40px}
-  .page-header h1{font-size:clamp(24px,8vw,30px)}
+  .page-header{padding:100px 0 30px}
+  .page-header h1,.page-header h2{font-size:clamp(22px,7vw,28px)}
   .page-header p{font-size:14px}
   .booking-form{padding:0}
-  .fleet-card .img-wrap{height:220px}
+  .car-media{height:180px}
   .blog-card .thumb{height:160px}
-  .btn{padding:12px 24px;font-size:13px}
-  .nav-links{width:100%}
+  .btn,.btn-primary,.btn-outline{padding:12px 22px;font-size:12.5px}
+  .nav-links{width:100%;padding:80px 32px}
 }
 @media(max-width:400px){
-  .hero .btn{padding:10px 20px;font-size:12px;white-space:nowrap}
-  .hero-btns{gap:10px}
+  .btn,.btn-primary,.btn-outline{padding:10px 18px;font-size:12px}
+  .hero-actions{gap:10px;flex-direction:column;align-items:stretch}
   .container{padding:0 16px}
   .section{padding:40px 0}
-  .page-header{padding:100px 0 30px}
+  .page-header{padding:80px 0 24px}
   .nav-links{padding:80px 24px}
   .nav-links a{font-size:16px}
+}
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
@@ -543,57 +536,40 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 
 <!-- ─── Nav ─── -->
 <nav id="nav">
-<div class="container">
   <a href="/" class="nav-logo">Ava<span>Limo</span></a>
   <ul class="nav-links" id="navLinks">
     <li><a href="/">Home</a></li>
     <li><a href="/services">Services</a></li>
     <li><a href="/fleet">Fleet</a></li>
-    <li><a href="/blog">Blog</a></li>
     <li><a href="/flight-status">Flight Status</a></li>
     <li><a href="/contact">Contact</a></li>
     <li><a href="/faq">FAQ</a></li>
-    <li><a href="/deposit">Pay Deposit</a></li>
   </ul>
   <div class="nav-cta">
-    <div class="phone"><a href="tel:+18325678050">(832) 567-8050</a> <small>24/7 Dispatch</small></div>
+    <span class="phone">24/7 Dispatch · <b>(832) 567-8050</b></span>
     <a href="/book" class="btn btn-gold">Book Now</a>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-</div>
 </nav>
 
 <!-- ─── PAGE: HOME ─── -->
 <div class="page" id="page-home">
 
 <section class="hero">
-  <div class="hero-bg">
-    <video autoplay muted loop playsinline poster="/static/chauffeur_service.png">
-      <source src="/static/hero_bg.mp4" type="video/mp4">
-    </video>
-    <div class="hero-grid"></div>
-  </div>
-  <div class="container">
-    <div class="hero-text">
-      <div class="badge"><span class="dot"></span> Houston's Premier Chauffeur Service</div>
-      <h1><span class="line">Arrive in</span> <span class="line">Absolute Luxury</span></h1>
-      <p>Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.</p>
-      <div class="hero-btns">
-        <a href="/book" class="btn btn-gold">Book Your Ride</a>
-        <a href="/fleet" class="btn btn-outline">View Fleet</a>
-      </div>
+  <div class="hero-inner">
+    <div class="eyebrow">Houston's premier chauffeur service</div>
+    <h1>Arrive in<br><em>absolute</em> luxury.</h1>
+    <p class="hero-sub">Airport transfers, corporate travel, weddings and events — chauffeured 24/7 across Greater Houston, with zero surge pricing.</p>
+    <div class="hero-actions">
+      <a href="/book" class="btn-primary">Book your ride</a>
+      <a href="/fleet" class="btn-outline">View the fleet</a>
     </div>
-  </div>
-</section>
 
-<!-- Stats -->
-<section class="stats-bar">
-  <div class="container">
-    <div class="stats-grid">
-      <div class="stat-item fade-up"><div class="stat-number"><span class="counter" data-target="500">0</span>+</div><div class="stat-label">Happy Clients</div></div>
-      <div class="stat-item fade-up"><div class="stat-number"><span class="counter" data-target="49">0</span>★</div><div class="stat-label">Avg Rating</div></div>
-      <div class="stat-item fade-up"><div class="stat-number">24/7</div><div class="stat-label">Available</div></div>
-      <div class="stat-item fade-up"><div class="stat-number">$0</div><div class="stat-label">Surge Fees</div></div>
+    <div class="stat-strip">
+      <div class="stat fade-up"><div class="stat-num"><span class="counter" data-target="500">0</span>+</div><div class="stat-label">Happy clients</div></div>
+      <div class="stat fade-up"><div class="stat-num"><span class="counter" data-target="50">0</span>★</div><div class="stat-label">Average rating</div></div>
+      <div class="stat fade-up"><div class="stat-num">24/7</div><div class="stat-label">Availability</div></div>
+      <div class="stat fade-up"><div class="stat-num">$0</div><div class="stat-label">Surge fees</div></div>
     </div>
   </div>
 </section>
@@ -607,31 +583,49 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
       <p>Select from our meticulously maintained fleet of luxury vehicles. Every ride is immaculately cleaned and prepared for your arrival.</p>
     </div>
     <div class="fleet-grid">
-      <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Executive</h3>
-          <div class="capacity">&#9679; Mercedes S-Class &middot; Up to 3 passengers</div>
-          <p>The pinnacle of executive comfort. Perfect for corporate travel and airport transfers.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
+      <div class="car-card fade-up">
+        <div class="car-media">
+          <span class="car-badge">Executive</span>
+          <img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy">
+          <div class="gloss-sweep"></div>
+        </div>
+        <div class="car-body">
+          <h3>Mercedes S-Class</h3>
+          <div class="car-meta">● Up to 3 passengers</div>
+          <p class="car-desc">The pinnacle of executive comfort — whisper-quiet cabin, ideal for airport transfers and corporate travel.</p>
+          <div class="car-foot">
+            <a href="/book" class="car-link">Book now</a>
+          </div>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>SUV</h3>
-          <div class="capacity">&#9679; Cadillac Escalade &middot; Up to 6 passengers</div>
-          <p>Spacious luxury SUV ideal for groups, families, or when you need extra comfort.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
+      <div class="car-card fade-up" style="transition-delay:.15s">
+        <div class="car-media">
+          <span class="car-badge">Most popular</span>
+          <img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy">
+          <div class="gloss-sweep"></div>
+        </div>
+        <div class="car-body">
+          <h3>Cadillac Escalade</h3>
+          <div class="car-meta">● Up to 6 passengers</div>
+          <p class="car-desc">Spacious, powerful, and built for groups — the fleet's go-to choice for families and VIP transfers.</p>
+          <div class="car-foot">
+            <a href="/book" class="car-link">Book now</a>
+          </div>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
-        <div class="body">
-          <h3>Sprinter</h3>
-          <div class="capacity">&#9679; Mercedes Sprinter &middot; Up to 14 passengers</div>
-          <p>The ultimate group vehicle. High ceilings, plush seating, full luxury amenities.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
+      <div class="car-card fade-up" style="transition-delay:.3s">
+        <div class="car-media">
+          <span class="car-badge">Groups</span>
+          <img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy">
+          <div class="gloss-sweep"></div>
+        </div>
+        <div class="car-body">
+          <h3>Mercedes Sprinter</h3>
+          <div class="car-meta">● Up to 14 passengers</div>
+          <p class="car-desc">High ceilings, reclining seats, and a cabin that feels more like a private lounge than a van.</p>
+          <div class="car-foot">
+            <a href="/book" class="car-link">Book now</a>
+          </div>
         </div>
       </div>
     </div>
@@ -765,31 +759,49 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="fleet-grid">
-      <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy" width="640" height="640"></div>
-        <div class="body">
+      <div class="car-card fade-up">
+        <div class="car-media">
+          <span class="car-badge">Executive</span>
+          <img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan" loading="lazy">
+          <div class="gloss-sweep"></div>
+        </div>
+        <div class="car-body">
           <h3>Mercedes S-Class</h3>
-          <div class="capacity">&#9679; Up to 3 passengers</div>
-          <p>The pinnacle of executive comfort. Features leather seating, ambient lighting, and a quiet cabin — perfect for airport transfers and corporate travel.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
+          <div class="car-meta">● Up to 3 passengers</div>
+          <p class="car-desc">The pinnacle of executive comfort — leather seating, ambient lighting, whisper-quiet cabin. Perfect for airport transfers and corporate travel.</p>
+          <div class="car-foot">
+            <a href="/book" class="car-link">Book now</a>
+          </div>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy" width="640" height="640"></div>
-        <div class="body">
+      <div class="car-card fade-up" style="transition-delay:.15s">
+        <div class="car-media">
+          <span class="car-badge">Most popular</span>
+          <img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV" loading="lazy">
+          <div class="gloss-sweep"></div>
+        </div>
+        <div class="car-body">
           <h3>Cadillac Escalade</h3>
-          <div class="capacity">&#9679; Up to 6 passengers</div>
-          <p>Our most popular choice. Spacious, powerful, and packed with premium amenities. Ideal for groups, families, and VIP airport transfers.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
+          <div class="car-meta">● Up to 6 passengers</div>
+          <p class="car-desc">Spacious, powerful, and packed with premium amenities. The go-to choice for families, groups, and VIP airport transfers.</p>
+          <div class="car-foot">
+            <a href="/book" class="car-link">Book now</a>
+          </div>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy" width="640" height="640"></div>
-        <div class="body">
+      <div class="car-card fade-up" style="transition-delay:.3s">
+        <div class="car-media">
+          <span class="car-badge">Groups</span>
+          <img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van" loading="lazy">
+          <div class="gloss-sweep"></div>
+        </div>
+        <div class="car-body">
           <h3>Mercedes Sprinter</h3>
-          <div class="capacity">&#9679; Up to 14 passengers</div>
-          <p>The ultimate group vehicle. High ceilings, plush reclining seats, ambient lighting, and premium sound system. Perfect for weddings, tours, and groups.</p>
-          <a href="/book" class="btn btn-gold">Book Now</a>
+          <div class="car-meta">● Up to 14 passengers</div>
+          <p class="car-desc">High ceilings, reclining seats, ambient lighting, and premium sound. The ultimate group vehicle for weddings, tours, and events.</p>
+          <div class="car-foot">
+            <a href="/book" class="car-link">Book now</a>
+          </div>
         </div>
       </div>
     </div>
@@ -1007,14 +1019,14 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
         <div class="fr-row"><span class="fr-label">Terminal</span><span class="fr-value" id="fr-term">C</span></div>
         <div class="fr-map" id="fr-map">
           <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#D4AF37" stop-opacity=".1"/><stop offset="50%" stop-color="#D4AF37" stop-opacity=".4"/><stop offset="100%" stop-color="#D4AF37" stop-opacity=".1"/></linearGradient></defs>
-            <rect width="400" height="160" fill="rgba(212,175,55,.03)" rx="12"/>
+            <defs><linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a463" stop-opacity=".1"/><stop offset="50%" stop-color="#c9a463" stop-opacity=".4"/><stop offset="100%" stop-color="#c9a463" stop-opacity=".1"/></linearGradient></defs>
+            <rect width="400" height="160" fill="rgba(201,164,99,.03)" rx="6"/>
             <path d="M30 130 Q80 80 130 90 Q180 100 220 70 Q260 40 310 50 Q350 55 370 40" fill="none" stroke="url(#routeGrad)" stroke-width="2" stroke-dasharray="6 4"/>
-            <circle cx="30" cy="130" r="6" fill="#D4AF37" opacity=".8"/>
+            <circle cx="30" cy="130" r="6" fill="#c9a463" opacity=".8"/>
             <text x="30" y="150" fill="#999" font-size="10" text-anchor="middle">Origin</text>
-            <circle cx="370" cy="40" r="6" fill="#D4AF37"/>
-            <text x="370" y="30" fill="#D4AF37" font-size="10" text-anchor="middle">IAH</text>
-            <circle cx="220" cy="70" r="4" fill="#D4AF37" opacity=".5"/>
+            <circle cx="370" cy="40" r="6" fill="#c9a463"/>
+            <text x="370" y="30" fill="#c9a463" font-size="10" text-anchor="middle">IAH</text>
+            <circle cx="220" cy="70" r="4" fill="#c9a463" opacity=".5"/>
             <text x="220" y="64" fill="#666" font-size="9" text-anchor="middle">&#9992; in flight</text>
           </svg>
         </div>
