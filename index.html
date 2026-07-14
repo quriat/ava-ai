@@ -138,6 +138,9 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 
 /* ─── Hero ─── */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:120px 0 80px}
+.hero-video-wrap{position:absolute;inset:0;z-index:0}
+.hero-video-wrap video{width:100%;height:100%;object-fit:cover}
+.hero-video-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,10,10,.85) 0%,rgba(10,10,10,.5) 40%,rgba(10,10,10,.7) 100%)}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,175,55,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,255,255,.03) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(212,175,55,.05) 0%,transparent 50%);pointer-events:none}
 .hero-bg{position:absolute;inset:0;z-index:0}
 .hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.15}
@@ -175,11 +178,15 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .fleet-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s;position:relative}
 .fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.fleet-card .img-wrap{height:420px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);padding:40px;position:relative;overflow:hidden;border-radius:16px 16px 0 0}
-.fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%);pointer-events:none}
-.fleet-card .img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .6s}
-.fleet-card:hover .img-wrap img{transform:scale(1.08)}
-.fleet-card .tag{position:absolute;top:16px;left:16px;background:rgba(212,175,55,.15);color:var(--gold);padding:4px 14px;border-radius:50px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.fleet-card .img-wrap{height:280px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#1a1a1a 0%,#0d0d0d 50%,#050505 100%);padding:30px;position:relative;overflow:hidden}
+.fleet-card .img-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(200,168,97,.08) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(200,168,97,.03) 0%,transparent 50%);pointer-events:none}
+.fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03) 0%,transparent 30%,transparent 70%,rgba(255,255,255,.02) 100%);pointer-events:none}
+.fleet-card .img-wrap .gloss-line{position:absolute;top:0;left:-50%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);transform:skewX(-20deg);pointer-events:none;animation:glossSweep 8s ease-in-out infinite}
+@keyframes glossSweep{0%,100%{left:-50%}50%{left:100%}}
+.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;object-position:center;transition:transform .6s;filter:drop-shadow(0 8px 30px rgba(0,0,0,.5))}
+.fleet-card:hover .img-wrap img{transform:scale(1.06)}
+.fleet-card:hover .img-wrap::before{background:radial-gradient(ellipse at 50% 30%,rgba(200,168,97,.15) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(200,168,97,.05) 0%,transparent 50%)}
+.fleet-card .tag{position:absolute;top:16px;left:16px;background:rgba(212,175,55,.9);color:#111;padding:4px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;z-index:2}
 .fleet-card .body{padding:24px}
 .fleet-card .body h3{font-size:20px;font-weight:700;margin-bottom:4px}
 .fleet-card .body .capacity{color:var(--text3);font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
@@ -349,7 +356,7 @@ footer ul li a:hover{color:var(--gold)}
   .hero-text p{margin:0 auto 32px}
   .hero-btns{justify-content:center}
   .hero-image img{max-width:95%}
-  .fleet-card .img-wrap{height:350px;padding:30px}
+  .fleet-card .img-wrap{height:200px}
   .hero-image{display:flex;margin-top:20px}
   .hero-image img{max-width:320px}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
@@ -386,7 +393,7 @@ footer ul li a:hover{color:var(--gold)}
   .page-header h1{font-size:clamp(24px,8vw,30px)}
   .page-header p{font-size:14px}
   .booking-form{padding:0}
-  .fleet-card .img-wrap{height:180px}
+  .fleet-card .img-wrap{height:160px}
   .blog-card .thumb{height:160px}
   .btn{padding:12px 24px;font-size:13px}
   .nav-links{width:100%}
@@ -438,6 +445,12 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 <div class="page" id="page-home">
 
 <section class="hero">
+  <div class="hero-video-wrap">
+    <video autoplay muted loop playsinline poster="/static/chauffeur_service.png">
+      <source src="/static/hero_bg.mp4" type="video/mp4">
+    </video>
+    <div class="hero-video-overlay"></div>
+  </div>
   <div class="hero-bg"><div class="hero-grid"></div></div>
   <div class="container">
     <div class="hero-text">
@@ -478,7 +491,7 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
     </div>
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><div class="gloss-line"></div><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
         <div class="body">
           <h3>Executive</h3>
           <div class="capacity">&#9679; Mercedes S-Class &middot; Up to 3 passengers</div>
@@ -487,7 +500,7 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><div class="gloss-line"></div><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
         <div class="body">
           <h3>SUV</h3>
           <div class="capacity">&#9679; Cadillac Escalade &middot; Up to 6 passengers</div>
@@ -496,7 +509,7 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><div class="gloss-line"></div><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
         <div class="body">
           <h3>Sprinter</h3>
           <div class="capacity">&#9679; Mercedes Sprinter &middot; Up to 14 passengers</div>
@@ -636,7 +649,7 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
   <div class="container">
     <div class="fleet-grid">
       <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="tag">Executive</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
+        <div class="img-wrap"><span class="tag">Executive</span><div class="gloss-line"></div><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan"></div>
         <div class="body">
           <h3>Mercedes S-Class</h3>
           <div class="capacity">&#9679; Up to 3 passengers</div>
@@ -645,7 +658,7 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.15s">
-        <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
+        <div class="img-wrap"><span class="tag">Popular</span><div class="gloss-line"></div><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
           <div class="capacity">&#9679; Up to 6 passengers</div>
@@ -654,7 +667,7 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
         </div>
       </div>
       <div class="fleet-card fade-up" style="transition-delay:.3s">
-        <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
+        <div class="img-wrap"><span class="tag">Groups</span><div class="gloss-line"></div><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
           <div class="capacity">&#9679; Up to 14 passengers</div>
