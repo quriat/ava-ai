@@ -253,7 +253,7 @@ img{max-width:100%;height:auto}
 .gold{color:var(--gold)}
 
 /* ─── Nav ─── */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;transition:all .4s ease;background:transparent}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;transition:all .4s ease;background:rgba(10,10,10,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 nav.scrolled{background:rgba(10,10,10,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:10px 0;box-shadow:0 1px 0 rgba(212,175,55,.1)}
 nav .container{display:flex;align-items:center;justify-content:space-between}
 .nav-logo{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#fff;display:flex;align-items:center;gap:10px}
@@ -279,23 +279,20 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 
 /* ─── Hero ─── */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:120px 0 80px}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,175,55,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,255,255,.03) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(212,175,55,.05) 0%,transparent 50%);pointer-events:none}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,175,55,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,255,255,.03) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(212,175,55,.05) 0%,transparent 50%);pointer-events:none;z-index:2}
+.hero::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:1;pointer-events:none}
 .hero-bg{position:absolute;inset:0;z-index:0}
-.hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.15}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-.hero .container{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.4}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:2}
+.hero .container{position:relative;z-index:3;text-align:center}
 .hero-text .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);color:var(--gold);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;letter-spacing:.5px;margin-bottom:32px}
 .hero-text .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .hero-text h1{font-size:clamp(40px,5.5vw,80px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
 .hero-text h1 .line{display:block}
 .hero-text h1 .line:last-child{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold-dark) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-text p{color:var(--text2);font-size:18px;max-width:500px;line-height:1.7;margin-bottom:40px}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap}
-.hero-image{position:relative;display:flex;justify-content:center;align-items:center}
-.hero-image .glow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.15) 0%,transparent 70%);filter:blur(60px)}
-.hero-image img{position:relative;z-index:1;width:100%;max-width:550px;animation:float 6s ease-in-out infinite;border-radius:12px}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+.hero-text p{color:var(--text2);font-size:18px;max-width:560px;line-height:1.7;margin-bottom:40px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
 
 /* ─── Stats Bar ─── */
 .stats-bar{background:var(--bg2);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);padding:40px 0}
@@ -315,7 +312,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 /* ─── Fleet ─── */
 .fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .fleet-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s;position:relative}
-.fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(212,175,55,.06)}
 .fleet-card .img-wrap{height:220px;display:flex;align-items:center;justify-content:center;background:transparent;padding:24px;position:relative;overflow:hidden}
 .fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%);pointer-events:none}
 .fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s}
@@ -330,7 +327,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 /* ─── Services ─── */
 .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .service-card{background:var(--card);border-radius:var(--radius);padding:36px 28px;border:1px solid rgba(255,255,255,.04);transition:all .4s;text-align:center}
-.service-card:hover{transform:translateY(-6px);border-color:rgba(212,175,55,.15);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.service-card:hover{transform:translateY(-6px);border-color:rgba(212,175,55,.15);box-shadow:0 20px 60px rgba(0,0,0,.3),0 0 30px rgba(212,175,55,.04)}
 .service-card .icon{width:64px;height:64px;border-radius:16px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
 .service-card h3{font-size:18px;font-weight:700;margin-bottom:10px}
 .service-card p{color:var(--text2);font-size:14px;line-height:1.7}
@@ -486,11 +483,6 @@ footer ul li a:hover{color:var(--gold)}
   .flight-card .input-group{flex-direction:column}
 }
 @media(max-width:900px){
-  .hero .container{grid-template-columns:1fr;gap:40px;text-align:center}
-  .hero-text p{margin:0 auto 32px}
-  .hero-btns{justify-content:center}
-  .hero-image{display:flex;margin-top:20px}
-  .hero-image img{max-width:320px}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
   .stat-item{border-right:none}
   .fleet-grid,.services-grid,.test-grid{grid-template-columns:1fr}
@@ -508,10 +500,8 @@ footer ul li a:hover{color:var(--gold)}
   .nav-cta .btn{padding:10px 20px;font-size:13px}
 }
 @media(max-width:600px){
-  .hero .container{gap:24px}
   .hero-text h1{font-size:clamp(28px,10vw,36px)}
   .hero-text p{font-size:15px}
-  .hero-image img{max-width:260px}
 
   .section{padding:60px 0}
   .section-header h2{font-size:clamp(24px,8vw,30px)}
@@ -531,7 +521,6 @@ footer ul li a:hover{color:var(--gold)}
   .nav-links{width:100%}
 }
 @media(max-width:400px){
-  .hero-image img{max-width:200px}
   .hero .btn{padding:10px 20px;font-size:12px;white-space:nowrap}
   .hero-btns{gap:10px}
   .container{padding:0 16px}
@@ -577,7 +566,12 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 <div class="page" id="page-home">
 
 <section class="hero">
-  <div class="hero-bg"><div class="hero-grid"></div></div>
+  <div class="hero-bg">
+    <video autoplay muted loop playsinline poster="/static/chauffeur_service.png">
+      <source src="/static/hero_bg.mp4" type="video/mp4">
+    </video>
+    <div class="hero-grid"></div>
+  </div>
   <div class="container">
     <div class="hero-text">
       <div class="badge"><span class="dot"></span> Houston's Premier Chauffeur Service</div>
@@ -588,10 +582,6 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
         <a href="/fleet" class="btn btn-outline">View Fleet</a>
       </div>
     </div>
-    <div class="hero-image">
-      <div class="glow"></div>
-      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly" width="550" height="550">
-    </div>
   </div>
 </section>
 
@@ -599,8 +589,8 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 <section class="stats-bar">
   <div class="container">
     <div class="stats-grid">
-      <div class="stat-item fade-up"><div class="stat-number">500+</div><div class="stat-label">Happy Clients</div></div>
-      <div class="stat-item fade-up"><div class="stat-number">4.9★</div><div class="stat-label">Avg Rating</div></div>
+      <div class="stat-item fade-up"><div class="stat-number"><span class="counter" data-target="500">0</span>+</div><div class="stat-label">Happy Clients</div></div>
+      <div class="stat-item fade-up"><div class="stat-number"><span class="counter" data-target="49">0</span>★</div><div class="stat-label">Avg Rating</div></div>
       <div class="stat-item fade-up"><div class="stat-number">24/7</div><div class="stat-label">Available</div></div>
       <div class="stat-item fade-up"><div class="stat-number">$0</div><div class="stat-label">Surge Fees</div></div>
     </div>
@@ -1364,6 +1354,26 @@ var observer=new IntersectionObserver(function(entries){
   });
 },{threshold:.15});
 document.querySelectorAll('.fade-up').forEach(function(el){observer.observe(el)});
+
+// ─── Animated stat counters ───
+var counterObserver=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      var el=entry.target;
+      var target=parseInt(el.getAttribute('data-target'));
+      if(!target) return;
+      var current=0;
+      var step=Math.ceil(target/60);
+      var timer=setInterval(function(){
+        current+=step;
+        if(current>=target){current=target;clearInterval(timer)}
+        el.textContent=target>99?(current/10).toFixed(1):current;
+      },20);
+      counterObserver.unobserve(el);
+    }
+  });
+},{threshold:.5});
+document.querySelectorAll('.counter').forEach(function(el){counterObserver.observe(el)});
 
 // ─── FAQ accordion ───
 document.addEventListener('click',function(e){
