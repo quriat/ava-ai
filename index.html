@@ -265,7 +265,9 @@ footer ul a:hover{color:var(--gold)}
 /* ─── Mobile ─── */
 @media(max-width:900px){
   .hero-grid{grid-template-columns:1fr;gap:32px}
-  .hero-text h1{font-size:42px}
+  .hero-text h1{font-size:36px}
+  .hero-text h1 .brand{font-size:52px}
+  .hero-text p{font-size:15px}
   .fleet-grid,.services-grid,.testimonials-grid,.blog-grid{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr;gap:24px}
   .contact-row{grid-template-columns:1fr}
@@ -277,6 +279,13 @@ footer ul a:hover{color:var(--gold)}
   .stat .num{font-size:22px}
   .section{padding:60px 0}
   .section-header h2{font-size:32px}
+}
+@media(max-width:480px){
+  .hero-text h1{font-size:28px}
+  .hero-text h1 .brand{font-size:40px}
+  .section-header h2{font-size:26px}
+  .nav-logo{font-size:22px}
+  .quote-card{padding:24px}
 }
 </style>
 </head>
