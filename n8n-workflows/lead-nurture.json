@@ -1,0 +1,179 @@
+{
+  "name": "AvaLimo Lead Nurture",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "avalimo-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "lead-webhook",
+      "name": "New Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "avalimo-lead"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "New AvaLimo Lead! Name: {{ $json.body.name }} | Phone: {{ $json.body.phone }} | Email: {{ $json.body.email }} | Pickup: {{ $json.body.pickup }} | Dropoff: {{ $json.body.dropoff }} | Vehicle: {{ $json.body.vehicle }} | Date: {{ $json.body.time }}",
+        "additionalFields": {}
+      },
+      "id": "telegram-lead",
+      "name": "Notify Adam (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "bookings@avalimo.net",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "Thank you for booking with AvaLimo",
+        "text": "Hi {{ $json.body.name }}, Thank you for your booking request with AvaLimo. We have received your request for {{ $json.body.vehicle }} from {{ $json.body.pickup }} to {{ $json.body.dropoff }}. We will confirm your reservation shortly. Call us at 8325678050 for immediate assistance."
+      },
+      "id": "email-thanks",
+      "name": "Auto-Reply Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "options": {},
+        "table": {
+          "mode": "list",
+          "value": "leads"
+        },
+        "columns": {
+          "matching": [
+            {
+              "column": "name",
+              "value": "={{ $json.body.name }}"
+            },
+            {
+              "column": "phone",
+              "value": "={{ $json.body.phone }}"
+            },
+            {
+              "column": "email",
+              "value": "={{ $json.body.email }}"
+            },
+            {
+              "column": "pickup",
+              "value": "={{ $json.body.pickup }}"
+            },
+            {
+              "column": "dropoff",
+              "value": "={{ $json.body.dropoff }}"
+            },
+            {
+              "column": "vehicle",
+              "value": "={{ $json.body.vehicle }}"
+            },
+            {
+              "column": "created_at",
+              "value": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "id": "save-lead",
+      "name": "Save to Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "seconds": 0,
+              "minutes": 0,
+              "hours": 1
+            }
+          ]
+        }
+      },
+      "id": "wait-1h",
+      "name": "Wait 1 Hour",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "fromEmail": "adam@avalimo.net",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "Still thinking about your AvaLimo ride?",
+        "text": "Hi {{ $json.body.name }}, We noticed you requested a quote but haven't confirmed yet. We have limited availability for {{ $json.body.vehicle }} on your date. Book now to secure your ride. Call 8325678050 or reply to this email."
+      },
+      "id": "follow-up",
+      "name": "Follow-Up Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1050, 400]
+    }
+  ],
+  "connections": {
+    "New Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Notify Adam (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Adam (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Auto-Reply Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save to Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Database": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Hour",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Hour": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["avalimo", "leads", "crm"]
+}

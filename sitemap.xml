@@ -16,6 +16,11 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://avalimo.net/book</loc>
+    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://avalimo.net/blog</loc>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
@@ -36,14 +41,64 @@
     <changefreq>yearly</changefreq>
   </url>
   <url>
-    <loc>https://avalimo.net/book</loc>
-    <priority>0.9</priority>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
     <loc>https://avalimo.net/flight-status</loc>
     <priority>0.6</priority>
     <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/deposit</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/sugar-land-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/the-woodlands-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/katy-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/missouri-city-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/pearland-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/galveston-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/league-city-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/baytown-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/spring-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/cypress-limo</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://avalimo.net/houston-airport-limo-service</loc>
@@ -58,6 +113,26 @@
   <url>
     <loc>https://avalimo.net/blog/sugar-land-limo-service</loc>
     <priority>0.6</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/blog/houston-airport-limo-cost</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/blog/galveston-cruise-limo</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/blog/houston-wedding-transportation-cost</loc>
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://avalimo.net/blog/houston-corporate-car-service-airport</loc>
+    <priority>0.7</priority>
     <changefreq>monthly</changefreq>
   </url>
 </urlset>

@@ -1,0 +1,26 @@
+# AvaLimo Flask backend for Coolify
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY site_app.py /app/
+COPY index.html /app/
+COPY blog_posts.json /app/
+COPY blog_cron.sh /app/
+COPY auto_blog.py /app/
+COPY build.info /app/
+COPY static /app/static/
+
+# Create trips.json placeholder
+RUN echo '[]' > /app/trips.json
+
+# Expose the port Coolify/Traefik expects
+EXPOSE 5002
+
+# Run Flask with Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "2", "--timeout", "120", "site_app:app"]

@@ -1,0 +1,262 @@
+<!--
+GOOGLE ADS LANDING PAGE - AIRPORT TRANSFERS
+Campaign: IAH Airport Transfer
+Target Keyword: "iah airport transfer"
+URL: /lp/iah-airport.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- AD-SPECIFIC TITLE: Include keyword + CTA -->
+  <title>IAH Airport Transfer Houston | Chauffeur Service $100+ | AvaLimo</title>
+  
+  <meta name="description" content="Book IAH airport transfer with AvaLimo. Flight tracking, meet & greet, zero surge pricing. 24/7 Houston chauffeur service. Get instant quote.">
+  <meta name="robots" content="noindex, follow">  <!-- Don't index landing pages (duplicate content risk) -->
+  
+  <link rel="canonical" href="https://avalimo.net/lp/iah-airport.html">
+  
+  <!-- Google Ads Conversion Tracking -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-YOUR_CONVERSION_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-YOUR_CONVERSION_ID');
+    
+    // Conversion event on form submit
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof(url) != 'undefined') { window.location = url; }
+      };
+      gtag('event', 'conversion', {
+        'send_to': 'AW-YOUR_CONVERSION_ID/YOUR_CONVERSION_LABEL',
+        'value': 100.0,
+        'currency': 'USD',
+        'event_callback': callback
+      });
+      return false;
+    }
+  </script>
+  
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#D4AF37;--gold-light:#E8C84A;--bg:#0a0a0a;--text:#f0f0f0;--text2:#999;--success:#4CAF50}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:900px;margin:0 auto;padding:0 24px}
+    
+    /* Hero */
+    .hero{text-align:center;padding:60px 0 40px;background:linear-gradient(135deg,rgba(212,175,55,.1) 0%,transparent 60%)}
+    .hero h1{font-size:clamp(32px,5vw,52px);font-weight:900;letter-spacing:-1.5px;margin-bottom:16px}
+    .hero h1 span{color:var(--gold)}
+    .hero .sub{font-size:18px;color:var(--text2);max-width:600px;margin:0 auto 24px}
+    .hero .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);color:var(--gold);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:24px}
+    
+    /* Trust bar */
+    .trust{display:flex;justify-content:center;gap:32px;padding:20px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap}
+    .trust-item{text-align:center}
+    .trust-item .num{font-size:28px;font-weight:800;color:var(--gold);display:block}
+    .trust-item .label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+    
+    /* 2-col layout */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;padding:48px 0;align-items:start}
+    @media(max-width:768px){.grid{grid-template-columns:1fr}}
+    
+    /* Form */
+    .form-card{background:#151515;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:32px;position:sticky;top:24px}
+    .form-card h2{font-size:20px;margin-bottom:20px}
+    .form-card h2 span{color:var(--gold)}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+    .form-group input,.form-group select{width:100%;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-size:14px}
+    .form-group input:focus,.form-group select:focus{border-color:var(--gold);outline:none}
+    .btn{width:100%;padding:16px;border-radius:50px;border:none;background:linear-gradient(135deg,var(--gold),#B8962E);color:#111;font-weight:700;font-size:16px;cursor:pointer;transition:transform .3s}
+    .btn:hover{transform:translateY(-2px)}
+    .btn-sub{text-align:center;margin-top:12px;font-size:12px;color:var(--text2)}
+    .btn-sub span{color:var(--gold);font-weight:600}
+    
+    /* Benefits */
+    .benefits h2{font-size:24px;margin-bottom:24px}
+    .benefits h2 span{color:var(--gold)}
+    .benefit{display:flex;gap:16px;margin-bottom:24px;align-items:flex-start}
+    .benefit .icon{width:48px;height:48px;border-radius:12px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+    .benefit h3{font-size:16px;margin-bottom:4px}
+    .benefit p{font-size:14px;color:var(--text2);line-height:1.6}
+    
+    /* Pricing */
+    .pricing{background:#151515;border-radius:16px;padding:32px;margin-top:32px;border:1px solid rgba(255,255,255,.06)}
+    .pricing h3{font-size:18px;margin-bottom:16px}
+    .pricing h3 span{color:var(--gold)}
+    .price-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+    .price-row:last-child{border:none}
+    .price-label{font-size:14px}
+    .price-val{font-weight:700;color:var(--gold)}
+    .price-note{font-size:12px;color:var(--text2);margin-top:12px}
+    
+    /* Footer */
+    footer{text-align:center;padding:40px 0;border-top:1px solid rgba(255,255,255,.06);margin-top:40px}
+    footer p{font-size:12px;color:var(--text2)}
+    footer a{color:var(--gold)}
+  </style>
+</head>
+<body>
+  
+  <!-- Trust bar -->
+  <div style="background:rgba(212,175,55,.05);padding:8px 0;text-align:center;font-size:12px;color:var(--gold)">
+    ⭐ Rated 4.9/5 | 500+ Happy Clients | Licensed & Insured | 24/7 Available
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="badge">✈ IAH Airport Specialists</div>
+      <h1>Houston <span>IAH Airport Transfer</span><br>Chauffeur Service</h1>
+      <p class="sub">Flight tracking included. Meet & greet at baggage claim. Zero surge pricing, ever. Book in 30 seconds.</p>
+    </div>
+  </section>
+  
+  <!-- Trust metrics -->
+  <div class="trust container">
+    <div class="trust-item"><span class="num">4.9★</span><span class="label">Avg Rating</span></div>
+    <div class="trust-item"><span class="num">500+</span><span class="label">Happy Clients</span></div>
+    <div class="trust-item"><span class="num">0</span><span class="label">Surge Fees</span></div>
+    <div class="trust-item"><span class="num">24/7</span><span class="label">Available</span></div>
+  </div>
+
+  <!-- Main content + form -->
+  <div class="container">
+    <div class="grid">
+      
+      <!-- Left: Benefits -->
+      <div class="benefits">
+        <h2>Why Business Travelers Choose <span>AvaLimo</span> for IAH</h2>
+        
+        <div class="benefit">
+          <div class="icon">📡</div>
+          <div>
+            <h3>Real-Time Flight Tracking</h3>
+            <p>We monitor your flight from takeoff to landing. Early arrival? Delayed 2 hours? Your chauffeur adjusts automatically. No extra charges for flight delays.</p>
+          </div>
+        </div>
+        
+        <div class="benefit">
+          <div class="icon">🤝</div>
+          <div>
+            <h3>Meet & Greet at Baggage Claim</h3>
+            <p>Your chauffeur meets you inside the terminal with a name sign, assists with luggage, and escorts you directly to your vehicle. No curbside confusion.</p>
+          </div>
+        </div>
+        
+        <div class="benefit">
+          <div class="icon">🔒</div>
+          <div>
+            <h3>Fixed Price — Zero Surge</h3>
+            <p>Unlike rideshares that spike 3x during rush hour, your rate is locked when you book. Know exactly what you'll pay before you ride.</p>
+          </div>
+        </div>
+        
+        <div class="benefit">
+          <div class="icon">👔</div>
+          <div>
+            <h3>Professional, Vetted Chauffeurs</h3>
+            <p>Background-checked, commercially insured, trained in hospitality. They know Houston traffic patterns and the fastest routes to downtown, Galleria, Sugar Land, and The Woodlands.</p>
+          </div>
+        </div>
+        
+        <!-- Pricing -->
+        <div class="pricing">
+          <h3>IAH Transfer <span>Pricing</span></h3>
+          <div class="price-row"><span class="price-label">IAH → Downtown Houston</span><span class="price-val">From $100</span></div>
+          <div class="price-row"><span class="price-label">IAH → Galleria / Uptown</span><span class="price-val">From $115</span></div>
+          <div class="price-row"><span class="price-label">IAH → Sugar Land</span><span class="price-val">From $135</span></div>
+          <div class="price-row"><span class="price-label">IAH → The Woodlands</span><span class="price-val">From $125</span></div>
+          <div class="price-row"><span class="price-label">IAH → Galveston Cruise</span><span class="price-val">From $195</span></div>
+          <p class="price-note">✓ All rates include flight tracking, meet & greet, tolls, and gratuity. No hidden fees.</p>
+        </div>
+      </div>
+      
+      <!-- Right: Form -->
+      <div class="form-card">
+        <h2>Get Your <span>Instant Quote</span></h2>
+        
+        <form action="https://n8napp.adamj.fit/webhook/avalimo-lead" method="POST" onsubmit="return gtag_report_conversion('/thanks')">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="John Smith" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" name="phone" placeholder="(832) 123-4567" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="you@company.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Flight Number</label>
+            <input type="text" name="flight" placeholder="e.g. UA1234" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Pickup Date & Time</label>
+            <input type="datetime-local" name="datetime" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Destination</label>
+            <select name="destination" required>
+              <option value="">Select destination...</option>
+              <option value="downtown">Downtown Houston</option>
+              <option value="galleria">Galleria / Uptown</option>
+              <option value="sugarland">Sugar Land</option>
+              <option value="woodlands">The Woodlands</option>
+              <option value="galveston">Galveston Cruise Terminal</option>
+              <option value="other">Other (specify in notes)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Vehicle Type</label>
+            <select name="vehicle" required>
+              <option value="sedan">Executive Sedan (1-3 pax) — $100+</option>
+              <option value="suv">Luxury SUV (1-6 pax) — $115+</option>
+              <option value="sprinter">Sprinter Van (1-14 pax) — $195+</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Special Requests</label>
+            <input type="text" name="notes" placeholder="Child seat, extra luggage, etc.">
+          </div>
+          
+          <button type="submit" class="btn">Get Instant Quote →</button>
+          
+          <p class="btn-sub">⚡ Response in <span>under 5 minutes</span> | No credit card required</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>
+        © 2026 AvaLimo — Houston's Premier Chauffeur Service
+        <br>
+        Licensed & Insured | 8325678050 | <a href="mailto:adam@avalimo.net">adam@avalimo.net</a>
+      </p>
+      <p style="margin-top:12px;font-size:11px">
+        <a href="https://avalimo.net">Home</a> | 
+        <a href="https://avalimo.net/services">Services</a> | 
+        <a href="https://avalimo.net/privacy">Privacy Policy</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

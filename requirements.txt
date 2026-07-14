@@ -1,0 +1,12 @@
+google-api-python-client>=2.0.0
+google-auth-httplib2>=0.1.0
+google-auth-oauthlib>=1.0.0
+reportlab>=4.0
+flask>=3.0
+ollama>=0.6
+beautifulsoup4>=4.0
+requests>=2.0
+gunicorn>=21.0
+flask-sqlalchemy>=3.0
+psycopg2-binary
+squareup
