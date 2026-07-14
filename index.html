@@ -78,15 +78,15 @@ img{max-width:100%;height:auto}
 .btn-outline:hover{border-color:var(--gold);color:var(--gold)}
 .section{padding:100px 0}
 .section-header{text-align:center;margin-bottom:60px}
-.section-header .label{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
-.section-header h2{font-family:var(--font-serif);font-size:42px;font-weight:600;line-height:1.2}
+.section-header .label{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+.section-header h2{font-family:var(--font-serif);font-size:48px;font-weight:700;line-height:1.15}
 .section-header p{color:var(--text2);font-size:18px;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto}
 
 /* ─── Nav ─── */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 0;transition:all .4s}
 nav.scrolled{background:rgba(5,5,5,.9);backdrop-filter:blur(24px);padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 nav .container{display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-family:var(--font-serif);font-size:20px;font-weight:700;color:#fff;letter-spacing:1px}
+.nav-logo{font-family:var(--font-serif);font-size:28px;font-weight:700;color:#fff;letter-spacing:2px}
 .nav-logo span{color:var(--gold)}
 .nav-links{display:flex;align-items:center;gap:28px;list-style:none}
 .nav-links a{color:var(--text2);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:color .3s}
@@ -101,9 +101,10 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,5,.6) 0%,rgba(5,5,5,.95) 100%);z-index:1}
 .hero .container{position:relative;z-index:2;width:100%}
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.hero-text .tagline{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
-.hero-text h1{font-family:var(--font-serif);font-size:64px;font-weight:600;line-height:1.1;margin-bottom:16px}
+.hero-text .tagline{color:var(--gold);font-size:14px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px}
+.hero-text h1{font-family:var(--font-serif);font-size:72px;font-weight:700;line-height:1.05;margin-bottom:20px}
 .hero-text h1 em{font-style:italic;color:var(--gold)}
+.hero-text h1 .brand{display:block;font-size:96px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
 .hero-text p{color:var(--text2);font-size:18px;line-height:1.7;margin-bottom:32px;max-width:500px}
 .hero-btns{display:flex;gap:12px;flex-wrap:wrap}
 
@@ -178,7 +179,9 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 /* ─── Footer ─── */
 footer{padding:60px 0 40px;border-top:1px solid var(--card-border)}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
-footer h4{font-family:var(--font-serif);font-size:16px;margin-bottom:16px}
+footer h4{font-family:var(--font-serif);font-size:18px;margin-bottom:16px}
+footer .brand-large{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--text);margin-bottom:8px}
+footer .brand-large span{color:var(--gold)}
 footer p{color:var(--text2);font-size:13px;line-height:1.7}
 footer ul{list-style:none}
 footer ul li{margin-bottom:8px}
@@ -454,7 +457,7 @@ footer ul a:hover{color:var(--gold)}
     <div class="hero-grid">
       <div class="hero-text fade-up">
         <div class="tagline">Houston &bull; 24/7 Chauffeur Service</div>
-        <h1>Arrive in <em>absolute</em> luxury.</h1>
+        <h1><span class="brand">AvaLimo</span> Arrive in <em>absolute</em> luxury.</h1>
         <p>Airport transfers, corporate travel, weddings and nights out. Flat rates, zero surge, always on time.</p>
         <div class="hero-btns">
           <a href="#quote" class="btn btn-gold">Book Your Ride</a>
@@ -624,7 +627,7 @@ footer ul a:hover{color:var(--gold)}
 <footer>
   <div class="container">
     <div class="footer-grid">
-      <div><h4>AvaLimo</h4><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort &mdash; every time.</p></div>
+      <div><div class="brand-large">Ava<span>Limo</span></div><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort &mdash; every time.</p></div>
       <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
       <div><h4>Services</h4><ul><li><a href="/services">Airport Transfers</a></li><li><a href="/services">Corporate Travel</a></li><li><a href="/services">Weddings</a></li><li><a href="/services">Events</a></li></ul></div>
       <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li><li>Houston, TX</li></ul></div>
