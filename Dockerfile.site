@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
 COPY site_app.py /app/
+COPY index.html /app/
 COPY blog_posts.json /app/
 COPY blog_cron.sh /app/
 COPY auto_blog.py /app/

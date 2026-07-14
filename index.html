@@ -1,28 +1,52 @@
+<!--
+===============================================
+SEO & TRACKING SETUP CHECKLIST FOR AVALIMO.NET
+===============================================
+
+1. Google Search Console:
+   - Go to https://search.google.com/search-console
+   - Add property: avalimo.net
+   - Copy verification code
+   - Replace YOUR_GSC_CODE_HERE in line below
+
+2. Facebook Pixel:
+   - Go to https://business.facebook.com/events_manager
+   - Create pixel
+   - Replace YOUR_PIXEL_ID_HERE (2 places) in the FB pixel code
+
+3. Submit Sitemap:
+   - In Search Console, go to Sitemaps
+   - Submit: sitemap.xml
+
+4. Upload this file to your server root (replace index.html)
+===============================================
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers</title>
-<meta name="description" content="Houston's most trusted chauffeur service. Airport transfers for IAH &amp; Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.">
-
+<title>{{ title }}</title>
+<meta name="description" content="{{ meta_desc }}">
+<meta name="keywords" content="Houston limo, IAH airport transfer, Hobby airport car service, luxury chauffeur Houston, corporate car service Houston, wedding limo Houston, AvaLimo">
 <meta name="robots" content="index, follow">
 <meta name="geo.region" content="US-TX">
 <meta name="geo.placename" content="Houston">
 <meta name="theme-color" content="#0a0a0a">
-<meta name="google-site-verification" content="" />
-<link rel="canonical" href="https://avalimo.net" id="canonical-url">
+{{ sc_meta | safe }}
+<link rel="canonical" href="{{ canonical_url }}" id="canonical-url">
 <meta property="og:locale" content="en_US">
-<meta property="og:title" content="AvaLimo — Houston Premier Limo Service | IAH &amp; Hobby Airport Transfers">
-<meta property="og:description" content="Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.">
-<meta property="og:url" content="https://avalimo.net">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://avalimo.net/wp-content/uploads/2026/04/chauffeur_service.png">
+<meta property="og:title" content="{{ title }}">
+<meta property="og:description" content="{{ meta_desc }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:image" content="{{ og_image }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AvaLimo — Houston Premier Limo Service">
-<meta name="twitter:description" content="Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings — 24/7 with zero surge pricing.">
+<meta name="twitter:title" content="{{ title }}">
+<meta name="twitter:description" content="{{ meta_desc }}">
+<meta name="twitter:image" content="{{ og_image }}">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -378,14 +402,13 @@ footer ul li a:hover{color:var(--gold)}
   .nav-links a{font-size:16px}
 </style>
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-STY7CSKRMX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());gtag('config','G-STY7CSKRMX');
+gtag('js',new Date());gtag('config','{{ ga_id }}');
 </script>
 
-
-
+{{ fb_pixel | safe }}
 </head>
 <body>
 
@@ -778,166 +801,7 @@ gtag('js',new Date());gtag('config','G-STY7CSKRMX');
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="blog-grid">
-      <div class="blog-card fade-up">
-        <div class="thumb">&#9992;</div>
-        <div class="body">
-          <div class="cat">Airport Travel</div>
-          <h3>IAH vs Hobby: Which Houston Airport Should You Fly Into?</h3>
-          <p>A complete guide to Houston's two airports — amenities, locations, and which one makes sense for your trip.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>June 1, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Houston is served by two major airports: George Bush Intercontinental (IAH) and William P. Hobby (HOU). Choosing the right one can save you time, money, and stress.</p>
-            <p><strong>George Bush Intercontinental (IAH)</strong> is Houston's primary international airport, located about 23 miles north of downtown. It has five terminals and serves most major international carriers. IAH is the better choice for international flights, long-haul domestic routes, and if you're traveling to or from the north side of Houston (The Woodlands, Spring, Conroe).</p>
-            <p><strong>William P. Hobby (HOU)</strong> is smaller, closer to downtown (about 7 miles), and primarily serves domestic routes via Southwest Airlines and a few other carriers. It's much easier to navigate with shorter security lines and quicker baggage claim. Hobby is ideal for short-haul domestic flights and if you're staying in downtown, Midtown, or the Medical Center.</p>
-            <p><strong>Our recommendation:</strong> For international travel, fly into IAH. For domestic trips, especially with Southwest, Hobby is hard to beat. Either way, AvaLimo covers both airports with the same premium service — flight tracking included.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.1s">
-        <div class="thumb">&#127542;</div>
-        <div class="body">
-          <div class="cat">Travel Tips</div>
-          <h3>10 Reasons to Book a Chauffeur for Your Next Business Trip</h3>
-          <p>From productivity to professionalism, here's why executives choose chauffeured travel over rideshares.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 28, 2026</span><span>&#8226; 6 min read</span></div>
-          <div class="article-content">
-            <p>Business travel is about efficiency, professionalism, and making the right impression. Here are 10 reasons why a professional chauffeur beats rideshares and taxis every time.</p>
-            <ol>
-              <li><strong>Work en route</strong> — A quiet, private cabin lets you take calls, answer emails, or prep for meetings.</li>
-              <li><strong>Zero waiting</strong> — Your chauffeur tracks your flight and is ready when you land.</li>
-              <li><strong>Consistent quality</strong> — Every vehicle is inspected and cleaned before each ride.</li>
-              <li><strong>Professional image</strong> — Arrive in a luxury vehicle — it speaks volumes to clients.</li>
-              <li><strong>No surge pricing</strong> — What you quote is what you pay, every time.</li>
-              <li><strong>Meet &amp; greet</strong> — Your chauffeur welcomes you at arrivals with a name sign.</li>
-              <li><strong>24/7 availability</strong> — Late flight? Early morning? We're always on.</li>
-              <li><strong>Local expertise</strong> — Our drivers know Houston traffic, shortcuts, and construction.</li>
-              <li><strong>Luggage assistance</strong> — No hauling your own bags — we handle everything.</li>
-              <li><strong>Peace of mind</strong> — Fully insured, licensed, and vetted chauffeurs.</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.2s">
-        <div class="thumb">&#128141;</div>
-        <div class="body">
-          <div class="cat">Weddings</div>
-          <h3>How to Choose the Perfect Wedding Limo in Houston</h3>
-          <p>Bride, groom, wedding party — what vehicle fits your day? Our guide to wedding transportation.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 22, 2026</span><span>&#8226; 5 min read</span></div>
-          <div class="article-content">
-            <p>Your wedding day transportation is more than just a ride — it's part of the experience. Here's how to choose the perfect vehicle for your big day.</p>
-            <p><strong>For the Bride &amp; Groom:</strong> A Mercedes S-Class offers timeless elegance. With leather seating, ambient lighting, and a whisper-quiet cabin, it's the ultimate wedding car. Perfect for getting to the ceremony in style.</p>
-            <p><strong>For the Wedding Party:</strong> A Cadillac Escalade can comfortably seat up to 6 passengers. It's spacious enough for dresses, suits, and last-minute touch-ups. The panoramic sunroof makes for amazing photos.</p>
-            <p><strong>For Large Groups:</strong> The Mercedes Sprinter seats up to 14 guests and has high ceilings so nobody crushes their hair or dress. Reclining seats and premium sound make the ride part of the celebration.</p>
-            <p><strong>Pro tip:</strong> Book your wedding transportation at least 2-3 months in advance, especially during peak season (March-June and September-November).</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.3s">
-        <div class="thumb">&#127963;</div>
-        <div class="body">
-          <div class="cat">Corporate</div>
-          <h3>Houston Corporate Travel: Why Your Company Needs a Dedicated Chauffeur Service</h3>
-          <p>Reduce travel stress and boost productivity with professional corporate transportation.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 15, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Houston is a city built on business. From the Energy Corridor to the Texas Medical Center, professionals are constantly on the move. Here's why a dedicated corporate chauffeur service makes sense for your company.</p>
-            <p><strong>Maximize billable hours.</strong> When your team travels between meetings, a chauffeur allows them to work productively instead of focusing on traffic. The vehicle becomes a mobile office.</p>
-            <p><strong>Simplify billing.</strong> With corporate accounts, all charges are consolidated into a single monthly invoice. No more expense report headaches or receipts to track.</p>
-            <p><strong>Impress clients.</strong> Picking up VIP clients in a luxury vehicle sets the right tone. It shows attention to detail and a commitment to quality that reflects well on your company.</p>
-            <p>Contact us to set up a corporate account with customized billing and priority scheduling.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.4s">
-        <div class="thumb">&#127796;</div>
-        <div class="body">
-          <div class="cat">Events</div>
-          <h3>Best Concert Venues in Houston &amp; How to Get There in Style</h3>
-          <p>From NRG to the House of Blues — your guide to Houston's top music venues.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>May 10, 2026</span><span>&#8226; 5 min read</span></div>
-          <div class="article-content">
-            <p>Houston has an incredible live music scene. Here are the top venues and how to arrive in style.</p>
-            <p><strong>NRG Stadium</strong> — Home to mega-concerts and events. Parking is notoriously difficult. A chauffeur drops you at the gate and picks you up at the same spot after the show.</p>
-            <p><strong>Cynthia Woods Mitchell Pavilion</strong> — Located in The Woodlands, this outdoor venue is beautiful but challenging to navigate. Let us handle the drive.</p>
-            <p><strong>House of Blues</strong> — Downtown. Valet parking is limited. Our service means no circling the block looking for parking.</p>
-            <p><strong>Smart Financial Centre</strong> — Sugar Land's premier venue. With a chauffeur, you can enjoy the show without worrying about the drive home.</p>
-            <p><strong>Pro tip:</strong> Book your ride in advance for concert nights — demand is high and prices stay the same with us (no surge!).</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.5s">
-        <div class="thumb">&#127874;</div>
-        <div class="body">
-          <div class="cat">Events</div>
-          <h3>Houston Wedding Season 2026: Top Trends &amp; Transportation Tips</h3>
-          <p>Everything you need to know about getting married in Houston this year.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 28, 2026</span><span>&#8226; 6 min read</span></div>
-          <div class="article-content">
-            <p>2026 wedding season in Houston is shaping up to be one of the biggest yet. Here are the top trends and transportation tips.</p>
-            <p><strong>Trend 1: Multi-venue weddings.</strong> Many couples are choosing separate venues for the ceremony and reception. That means more moving parts — and more need for reliable transportation between locations.</p>
-            <p><strong>Trend 2: Late-night after-parties.</strong> After the reception, the celebration continues. Having a dedicated chauffeur means the party moves seamlessly from venue to venue.</p>
-            <p><strong>Trend 3: Sustainable luxury.</strong> Couples are choosing quality over quantity. A single luxury vehicle for the wedding party is becoming more popular than a fleet of standard cars.</p>
-            <p><strong>Transportation tip:</strong> Book group transportation for your out-of-town guests. It ensures everyone arrives on time and lets them enjoy the celebration without worrying about designated drivers.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.6s">
-        <div class="thumb">&#127761;</div>
-        <div class="body">
-          <div class="cat">Airport Travel</div>
-          <h3>How Early Should You Arrive at IAH? A Complete Airport Timeline</h3>
-          <p>Everything you need to know about timing your arrival at Houston's busiest airport.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 20, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Getting to IAH with the right timing can make or break your travel day. Here's our recommended timeline based on destination and time of day.</p>
-            <p><strong>Domestic flights:</strong> Arrive 2 hours before departure. This gives you time for check-in, security (typically 15-30 minutes at IAH), and a comfortable walk to your gate.</p>
-            <p><strong>International flights:</strong> Arrive 3 hours before departure. International check-in and customs documentation take longer, and security can be more thorough.</p>
-            <p><strong>Peak times:</strong> Monday mornings (6-9 AM) and Thursday/Friday evenings (4-7 PM) are the busiest. Add 30 minutes during these windows.</p>
-            <p><strong>With AvaLimo:</strong> We build in traffic buffers so you arrive with time to spare. Your chauffeur monitors your flight and adjusts pickup time if needed.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.7s">
-        <div class="thumb">&#128664;</div>
-        <div class="body">
-          <div class="cat">Fleet</div>
-          <h3>Mercedes S-Class vs Cadillac Escalade: Which AvaLimo Vehicle Is Right for You?</h3>
-          <p>A detailed comparison of our two most popular luxury vehicles.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 12, 2026</span><span>&#8226; 5 min read</span></div>
-          <div class="article-content">
-            <p>Two of our most popular vehicles serve different purposes. Here's how to choose between the Mercedes S-Class and the Cadillac Escalade.</p>
-            <p><strong>Mercedes S-Class</strong> is the ultimate executive sedan. It seats up to 3 passengers in supreme comfort. Best for: airport transfers, business travel, romantic evenings, and when you want a quiet, refined ride.</p>
-            <p><strong>Cadillac Escalade</strong> is a full-size luxury SUV seating up to 6 passengers. Best for: groups, families, shopping trips, and when you need more space for luggage or equipment.</p>
-            <p><strong>Our take:</strong> If it's just you and one or two others, the S-Class offers a more intimate luxury experience. For groups of 3-6, the Escalade provides space without sacrificing comfort.</p>
-          </div>
-        </div>
-      </div>
-      <div class="blog-card fade-up" style="transition-delay:.8s">
-        <div class="thumb">&#128230;</div>
-        <div class="body">
-          <div class="cat">Travel Tips</div>
-          <h3>Packing for a Weekend in Houston: What to Bring &amp; Where to Go</h3>
-          <p>The ultimate Houston weekend itinerary for visitors and first-timers.</p>
-          <a href="javascript:void(0)" class="btn btn-outline" style="padding:8px 20px;font-size:12px" onclick="toggleArticle(this)">Read More</a>
-          <div class="meta"><span>April 5, 2026</span><span>&#8226; 4 min read</span></div>
-          <div class="article-content">
-            <p>Planning a weekend in Houston? Here's what to pack and where to go for an unforgettable trip.</p>
-            <p><strong>What to pack:</strong> Light layers (Houston weather changes fast), comfortable walking shoes, an umbrella (afternoon showers are common), and nice outfits for dinner (Houstonians dress up).</p>
-            <p><strong>Where to go:</strong> The Museum District (18 museums!), Houston Zoo, Space Center Houston, Buffalo Bayou Park, and the Galleria for shopping.</p>
-            <p><strong>Where to eat:</strong> Houston is one of America's best food cities. Try Xochi for Oaxacan cuisine, Killen's BBQ for Texas brisket, and Hugo's for upscale Mexican.</p>
-            <p><strong>Getting around:</strong> Houston is spread out — a chauffeur service is the best way to explore without worrying about parking or traffic.</p>
-          </div>
-        </div>
-      </div>
+      {{ blog_posts_html | safe }}
     </div>
     <div style="text-align:center;margin-top:40px"><p style="color:var(--text3);font-size:13px">New articles published weekly. <a href="/contact" style="color:var(--gold)">Suggest a topic</a>.</p></div>
 <footer style="background:var(--bg);border-top:1px solid rgba(255,255,255,.04)"><div class="container"><div class="footer-grid">
@@ -1000,8 +864,8 @@ gtag('js',new Date());gtag('config','G-STY7CSKRMX');
 
 <!-- ─── PAGE: DEPOSIT ─── -->
 <div class="page" id="page-deposit" style="display:none"
-     data-sq-app-id="sq0idp-3tLlKikoRR7KSuOGOo7duw"
-     data-sq-loc-id="3RXHFV03PFGZ8">
+     data-sq-app-id="{{ sq_app_id }}"
+     data-sq-loc-id="{{ sq_location_id }}">
 <div class="page-header"><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
 <section class="section" style="padding-top:0">
   <div class="container">
