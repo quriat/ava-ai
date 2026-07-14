@@ -313,9 +313,10 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .fleet-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s;position:relative}
 .fleet-card:hover{transform:translateY(-8px);border-color:rgba(212,175,55,.2);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(212,175,55,.06)}
-.fleet-card .img-wrap{height:220px;display:flex;align-items:center;justify-content:center;background:transparent;padding:24px;position:relative;overflow:hidden}
-.fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.06) 0%,transparent 70%);pointer-events:none}
-.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s}
+.fleet-card .img-wrap{height:280px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a 0%,#0a0a0a 50%,#1a1a1a 100%);padding:32px;position:relative;overflow:hidden}
+.fleet-card .img-wrap::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 40%,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
+.fleet-card .img-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.08) 0%,transparent 70%);pointer-events:none}
+.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .6s;filter:drop-shadow(0 8px 24px rgba(0,0,0,.5))}
 .fleet-card:hover .img-wrap img{transform:scale(1.08)}
 .fleet-card .tag{position:absolute;top:16px;left:16px;background:rgba(212,175,55,.15);color:var(--gold);padding:4px 14px;border-radius:50px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
 .fleet-card .body{padding:24px}
@@ -515,7 +516,7 @@ footer ul li a:hover{color:var(--gold)}
   .page-header h1{font-size:clamp(24px,8vw,30px)}
   .page-header p{font-size:14px}
   .booking-form{padding:0}
-  .fleet-card .img-wrap{height:180px}
+  .fleet-card .img-wrap{height:220px}
   .blog-card .thumb{height:160px}
   .btn{padding:12px 24px;font-size:13px}
   .nav-links{width:100%}
