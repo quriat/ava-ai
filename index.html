@@ -136,25 +136,31 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;background:none;border:none}
 .hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
 
-/* ─── Hero ─── */
+/* ─── Hero Section ─── */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:120px 0 80px}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,175,55,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,255,255,.03) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(212,175,55,.05) 0%,transparent 50%);pointer-events:none}
-.hero-bg{position:absolute;inset:0;z-index:0}
-.hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.15}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-.hero .container{position:relative;z-index:1;display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center}
-.hero-text .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);color:var(--gold);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;letter-spacing:.5px;margin-bottom:32px}
-.hero-text .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-text h1{font-size:clamp(40px,5.5vw,80px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
-.hero-text h1 .line{display:block}
-.hero-text h1 .line:last-child{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold-dark) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-text p{color:var(--text2);font-size:18px;max-width:500px;line-height:1.7;margin-bottom:40px}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap}
-.hero-image{position:relative;display:flex;justify-content:center;align-items:center}
-.hero-image .glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.25) 0%,transparent 55%);filter:blur(100px)}
-.hero-image img{position:relative;z-index:1;width:100%;max-width:850px;animation:float 6s ease-in-out infinite;border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 100px rgba(212,175,55,.1)}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+.hero-aurora{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(200,168,97,.04) 0%,transparent 50%);pointer-events:none}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,var(--bg) 100%);pointer-events:none}
+.hero .container{display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:center;position:relative;z-index:1}
+.hero-content{max-width:500px}
+.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.eyebrow-line{width:32px;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,97,.4))}
+.hero-eyebrow span{font-size:11px;color:var(--text3);letter-spacing:.2em;text-transform:uppercase;font-weight:500}
+.hero-heading{font-family:'Playfair Display',serif;font-size:clamp(3rem,6vw,5rem);font-weight:400;line-height:1.1;margin-bottom:24px;letter-spacing:-.02em}
+.heading-line{display:block;color:var(--text)}
+.heading-italic{color:var(--text3);font-style:italic}
+.heading-gold{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold-dark) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-subtitle{color:var(--text2);font-size:17px;line-height:1.8;margin-bottom:40px;letter-spacing:.01em}
+.hero-cta{display:flex;align-items:center;gap:24px}
+.btn-primary{display:inline-flex;align-items:center;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);padding:16px 32px;border-radius:var(--radius-sm);font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:all .3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,168,97,.3)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;color:var(--text2);font-size:14px;text-decoration:none;transition:color .3s}
+.btn-secondary:hover{color:var(--text)}
+.btn-arrow{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;transition:all .3s}
+.btn-secondary:hover .btn-arrow{border-color:var(--gold);color:var(--gold)}
+.hero-trust{display:flex;gap:32px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.06)}
+.trust-item{text-align:left}
+.trust-number{font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);margin-bottom:4px}
+.trust-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em}
 .hero-car-showcase{position:relative;width:100%;height:400px;background:linear-gradient(180deg,rgba(255,255,255,.02) 0%,rgba(255,255,255,.01) 100%);border:1px solid rgba(255,255,255,.04);border-radius:var(--radius-lg);overflow:hidden}
 .hero-car-showcase canvas{width:100%!important;height:100%!important}
 
@@ -348,12 +354,12 @@ footer ul li a:hover{color:var(--gold)}
 }
 @media(max-width:900px){
   .hero .container{grid-template-columns:1fr;gap:40px;text-align:center}
-  .hero-text p{margin:0 auto 32px}
-  .hero-btns{justify-content:center}
-  .hero-image img{max-width:95%}
+  .hero-content{max-width:100%}
+  .hero-eyebrow{justify-content:center}
+  .hero-cta{justify-content:center}
+  .hero-trust{justify-content:center}
+  .hero-car-showcase{height:300px}
   .fleet-card .img-wrap{height:350px;padding:30px}
-  .hero-image{display:flex;margin-top:20px}
-  .hero-image img{max-width:320px}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
   .stat-item{border-right:none}
   .fleet-grid,.services-grid,.test-grid{grid-template-columns:1fr}
@@ -371,10 +377,11 @@ footer ul li a:hover{color:var(--gold)}
   .nav-cta .btn{padding:10px 20px;font-size:13px}
 }
 @media(max-width:600px){
+  .hero{padding:100px 0 60px}
   .hero .container{gap:24px}
-  .hero-text h1{font-size:clamp(28px,10vw,36px)}
-  .hero-text p{font-size:15px}
-  .hero-image img{max-width:260px}
+  .hero-heading{font-size:clamp(36px,10vw,48px)}
+  .hero-trust{gap:24px}
+  .trust-number{font-size:24px}
 
   .section{padding:60px 0}
   .section-header h2{font-size:clamp(24px,8vw,30px)}
@@ -394,9 +401,6 @@ footer ul li a:hover{color:var(--gold)}
   .nav-links{width:100%}
 }
 @media(max-width:400px){
-  .hero-image img{max-width:200px}
-  .hero .btn{padding:10px 20px;font-size:12px;white-space:nowrap}
-  .hero-btns{gap:10px}
   .container{padding:0 16px}
   .section{padding:40px 0}
   .page-header{padding:100px 0 30px}
@@ -464,24 +468,60 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
 
 <section class="hero">
   <div class="hero-grain"></div>
-  <div class="hero-bg"><div class="hero-grid"></div></div>
+  <div class="hero-aurora"></div>
+  <div class="hero-overlay"></div>
+  
   <div class="container">
-    <div class="hero-text">
-      <div class="badge"><span class="dot"></span> Houston's Premier Chauffeur Service</div>
-      <h1><span class="line">Arrive in</span> <span class="line">Absolute Luxury</span></h1>
-      <p>Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.</p>
-      <div class="hero-btns">
-        <a href="/book" class="btn btn-gold">Book Your Ride</a>
-        <a href="/fleet" class="btn btn-outline">View Fleet</a>
+    <div class="hero-content">
+      <!-- Eyebrow -->
+      <div class="hero-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span>Est. 2013 · Houston, Texas</span>
+      </div>
+      
+      <!-- Main heading -->
+      <h1 class="hero-heading">
+        <span class="heading-line">Arrive</span>
+        <span class="heading-line heading-italic">in</span>
+        <span class="heading-line heading-gold">Luxury</span>
+      </h1>
+      
+      <!-- Subtitle -->
+      <p class="hero-subtitle">
+        Premium chauffeur service for Houston's most discerning travelers. 
+        Airport transfers, corporate travel, and special occasions.
+      </p>
+      
+      <!-- CTA Row -->
+      <div class="hero-cta">
+        <a href="/book" class="btn-primary">Book Now</a>
+        <a href="/fleet" class="btn-secondary">
+          <span class="btn-arrow">→</span>
+          View Fleet
+        </a>
+      </div>
+      
+      <!-- Trust indicators -->
+      <div class="hero-trust">
+        <div class="trust-item">
+          <div class="trust-number">500+</div>
+          <div class="trust-label">Clients</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-number">4.9</div>
+          <div class="trust-label">Rating</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-number">24/7</div>
+          <div class="trust-label">Available</div>
+        </div>
       </div>
     </div>
-    <div class="hero-image">
-      <div class="glow"></div>
-      <div class="hero-car-showcase" id="car-3d-container">
-        <!-- Three.js car model will be rendered here -->
-        <div class="car-fallback" style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 120px;">
-          🚗
-        </div>
+    
+    <!-- 3D Car Showcase -->
+    <div class="hero-car-showcase" id="car-3d-container">
+      <div class="car-fallback" style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 120px;">
+        🚗
       </div>
     </div>
   </div>
