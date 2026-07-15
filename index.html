@@ -96,6 +96,7 @@ SEO & TRACKING SETUP CHECKLIST FOR AVALIMO.NET
   --text3:#666;
   --radius:16px;
   --radius-sm:10px;
+  --radius-lg:20px;
   --shadow:0 4px 30px rgba(0,0,0,0.5);
   --maxw:1200px;
 }
@@ -154,6 +155,8 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .hero-image .glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.25) 0%,transparent 55%);filter:blur(100px)}
 .hero-image img{position:relative;z-index:1;width:100%;max-width:850px;animation:float 6s ease-in-out infinite;border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 100px rgba(212,175,55,.1)}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+.hero-car-showcase{position:relative;width:100%;height:400px;background:linear-gradient(180deg,rgba(255,255,255,.02) 0%,rgba(255,255,255,.01) 100%);border:1px solid rgba(255,255,255,.04);border-radius:var(--radius-lg);overflow:hidden}
+.hero-car-showcase canvas{width:100%!important;height:100%!important}
 
 /* ─── Stats Bar ─── */
 .stats-bar{background:var(--bg2);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);padding:40px 0}
@@ -429,6 +432,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
 <!-- End Facebook Pixel Code -->
 <link rel="stylesheet" href="/static/css/tokens.css">
 <link rel="stylesheet" href="/static/css/grain.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 </head>
 <body>
 <div class="grain-overlay"></div>
@@ -473,7 +477,12 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
     </div>
     <div class="hero-image">
       <div class="glow"></div>
-      <img src="/static/chauffeur_service.png" alt="AvaLimo black luxury sedan parked elegantly">
+      <div class="hero-car-showcase" id="car-3d-container">
+        <!-- Three.js car model will be rendered here -->
+        <div class="car-fallback" style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 120px;">
+          🚗
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1429,5 +1438,6 @@ function processSquarePayment(){
   });
 }
 </script>
+<script src="/static/js/car-3d.js" defer></script>
 </body>
 </html>
