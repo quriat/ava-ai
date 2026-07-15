@@ -30,6 +30,26 @@ img { max-width: 100%; height: auto; }
 a { color: inherit; text-decoration: none; }
 ul { list-style: none; }
 
+/* ─── Premium Typography ─── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--font-size-hero); }
+h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+
+p {
+  font-family: var(--font-body);
+  font-size: var(--font-size-md);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
@@ -44,7 +64,14 @@ ul { list-style: none; }
 }
 
 /* ─── Gold accent ─── */
-.gold { color: var(--gold); }
+.gold { color: var(--color-gold); }
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 50%, var(--color-gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .gold-line {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(200,168,97,0.3), transparent);
@@ -162,17 +189,23 @@ ul { list-style: none; }
 
 /* ─── Section ─── */
 .section { padding: 80px 0; }
-.section-header { text-align: center; max-width: 700px; margin: 0 auto 50px; }
+.section-header { text-align: center; max-width: 700px; margin: 0 auto var(--space-12); }
 .section-header .subtitle {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 16px;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: var(--space-4);
 }
 .section-header h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  font-weight: 500; line-height: 1.2; margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
-.section-header p { color: var(--text2); font-size: 15px; line-height: 1.7; }
+.section-header p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  line-height: 1.7;
+}
 
 /* ─── Hero Section ─── */
 .hero {
