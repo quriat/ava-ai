@@ -48,8 +48,16 @@ class CarShowcase {
   
   showFallback() {
     this.container.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 120px;">
-        🚗
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px">
+        <svg viewBox="0 0 120 50" width="200" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 35h80" stroke="#C8A861" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          <path d="M25 32c0-1.5 1-3 3-3h12l8-10h22l10 10h12c2 0 3 1.5 3 3v5c0 1-1 2-2 2h-1.5c-.5 2-2.5 3.5-5 3.5s-4.5-1.5-5-3.5H41.5c-.5 2-2.5 3.5-5 3.5s-4.5-1.5-5-3.5H30c-1 0-2-1-2-2v-5z" fill="#C8A861" opacity=".15"/>
+          <path d="M30 32h60v5H30z" fill="#C8A861" opacity=".08"/>
+          <circle cx="38" cy="36" r="4" stroke="#C8A861" stroke-width="1.5" fill="none" opacity=".5"/>
+          <circle cx="38" cy="36" r="1.5" fill="#C8A861" opacity=".3"/>
+          <circle cx="82" cy="36" r="4" stroke="#C8A861" stroke-width="1.5" fill="none" opacity=".5"/>
+          <circle cx="82" cy="36" r="1.5" fill="#C8A861" opacity=".3"/>
+        </svg>
       </div>
     `;
   }

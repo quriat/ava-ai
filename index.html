@@ -252,6 +252,17 @@ footer ul li a:hover{color:var(--gold)}
 .fade-in{opacity:0;transition:opacity .8s}
 .fade-in.visible{opacity:1}
 
+/* Staggered animation delays */
+.fade-delay-1{transition-delay:.1s}
+.fade-delay-15{transition-delay:.15s}
+.fade-delay-2{transition-delay:.2s}
+.fade-delay-3{transition-delay:.3s}
+.fade-delay-4{transition-delay:.4s}
+.fade-delay-5{transition-delay:.5s}
+.fade-delay-6{transition-delay:.6s}
+.fade-delay-7{transition-delay:.7s}
+.fade-delay-8{transition-delay:.8s}
+
 /* ─── Blog ─── */
 .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .blog-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.04);transition:all .4s}
@@ -503,8 +514,16 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
     
     <!-- 3D Car Showcase -->
     <div class="hero-car-showcase" id="car-3d-container">
-      <div class="car-fallback" style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 120px;">
-        🚗
+      <div class="car-fallback" style="display:flex;align-items:center;justify-content:center;height:100%;padding:20px">
+        <svg viewBox="0 0 120 50" width="200" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 35h80" stroke="#C8A861" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          <path d="M25 32c0-1.5 1-3 3-3h12l8-10h22l10 10h12c2 0 3 1.5 3 3v5c0 1-1 2-2 2h-1.5c-.5 2-2.5 3.5-5 3.5s-4.5-1.5-5-3.5H41.5c-.5 2-2.5 3.5-5 3.5s-4.5-1.5-5-3.5H30c-1 0-2-1-2-2v-5z" fill="#C8A861" opacity=".15"/>
+          <path d="M30 32h60v5H30z" fill="#C8A861" opacity=".08"/>
+          <circle cx="38" cy="36" r="4" stroke="#C8A861" stroke-width="1.5" fill="none" opacity=".5"/>
+          <circle cx="38" cy="36" r="1.5" fill="#C8A861" opacity=".3"/>
+          <circle cx="82" cy="36" r="4" stroke="#C8A861" stroke-width="1.5" fill="none" opacity=".5"/>
+          <circle cx="82" cy="36" r="1.5" fill="#C8A861" opacity=".3"/>
+        </svg>
       </div>
     </div>
   </div>
@@ -540,7 +559,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           <a href="/book" class="btn btn-gold">Book Now</a>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.15s">
+      <div class="fleet-card fade-up fade-delay-15">
         <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
         <div class="body">
           <h3>SUV</h3>
@@ -549,7 +568,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           <a href="/book" class="btn btn-gold">Book Now</a>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.3s">
+      <div class="fleet-card fade-up fade-delay-3">
         <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
         <div class="body">
           <h3>Sprinter</h3>
@@ -573,11 +592,11 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
     </div>
     <div class="services-grid">
       <div class="service-card fade-up"><div class="icon">&#9992;</div><h3>Airport Transfers</h3><p>IAH &amp; Hobby Airport. Flight tracking included, meet &amp; greet available.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">&#128188;</div><h3>Corporate Travel</h3><p>Impress clients with punctual, professional chauffeur service across Houston.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">&#128141;</div><h3>Wedding Limo</h3><p>Make your biggest day unforgettable with a grand, elegant arrival.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.3s"><div class="icon">&#127916;</div><h3>Events &amp; Nights Out</h3><p>Concerts, sports, prom, galas — all your special event transportation needs.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.4s"><div class="icon">&#127925;</div><h3>Bachelorette &amp; Parties</h3><p>BYOB party buses and Sprinter vans for the bride tribe and group nights out.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.5s"><div class="icon">&#127963;</div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wineries and Houston craft breweries — safe and stylish.</p></div>
+      <div class="service-card fade-up fade-delay-1"><div class="icon">&#128188;</div><h3>Corporate Travel</h3><p>Impress clients with punctual, professional chauffeur service across Houston.</p></div>
+      <div class="service-card fade-up fade-delay-2"><div class="icon">&#128141;</div><h3>Wedding Limo</h3><p>Make your biggest day unforgettable with a grand, elegant arrival.</p></div>
+      <div class="service-card fade-up fade-delay-3"><div class="icon">&#127916;</div><h3>Events &amp; Nights Out</h3><p>Concerts, sports, prom, galas — all your special event transportation needs.</p></div>
+      <div class="service-card fade-up fade-delay-4"><div class="icon">&#127925;</div><h3>Bachelorette &amp; Parties</h3><p>BYOB party buses and Sprinter vans for the bride tribe and group nights out.</p></div>
+      <div class="service-card fade-up fade-delay-5"><div class="icon">&#127963;</div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wineries and Houston craft breweries — safe and stylish.</p></div>
     </div>
   </div>
 </section>
@@ -595,12 +614,12 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
         <p>"Service was impeccable. Our chauffeur was professional and the car was spotless."</p>
         <div class="author"><div class="avatar">JR</div><div><div class="name">James R.</div><div class="title">Airport Transfer</div></div></div>
       </div>
-      <div class="test-card fade-up" style="transition-delay:.15s">
+      <div class="test-card fade-up fade-delay-15">
         <div class="stars">★★★★★</div>
         <p>"Best limo service in Houston! On time, very polite, and the vehicle was amazingly comfortable."</p>
         <div class="author"><div class="avatar">SM</div><div><div class="name">Sarah M.</div><div class="title">Corporate Client</div></div></div>
       </div>
-      <div class="test-card fade-up" style="transition-delay:.3s">
+      <div class="test-card fade-up fade-delay-3">
         <div class="stars">★★★★★</div>
         <p>"From easy booking to arrival — everything was perfect. Thank you AvaLimo!"</p>
         <div class="author"><div class="avatar">MB</div><div><div class="name">Michael B.</div><div class="title">Wedding</div></div></div>
@@ -659,14 +678,14 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
   <div class="container">
     <div class="services-grid" style="max-width:900px;margin:0 auto">
       <div class="service-card fade-up"><div class="icon">&#9992;</div><h3>Airport Transfers</h3><p>Professional IAH &amp; Hobby transfers with real-time flight tracking, meet &amp; greet, and luggage assistance. We monitor your flight so we're always on time.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">&#128188;</div><h3>Corporate Travel</h3><p>Executive transportation for business meetings, client entertainment, and team travel. Impress with punctuality and professionalism.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">&#128141;</div><h3>Wedding Transportation</h3><p>Make your entrance and exit unforgettable. White glove service for the wedding party, family, and guests. Photo-worthy arrivals.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.3s"><div class="icon">&#127916;</div><h3>Concerts &amp; Events</h3><p>Toyota Center, Shell Energy Stadium, 713 Music Hall, NRG — arrive in style and skip the parking hassle. We'll be waiting when the show ends.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.4s"><div class="icon">&#127954;</div><h3>Sporting Events</h3><p>Astros, Rockets, Texans, Dynamo, Dash — tailgate in luxury and leave the driving to us. Door-to-door service for game day.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.5s"><div class="icon">&#127874;</div><h3>Prom &amp; Quinceañera</h3><p>Safe, stylish transportation for life's milestone celebrations. Stretch limos, SUVs, and Sprinter vans available.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.6s"><div class="icon">&#127925;</div><h3>Bachelorette &amp; Parties</h3><p>BYOB-friendly Sprinter vans and party buses for the bride tribe, birthday bashes, and group nights out in Houston.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.7s"><div class="icon">&#127863;</div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wine tours and Houston brewery crawls. Safe, social, and completely customized to your group.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.8s"><div class="icon">&#128652;</div><h3>Group Transportation</h3><p>Corporate offsites, conventions, weddings, and large parties. Mercedes Sprinter vans seat up to 14 in full luxury comfort.</p></div>
+      <div class="service-card fade-up fade-delay-1"><div class="icon">&#128188;</div><h3>Corporate Travel</h3><p>Executive transportation for business meetings, client entertainment, and team travel. Impress with punctuality and professionalism.</p></div>
+      <div class="service-card fade-up fade-delay-2"><div class="icon">&#128141;</div><h3>Wedding Transportation</h3><p>Make your entrance and exit unforgettable. White glove service for the wedding party, family, and guests. Photo-worthy arrivals.</p></div>
+      <div class="service-card fade-up fade-delay-3"><div class="icon">&#127916;</div><h3>Concerts &amp; Events</h3><p>Toyota Center, Shell Energy Stadium, 713 Music Hall, NRG — arrive in style and skip the parking hassle. We'll be waiting when the show ends.</p></div>
+      <div class="service-card fade-up fade-delay-4"><div class="icon">&#127954;</div><h3>Sporting Events</h3><p>Astros, Rockets, Texans, Dynamo, Dash — tailgate in luxury and leave the driving to us. Door-to-door service for game day.</p></div>
+      <div class="service-card fade-up fade-delay-5"><div class="icon">&#127874;</div><h3>Prom &amp; Quinceañera</h3><p>Safe, stylish transportation for life's milestone celebrations. Stretch limos, SUVs, and Sprinter vans available.</p></div>
+      <div class="service-card fade-up fade-delay-6"><div class="icon">&#127925;</div><h3>Bachelorette &amp; Parties</h3><p>BYOB-friendly Sprinter vans and party buses for the bride tribe, birthday bashes, and group nights out in Houston.</p></div>
+      <div class="service-card fade-up fade-delay-7"><div class="icon">&#127863;</div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wine tours and Houston brewery crawls. Safe, social, and completely customized to your group.</p></div>
+      <div class="service-card fade-up fade-delay-8"><div class="icon">&#128652;</div><h3>Group Transportation</h3><p>Corporate offsites, conventions, weddings, and large parties. Mercedes Sprinter vans seat up to 14 in full luxury comfort.</p></div>
     </div>
   </div>
 </section>
@@ -698,7 +717,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           <a href="/book" class="btn btn-gold">Book Now</a>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.15s">
+      <div class="fleet-card fade-up fade-delay-15">
         <div class="img-wrap"><span class="tag">Popular</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
@@ -707,7 +726,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           <a href="/book" class="btn btn-gold">Book Now</a>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.3s">
+      <div class="fleet-card fade-up fade-delay-3">
         <div class="img-wrap"><span class="tag">Groups</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter passenger van"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
@@ -743,7 +762,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
         <div class="contact-item"><div class="ci-icon">&#128205;</div><div><div class="ci-text">Houston, Texas</div><div class="ci-sub">Serving the entire Greater Houston area</div></div></div>
 
       </div>
-      <div class="fade-up" style="transition-delay:.2s">
+      <div class="fade-up fade-delay-2">
         <form class="booking-form" id="contactForm">
           <div class="full"><label>Your Name</label><input type="text" id="c-name" required></div>
           <div><label>Email</label><input type="email" id="c-email" required></div>
@@ -771,14 +790,14 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
   <div class="container">
     <div class="faq-list">
       <div class="faq-item fade-up"><div class="faq-q"><span>How do I book a ride?</span><span class="arrow">&#9660;</span></div><div class="faq-a">You can book online using our booking form, call us at (832) 567-8050, or email adam@avalimo.net. Online booking is fastest — just fill in your details and we'll confirm within minutes.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.1s"><div class="faq-q"><span>Do you service both IAH and Hobby airports?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes! We cover both George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports. We also serve all surrounding areas including Sugar Land, The Woodlands, Katy, and Pearland.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.2s"><div class="faq-q"><span>Do you track flights for airport pickups?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Absolutely. We monitor your flight in real-time so we're always there when you land — even if your flight is early or delayed. No extra charge.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.3s"><div class="faq-q"><span>What vehicles do you offer?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Our fleet includes the Mercedes S-Class (up to 3 passengers), Cadillac Escalade SUV (up to 6 passengers), and Mercedes Sprinter (up to 14 passengers). All vehicles are immaculately maintained.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.4s"><div class="faq-q"><span>How much does it cost?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Pricing depends on vehicle type, distance, and duration. We offer transparent flat-rate pricing with zero surge fees. Contact us for a quote — we typically respond within minutes.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.5s"><div class="faq-q"><span>Do you require a deposit?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, a booking deposit is required to secure your reservation. The deposit is fully refundable with 24-hour cancellation notice. See our Company Policy for details.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.6s"><div class="faq-q"><span>Can I cancel or modify my booking?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. You can cancel or modify your booking up to 24 hours before the scheduled pickup time for a full refund. Late cancellations may incur a fee.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.7s"><div class="faq-q"><span>Are your drivers licensed and insured?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. Every AvaLimo chauffeur is fully licensed, insured, and professionally trained. We conduct thorough background checks and regular vehicle inspections.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.8s"><div class="faq-q"><span>Do you provide car seats for children?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, we can provide car seats upon request. Please let us know at the time of booking so we can ensure proper installation.</div></div>
+      <div class="faq-item fade-up fade-delay-1"><div class="faq-q"><span>Do you service both IAH and Hobby airports?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes! We cover both George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports. We also serve all surrounding areas including Sugar Land, The Woodlands, Katy, and Pearland.</div></div>
+      <div class="faq-item fade-up fade-delay-2"><div class="faq-q"><span>Do you track flights for airport pickups?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Absolutely. We monitor your flight in real-time so we're always there when you land — even if your flight is early or delayed. No extra charge.</div></div>
+      <div class="faq-item fade-up fade-delay-3"><div class="faq-q"><span>What vehicles do you offer?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Our fleet includes the Mercedes S-Class (up to 3 passengers), Cadillac Escalade SUV (up to 6 passengers), and Mercedes Sprinter (up to 14 passengers). All vehicles are immaculately maintained.</div></div>
+      <div class="faq-item fade-up fade-delay-4"><div class="faq-q"><span>How much does it cost?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Pricing depends on vehicle type, distance, and duration. We offer transparent flat-rate pricing with zero surge fees. Contact us for a quote — we typically respond within minutes.</div></div>
+      <div class="faq-item fade-up fade-delay-5"><div class="faq-q"><span>Do you require a deposit?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, a booking deposit is required to secure your reservation. The deposit is fully refundable with 24-hour cancellation notice. See our Company Policy for details.</div></div>
+      <div class="faq-item fade-up fade-delay-6"><div class="faq-q"><span>Can I cancel or modify my booking?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. You can cancel or modify your booking up to 24 hours before the scheduled pickup time for a full refund. Late cancellations may incur a fee.</div></div>
+      <div class="faq-item fade-up fade-delay-7"><div class="faq-q"><span>Are your drivers licensed and insured?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes. Every AvaLimo chauffeur is fully licensed, insured, and professionally trained. We conduct thorough background checks and regular vehicle inspections.</div></div>
+      <div class="faq-item fade-up fade-delay-8"><div class="faq-q"><span>Do you provide car seats for children?</span><span class="arrow">&#9660;</span></div><div class="faq-a">Yes, we can provide car seats upon request. Please let us know at the time of booking so we can ensure proper installation.</div></div>
     </div>
   </div>
 </section>
@@ -871,7 +890,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.1s">
+      <div class="blog-card fade-up fade-delay-1">
         <div class="thumb">&#127542;</div>
         <div class="body">
           <div class="cat">Travel Tips</div>
@@ -896,7 +915,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.2s">
+      <div class="blog-card fade-up fade-delay-2">
         <div class="thumb">&#128141;</div>
         <div class="body">
           <div class="cat">Weddings</div>
@@ -913,7 +932,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.3s">
+      <div class="blog-card fade-up fade-delay-3">
         <div class="thumb">&#127963;</div>
         <div class="body">
           <div class="cat">Corporate</div>
@@ -930,7 +949,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.4s">
+      <div class="blog-card fade-up fade-delay-4">
         <div class="thumb">&#127796;</div>
         <div class="body">
           <div class="cat">Events</div>
@@ -948,7 +967,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.5s">
+      <div class="blog-card fade-up fade-delay-5">
         <div class="thumb">&#127874;</div>
         <div class="body">
           <div class="cat">Events</div>
@@ -965,7 +984,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.6s">
+      <div class="blog-card fade-up fade-delay-6">
         <div class="thumb">&#127761;</div>
         <div class="body">
           <div class="cat">Airport Travel</div>
@@ -982,7 +1001,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.7s">
+      <div class="blog-card fade-up fade-delay-7">
         <div class="thumb">&#128664;</div>
         <div class="body">
           <div class="cat">Fleet</div>
@@ -998,7 +1017,7 @@ src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
           </div>
         </div>
       </div>
-      <div class="blog-card fade-up" style="transition-delay:.8s">
+      <div class="blog-card fade-up fade-delay-8">
         <div class="thumb">&#128230;</div>
         <div class="body">
           <div class="cat">Travel Tips</div>
