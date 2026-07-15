@@ -7,17 +7,27 @@ class CarShowcase {
     this.renderer = null;
     this.car = null;
     this.isInitialized = false;
-    
+    this._animationId = null;
+    this._resizeObserver = null;
+    this._boundMouseMove = null;
+    this._boundMouseLeave = null;
+
     this.init();
   }
   
   init() {
+    // Check for Three.js availability (CDN may fail to load)
+    if (typeof THREE === 'undefined') {
+      this.showFallback();
+      return;
+    }
+
     // Check for WebGL support
     if (!this.isWebGLSupported()) {
       this.showFallback();
       return;
     }
-    
+
     this.setupScene();
     this.createCar();
     this.setupLights();
@@ -173,44 +183,105 @@ class CarShowcase {
   
   setupControls() {
     // Mouse rotation
-    this.container.addEventListener('mousemove', (e) => {
+    this._boundMouseMove = (e) => {
       if (!this.car) return;
-      
+
       const rect = this.container.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-      
+
       this.car.rotation.y = x * 0.3;
       this.car.rotation.x = y * 0.1;
-    });
-    
+    };
+    this.container.addEventListener('mousemove', this._boundMouseMove);
+
     // Reset on mouse leave
-    this.container.addEventListener('mouseleave', () => {
+    this._boundMouseLeave = () => {
       if (this.car) {
         this.car.rotation.y = 0;
         this.car.rotation.x = 0;
       }
-    });
-    
-    // Handle resize
-    window.addEventListener('resize', () => {
+    };
+    this.container.addEventListener('mouseleave', this._boundMouseLeave);
+
+    // Handle resize via ResizeObserver to catch container size changes
+    this._resizeObserver = new ResizeObserver(() => {
       if (!this.camera || !this.renderer) return;
-      
+
       this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     });
+    this._resizeObserver.observe(this.container);
   }
   
   animate() {
-    requestAnimationFrame(() => this.animate());
-    
+    this._animationId = requestAnimationFrame(() => this.animate());
+
     // Subtle idle rotation
     if (this.car) {
       this.car.rotation.y += 0.002;
     }
-    
+
     this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() {
+    // Stop animation loop
+    if (this._animationId !== null) {
+      cancelAnimationFrame(this._animationId);
+      this._animationId = null;
+    }
+
+    // Remove event listeners
+    if (this._boundMouseMove) {
+      this.container.removeEventListener('mousemove', this._boundMouseMove);
+      this._boundMouseMove = null;
+    }
+    if (this._boundMouseLeave) {
+      this.container.removeEventListener('mouseleave', this._boundMouseLeave);
+      this._boundMouseLeave = null;
+    }
+
+    // Disconnect ResizeObserver
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
+    }
+
+    // Dispose scene objects (geometries, materials, textures)
+    if (this.scene) {
+      this.scene.traverse((object) => {
+        if (object.geometry) {
+          object.geometry.dispose();
+        }
+        if (object.material) {
+          const materials = Array.isArray(object.material)
+            ? object.material
+            : [object.material];
+          materials.forEach((material) => {
+            // Dispose textures
+            Object.values(material).forEach((value) => {
+              if (value && typeof value === 'object' && typeof value.dispose === 'function') {
+                value.dispose();
+              }
+            });
+            material.dispose();
+          });
+        }
+      });
+    }
+
+    // Dispose renderer
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer = null;
+    }
+
+    this.scene = null;
+    this.camera = null;
+    this.car = null;
+    this.isInitialized = false;
   }
 }
 
