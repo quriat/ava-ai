@@ -643,7 +643,6 @@ function fmtDateShort(t){
   return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 }
 
-// ── API helper (uses SameSite cookie from /admin login) ────
 function api(method, path, body){
   var opts = {method:method, headers:{'Content-Type':'application/json','Accept':'application/json'}};
   if(body !== undefined) opts.body = JSON.stringify(body);
@@ -665,34 +664,20 @@ function login(pin){
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
   $('loginErr').textContent = '';
 
-  // Use form POST to get HttpOnly session cookie
-  var form = document.createElement('form');
-  form.method = 'POST';
-  form.action = '/admin';
-  var input = document.createElement('input');
-  input.name = 'pin';
-  input.value = pin;
-  form.appendChild(input);
-  form.style.display = 'none';
-  document.body.appendChild(form);
-
-  // We submit the form and check if we get a redirect (success) or the login page back
+  // Submit POST to /admin to get HttpOnly session cookie
   fetch('/admin', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'pin='+encodeURIComponent(pin), redirect:'manual'})
     .then(function(r){
       if(r.status === 302){
-        // Success! Session cookie is set
-        localStorage.setItem('dispatch_session', '1');
-        showApp();
-        loadAll();
-        toast('Signed in','ok');
+        // Success! Session cookie is set - redirect to load the SPA on same domain
+        window.location.href = '/admin';
       } else {
         // Login page again — wrong PIN
         $('loginErr').textContent = 'Wrong PIN';
-        btn.disabled = false; btn.textContent = 'Sign in';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-shield-halved"></i> Sign in';
       }
     }).catch(function(e){
       $('loginErr').textContent = e.message;
-      btn.disabled = false; btn.textContent = 'Sign in';
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-shield-halved"></i> Sign in';
     });
 }
 
