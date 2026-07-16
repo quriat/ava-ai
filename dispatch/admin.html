@@ -1,0 +1,1446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0b0e">
+<title>AvaLimo Dispatch</title>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070b; --panel:#0e0e14; --panel-2:#16161e; --panel-3:#1c1c28;
+  --text:#f0ece4; --muted:#7a7a8a; --subtle:#555566;
+  --gold:#d4af37; --gold-2:#c4a030; --gold-3:#b7924a; --gold-light:#e8d48b;
+  --gold-soft:rgba(212,175,55,.1); --gold-glow:rgba(212,175,55,.25);
+  --green:#10b981; --red:#ef4444; --blue:#60a5fa; --amber:#f59e0b; --purple:#a78bfa;
+  --border:rgba(255,255,255,.06); --border-gold:rgba(212,175,55,.22);
+  --radius:16px; --radius-sm:10px; --radius-xs:6px;
+  --shadow:0 8px 32px rgba(0,0,0,.5);
+  --glass:rgba(14,14,20,.88);
+  --sidebar-w:260px;
+  --topbar-h:64px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+  font-size:15px; scroll-behavior:smooth;
+}
+html,body{background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.5}
+::selection{background:rgba(212,175,55,.3);color:#fff}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font:inherit;background:var(--panel-2);color:var(--text);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:11px 14px;outline:none;transition:all .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.1);background:rgba(212,175,55,.04)}
+::placeholder{color:var(--subtle);opacity:.6}
+select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237a7a8a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+textarea{resize:vertical;min-height:60px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{text-align:left;padding:14px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid rgba(212,175,55,.12);background:rgba(0,0,0,.2);position:sticky;top:0;white-space:nowrap}
+tbody td{padding:12px 16px;border-bottom:1px solid var(--border);transition:background .12s}
+tbody tr:hover td{background:rgba(212,175,55,.04)}
+tbody tr:last-child td{border-bottom:none}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* Animated background orbs */
+.orbs{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.orbs span{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.05) 0%,transparent 70%);animation:orbDrift 20s ease-in-out infinite}
+.orbs span:nth-child(1){top:-20%;left:-10%;animation-delay:0s;width:600px;height:600px}
+.orbs span:nth-child(2){bottom:-30%;right:-15%;width:600px;height:600px;animation-delay:-7s;animation-direction:reverse}
+.orbs span:nth-child(3){top:40%;left:55%;width:350px;height:350px;animation-delay:-14s}
+@keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(80px,-60px) scale(1.12)}50%{transform:translate(-50px,80px) scale(.88)}75%{transform:translate(60px,40px) scale(1.05)}}
+
+/* Layout */
+.app-layout{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* Sidebar */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:linear-gradient(180deg,rgba(14,14,20,1) 0%,rgba(10,10,16,1) 100%);border-right:1px solid var(--border);z-index:100;display:flex;flex-direction:column;overflow:hidden;box-shadow:4px 0 50px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.sidebar::after{content:'';position:absolute;top:50%;left:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(212,175,55,.15),transparent);pointer-events:none}
+.sidebar-brand{padding:22px 22px 16px;border-bottom:1px solid var(--border);position:relative}
+.sidebar-brand::after{content:'';position:absolute;bottom:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.35}
+.sidebar-brand .logo-row{display:flex;align-items:center;gap:12px}
+.sidebar-brand .logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold-2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#0a0a0d;box-shadow:0 3px 12px rgba(212,175,55,.25)}
+.sidebar-brand h1{font-size:19px;font-weight:700;letter-spacing:-.3px}
+.sidebar-brand h1 span{color:var(--gold)}
+.sidebar-brand .sub{color:var(--muted);font-size:11px;margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+.sidebar-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.sidebar-nav .nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--subtle);padding:12px 12px 6px;font-weight:600}
+.sidebar-nav .nav-item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border-radius:var(--radius-sm);color:var(--muted);font-size:13.5px;font-weight:500;transition:all .2s;margin-bottom:2px;border-left:3px solid transparent;cursor:pointer}
+.sidebar-nav .nav-item:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.sidebar-nav .nav-item.active{color:var(--gold);background:rgba(212,175,55,.08);border-left-color:var(--gold)}
+.sidebar-nav .nav-item .nav-icon{width:20px;text-align:center;font-size:14px;flex-shrink:0;opacity:.8}
+.sidebar-nav .nav-item .nav-badge{margin-left:auto;background:rgba(212,175,55,.15);color:var(--gold);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}
+.sidebar-footer{padding:14px 18px;border-top:1px solid var(--border);background:rgba(0,0,0,.15)}
+.sidebar-footer .sb-status{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5}
+.sidebar-footer .sb-status strong{color:var(--text)}
+.sidebar-footer .btn{width:100%;justify-content:center;font-size:12px;padding:8px}
+
+/* Main content */
+.main-content{flex:1;margin-left:var(--sidebar-w);position:relative;z-index:1;min-height:100vh;background:radial-gradient(ellipse at 20% 20%,rgba(212,175,55,.012) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(96,144,240,.012) 0%,transparent 50%),var(--bg)}
+
+/* Top bar */
+.top-bar{position:sticky;top:0;z-index:50;height:var(--topbar-h);display:flex;align-items:center;gap:16px;padding:0 28px;background:rgba(7,7,11,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar h2{font-size:17px;font-weight:600;letter-spacing:-.2px}
+.top-bar h2 span{color:var(--gold)}
+.top-bar .top-stats{margin-left:auto;display:flex;gap:16px;align-items:center}
+.top-bar .top-stat{font-size:13px;color:var(--muted)}
+.top-bar .top-stat strong{color:var(--text)}
+.menu-btn{display:none;background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .2s}
+.menu-btn:hover{background:rgba(255,255,255,.06)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(4px)}
+.sidebar-overlay.show{display:block}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;padding:24px 28px 8px}
+.stat-card{background:linear-gradient(145deg,var(--panel) 0%,rgba(14,14,20,.5) 100%);border:1px solid var(--border);border-radius:var(--radius);padding:24px 26px;position:relative;overflow:hidden;transition:all .35s cubic-bezier(.22,1,.36,1)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .35s}
+.stat-card::after{content:'';position:absolute;top:-30%;right:-20%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.05),transparent 70%);pointer-events:none}
+.stat-card:hover{border-color:rgba(212,175,55,.2);transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.5)}
+.stat-card:hover::before{opacity:1}
+.stat-card .sv{font-size:28px;font-weight:800;color:var(--gold);letter-spacing:-.5px;line-height:1.2}
+.stat-card .sl{color:var(--muted);font-size:12px;margin-top:6px;text-transform:uppercase;letter-spacing:.07em;font-weight:500}
+.stat-card .sicon{position:absolute;top:14px;right:18px;font-size:24px;opacity:.08}
+
+/* Content */
+.content-wrap{padding:4px 28px 48px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.panel-header .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tsec{animation:tabFadeIn .25s ease}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Table wrapper */
+.table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3);position:relative}
+.table-wrap::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.2),transparent);pointer-events:none}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.badge-new{background:rgba(212,175,55,.13);color:var(--gold)}
+.badge-progress{background:rgba(96,144,240,.13);color:var(--blue)}
+.badge-completed{background:rgba(16,185,129,.13);color:var(--green)}
+.badge-cancelled{background:rgba(239,68,68,.13);color:var(--red)}
+.badge-paid{background:rgba(16,185,129,.13);color:var(--green)}
+.badge-sent{background:rgba(96,144,240,.13);color:var(--blue)}
+.badge-draft{background:rgba(245,158,11,.13);color:var(--amber)}
+.badge-overdue{background:rgba(239,68,68,.13);color:var(--red)}
+.badge-offline{background:rgba(255,255,255,.06);color:var(--muted)}
+.badge-online{background:rgba(16,185,129,.13);color:var(--green)}
+.badge-available{background:rgba(16,185,129,.13);color:var(--green)}
+.badge-maintenance{background:rgba(245,158,11,.13);color:var(--amber)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#0a0a0d;font-weight:600;font-size:13px;transition:all .2s;border:none;white-space:nowrap;cursor:pointer}
+.btn:hover{opacity:.93;transform:translateY(-1.5px);box-shadow:0 5px 20px rgba(212,175,55,.3)}
+.btn:active{transform:scale(.97)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.04);border-color:var(--gold);box-shadow:none}
+.btn-danger{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff}
+.btn-danger:hover{box-shadow:0 4px 16px rgba(239,68,68,.3)}
+.btn-success{background:linear-gradient(135deg,var(--green),#059669);color:#fff}
+.btn-icon{padding:6px 10px;border-radius:6px;font-size:13px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);transition:all .15s;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.btn-icon:hover{border-color:var(--gold);background:rgba(212,175,55,.08);color:var(--gold)}
+.btn-icon.danger{color:var(--red)}
+.btn-icon.danger:hover{border-color:var(--red);background:rgba(239,68,68,.1)}
+
+/* Form elements */
+.pill-select{padding:8px 12px;font-size:12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);outline:none;cursor:pointer;transition:border-color .2s}
+.pill-select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.08)}
+.search-input{max-width:260px;padding:9px 12px;font-size:13px}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fadeIn .15s ease}
+.modal{background:linear-gradient(145deg,var(--panel) 0%,rgba(12,12,18,.97) 100%);border:1px solid var(--border-gold);border-radius:var(--radius);padding:28px;max-width:560px;width:92vw;max-height:88vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:modalIn .25s cubic-bezier(.22,1,.36,1)}
+.modal.wide{max-width:680px}
+.modal h2{font-size:18px;font-weight:700;margin:0 0 18px;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.modal h2 span{color:var(--gold)}
+.modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.06);border:none;color:var(--muted);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s}
+.modal-close:hover{background:rgba(239,68,68,.15);color:var(--red)}
+@keyframes modalIn{from{transform:translateY(20px) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal .form-grid .full{grid-column:1/-1}
+.modal label{font-size:12px;font-weight:500;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.modal label input,.modal label select,.modal label textarea{font-size:13px;padding:10px 12px;border-radius:8px}
+.modal .form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;grid-column:1/-1}
+.form-err{color:var(--red);font-size:12px;min-height:0;grid-column:1/-1}
+
+/* Toast */
+.toast{position:fixed;top:16px;right:16px;z-index:9999;display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:var(--radius-sm);background:var(--panel-2);border:1px solid var(--border);box-shadow:0 12px 48px rgba(0,0,0,.6);animation:slideIn .2s ease;font-size:14px;border-left:3px solid var(--green)}
+.toast.err{border-left-color:var(--red)}
+.toast.warn{border-left-color:var(--amber)}
+@keyframes slideIn{from{transform:translateY(-16px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* Empty state */
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted)}
+.empty-state i{font-size:40px;display:block;margin-bottom:10px;opacity:.25}
+.empty-state b{display:block;font-size:15px;margin-bottom:4px;color:var(--text)}
+
+/* Action buttons in tables */
+.action-row{display:flex;gap:4px;flex-wrap:wrap}
+
+/* Card */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:border-color .25s,transform .25s}
+.card:hover{border-color:rgba(212,175,55,.1);transform:translateY(-1px)}
+
+/* Layout helpers */
+.row{display:flex;gap:10px;align-items:center}
+.spacer{flex:1}
+.muted{color:var(--muted)}
+.gold{color:var(--gold)}
+.mono{font-family:ui-monospace,SFMono-Regular,monospace}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+
+/* Login page */
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:radial-gradient(ellipse at 50% 20%,rgba(212,175,55,.07),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(212,175,55,.03),transparent 50%),var(--bg)}
+.login-card{background:var(--panel);border:1px solid var(--border-gold);border-radius:var(--radius);padding:40px 36px;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.5)}
+.login-card .logo{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--gold),var(--gold-2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#0a0a0d;margin:0 auto 16px;box-shadow:0 6px 24px rgba(212,175,55,.35)}
+.login-card h1{font-size:28px;margin:0 0 4px;font-weight:700;letter-spacing:-.4px}
+.login-card h1 span{color:var(--gold)}
+.login-card p{color:var(--muted);font-size:14px;margin:0 0 28px}
+.login-form{display:flex;flex-direction:column;gap:12px}
+.login-form input{padding:14px 16px;font-size:16px;text-align:center;letter-spacing:.4em}
+.login-form .btn{padding:14px;font-size:15px;width:100%}
+.login-err{color:var(--red);font-size:13px;min-height:20px}
+
+/* Driver status dot */
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.status-dot.online{background:var(--green);box-shadow:0 0 10px rgba(16,185,129,.4)}
+.status-dot.offline{background:var(--muted)}
+
+/* Responsive */
+@media(max-width:900px){
+  .menu-btn{display:block}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}
+  .top-bar{padding:0 16px}
+  .top-bar .top-stats .hide-mobile{display:none}
+  .stats-row{grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 16px 4px}
+  .stat-card{padding:18px}
+  .stat-card .sv{font-size:22px}
+  .stat-card .sicon{opacity:.06}
+  .content-wrap{padding:4px 16px 28px}
+  .panel-header{flex-direction:column;align-items:stretch;gap:8px}
+  .panel-header .left{flex-wrap:wrap}
+  .search-input{max-width:100%}
+  .table-wrap{overflow-x:auto}
+  .table-wrap table{min-width:580px;font-size:13px}
+  thead th,tbody td{padding:10px 12px}
+  .modal{width:95vw;padding:20px}
+  .modal .form-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr;gap:6px}
+  .stat-card{padding:12px}
+  .stat-card .sv{font-size:18px}
+  .stat-card .sicon{display:none}
+  .login-card{padding:28px 20px}
+  .login-card .logo{width:52px;height:52px;font-size:18px}
+  .login-card h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="orbs"><span></span><span></span><span></span></div>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="logo">A</div>
+    <h1><span>Ava</span>Limo</h1>
+    <p>Enter dispatcher PIN to continue</p>
+    <form id="loginForm" class="login-form" autocomplete="off">
+      <input type="password" id="loginPin" placeholder="••••" maxlength="10" inputmode="numeric" autofocus>
+      <div id="loginErr" class="login-err"></div>
+      <button type="submit" class="btn" id="loginBtn">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════ APP SHELL ═══════════════ -->
+<div id="appShell" style="display:none">
+<div class="orbs"><span></span><span></span><span></span></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-row">
+      <div class="logo-icon">A</div>
+      <div><h1><span>Ava</span>Limo</h1><div class="sub">Dispatch Dashboard</div></div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Management</div>
+    <div class="nav-item active" data-tab="reservations"><span class="nav-icon"><i class="fas fa-calendar-check"></i></span> Reservations</div>
+    <div class="nav-item" data-tab="drivers"><span class="nav-icon"><i class="fas fa-users"></i></span> Drivers</div>
+    <div class="nav-item" data-tab="vehicles"><span class="nav-icon"><i class="fas fa-car"></i></span> Vehicles</div>
+    <div class="nav-item" data-tab="customers"><span class="nav-icon"><i class="fas fa-address-book"></i></span> Customers</div>
+    <div class="nav-item" data-tab="invoices"><span class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></span> Invoices</div>
+    <div class="nav-label" style="margin-top:12px">Tools</div>
+    <div class="nav-item" data-tab="notifications"><span class="nav-icon"><i class="fas fa-bell"></i></span> Notifications <span class="nav-badge">NEW</span></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sb-status" id="sbStatus">Loading…</div>
+    <button class="btn btn-sm btn-ghost" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign out</button>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Main -->
+<div class="main-content">
+<div class="top-bar">
+  <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+  <h2 id="pageTitle"><span>Ava</span>Limo <span class="muted" style="font-weight:400;font-size:14px">Dispatch</span></h2>
+  <div class="top-stats" id="topStats">
+    <span class="top-stat hide-mobile" id="topStatActive"><strong>0</strong> active</span>
+    <span class="top-stat" id="topStatDrivers"><strong>0/0</strong> <span class="hide-mobile">drivers</span></span>
+  </div>
+</div>
+
+<!-- Stats Row -->
+<div class="stats-row">
+  <div class="stat-card"><div class="sicon"><i class="fas fa-car-side"></i></div><div class="sv" id="statActive">0</div><div class="sl">Active trips</div></div>
+  <div class="stat-card"><div class="sicon"><i class="fas fa-user-check"></i></div><div class="sv" id="statDrivers">0/0</div><div class="sl">Drivers online</div></div>
+  <div class="stat-card"><div class="sicon"><i class="fas fa-check-circle"></i></div><div class="sv" id="statToday">0</div><div class="sl">Completed today</div></div>
+  <div class="stat-card"><div class="sicon"><i class="fas fa-dollar-sign"></i></div><div class="sv" id="statRevToday">$0</div><div class="sl">Revenue today</div></div>
+  <div class="stat-card"><div class="sicon"><i class="fas fa-chart-line"></i></div><div class="sv" id="statRevWeek">$0</div><div class="sl">This week</div></div>
+</div>
+
+<div class="content-wrap">
+
+<!-- ═══ RESERVATIONS ═══ -->
+<section id="t-reservations" class="tsec">
+  <div class="panel-header">
+    <div class="left">
+      <select id="resFilter" class="pill-select">
+        <option value="active">Active</option>
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="assigned">Assigned</option>
+        <option value="in_progress">In progress</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <button class="btn btn-sm btn-ghost" id="resRefresh"><i class="fas fa-sync-alt"></i></button>
+    </div>
+    <button class="btn btn-sm" id="newResBtn"><i class="fas fa-plus"></i> New reservation</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>#</th><th>Passenger</th><th>Pickup → Dropoff</th><th>Driver</th><th>Fare</th><th>Status</th><th style="width:140px"></th>
+    </tr></thead><tbody id="resTbody"></tbody></table>
+  </div>
+</section>
+
+<!-- ═══ DRIVERS ═══ -->
+<section id="t-drivers" class="tsec" style="display:none">
+  <div class="panel-header">
+    <div class="left"></div>
+    <button class="btn btn-sm" id="newDriverBtn"><i class="fas fa-plus"></i> New driver</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Vehicle</th><th>Status</th><th style="width:100px"></th></tr></thead><tbody id="driversTbody"></tbody></table>
+  </div>
+</section>
+
+<!-- ═══ VEHICLES ═══ -->
+<section id="t-vehicles" class="tsec" style="display:none">
+  <div class="panel-header">
+    <div class="left"></div>
+    <button class="btn btn-sm" id="newVehicleBtn"><i class="fas fa-plus"></i> New vehicle</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Type</th><th>Description</th><th>Plate</th><th>Status</th><th>Capacity</th><th style="width:100px"></th></tr></thead><tbody id="vehiclesTbody"></tbody></table>
+  </div>
+</section>
+
+<!-- ═══ CUSTOMERS ═══ -->
+<section id="t-customers" class="tsec" style="display:none">
+  <div class="panel-header">
+    <div class="left">
+      <input id="custSearch" class="search-input" placeholder="Search customers…">
+      <button class="btn btn-sm btn-ghost" id="custRefresh"><i class="fas fa-sync-alt"></i></button>
+      <span class="muted" id="custCount" style="font-size:12px"></span>
+    </div>
+    <div class="left" style="gap:6px">
+      <button class="btn btn-sm" id="newCustomerBtn"><i class="fas fa-plus"></i> New customer</button>
+      <button class="btn btn-sm btn-ghost" id="bulkCustomerBtn"><i class="fas fa-upload"></i> Bulk import</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Name</th><th>Phone</th><th>Email</th><th>CC</th><th>Address</th><th>Notes</th><th>Created</th><th style="width:80px"></th>
+    </tr></thead><tbody id="customersTbody"></tbody></table>
+  </div>
+</section>
+
+<!-- ═══ INVOICES ═══ -->
+<section id="t-invoices" class="tsec" style="display:none">
+  <div class="panel-header">
+    <div class="left"></div>
+    <button class="btn btn-sm" id="newInvoiceBtn"><i class="fas fa-plus"></i> New invoice</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>#</th><th>Client</th><th>Reservation</th><th>Amount</th><th>Status</th><th>Issue date</th><th style="width:60px"></th></tr></thead><tbody id="invoicesTbody"></tbody></table>
+  </div>
+</section>
+
+<!-- ═══ NOTIFICATIONS LOG ═══ -->
+<section id="t-notifications" class="tsec" style="display:none">
+  <div class="panel-header">
+    <div class="left">
+      <span style="font-size:13px;color:var(--muted)">Sent notifications</span>
+      <button class="btn btn-sm btn-ghost" id="notifRefresh"><i class="fas fa-sync-alt"></i></button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Type</th><th>To</th><th>Subject</th><th>Trip</th><th>Sent by</th><th>Time</th></tr></thead><tbody id="notifTbody"></tbody></table>
+  </div>
+</section>
+
+</div><!-- /content-wrap -->
+</div><!-- /main-content -->
+</div><!-- /appShell -->
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Reservation Modal -->
+<div id="resModal" class="modal-bg" style="display:none">
+  <div class="modal wide">
+    <button class="modal-close" onclick="closeModal('resModal')"><i class="fas fa-times"></i></button>
+    <h2 id="resModalTitle"><span>Ava</span> — <span id="resModalAction">New</span> reservation</h2>
+    <form id="resForm" class="form-grid" novalidate>
+      <input type="hidden" name="id">
+      <label class="full">Passenger name
+        <input name="passenger_name" list="custDatalist" required placeholder="Start typing to search existing…">
+        <datalist id="custDatalist"></datalist>
+      </label>
+      <label>Phone <input name="passenger_phone" type="tel" placeholder="(832) 555-0123"></label>
+      <label>Email <input name="passenger_email" type="email" placeholder="client@example.com"></label>
+      <label class="full">Pickup location <input name="pickup_location" required placeholder="Address or landmark"></label>
+      <label class="full">Dropoff location <input name="dropoff_location" placeholder="Address or landmark"></label>
+      <label>Pickup date <input name="pickup_date" type="date"></label>
+      <label>Pickup time <input name="pickup_time" type="time"></label>
+      <label>Price ($) <input name="price" type="number" step="0.01" value="0"></label>
+      <label>Passengers <input name="passenger_count" type="number" value="1" min="1"></label>
+      <label>Flight # <input name="flight_number" placeholder="UA1234"></label>
+      <label>Driver
+        <select name="driver_id"><option value="">— Unassigned —</option></select>
+      </label>
+      <label>Status
+        <select name="status">
+          <option value="pending">Pending</option>
+          <option value="assigned">Assigned</option>
+          <option value="in_progress">In progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </label>
+      <label class="full">Notes <textarea name="notes" rows="2" placeholder="Special instructions, luggage info…"></textarea></label>
+      <div class="full" style="display:flex;align-items:center;gap:8px;padding:6px 0">
+        <label style="display:flex;flex-direction:row;align-items:center;gap:6px;cursor:pointer;color:var(--muted);font-weight:400;font-size:13px">
+          <input type="checkbox" id="autoEmailCb" checked style="width:auto"> Auto-email passenger &amp; driver
+        </label>
+      </div>
+      <div class="form-err" id="resFormErr"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('resModal')">Cancel</button>
+        <button type="submit" class="btn btn-sm">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Driver Modal -->
+<div id="driverModal" class="modal-bg" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('driverModal')"><i class="fas fa-times"></i></button>
+    <h2 id="driverModalTitle"><span>Ava</span> — <span id="driverModalAction">New</span> driver</h2>
+    <form id="driverForm" class="form-grid">
+      <input type="hidden" name="id">
+      <label class="full">Name <input name="name" required placeholder="Driver's full name"></label>
+      <label>Email (login) <input name="email" type="email" required placeholder="driver@avalimo.net"></label>
+      <label>Phone <input name="phone" type="tel" placeholder="(832) 555-0100"></label>
+      <label>Vehicle type <input name="vehicle_type" placeholder="e.g. Cadillac Escalade"></label>
+      <label>Vehicle description <input name="vehicle_desc" placeholder="Black, 2025"></label>
+      <label>License # <input name="license" placeholder="TX DL #"></label>
+      <label class="full">Password <input name="password" type="password" minlength="6" placeholder="Min 6 chars for new driver"></label>
+      <div class="form-err" id="driverFormErr"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('driverModal')">Cancel</button>
+        <button type="submit" class="btn btn-sm">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Vehicle Modal -->
+<div id="vehicleModal" class="modal-bg" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('vehicleModal')"><i class="fas fa-times"></i></button>
+    <h2 id="vehicleModalTitle"><span>Ava</span> — <span id="vehicleModalAction">New</span> vehicle</h2>
+    <form id="vehicleForm" class="form-grid">
+      <input type="hidden" name="id">
+      <label class="full">Type <input name="type" placeholder="Sedan, SUV, Sprinter..." required></label>
+      <label class="full">Description <input name="description" placeholder="Black, 2025 Mercedes S-Class"></label>
+      <label>License plate <input name="license_plate" placeholder="ABC-1234"></label>
+      <label>Capacity <input name="capacity" type="number" value="4" min="1"></label>
+      <label>Status
+        <select name="status">
+          <option value="available">Available</option>
+          <option value="in_service">In service</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+      </label>
+      <label>Assigned driver
+        <select name="assigned_driver_id"><option value="">— Unassigned —</option></select>
+      </label>
+      <div class="form-err" id="vehicleFormErr"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('vehicleModal')">Cancel</button>
+        <button type="submit" class="btn btn-sm">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Customer Modal -->
+<div id="customerModal" class="modal-bg" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('customerModal')"><i class="fas fa-times"></i></button>
+    <h2 id="customerModalTitle"><span>Ava</span> — <span id="customerModalAction">New</span> customer</h2>
+    <form id="customerForm" class="form-grid">
+      <input type="hidden" name="id">
+      <label class="full">Name <input name="name" required></label>
+      <label>Phone <input name="phone" type="tel"></label>
+      <label>Email <input name="email" type="email"></label>
+      <label>CC email <input name="cc_email" type="email" placeholder="billing@company.com"></label>
+      <label class="full">Address <input name="address"></label>
+      <label class="full">Notes <textarea name="notes" rows="2"></textarea></label>
+      <div class="form-err" id="customerFormErr"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('customerModal')">Cancel</button>
+        <button type="submit" class="btn btn-sm">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bulk Customer Import Modal -->
+<div id="bulkModal" class="modal-bg" style="display:none">
+  <div class="modal wide">
+    <button class="modal-close" onclick="closeModal('bulkModal')"><i class="fas fa-times"></i></button>
+    <h2><span>Ava</span> — Bulk import customers</h2>
+    <p class="muted" style="margin:0 0 12px;font-size:12px;line-height:1.6">
+      Paste rows below — one per line. Formats accepted:<br>
+      <span class="mono" style="background:var(--panel-2);padding:1px 6px;border-radius:4px;font-size:11px">Name</span> ·
+      <span class="mono" style="background:var(--panel-2);padding:1px 6px;border-radius:4px;font-size:11px">Name, Phone</span> ·
+      <span class="mono" style="background:var(--panel-2);padding:1px 6px;border-radius:4px;font-size:11px">Name, Phone, Email</span> ·
+      or JSON array.
+    </p>
+    <form id="bulkForm" class="form-grid">
+      <textarea name="rows" rows="8" class="full" placeholder="Acme Corp, 2815551212, billing@acme.com
+Bob Smith, 8325550001, bob@example.com
+Jane Doe"></textarea>
+      <div class="form-err" id="bulkFormErr"></div>
+      <div id="bulkFormOk" style="color:var(--green);font-size:13px;grid-column:1/-1"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('bulkModal')">Cancel</button>
+        <button type="submit" class="btn btn-sm">Import</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Invoice Modal -->
+<div id="invoiceModal" class="modal-bg" style="display:none">
+  <div class="modal wide">
+    <button class="modal-close" onclick="closeModal('invoiceModal')"><i class="fas fa-times"></i></button>
+    <h2 id="invoiceModalTitle"><span>Ava</span> — <span id="invoiceModalAction">New</span> invoice</h2>
+    <form id="invoiceForm" class="form-grid">
+      <input type="hidden" name="id">
+      <label class="full">Client name <input name="client_name" required></label>
+      <label class="full">Client email <input name="client_email" type="email"></label>
+      <label class="full">Reservation
+        <select name="reservation_id"><option value="">— None —</option></select>
+      </label>
+      <label>Issue date <input name="issue_date" type="date"></label>
+      <label>Due date <input name="due_date" type="date"></label>
+      <label>Tax rate (%) <input name="tax_rate" type="number" step="0.01" value="0"></label>
+      <label>Status
+        <select name="status">
+          <option value="draft">Draft</option>
+          <option value="sent">Sent</option>
+          <option value="paid">Paid</option>
+          <option value="overdue">Overdue</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </label>
+      <label class="full">Notes <textarea name="notes" rows="2"></textarea></label>
+      <div class="form-err" id="invoiceFormErr"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('invoiceModal')">Cancel</button>
+        <button type="submit" class="btn btn-sm">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ── Utilities ──────────────────────────────────────────────
+function $(id){return document.getElementById(id)}
+function qs(s){return document.querySelector(s)}
+function qsa(s){return document.querySelectorAll(s)}
+
+function esc(s){
+  if(s==null) return '';
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function toast(msg, kind){
+  var t=document.createElement('div');
+  t.className='toast' + (kind==='err'?' err':kind==='warn'?' warn':'');
+  t.innerHTML = '<i class="fas '+(kind==='err'?'fa-exclamation-circle':kind==='warn'?'fa-exclamation-triangle':'fa-check-circle')+'"></i> '+esc(msg);
+  document.body.appendChild(t);
+  setTimeout(function(){t.remove();},3000);
+}
+
+function closeModal(id){
+  $(''+id).style.display='none';
+}
+
+function openModal(id){
+  $(''+id).style.display='flex';
+}
+
+function statusBadge(s){
+  var cls = s==='in_progress'?'progress':s==='completed'?'completed':s==='cancelled'?'cancelled':s==='paid'?'paid':s==='sent'?'sent':s==='draft'?'draft':s==='overdue'?'overdue':s==='online'?'online':s==='available'?'available':s==='maintenance'?'maintenance':'new';
+  return '<span class="badge badge-'+cls+'">'+esc(String(s||'').replace(/_/g,' ').toUpperCase())+'</span>';
+}
+
+function fare(n){ n=Number(n||0); return '$'+n.toFixed(2); }
+
+function fmtDate(t){
+  if(!t) return '-';
+  var d=new Date(t);
+  if(isNaN(d.getTime())) return String(t).slice(0,16).replace('T',' ');
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function fmtDateShort(t){
+  if(!t) return '-';
+  var d=new Date(t);
+  if(isNaN(d.getTime())) return String(t).slice(0,10);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+// ── API helper (uses SameSite cookie from /admin login) ────
+function api(method, path, body){
+  var opts = {method:method, headers:{'Content-Type':'application/json','Accept':'application/json'}};
+  if(body !== undefined) opts.body = JSON.stringify(body);
+  return fetch(path, opts).then(function(r){
+    if(!r.ok) return r.json().then(function(e){
+      var msg = (e && (e.error||e.msg||e.error_description||e.message)) || ('HTTP '+r.status);
+      throw new Error(msg);
+    });
+    if(r.status===204) return null;
+    return r.json();
+  });
+}
+
+// ── LOGIN ──────────────────────────────────────────────────
+var LOGGED_IN = localStorage.getItem('dispatch_session') === '1';
+
+function login(pin){
+  var btn = $('loginBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
+  $('loginErr').textContent = '';
+
+  // Use form POST to get HttpOnly session cookie
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/admin';
+  var input = document.createElement('input');
+  input.name = 'pin';
+  input.value = pin;
+  form.appendChild(input);
+  form.style.display = 'none';
+  document.body.appendChild(form);
+
+  // We submit the form and check if we get a redirect (success) or the login page back
+  fetch('/admin', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'pin='+encodeURIComponent(pin), redirect:'manual'})
+    .then(function(r){
+      if(r.status === 302){
+        // Success! Session cookie is set
+        localStorage.setItem('dispatch_session', '1');
+        showApp();
+        loadAll();
+        toast('Signed in','ok');
+      } else {
+        // Login page again — wrong PIN
+        $('loginErr').textContent = 'Wrong PIN';
+        btn.disabled = false; btn.textContent = 'Sign in';
+      }
+    }).catch(function(e){
+      $('loginErr').textContent = e.message;
+      btn.disabled = false; btn.textContent = 'Sign in';
+    });
+}
+
+$('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  login($('loginPin').value);
+});
+
+$('loginPin').addEventListener('keydown', function(e){
+  if(e.key==='Enter') login(this.value);
+});
+
+// ── APP SHELL ──────────────────────────────────────────────
+function showApp(){
+  $('loginPage').style.display = 'none';
+  $('appShell').style.display = 'block';
+  document.title = 'AvaLimo Dispatch';
+}
+
+function showLogin(){
+  $('loginPage').style.display = 'flex';
+  $('appShell').style.display = 'none';
+  $('loginPin').value = '';
+  $('loginPin').focus();
+  localStorage.removeItem('dispatch_session');
+}
+
+function logout(){
+  if(!confirm('Sign out of dispatch?')) return;
+  // Clear session and redirect to admin login
+  localStorage.removeItem('dispatch_session');
+  window.location.href = '/admin/logout';
+}
+
+$('logoutBtn').addEventListener('click', logout);
+
+// ── SIDEBAR TABS ───────────────────────────────────────────
+var PAGE_TITLES = {
+  reservations:'Reservations', drivers:'Drivers', vehicles:'Vehicles',
+  customers:'Customers', invoices:'Invoices', notifications:'Notifications'
+};
+
+qsa('.nav-item').forEach(function(item){
+  item.addEventListener('click', function(){
+    var tab = item.getAttribute('data-tab');
+    switchTab(tab);
+    // Close sidebar on mobile
+    var sb = document.querySelector('.sidebar');
+    if(sb && sb.classList.contains('open')){
+      sb.classList.remove('open');
+      $('sidebarOverlay').classList.remove('show');
+    }
+  });
+});
+
+function switchTab(tab){
+  qsa('.nav-item').forEach(function(n){n.classList.remove('active');});
+  qsa('.tsec').forEach(function(s){s.style.display='none';});
+  var navItem = qs('.nav-item[data-tab="'+tab+'"]');
+  if(navItem) navItem.classList.add('active');
+  $('t-'+tab).style.display='block';
+  $('pageTitle').innerHTML = '<span>Ava</span>Limo <span class="muted" style="font-weight:400;font-size:14px">'+PAGE_TITLES[tab]+'</span>';
+
+  if(tab==='reservations') loadReservations();
+  else if(tab==='drivers') loadDrivers();
+  else if(tab==='vehicles') loadVehicles();
+  else if(tab==='customers') loadCustomers();
+  else if(tab==='invoices') loadInvoices();
+  else if(tab==='notifications') loadNotifications();
+}
+
+// ── STATS ──────────────────────────────────────────────────
+var _statsInterval = null;
+
+function refreshStats(){
+  api('GET','/api/stats').then(function(s){
+    $('statActive').textContent = s.active || 0;
+    $('statDrivers').textContent = (s.drivers_online||0)+'/'+(s.drivers_total||0);
+    $('statToday').textContent = s.today || 0;
+    $('statRevToday').textContent = '$' + Number(s.revenue_today||0).toFixed(0);
+    $('statRevWeek').textContent = '$' + Number(s.revenue_week||0).toFixed(0);
+    $('topStatActive').innerHTML = '<strong>'+(s.active||0)+'</strong> active';
+    $('topStatDrivers').innerHTML = '<strong>'+(s.drivers_online||0)+'/'+(s.drivers_total||0)+'</strong> <span class="hide-mobile">drivers</span>';
+    $('sbStatus').innerHTML = '<strong>'+(s.active||0)+'</strong> active · <strong>'+(s.drivers_online||0)+'/'+(s.drivers_total||0)+'</strong> drivers online';
+  }).catch(function(){});
+}
+
+// ── LOAD ALL ON START ──────────────────────────────────────
+function loadAll(){
+  refreshStats();
+  loadReservations();
+  if(_statsInterval) clearInterval(_statsInterval);
+  _statsInterval = setInterval(refreshStats, 15000);
+}
+
+// ── RESERVATIONS ───────────────────────────────────────────
+function loadReservations(resetFilter){
+  if(resetFilter) $('resFilter').value = resetFilter;
+  var f = $('resFilter').value;
+  api('GET','/api/admin/reservations?filter='+encodeURIComponent(f)).then(function(rows){
+    var h='';
+    if(!rows || rows.length===0){
+      h='<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>No reservations</td></tr>';
+    } else {
+      rows.forEach(function(t){
+        h += '<tr>'
+          + '<td class="mono">#'+esc(t.reservation_number||t.id)+'</td>'
+          + '<td><div>'+esc(t.passenger_name||'-')+'</div><div class="muted" style="font-size:12px">'+esc(t.passenger_phone||'')+'</div></td>'
+          + '<td><div>'+esc(t.pickup_location)+'</div><div class="muted" style="font-size:12px"><i class="fas fa-arrow-right" style="font-size:10px"></i> '+esc(t.dropoff_location||'TBD')+'</div></td>'
+          + '<td>'+esc(t.driver_name||'<span class="muted">—</span>')+'</td>'
+          + '<td><strong>'+fare(t.price)+'</strong></td>'
+          + '<td>'+statusBadge(t.status)+'</td>'
+          + '<td><div class="action-row">'
+          +   '<button class="btn-icon btn-xs" data-act="edit" data-id="'+t.id+'" title="Edit trip"><i class="fas fa-pen"></i></button>'
+          +   '<button class="btn-icon btn-xs" data-act="email" data-id="'+t.id+'" title="Email passenger"><i class="fas fa-envelope"></i></button>'
+          +   '<button class="btn-icon btn-xs" data-act="invoice" data-id="'+t.id+'" title="Create invoice"><i class="fas fa-file-invoice"></i></button>'
+          +   '<button class="btn-icon btn-xs danger" data-act="del" data-id="'+t.id+'" title="Delete"><i class="fas fa-trash"></i></button>'
+          + '</div></td>'
+          + '</tr>';
+      });
+    }
+    $('resTbody').innerHTML = h;
+    $('resTbody').querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){
+        var id = b.getAttribute('data-id');
+        var act = b.getAttribute('data-act');
+        if(act==='edit') openResEditor(id);
+        else if(act==='del') delRes(id);
+        else if(act==='email') emailPassenger(id);
+        else if(act==='invoice') openInvoiceFromTrip(id);
+      });
+    });
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+// ── AUTO-EMAIL ───────────────────────────────────────────────
+// When a trip is created/updated, automatically notify passenger and driver
+function sendAutoEmails(trip, isNew){
+  var emails = [];
+  var driverName = trip.driver_name || '';
+  var driverEmail = trip.driver_email || '';
+
+  // Email to passenger
+  if(trip.passenger_email){
+    var body = 'Hello ' + (trip.passenger_name||'') + ',\n\n'
+      + 'Your AvaLimo reservation has been ' + (isNew ? 'created' : 'updated') + ':\n\n'
+      + 'Pickup: ' + (trip.pickup_location||'') + '\n'
+      + 'Dropoff: ' + (trip.dropoff_location||'TBD') + '\n'
+      + (trip.pickup_date ? 'Date: ' + trip.pickup_date + '\n' : '')
+      + (trip.pickup_time ? 'Time: ' + String(trip.pickup_time).slice(0,5) + '\n' : '')
+      + (trip.flight_number ? 'Flight: ' + trip.flight_number + '\n' : '')
+      + 'Fare: $' + Number(trip.price||0).toFixed(2) + '\n'
+      + (driverName ? 'Driver: ' + driverName + '\n' : '')
+      + '\nStatus: ' + (trip.status||'pending').replace('_',' ') + '\n\n'
+      + 'Thank you for choosing AvaLimo.\n'
+      + 'Call (832) 567-8050 for changes.';
+
+    emails.push({
+      trip_id: trip.id,
+      type: 'email',
+      to: trip.passenger_email,
+      subject: isNew
+        ? ('Your AvaLimo trip #' + (trip.reservation_number||trip.id) + ' is confirmed')
+        : ('AvaLimo trip #' + (trip.reservation_number||trip.id) + ' has been updated'),
+      body: body,
+      sent_by: 'system_auto'
+    });
+  }
+
+  // Email to driver if assigned
+  if(trip.driver_id && trip.driver_email){
+    var dBody = 'Trip assigned:\n\n'
+      + 'Passenger: ' + (trip.passenger_name||'') + '\n'
+      + 'Phone: ' + (trip.passenger_phone||'') + '\n'
+      + 'Pickup: ' + (trip.pickup_location||'') + '\n'
+      + 'Dropoff: ' + (trip.dropoff_location||'TBD') + '\n'
+      + (trip.pickup_date ? 'Date: ' + trip.pickup_date + '\n' : '')
+      + (trip.pickup_time ? 'Time: ' + String(trip.pickup_time).slice(0,5) + '\n' : '')
+      + (trip.flight_number ? 'Flight: ' + trip.flight_number + '\n' : '')
+      + 'Fare: $' + Number(trip.price||0).toFixed(2);
+
+    emails.push({
+      trip_id: trip.id,
+      type: 'email',
+      to: trip.driver_email,
+      subject: 'New trip assigned — #' + (trip.reservation_number||trip.id),
+      body: dBody,
+      sent_by: 'system_auto'
+    });
+  }
+
+  // Send all notifications
+  emails.forEach(function(data){
+    api('POST','/api/admin/notifications', data).catch(function(e){
+      console.warn('Auto-email failed:', e.message);
+    });
+  });
+
+  if(emails.length > 0){
+    toast('Sent ' + emails.length + ' notification' + (emails.length>1?'s':''), 'ok');
+  }
+}
+
+// ── Email passenger from trip row ──────────────────────────
+function emailPassenger(id){
+  api('GET','/api/admin/reservations/'+id).then(function(t){
+    if(!t || t.error){ toast(t&&t.error||'Not found','err'); return; }
+    if(!t.passenger_email){ toast('No email on this trip','warn'); return; }
+    var body = 'Hello ' + (t.passenger_name||'') + ',\n\n'
+      + 'Your AvaLimo trip details:\n\n'
+      + 'Pickup: ' + (t.pickup_location||'') + '\n'
+      + 'Dropoff: ' + (t.dropoff_location||'TBD') + '\n'
+      + (t.pickup_date ? 'Date: ' + t.pickup_date + '\n' : '')
+      + (t.pickup_time ? 'Time: ' + String(t.pickup_time).slice(0,5) + '\n' : '')
+      + 'Fare: $' + Number(t.price||0).toFixed(2) + '\n\n'
+      + 'Thank you for choosing AvaLimo.';
+    api('POST','/api/admin/notifications', {
+      trip_id: t.id,
+      type: 'email',
+      to: t.passenger_email,
+      subject: 'Your AvaLimo trip #' + (t.reservation_number||t.id),
+      body: body,
+      sent_by: 'dispatcher'
+    }).then(function(){
+      toast('Email sent to '+t.passenger_email,'ok');
+    }).catch(function(e){toast(e.message,'err');});
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+// ── RESERVATION EDITOR ────────────────────────────────────
+var _resCustomers = [];
+
+function loadDriversForSelect(){
+  return api('GET','/api/admin/drivers').then(function(rows){
+    var sel = document.querySelector('#resForm select[name=driver_id]');
+    sel.innerHTML = '<option value="">— Unassigned —</option>'
+      + (rows||[]).map(function(d){return '<option value="'+d.id+'">'+esc(d.name)+'</option>';}).join('');
+    return rows||[];
+  });
+}
+
+function loadCustDatalist(){
+  return api('GET','/api/admin/customers').then(function(rows){
+    _resCustomers = rows||[];
+    var dl = $('custDatalist');
+    dl.innerHTML = rows.map(function(c){return '<option value="'+esc(c.name)+'" data-id="'+c.id+'">';}).join('');
+  });
+}
+
+function fillFromCustomer(name){
+  var c = _resCustomers.find(function(x){return x.name.trim().toLowerCase()===name.trim().toLowerCase();});
+  if(!c) return;
+  var f = $('resForm');
+  if(!f.passenger_phone.value) f.passenger_phone.value = c.phone||'';
+  if(!f.passenger_email.value) f.passenger_email.value = c.email||'';
+  if(!f.notes.value) f.notes.value = c.notes||'';
+}
+
+function openResEditor(id){
+  $('resForm').reset();
+  $('resFormErr').textContent = '';
+  $('resModalAction').textContent = id ? 'Edit' : 'New';
+
+  Promise.all([loadDriversForSelect(), loadCustDatalist()]).then(function(results){
+    var drivers = results[0];
+    var nameInput = document.querySelector('#resForm [name=passenger_name]');
+    nameInput.removeEventListener('change', function(){});
+    nameInput.addEventListener('change', function(){ fillFromCustomer(this.value); });
+
+    if(id){
+      api('GET','/api/admin/reservations/'+id).then(function(t){
+        var f = $('resForm');
+        f.id.value = t.id;
+        f.passenger_name.value = t.passenger_name||'';
+        f.passenger_phone.value = t.passenger_phone||'';
+        f.passenger_email.value = t.passenger_email||'';
+        f.pickup_location.value = t.pickup_location||'';
+        f.dropoff_location.value = t.dropoff_location||'';
+        f.pickup_date.value = t.pickup_date||'';
+        f.pickup_time.value = t.pickup_time?String(t.pickup_time).slice(0,5):'';
+        f.flight_number.value = t.flight_number||'';
+        f.price.value = t.price||0;
+        f.passenger_count.value = t.passenger_count||1;
+        f.driver_id.value = t.driver_id||'';
+        f.status.value = t.status||'pending';
+        f.notes.value = t.notes||'';
+        openModal('resModal');
+      }).catch(function(e){toast(e.message,'err');});
+    } else {
+      // Set default pickup date/time
+      var now = new Date();
+      var dateStr = now.toISOString().slice(0,10);
+      var timeStr = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+      var f = $('resForm');
+      f.pickup_date.value = dateStr;
+      f.pickup_time.value = timeStr;
+      openModal('resModal');
+    }
+  });
+}
+
+function saveRes(e){
+  e.preventDefault();
+  var f = $('resForm');
+  var isNew = !f.id.value;
+  var data = {
+    passenger_name: f.passenger_name.value.trim(),
+    passenger_phone: f.passenger_phone.value.trim() || null,
+    passenger_email: f.passenger_email.value.trim() || null,
+    pickup_location: f.pickup_location.value.trim(),
+    dropoff_location: f.dropoff_location.value.trim() || null,
+    pickup_date: f.pickup_date.value || null,
+    pickup_time: f.pickup_time.value || null,
+    price: parseFloat(f.price.value)||0,
+    passenger_count: parseInt(f.passenger_count.value,10)||1,
+    flight_number: f.flight_number.value.trim() || null,
+    status: (f.status.value||'').toLowerCase(),
+    driver_id: f.driver_id.value || null,
+    notes: f.notes.value.trim() || null,
+  };
+
+  var id = f.id.value;
+  var url = id ? '/api/admin/reservations/'+id : '/api/admin/reservations';
+  var method = id ? 'PATCH' : 'POST';
+
+  api(method, url, data).then(function(saved){
+    closeModal('resModal');
+    toast(id?'Updated':'Created','ok');
+    $('resFilter').value = 'active';
+
+    // Auto-email if checkbox is checked
+    if($('autoEmailCb').checked){
+      // Get the full saved trip (with driver email)
+      api('GET','/api/admin/reservations/'+(saved.id||id)).then(function(fullTrip){
+        if(fullTrip && !fullTrip.error) sendAutoEmails(fullTrip, isNew);
+      }).catch(function(){});
+    }
+
+    loadReservations('active');
+    refreshStats();
+  }).catch(function(err){$('resFormErr').textContent=err.message;});
+}
+
+function delRes(id){
+  if(!confirm('Delete reservation #'+id+'?')) return;
+  api('DELETE','/api/admin/reservations/'+id).then(function(){
+    toast('Deleted','ok');
+    loadReservations();
+    refreshStats();
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+$('newResBtn').addEventListener('click', function(){openResEditor(null);});
+$('resForm').addEventListener('submit', saveRes);
+$('resFilter').addEventListener('change', loadReservations);
+$('resRefresh').addEventListener('click', function(){loadReservations(); refreshStats(); toast('Refreshed','ok');});
+
+// ── DRIVERS ────────────────────────────────────────────────
+function loadDrivers(){
+  api('GET','/api/admin/drivers').then(function(rows){
+    var h='';
+    if(!rows || rows.length===0){
+      h='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-users" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>No drivers yet</td></tr>';
+    } else {
+      rows.forEach(function(d){
+        h += '<tr>'
+          + '<td><div>'+esc(d.name)+'</div><div class="muted" style="font-size:12px">'+esc(d.vehicle_type||'')+'</div></td>'
+          + '<td>'+esc(d.email||'-')+'</td>'
+          + '<td>'+esc(d.phone||'-')+'</td>'
+          + '<td>'+esc(d.vehicle_desc||'-')+'</td>'
+          + '<td>'+statusBadge(d.status||'offline')+'</td>'
+          + '<td><div class="action-row">'
+          +   '<button class="btn-icon btn-xs" data-act="edit" data-id="'+d.id+'" title="Edit"><i class="fas fa-pen"></i></button>'
+          +   '<button class="btn-icon btn-xs danger" data-act="del" data-id="'+d.id+'" title="Delete"><i class="fas fa-trash"></i></button>'
+          + '</div></td>'
+          + '</tr>';
+      });
+    }
+    $('driversTbody').innerHTML = h;
+    $('driversTbody').querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){
+        var id = b.getAttribute('data-id');
+        if(b.getAttribute('data-act')==='edit') openDriverEditor(id);
+        else delDriver(id);
+      });
+    });
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+function openDriverEditor(id){
+  $('driverForm').reset();
+  $('driverFormErr').textContent='';
+  $('driverModalAction').textContent = id?'Edit':'New';
+  if(id){
+    api('GET','/api/admin/drivers/'+id).then(function(d){
+      var f=$('driverForm');
+      f.id.value=d.id;
+      f.name.value=d.name||'';
+      f.email.value=d.email||'';
+      f.phone.value=d.phone||'';
+      f.vehicle_type.value=d.vehicle_type||'';
+      f.vehicle_desc.value=d.vehicle_desc||'';
+      f.license.value=d.license||'';
+      openModal('driverModal');
+    }).catch(function(e){toast(e.message,'err');});
+  } else {
+    openModal('driverModal');
+  }
+}
+
+function saveDriver(e){
+  e.preventDefault();
+  var f=$('driverForm');
+  var data={name:f.name.value.trim(),email:f.email.value.trim(),phone:f.phone.value.trim()||"-",vehicle_type:f.vehicle_type.value.trim()||"-",vehicle_desc:f.vehicle_desc.value.trim()||"-",license:f.license.value.trim()||"-"};
+  var pw=f.password.value;
+  if(pw) data.password=pw;
+  var id=f.id.value;
+  var url=id?'/api/admin/drivers/'+id:'/api/admin/drivers';
+  var method=id?'PATCH':'POST';
+  api(method,url,data).then(function(){
+    closeModal('driverModal');
+    toast(id?'Updated':'Created','ok');
+    loadDrivers();
+  }).catch(function(err){$('driverFormErr').textContent=err.message;});
+}
+
+function delDriver(id){
+  if(!confirm('Delete driver?')) return;
+  api('DELETE','/api/admin/drivers/'+id).then(function(){toast('Deleted','ok');loadDrivers();}).catch(function(e){toast(e.message,'err');});
+}
+
+$('newDriverBtn').addEventListener('click',function(){openDriverEditor(null);});
+$('driverForm').addEventListener('submit',saveDriver);
+
+// ── VEHICLES ────────────────────────────────────────────────
+function loadVehicles(){
+  api('GET','/api/admin/vehicles').then(function(rows){
+    var h='';
+    if(!rows||!rows.length){
+      h='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-car" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>No vehicles</td></tr>';
+    } else {
+      rows.forEach(function(v){
+        h += '<tr>'
+          + '<td><strong>'+esc(v.type)+'</strong></td>'
+          + '<td>'+esc(v.description||'-')+'</td>'
+          + '<td class="mono">'+esc(v.license_plate||'-')+'</td>'
+          + '<td>'+statusBadge(v.status||'available')+'</td>'
+          + '<td>'+esc(v.capacity||'-')+'</td>'
+          + '<td><div class="action-row">'
+          +   '<button class="btn-icon btn-xs" data-act="edit" data-id="'+v.id+'"><i class="fas fa-pen"></i></button>'
+          +   '<button class="btn-icon btn-xs danger" data-act="del" data-id="'+v.id+'"><i class="fas fa-trash"></i></button>'
+          + '</div></td></tr>';
+      });
+    }
+    $('vehiclesTbody').innerHTML=h;
+    $('vehiclesTbody').querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var id=b.getAttribute('data-id');
+        if(b.getAttribute('data-act')==='edit') openVehicleEditor(id);
+        else delVehicle(id);
+      });
+    });
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+function openVehicleEditor(id){
+  $('vehicleForm').reset();
+  $('vehicleFormErr').textContent='';
+  $('vehicleModalAction').textContent=id?'Edit':'New';
+  api('GET','/api/admin/drivers').then(function(drivers){
+    var sel=document.querySelector('#vehicleForm select[name=assigned_driver_id]');
+    sel.innerHTML='<option value="">— Unassigned —</option>'+(drivers||[]).map(function(d){return '<option value="'+d.id+'">'+esc(d.name)+'</option>';}).join('');
+    if(id){
+      api('GET','/api/admin/vehicles/'+id).then(function(v){
+        var f=$('vehicleForm');
+        f.id.value=v.id;f.type.value=v.type||'';f.description.value=v.description||'';
+        f.license_plate.value=v.license_plate||'';f.status.value=v.status||'available';
+        f.capacity.value=v.capacity||4;f.assigned_driver_id.value=v.assigned_driver_id||'';
+        openModal('vehicleModal');
+      }).catch(function(e){toast(e.message,'err');});
+    } else openModal('vehicleModal');
+  });
+}
+
+function saveVehicle(e){
+  e.preventDefault();
+  var f=$('vehicleForm');
+  var data={type:f.type.value.trim(),description:f.description.value.trim()||null,license_plate:f.license_plate.value.trim()||null,status:f.status.value,capacity:parseInt(f.capacity.value,10)||4,assigned_driver_id:f.assigned_driver_id.value?parseInt(f.assigned_driver_id.value,10):null};
+  var id=f.id.value;
+  var url=id?'/api/admin/vehicles/'+id:'/api/admin/vehicles';
+  var method=id?'PATCH':'POST';
+  api(method,url,data).then(function(){closeModal('vehicleModal');toast(id?'Updated':'Created','ok');loadVehicles();}).catch(function(err){$('vehicleFormErr').textContent=err.message;});
+}
+
+function delVehicle(id){
+  if(!confirm('Delete vehicle?')) return;
+  api('DELETE','/api/admin/vehicles/'+id).then(function(){toast('Deleted','ok');loadVehicles();}).catch(function(e){toast(e.message,'err');});
+}
+
+$('newVehicleBtn').addEventListener('click',function(){openVehicleEditor(null);});
+$('vehicleForm').addEventListener('submit',saveVehicle);
+
+// ── CUSTOMERS ──────────────────────────────────────────────
+function loadCustomers(){
+  var q = ($('custSearch')&&$('custSearch').value||'').toLowerCase();
+  api('GET','/api/admin/customers').then(function(rows){
+    var h='',count=0;
+    if(!rows||!rows.length){
+      h='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-address-book" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>No customers yet</td></tr>';
+    } else {
+      rows.forEach(function(c){
+        if(q && c.name.toLowerCase().indexOf(q)===-1 && (c.email||'').toLowerCase().indexOf(q)===-1 && (c.phone||'').indexOf(q)===-1) return;
+        count++;
+        h += '<tr>'
+          + '<td><strong>'+esc(c.name||'-')+'</strong></td>'
+          + '<td>'+esc(c.phone||'-')+'</td>'
+          + '<td>'+esc(c.email||'-')+'</td>'
+          + '<td>'+esc(c.cc_email||'-')+'</td>'
+          + '<td class="truncate">'+esc(c.address||'-')+'</td>'
+          + '<td class="truncate">'+esc(c.notes||'-')+'</td>'
+          + '<td class="muted">'+fmtDateShort(c.created_at)+'</td>'
+          + '<td><div class="action-row">'
+          +   '<button class="btn-icon btn-xs" data-act="edit" data-id="'+c.id+'"><i class="fas fa-pen"></i></button>'
+          +   '<button class="btn-icon btn-xs danger" data-act="del" data-id="'+c.id+'"><i class="fas fa-trash"></i></button>'
+          + '</div></td></tr>';
+      });
+    }
+    $('customersTbody').innerHTML = h;
+    $('custCount').textContent = count ? count + ' shown' : '';
+    $('customersTbody').querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var id=b.getAttribute('data-id');
+        if(b.getAttribute('data-act')==='edit') openCustomerEditor(id);
+        else delCustomer(id);
+      });
+    });
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+function openCustomerEditor(id){
+  $('customerForm').reset();
+  $('customerFormErr').textContent='';
+  $('customerModalAction').textContent=id?'Edit':'New';
+  if(id){
+    api('GET','/api/admin/customers/'+id).then(function(c){
+      var f=$('customerForm');
+      f.id.value=c.id;f.name.value=c.name||'';f.phone.value=c.phone||'';
+      f.email.value=c.email||'';f.cc_email.value=c.cc_email||'';f.address.value=c.address||'';
+      f.notes.value=c.notes||'';
+      openModal('customerModal');
+    }).catch(function(e){toast(e.message,'err');});
+  } else openModal('customerModal');
+}
+
+function saveCustomer(e){
+  e.preventDefault();
+  var f=$('customerForm');
+  var data={name:f.name.value.trim(),phone:f.phone.value.trim()||null,email:f.email.value.trim()||null,cc_email:f.cc_email.value.trim()||null,address:f.address.value.trim()||null,notes:f.notes.value.trim()||null};
+  var id=f.id.value;
+  var url=id?'/api/admin/customers/'+id:'/api/admin/customers';
+  var method=id?'PATCH':'POST';
+  api(method,url,data).then(function(){closeModal('customerModal');toast(id?'Updated':'Created','ok');loadCustomers();}).catch(function(err){$('customerFormErr').textContent=err.message;});
+}
+
+function delCustomer(id){
+  if(!confirm('Delete customer?')) return;
+  api('DELETE','/api/admin/customers/'+id).then(function(){toast('Deleted','ok');loadCustomers();}).catch(function(e){toast(e.message,'err');});
+}
+
+$('newCustomerBtn').addEventListener('click',function(){openCustomerEditor(null);});
+$('customerForm').addEventListener('submit',saveCustomer);
+$('custSearch').addEventListener('input',loadCustomers);
+$('custRefresh').addEventListener('click',function(){loadCustomers();toast('Refreshed','ok');});
+
+// Bulk import
+$('bulkCustomerBtn').addEventListener('click',function(){$('bulkForm').reset();$('bulkFormErr').textContent='';$('bulkFormOk').textContent='';openModal('bulkModal');});
+$('bulkForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var txt=$('bulkForm').rows.value.trim();
+  if(!txt){$('bulkFormErr').textContent='Paste at least one row';return;}
+  var rows=null;
+  if(txt.charAt(0)==='['||txt.charAt(0)==='{'){
+    try{var parsed=JSON.parse(txt);rows=Array.isArray(parsed)?parsed:[parsed];}
+    catch(je){$('bulkFormErr').textContent='Not valid JSON: '+je.message;return;}
+  } else {
+    rows=[];
+    txt.split(/\r?\n/).forEach(function(line){
+      var s=line.trim();if(!s)return;
+      var parts=s.split(/\t|,/);
+      for(var i=0;i<parts.length;i++)parts[i]=parts[i].trim();
+      if(!parts[0])return;
+      var r={name:parts[0]};
+      if(parts[1])r.phone=parts[1];
+      if(parts[2])r.email=parts[2];
+      if(parts[3])r.cc_email=parts[3];
+      if(parts[4])r.address=parts[4];
+      if(parts[5])r.notes=parts.slice(5).join(', ');
+      rows.push(r);
+    });
+  }
+  if(!rows||!rows.length){$('bulkFormErr').textContent='No rows parsed';return;}
+  var bad=rows.filter(function(r){return !r.name;});
+  if(bad.length){$('bulkFormErr').textContent=bad.length+' row(s) missing name';return;}
+  $('bulkFormErr').textContent='';
+  $('bulkFormOk').textContent='Importing '+rows.length+' customers…';
+  api('POST','/api/admin/customers',rows).then(function(j){
+    var n=(j&&j.inserted)||(j&&j.rows&&j.rows.length)||0;
+    $('bulkFormOk').textContent='Imported '+n+' customers';
+    toast('Imported '+n,'ok');
+    loadCustomers();
+  }).catch(function(err){$('bulkFormErr').textContent=err.message;});
+});
+
+// ── INVOICES ──────────────────────────────────────────────
+function loadInvoices(){
+  api('GET','/api/admin/invoices').then(function(rows){
+    var h='';
+    if(!rows||!rows.length){
+      h='<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-file-invoice" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>No invoices</td></tr>';
+    } else {
+      rows.forEach(function(c){
+        h += '<tr>'
+          + '<td class="mono">#'+esc(c.invoice_number||c.id)+'</td>'
+          + '<td>'+esc(c.client_name||'-')+'<div class="muted" style="font-size:12px">'+esc(c.client_email||'')+'</div></td>'
+          + '<td>'+(c.reservation_id?'<span class="mono">#'+c.reservation_id+'</span>':'<span class="muted">-</span>')+'</td>'
+          + '<td><strong>'+fare(c.total||0)+'</strong></td>'
+          + '<td>'+statusBadge(c.status||'draft')+'</td>'
+          + '<td class="muted">'+fmtDateShort(c.issue_date)+'</td>'
+          + '<td><button class="btn-icon btn-xs danger" data-id="'+c.id+'"><i class="fas fa-trash"></i></button></td></tr>';
+      });
+    }
+    $('invoicesTbody').innerHTML=h;
+    $('invoicesTbody').querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var id=b.getAttribute('data-id');
+        if(!confirm('Delete invoice #'+id+'?')) return;
+        api('DELETE','/api/admin/invoices/'+id).then(function(){toast('Deleted','ok');loadInvoices();}).catch(function(e){toast(e.message,'err');});
+      });
+    });
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+function openInvoiceFromTrip(rid){
+  api('GET','/api/admin/reservations/'+rid).then(function(t){
+    if(!t||t.error){toast(t&&t.error||'Trip not found','err');return;}
+    $('invoiceForm').reset();
+    $('invoiceFormErr').textContent='';
+    $('invoiceModalAction').textContent='New';
+    api('GET','/api/admin/reservations?filter=all').then(function(res){
+      var sel=document.querySelector('#invoiceForm select[name=reservation_id]');
+      sel.innerHTML='<option value="">— None —</option>'+(res||[]).map(function(d){return '<option value="'+d.id+'">#'+(d.reservation_number||d.id)+' '+esc(d.passenger_name||'')+'</option>';}).join('');
+      var f=$('invoiceForm');
+      f.id.value='';
+      f.client_name.value=t.passenger_name||'';
+      f.client_email.value=t.passenger_email||'';
+      f.reservation_id.value=t.id||'';
+      f.issue_date.value=new Date().toISOString().slice(0,10);
+      f.due_date.value='';
+      f.tax_rate.value=0;
+      f.status.value='draft';
+      f.notes.value='Line item: Trip #'+(t.reservation_number||t.id)+' — '+(t.pickup_location||'')+(t.dropoff_location?' → '+t.dropoff_location:'')+' — $'+(t.price||0).toFixed(2);
+      openModal('invoiceModal');
+    });
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+function openInvoiceEditor(id){
+  $('invoiceForm').reset();
+  $('invoiceFormErr').textContent='';
+  $('invoiceModalAction').textContent=id?'Edit':'New';
+  api('GET','/api/admin/reservations?filter=all').then(function(res){
+    var sel=document.querySelector('#invoiceForm select[name=reservation_id]');
+    sel.innerHTML='<option value="">— None —</option>'+(res||[]).map(function(d){return '<option value="'+d.id+'">#'+(d.reservation_number||d.id)+' '+esc(d.passenger_name||'')+'</option>';}).join('');
+    if(id){
+      api('GET','/api/admin/invoices/'+id).then(function(c){
+        var f=$('invoiceForm');f.id.value=c.id;f.client_name.value=c.client_name||'';
+        f.client_email.value=c.client_email||'';f.reservation_id.value=c.reservation_id||'';
+        f.issue_date.value=c.issue_date||'';f.due_date.value=c.due_date||'';
+        f.tax_rate.value=c.tax_rate||0;f.status.value=c.status||'draft';f.notes.value=c.notes||'';
+        openModal('invoiceModal');
+      }).catch(function(e){toast(e.message,'err');});
+    } else openModal('invoiceModal');
+  });
+}
+
+function saveInvoice(e){
+  e.preventDefault();
+  var f=$('invoiceForm');
+  var data={client_name:f.client_name.value.trim(),client_email:f.client_email.value.trim()||null,reservation_id:f.reservation_id.value?parseInt(f.reservation_id.value,10):null,issue_date:f.issue_date.value||null,due_date:f.due_date.value||null,tax_rate:parseFloat(f.tax_rate.value)||0,status:f.status.value,notes:f.notes.value.trim()||null};
+  var id=f.id.value;
+  var url=id?'/api/admin/invoices/'+id:'/api/admin/invoices';
+  var method=id?'PATCH':'POST';
+  api(method,url,data).then(function(){closeModal('invoiceModal');toast(id?'Updated':'Created','ok');loadInvoices();}).catch(function(err){$('invoiceFormErr').textContent=err.message;});
+}
+
+$('newInvoiceBtn').addEventListener('click',function(){openInvoiceEditor(null);});
+$('invoiceForm').addEventListener('submit',saveInvoice);
+
+// ── NOTIFICATIONS ──────────────────────────────────────────
+function loadNotifications(){
+  api('GET','/api/admin/notifications').then(function(rows){
+    var h='';
+    if(!rows||!rows.length){
+      h='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-bell" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>No notifications sent yet</td></tr>';
+    } else {
+      rows.forEach(function(n){
+        h += '<tr>'
+          + '<td><span class="badge badge-'+(n.type==='email'?'sent':'new')+'">'+esc(n.type||'-')+'</span></td>'
+          + '<td>'+esc(n.to||'-')+'</td>'
+          + '<td class="truncate">'+esc(n.subject||'-')+'</td>'
+          + '<td>'+(n.trip_id?'<span class="mono">#'+n.trip_id+'</span>':'-')+'</td>'
+          + '<td>'+esc(n.sent_by||'-')+'</td>'
+          + '<td class="muted">'+fmtDate(n.created_at)+'</td></tr>';
+      });
+    }
+    $('notifTbody').innerHTML=h;
+  }).catch(function(e){toast(e.message,'err');});
+}
+
+$('notifRefresh').addEventListener('click',function(){loadNotifications();toast('Refreshed','ok');});
+
+// ── MOBILE SIDEBAR ────────────────────────────────────────
+$('menuBtn').addEventListener('click',function(e){
+  e.stopPropagation();
+  document.querySelector('.sidebar').classList.toggle('open');
+  $('sidebarOverlay').classList.toggle('show');
+});
+$('sidebarOverlay').addEventListener('click',function(){
+  document.querySelector('.sidebar').classList.remove('open');
+  $('sidebarOverlay').classList.remove('show');
+});
+
+// ── INIT ───────────────────────────────────────────────────
+if(LOGGED_IN){
+  showApp();
+  loadAll();
+}
+
+// Handle keyboard escape for modals
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape'){
+    qsa('.modal-bg').forEach(function(m){
+      if(m.style.display!=='none') m.style.display='none';
+    });
+  }
+});
+
+})();
+</script>
+</body>
+</html>
