@@ -56,6 +56,9 @@ fbq('init','{FB_PIXEL_ID}');fbq('track','PageView');
 _blog_path = os.path.join(os.path.dirname(__file__), "blog_posts.json")
 BLOG_POSTS = json.load(open(_blog_path)) if os.path.exists(_blog_path) else []
 
+_PAGE_CONTENT_PATH = os.path.join(os.path.dirname(__file__), "page_content.json")
+PAGE_CONTENT = json.load(open(_PAGE_CONTENT_PATH)) if os.path.exists(_PAGE_CONTENT_PATH) else {}
+
 
 def send_booking_email(data: dict):
     name = data.get("name", "?")
@@ -201,6 +204,26 @@ PAGE_META = {
     "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "pricing": { "title": "Limo Rental Cost Houston — AvaLimo Pricing", "desc": "Transparent flat-rate pricing for Houston limo service. Mercedes S-Class from $85, Escalade from $110, Sprinter from $160. No surge fees.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "wedding-limo": { "title": "Wedding Limo Houston — AvaLimo | Luxury Wedding Transportation", "desc": "Houston wedding limo service. Mercedes S-Class, Cadillac Escalade & Sprinter for your special day.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "prom-limo": { "title": "Prom Limo Houston — AvaLimo | Safe Prom Transportation 2026", "desc": "Prom limo service in Houston. Safe, stylish prom transportation for groups up to 14.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sprinter.png" },
+    "quinceanera-limo": { "title": "Quinceañera Limo Houston — AvaLimo | Quince Transportation", "desc": "Quinceañera limo service in Houston. Luxury transportation for your quince celebration.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "corporate-transportation": { "title": "Corporate Transportation Houston — AvaLimo | Executive Car Service", "desc": "Corporate transportation in Houston. Executive car service for business meetings, airport transfers & client entertainment.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "airport-iah": { "title": "IAH Airport Limo Service — AvaLimo | George Bush Intercontinental Transfers", "desc": "Premium IAH airport limo service. Real-time flight tracking, meet & greet, and flat-rate pricing.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "airport-hobby": { "title": "Hobby Airport Limo Service — AvaLimo | HOU Airport Transfers", "desc": "Hobby airport limo service in Houston. Professional chauffeurs, flight tracking & flat rates.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "airport-24-7-service": { "title": "24/7 Airport Car Service Houston — AvaLimo | Anytime Transfers", "desc": "24-hour airport car service in Houston. Early morning, late night & anytime transfers from IAH & Hobby.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "black-car-service": { "title": "Black Car Service Houston — AvaLimo | Premium Chauffeur Service", "desc": "Professional black car service in Houston. Mercedes S-Class, Cadillac Escalade.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "chauffeur-service": { "title": "Chauffeur Service Houston — AvaLimo | Private Driver Service", "desc": "Professional chauffeur service in Houston. Private driver for airport, corporate, wedding & event transportation.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "party-bus": { "title": "Party Bus Rental Houston — AvaLimo | Group Party Transportation", "desc": "Party bus rental in Houston. Mercedes Sprinter with ambient lighting, premium sound & BYOB-friendly.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sprinter.png" },
+    "event-transportation": { "title": "Event Transportation Houston — AvaLimo | Concert & Event Service", "desc": "Event transportation in Houston. Concerts, galas, sports games & special events.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "bachelorette-party": { "title": "Bachelorette Party Bus Houston — AvaLimo | Bride Tribe Transport", "desc": "Bachelorette party transportation in Houston. BYOB-friendly Sprinter vans for the bride tribe.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sprinter.png" },
+    "galveston-cruise-transport": { "title": "Galveston Cruise Port Transportation — AvaLimo | Cruise Limo Service", "desc": "Galveston cruise port transportation from Houston. Premium limo service to cruise terminals.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "wine-tours": { "title": "Texas Hill Country Wine Tour from Houston — AvaLimo | Wine Tours", "desc": "Texas Hill Country wine tour transportation from Houston. Mercedes Sprinter wine tours to Fredericksburg & beyond.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sprinter.png" },
+    "new-years-eve-limo": { "title": "New Year's Eve Limo Houston — AvaLimo | NYE Transportation", "desc": "New Year's Eve limo service in Houston. No surge pricing, flat-rate NYE transportation.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "fleet/mercedes-s-class": { "title": "Mercedes S-Class Rental Houston — AvaLimo Fleet", "desc": "Book the Mercedes S-Class in Houston for airport transfers, weddings & corporate travel.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "fleet/cadillac-escalade": { "title": "Cadillac Escalade Rental Houston — AvaLimo Fleet", "desc": "Book the Cadillac Escalade in Houston for airport transfers, weddings & corporate travel.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "fleet/mercedes-sprinter": { "title": "Mercedes Sprinter Rental Houston — AvaLimo Fleet", "desc": "Book the Mercedes Sprinter in Houston for group transportation, wine tours & weddings.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sprinter.png" },
+    "locations/galveston": { "title": "Galveston Limo Service — AvaLimo | Island Transportation", "desc": "Galveston limo service from Houston. Cruise port transfers, beach weddings & island getaways.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
 }
 
 
@@ -212,11 +235,20 @@ def robots_txt():
 def sitemap_xml():
         _today = _dt.date.today().isoformat()
         pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit"]
+        seo_pages = ["pricing", "wedding-limo", "prom-limo", "quinceanera-limo", "corporate-transportation", "airport-iah", "airport-hobby", "airport-24-7-service", "black-car-service", "chauffeur-service", "party-bus", "event-transportation", "bachelorette-party", "galveston-cruise-transport", "wine-tours", "new-years-eve-limo"]
+        fleet_pages = ["fleet/mercedes-s-class", "fleet/cadillac-escalade", "fleet/mercedes-sprinter"]
+        loc_pages = ["locations/galveston"]
         blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>' for p in BLOG_POSTS if p.get("slug"))
         urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>{"daily" if p == "" else "weekly"}</changefreq><priority>{"1.0" if p == "" else "0.8"}</priority></url>' for p in pages)
+        seo_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>' for p in seo_pages)
+        fleet_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' for p in fleet_pages)
+        loc_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>' for p in loc_pages)
         xml = f'''<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     {urls}
+    {seo_urls}
+    {fleet_urls}
+    {loc_urls}
     {blog_urls}
     </urlset>'''
         return xml, 200, {"Content-Type": "application/xml"}
@@ -279,6 +311,12 @@ def index(path):
                 break
         if meta is None:
             content_key = "404"
+    elif path in PAGE_CONTENT:
+        meta = {"title": PAGE_CONTENT[path]["title"], "desc": PAGE_CONTENT[path]["desc"]}
+        canonical_path = f"/{path}"
+        og_type = "website"
+        og_image = "https://avalimo.net/static/cadillac_escalade.png"
+        content_key = "page"
     elif path in PAGE_META:
         meta = PAGE_META[path]
         canonical_path = f"/{path}" if path else ""
@@ -324,6 +362,7 @@ def index(path):
         blog_posts_html=blog_cards,
         featured_post=featured_post,
         content_key=content_key,
+        page_content_html=PAGE_CONTENT.get(path, {}).get("content", "") if content_key == "page" else "",
     )
     status_code = 404 if content_key == "404" else 200
     resp = app.make_response((rendered, status_code))

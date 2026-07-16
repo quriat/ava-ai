@@ -299,6 +299,8 @@ footer ul a:hover{color:var(--gold)}
       <li><a href="/">Home</a></li>
       <li><a href="/services">Services</a></li>
       <li><a href="/fleet">Fleet</a></li>
+      <li><a href="/pricing">Pricing</a></li>
+      <li><a href="/wedding-limo">Wedding</a></li>
       <li><a href="/blog">Blog</a></li>
       <li><a href="/contact">Contact</a></li>
       <li><a href="/book" class="btn btn-gold" style="padding:10px 24px;font-size:12px">Book Now</a></li>
@@ -451,6 +453,18 @@ footer ul a:hover{color:var(--gold)}
   <p style="color:var(--text2);font-size:14px" id="dep-thanks-msg">Your booking is secured. You'll receive a confirmation email shortly.</p>
 </div>
 </div></div></section>
+
+{% elif content_key == 'page' %}
+<!-- SEO page content -->
+<section class="section" style="padding-top:120px">
+  <div class="container" style="max-width:1200px;margin:0 auto;padding:0 20px">
+    {{ page_content_html | safe }}
+    <div style="text-align:center;margin-top:60px;padding-top:40px;border-top:1px solid var(--card-border)">
+      <a href="/book" class="btn btn-gold" style="font-size:15px;padding:16px 40px">Book Your Ride</a>
+      <a href="/" class="btn btn-outline" style="font-size:15px;padding:16px 40px;margin-left:12px">Back to Home</a>
+    </div>
+  </div>
+</section>
 
 {% elif content_key == '404' %}
 <div class="error-page"><h1>404</h1><p>Sorry, the page you requested could not be found.</p><a href="/" class="btn btn-gold">Back to Home</a></div>
@@ -637,8 +651,8 @@ footer ul a:hover{color:var(--gold)}
   <div class="container">
     <div class="footer-grid">
       <div><div class="brand-large">Ava<span>Limo</span></div><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort &mdash; every time.</p></div>
-      <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
-      <div><h4>Services</h4><ul><li><a href="/services">Airport Transfers</a></li><li><a href="/services">Corporate Travel</a></li><li><a href="/services">Weddings</a></li><li><a href="/services">Events</a></li></ul></div>
+      <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/pricing">Pricing</a></li><li><a href="/wedding-limo">Wedding</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
+      <div><h4>Services</h4><ul><li><a href="/airport-iah">IAH Transfers</a></li><li><a href="/airport-hobby">Hobby Transfers</a></li><li><a href="/corporate-transportation">Corporate Travel</a></li><li><a href="/party-bus">Party Bus</a></li><li><a href="/wine-tours">Wine Tours</a></li></ul></div>
       <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li><li>Houston, TX</li></ul></div>
     </div>
     <div class="footer-bottom">&copy; 2026 AvaLimo. All rights reserved.</div>
