@@ -657,7 +657,13 @@ function api(method, path, body){
 }
 
 // ── LOGIN ──────────────────────────────────────────────────
-var LOGGED_IN = localStorage.getItem('dispatch_session') === '1';
+var LOGGED_IN = false;
+// Check if we have a valid session by making a quick API call
+(function checkSession(){
+  fetch('/api/stats').then(function(r){
+    if(r.ok){ LOGGED_IN = true; showApp(); loadAll(); }
+  }).catch(function(){});
+})();
 
 function login(pin){
   var btn = $('loginBtn');
@@ -669,8 +675,7 @@ function login(pin){
     .then(function(r){
       if(r.status === 302){
         // Success! Session cookie is set - redirect to load the SPA on same domain
-        localStorage.setItem('dispatch_session', '1');
-        window.location.href = '/admin';
+        localStorage.setItem('dispatch_session', '1'); window.location.href = '/admin';
       } else {
         // Login page again — wrong PIN
         $('loginErr').textContent = 'Wrong PIN';
@@ -823,17 +828,17 @@ function sendAutoEmails(trip, isNew){
 
   // Email to passenger
   if(trip.passenger_email){
-    var body = 'Hello ' + (trip.passenger_name||'') + ',\n\n'
-      + 'Your AvaLimo reservation has been ' + (isNew ? 'created' : 'updated') + ':\n\n'
-      + 'Pickup: ' + (trip.pickup_location||'') + '\n'
-      + 'Dropoff: ' + (trip.dropoff_location||'TBD') + '\n'
-      + (trip.pickup_date ? 'Date: ' + trip.pickup_date + '\n' : '')
-      + (trip.pickup_time ? 'Time: ' + String(trip.pickup_time).slice(0,5) + '\n' : '')
-      + (trip.flight_number ? 'Flight: ' + trip.flight_number + '\n' : '')
-      + 'Fare: $' + Number(trip.price||0).toFixed(2) + '\n'
-      + (driverName ? 'Driver: ' + driverName + '\n' : '')
-      + '\nStatus: ' + (trip.status||'pending').replace('_',' ') + '\n\n'
-      + 'Thank you for choosing AvaLimo.\n'
+    var body = 'Hello ' + (trip.passenger_name||'') + ',\\n\\n'
+      + 'Your AvaLimo reservation has been ' + (isNew ? 'created' : 'updated') + ':\\n\\n'
+      + 'Pickup: ' + (trip.pickup_location||'') + '\\n'
+      + 'Dropoff: ' + (trip.dropoff_location||'TBD') + '\\n'
+      + (trip.pickup_date ? 'Date: ' + trip.pickup_date + '\\n' : '')
+      + (trip.pickup_time ? 'Time: ' + String(trip.pickup_time).slice(0,5) + '\\n' : '')
+      + (trip.flight_number ? 'Flight: ' + trip.flight_number + '\\n' : '')
+      + 'Fare: $' + Number(trip.price||0).toFixed(2) + '\\n'
+      + (driverName ? 'Driver: ' + driverName + '\\n' : '')
+      + '\\nStatus: ' + (trip.status||'pending').replace('_',' ') + '\\n\\n'
+      + 'Thank you for choosing AvaLimo.\\n'
       + 'Call (832) 567-8050 for changes.';
 
     emails.push({
@@ -850,14 +855,14 @@ function sendAutoEmails(trip, isNew){
 
   // Email to driver if assigned
   if(trip.driver_id && trip.driver_email){
-    var dBody = 'Trip assigned:\n\n'
-      + 'Passenger: ' + (trip.passenger_name||'') + '\n'
-      + 'Phone: ' + (trip.passenger_phone||'') + '\n'
-      + 'Pickup: ' + (trip.pickup_location||'') + '\n'
-      + 'Dropoff: ' + (trip.dropoff_location||'TBD') + '\n'
-      + (trip.pickup_date ? 'Date: ' + trip.pickup_date + '\n' : '')
-      + (trip.pickup_time ? 'Time: ' + String(trip.pickup_time).slice(0,5) + '\n' : '')
-      + (trip.flight_number ? 'Flight: ' + trip.flight_number + '\n' : '')
+    var dBody = 'Trip assigned:\\n\\n'
+      + 'Passenger: ' + (trip.passenger_name||'') + '\\n'
+      + 'Phone: ' + (trip.passenger_phone||'') + '\\n'
+      + 'Pickup: ' + (trip.pickup_location||'') + '\\n'
+      + 'Dropoff: ' + (trip.dropoff_location||'TBD') + '\\n'
+      + (trip.pickup_date ? 'Date: ' + trip.pickup_date + '\\n' : '')
+      + (trip.pickup_time ? 'Time: ' + String(trip.pickup_time).slice(0,5) + '\\n' : '')
+      + (trip.flight_number ? 'Flight: ' + trip.flight_number + '\\n' : '')
       + 'Fare: $' + Number(trip.price||0).toFixed(2);
 
     emails.push({
@@ -887,13 +892,13 @@ function emailPassenger(id){
   api('GET','/api/admin/reservations/'+id).then(function(t){
     if(!t || t.error){ toast(t&&t.error||'Not found','err'); return; }
     if(!t.passenger_email){ toast('No email on this trip','warn'); return; }
-    var body = 'Hello ' + (t.passenger_name||'') + ',\n\n'
-      + 'Your AvaLimo trip details:\n\n'
-      + 'Pickup: ' + (t.pickup_location||'') + '\n'
-      + 'Dropoff: ' + (t.dropoff_location||'TBD') + '\n'
-      + (t.pickup_date ? 'Date: ' + t.pickup_date + '\n' : '')
-      + (t.pickup_time ? 'Time: ' + String(t.pickup_time).slice(0,5) + '\n' : '')
-      + 'Fare: $' + Number(t.price||0).toFixed(2) + '\n\n'
+    var body = 'Hello ' + (t.passenger_name||'') + ',\\n\\n'
+      + 'Your AvaLimo trip details:\\n\\n'
+      + 'Pickup: ' + (t.pickup_location||'') + '\\n'
+      + 'Dropoff: ' + (t.dropoff_location||'TBD') + '\\n'
+      + (t.pickup_date ? 'Date: ' + t.pickup_date + '\\n' : '')
+      + (t.pickup_time ? 'Time: ' + String(t.pickup_time).slice(0,5) + '\\n' : '')
+      + 'Fare: $' + Number(t.price||0).toFixed(2) + '\\n\\n'
       + 'Thank you for choosing AvaLimo.';
     api('POST','/api/admin/notifications', {
       trip_id: t.id,
@@ -1265,9 +1270,9 @@ $('bulkForm').addEventListener('submit',function(e){
     catch(je){$('bulkFormErr').textContent='Not valid JSON: '+je.message;return;}
   } else {
     rows=[];
-    txt.split(/\r?\n/).forEach(function(line){
+    txt.split(/\\r?\\n/).forEach(function(line){
       var s=line.trim();if(!s)return;
-      var parts=s.split(/\t|,/);
+      var parts=s.split(/\\t|,/);
       for(var i=0;i<parts.length;i++)parts[i]=parts[i].trim();
       if(!parts[0])return;
       var r={name:parts[0]};
@@ -1412,10 +1417,7 @@ $('sidebarOverlay').addEventListener('click',function(){
 });
 
 // ── INIT ───────────────────────────────────────────────────
-if(LOGGED_IN){
-  showApp();
-  loadAll();
-}
+// Session check happens at init via /api/stats call
 
 // Handle keyboard escape for modals
 document.addEventListener('keydown', function(e){
@@ -1430,3 +1432,646 @@ document.addEventListener('keydown', function(e){
 </script>
 </body>
 </html>
+"""
+
+
+
+
+# ----------------------------------------------------------------------------
+# Routes
+# ----------------------------------------------------------------------------
+
+@app.route("/")
+def index():
+    return render_template_string(DRIVER_HTML)
+
+@app.route("/driver")
+def driver():
+    return render_template_string(DRIVER_HTML)
+
+@app.route("/admin", methods=["GET","POST"])
+def admin():
+    if not session.get("admin"):
+        err = None
+        if request.method == "POST":
+            if request.form.get("pin") == ADMIN_PIN:
+                session["admin"] = True
+                return redirect(url_for("admin"))
+            err = "Wrong PIN"
+        return render_template_string(DASH_HTML, stats=_stats(), err=err)
+    return render_template_string(DASH_HTML, stats=_stats(), err=None)
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("admin", None)
+    return redirect(url_for("admin"))
+
+
+def _user_token():
+    """Drivers can pass ?token=... or Authorization: Bearer. Service-role auth also works."""
+    h = request.headers.get("Authorization","")
+    if h.startswith("Bearer "):
+        return h[7:]
+    return request.args.get("token") or SUPABASE_SERVICE_ROLE_KEY
+
+
+def _is_admin():
+    return bool(session.get("admin"))
+
+
+def _stats() -> dict:
+    try:
+        # Active = pending/assigned/in_progress
+        active = len(sb_table("reservations").select(
+            filters={"status": {"op":"in","val":"(pending,assigned,in_progress)"}}, columns="id"))
+        today_rows = sb_table("reservations").select(
+            filters={"status":"completed","created_at": {"op":"gte","val":"1970-01-01"}},
+            columns="price,created_at")
+        # simpler: get all completed in last 7 days, then filter by today
+        rev_today = sum(float(r.get("price") or 0) for r in today_rows
+                        if r.get("created_at","").startswith(datetime.now(timezone.utc).date().isoformat()))
+        rev_week = sum(float(r.get("price") or 0) for r in today_rows)
+        today = sum(1 for r in today_rows if r.get("created_at","").startswith(datetime.now(timezone.utc).date().isoformat()))
+        drv_rows = sb_table("drivers").select(columns="status")
+        drivers_online = sum(1 for d in drv_rows if d.get("status") == "online")
+        drivers_total = len(drv_rows)
+    except Exception as e:
+        log.warning("stats error: %s", e)
+        return {"active":0,"today":0,"revenue_today":0.0,"revenue_week":0.0,
+                "drivers_online":0,"drivers_total":0}
+    return {"active":active,"today":today,"revenue_today":rev_today,"revenue_week":rev_week,
+            "drivers_online":drivers_online,"drivers_total":drivers_total}
+
+
+# ----------------------------------------------------------------------------
+# Driver API (public, requires valid auth token)
+# ----------------------------------------------------------------------------
+
+@app.route("/api/driver/login", methods=["POST"])
+def api_driver_login():
+    """Sign in via Supabase Auth (email + password), then return driver record."""
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip()
+    password = data.get("password") or ""
+    if not email or not password:
+        return jsonify({"error":"Email and password required"}), 400
+    # Call Supabase Auth GoTrue endpoint
+    try:
+        status, body = _sb_request(
+            "POST", "/auth/v1/token?grant_type=password",
+            body={"email": email, "password": password},
+            token=SUPABASE_ANON_KEY,
+        )
+    except SupabaseError as e:
+        return jsonify({"error": str(e) or "Invalid credentials"}), 401
+    if status != 200 or not body:
+        return jsonify({"error":"Invalid credentials"}), 401
+    access_token = body.get("access_token")
+    user_id = body.get("user", {}).get("id")
+    # Look up the driver record
+    try:
+        drivers = sb_table("drivers").select(filters={"user_id": user_id}, columns="*")
+    except SupabaseError as e:
+        return jsonify({"error": f"Driver lookup failed: {e}"}), 500
+    if not drivers:
+        return jsonify({"error":"No driver account linked to this user"}), 403
+    driver = drivers[0]
+    return jsonify({"access_token": access_token, "driver": driver})
+
+
+@app.route("/api/driver/reservations")
+def api_driver_reservations():
+    # driver_id is a UUID (string), not an int. Take it as-is.
+    did = (request.args.get("driver_id") or "").strip()
+    if not did:
+        return jsonify([])
+    token = _user_token()
+    try:
+        rows = sb_table("reservations", token=token).select(
+            filters={"driver_id": did}, columns="*", order="created_at.desc", limit=200)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows)
+
+
+@app.route("/api/reservations/<rid>", methods=["PATCH"])
+def api_reservation_patch(rid):
+    data = request.get_json(silent=True) or {}
+    # Whitelist updatable fields
+    patch = {k: v for k, v in data.items() if k in {"status","notes","driver_id"}}
+    if not patch:
+        return jsonify({"error":"no valid fields to update"}), 400
+    token = _user_token()
+    try:
+        sb_table("reservations", token=token).update(filters={"id": rid}, patch=patch)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify({"ok": True})
+
+
+@app.route("/api/drivers/<did>", methods=["PATCH"])
+def api_driver_patch(did):
+    data = request.get_json(silent=True) or {}
+    patch = {k: v for k, v in data.items() if k in {"status","phone","vehicle_type","vehicle_desc","name"}}
+    if not patch:
+        return jsonify({"error":"no valid fields to update"}), 400
+    token = _user_token()
+    try:
+        sb_table("drivers", token=token).update(filters={"id": did}, patch=patch)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify({"ok": True})
+
+
+@app.route("/api/stats")
+def api_stats():
+    return jsonify(_stats())
+
+
+# ----------------------------------------------------------------------------
+# Admin API (requires dispatcher PIN in session)
+# ----------------------------------------------------------------------------
+
+def _require_admin(fn):
+    @wraps(fn)
+    def w(*a, **kw):
+        if not _is_admin():
+            return jsonify({"error":"unauthorized"}), 401
+        return fn(*a, **kw)
+    return w
+
+
+@app.route("/api/admin/reservations")
+@_require_admin
+def admin_reservations():
+    flt = request.args.get("filter","active")
+    try:
+        if flt == "active":
+            rows = sb_table("reservations").select(
+                filters={"status": {"op":"in","val":"(pending,assigned,in_progress)"}},
+                columns="*", order="created_at.desc", limit=500)
+        elif flt == "all":
+            rows = sb_table("reservations").select(columns="*", order="created_at.desc", limit=500)
+        else:
+            rows = sb_table("reservations").select(filters={"status": flt},
+                columns="*", order="created_at.desc", limit=500)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    # Join driver names client-side
+    try:
+        drivers = {d["id"]: d.get("name") for d in sb_table("drivers").select(columns="id,name")}
+    except Exception:
+        drivers = {}
+    for r in rows:
+        r["driver_name"] = drivers.get(r.get("driver_id"), "")
+    return jsonify(rows)
+
+
+@app.route("/api/admin/reservations/<rid>")
+@_require_admin
+def admin_reservation_get(rid):
+    try:
+        rows = sb_table("reservations").select(filters={"id": rid}, columns="*", limit=1)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    if not rows:
+        return jsonify({"error":"not found"}), 404
+    return jsonify(rows[0])
+
+
+@app.route("/api/admin/reservations", methods=["POST"])
+@_require_admin
+def admin_reservation_create():
+    data = request.get_json(silent=True) or {}
+    if not data.get("pickup_location"):
+        return jsonify({"error":"pickup_location required"}), 400
+    # Generate reservation_number if not provided
+    if not data.get("reservation_number"):
+        data["reservation_number"] = f"R-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+    try:
+        rows = sb_table("reservations").insert(data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows[0] if rows else {"ok":True}), 201
+
+
+@app.route("/api/admin/reservations/<rid>", methods=["PATCH","DELETE"])
+@_require_admin
+def admin_reservation_update(rid):
+    if request.method == "DELETE":
+        try:
+            sb_table("reservations").delete(filters={"id": rid})
+        except SupabaseError as e:
+            return jsonify({"error": str(e)}), e.status
+        return "", 204
+    data = request.get_json(silent=True) or {}
+    if not data:
+        return jsonify({"error":"no fields"}), 400
+    # Whitelist updatable fields to prevent the form from overwriting
+    # server-managed columns (id, created_at, updated_at, etc).
+    allowed = {
+        "passenger_name","passenger_phone","passenger_email",
+        "pickup_location","dropoff_location","pickup_date","pickup_time",
+        "vehicle_type","vehicle_label","passenger_count","flight_number",
+        "status","price","driver_id","driver_name","notes",
+    }
+    patch = {k: v for k, v in data.items() if k in allowed}
+    if not patch:
+        return jsonify({"error":"no valid fields to update"}), 400
+    try:
+        rows = sb_table("reservations").update(filters={"id": rid}, patch=patch)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows[0] if rows else {"ok":True})
+
+
+@app.route("/api/admin/drivers")
+@_require_admin
+def admin_drivers():
+    try:
+        rows = sb_table("drivers").select(columns="*", order="name", limit=500)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows)
+
+
+@app.route("/api/admin/drivers/<did>")
+@_require_admin
+def admin_driver_get(did):
+    try:
+        rows = sb_table("drivers").select(filters={"id": did}, columns="*", limit=1)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    if not rows:
+        return jsonify({"error":"not found"}), 404
+    return jsonify(rows[0])
+
+
+@app.route("/api/admin/drivers", methods=["POST"])
+@_require_admin
+def admin_driver_create():
+    """Create a new driver: create Supabase auth user, then create drivers row."""
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip()
+    password = data.get("password") or ""
+    name = (data.get("name") or "").strip()
+    if not email or not password or not name:
+        return jsonify({"error":"name, email, and password required"}), 400
+    if len(password) < 6:
+        return jsonify({"error":"password must be at least 6 characters"}), 400
+    # Create Supabase auth user via admin API
+    try:
+        status, body = _sb_request(
+            "POST", "/auth/v1/admin/users",
+            body={"email": email, "password": password, "email_confirm": True},
+            token=SUPABASE_SERVICE_ROLE_KEY,
+        )
+    except SupabaseError as e:
+        return jsonify({"error": f"Auth user create failed: {e}"}), e.status
+    if status not in (200, 201) or not body:
+        return jsonify({"error":"Failed to create auth user"}), 500
+    user_id = body.get("id")
+    # Create drivers row.
+    # Schema requires phone/vehicle_type/vehicle_desc/license to be NOT NULL,
+    # so substitute a placeholder ("-") when the dispatcher form leaves them blank.
+    # Schema's status check constraint only allows 'active' today, so default to that.
+    def _s(v):
+        if isinstance(v, str):
+            v = v.strip()
+        return v if v else "-"
+    driver_data = {
+        "user_id": user_id,
+        "name": name,
+        "email": email,
+        "phone":         _s(data.get("phone")),
+        "vehicle_type":  _s(data.get("vehicle_type")),
+        "vehicle_desc":  _s(data.get("vehicle_desc")),
+        "license":       _s(data.get("license")),
+        "status": "active",
+    }
+    try:
+        rows = sb_table("drivers").insert(driver_data)
+    except SupabaseError as e:
+        # Try to clean up auth user
+        try:
+            _sb_request("DELETE", f"/auth/v1/admin/users/{user_id}", token=SUPABASE_SERVICE_ROLE_KEY)
+        except Exception: pass
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows[0] if rows else {"ok":True}), 201
+
+
+@app.route("/api/admin/drivers/<did>", methods=["PATCH","DELETE"])
+@_require_admin
+def admin_driver_update(did):
+    if request.method == "DELETE":
+        try:
+            # Get user_id first
+            rows = sb_table("drivers").select(filters={"id": did}, columns="user_id", limit=1)
+            sb_table("drivers").delete(filters={"id": did})
+            if rows and rows[0].get("user_id"):
+                try:
+                    _sb_request("DELETE", f"/auth/v1/admin/users/{rows[0]['user_id']}", token=SUPABASE_SERVICE_ROLE_KEY)
+                except Exception: pass
+        except SupabaseError as e:
+            return jsonify({"error": str(e)}), e.status
+        return "", 204
+    data = request.get_json(silent=True) or {}
+    if not data:
+        return jsonify({"error":"no fields"}), 400
+    # If password is being changed, update auth user too
+    if "password" in data and data["password"]:
+        try:
+            driver_rows = sb_table("drivers").select(filters={"id": did}, columns="user_id", limit=1)
+            if driver_rows and driver_rows[0].get("user_id"):
+                _sb_request(
+                    "PUT", f"/auth/v1/admin/users/{driver_rows[0]['user_id']}",
+                    body={"password": data["password"]},
+                    token=SUPABASE_SERVICE_ROLE_KEY,
+                )
+        except SupabaseError as e:
+            return jsonify({"error": f"Password update failed: {e}"}), e.status
+        del data["password"]
+    if data:
+        try:
+            sb_table("drivers").update(filters={"id": did}, patch=data)
+        except SupabaseError as e:
+            return jsonify({"error": str(e)}), e.status
+    return jsonify({"ok":True})
+
+
+@app.route("/api/admin/vehicles")
+@_require_admin
+def admin_vehicles():
+    try:
+        rows = sb_table("vehicles").select(columns="*", order="type", limit=500)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows)
+
+
+@app.route("/api/admin/vehicles/<vid>")
+@_require_admin
+def admin_vehicle_get(vid):
+    try:
+        rows = sb_table("vehicles").select(filters={"id": vid}, columns="*", limit=1)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    if not rows: return jsonify({"error":"not found"}), 404
+    return jsonify(rows[0])
+
+
+@app.route("/api/admin/vehicles", methods=["POST"])
+@_require_admin
+def admin_vehicle_create():
+    data = request.get_json(silent=True) or {}
+    if not data.get("type"):
+        return jsonify({"error":"type required"}), 400
+    data = {k:v for k,v in data.items() if v is not None}
+    try:
+        rows = sb_table("vehicles").insert(data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows[0] if rows else {"ok":True}), 201
+
+
+@app.route("/api/admin/vehicles/<vid>", methods=["PATCH","DELETE"])
+@_require_admin
+def admin_vehicle_update(vid):
+    if request.method == "DELETE":
+        try:
+            sb_table("vehicles").delete(filters={"id": vid})
+        except SupabaseError as e:
+            return jsonify({"error": str(e)}), e.status
+        return "", 204
+    data = request.get_json(silent=True) or {}
+    if not data: return jsonify({"error":"no fields"}), 400
+    data = {k:v for k,v in data.items() if v is not None}
+    try:
+        sb_table("vehicles").update(filters={"id": vid}, patch=data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify({"ok":True})
+
+
+@app.route("/api/admin/invoices")
+@_require_admin
+def admin_invoices():
+    try:
+        rows = sb_table("invoices").select(columns="*", order="issue_date.desc", limit=500)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    # Compute total from invoice_lines if present
+    try:
+        lines = sb_table("invoice_lines").select(columns="invoice_id,quantity,rate")
+    except Exception:
+        lines = []
+    totals = {}
+    for l in lines:
+        totals[l["invoice_id"]] = totals.get(l["invoice_id"], 0) + float(l.get("quantity",0)) * float(l.get("rate",0))
+    for r in rows:
+        r["total"] = totals.get(r["id"], 0)
+    return jsonify(rows)
+
+
+@app.route("/api/admin/invoices/<iid>")
+@_require_admin
+def admin_invoice_get(iid):
+    try:
+        rows = sb_table("invoices").select(filters={"id": iid}, columns="*", limit=1)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    if not rows: return jsonify({"error":"not found"}), 404
+    return jsonify(rows[0])
+
+
+@app.route("/api/admin/invoices", methods=["POST"])
+@_require_admin
+def admin_invoice_create():
+    data = request.get_json(silent=True) or {}
+    if not data.get("client_name"):
+        return jsonify({"error":"client_name required"}), 400
+    if not data.get("invoice_number"):
+        data["invoice_number"] = f"INV-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+    data = {k:v for k,v in data.items() if v is not None}
+    try:
+        rows = sb_table("invoices").insert(data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows[0] if rows else {"ok":True}), 201
+
+
+@app.route("/api/admin/invoices/<iid>", methods=["PATCH","DELETE"])
+@_require_admin
+def admin_invoice_update(iid):
+    if request.method == "DELETE":
+        try:
+            sb_table("invoices").delete(filters={"id": iid})
+        except SupabaseError as e:
+            return jsonify({"error": str(e)}), e.status
+        return "", 204
+    data = request.get_json(silent=True) or {}
+    if not data: return jsonify({"error":"no fields"}), 400
+    data = {k:v for k,v in data.items() if v is not None}
+    try:
+        sb_table("invoices").update(filters={"id": iid}, patch=data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify({"ok":True})
+
+
+# ----------------------------------------------------------------------------
+# Customers
+# ----------------------------------------------------------------------------
+
+@app.route("/api/admin/customers")
+@_require_admin
+def admin_customers_list():
+    try:
+        rows = sb_table("customers").select(columns="*", order="created_at.desc", limit=500)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows)
+
+
+@app.route("/api/admin/customers/<cid>")
+@_require_admin
+def admin_customer_get(cid):
+    try:
+        rows = sb_table("customers").select(filters={"id": cid}, columns="*", limit=1)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    if not rows:
+        return jsonify({"error":"not found"}), 404
+    return jsonify(rows[0])
+
+
+@app.route("/api/admin/customers", methods=["POST"])
+@_require_admin
+def admin_customer_create():
+    data = request.get_json(silent=True) or {}
+    # Accept either a single object or a list of objects (bulk import).
+    if isinstance(data, list):
+        if not data:
+            return jsonify({"error":"empty list"}), 400
+        for i, row in enumerate(data):
+            if not isinstance(row, dict) or not row.get("name"):
+                return jsonify({"error": f"row {i}: name required"}), 400
+        # Strip nulls; let Supabase fill defaults
+        cleaned = [{k: v for k, v in r.items() if v is not None} for r in data]
+        try:
+            rows = sb_table("customers").insert(cleaned)
+        except SupabaseError as e:
+            return jsonify({"error": str(e)}), e.status
+        return jsonify({"inserted": len(rows or []), "rows": rows or []}), 201
+    # single object
+    if not data.get("name"):
+        return jsonify({"error":"name required"}), 400
+    data = {k: v for k, v in data.items() if v is not None}
+    try:
+        rows = sb_table("customers").insert(data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows[0] if rows else {"ok":True}), 201
+
+
+@app.route("/api/admin/customers/<cid>", methods=["PATCH","DELETE"])
+@_require_admin
+def admin_customer_update(cid):
+    if request.method == "DELETE":
+        try:
+            sb_table("customers").delete(filters={"id": cid})
+        except SupabaseError as e:
+            return jsonify({"error": str(e)}), e.status
+        return "", 204
+    data = request.get_json(silent=True) or {}
+    if not data:
+        return jsonify({"error":"no fields"}), 400
+    data = {k: v for k, v in data.items() if v is not None}
+    try:
+        sb_table("customers").update(filters={"id": cid}, patch=data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify({"ok":True})
+
+
+# ----------------------------------------------------------------------------
+# Notifications (Email / SMS — logged only; no SMTP/Twilio wiring)
+# ----------------------------------------------------------------------------
+
+@app.route("/api/admin/notifications", methods=["POST"])
+@_require_admin
+def admin_notification_create():
+    data = request.get_json(silent=True) or {}
+    if not data.get("to") or not data.get("type"):
+        return jsonify({"error":"type and to are required"}), 400
+    if data["type"] not in ("email","sms"):
+        return jsonify({"error":"type must be email or sms"}), 400
+    # trip_id is optional
+    if not data.get("trip_id"):
+        data.pop("trip_id", None)
+    try:
+        rows = sb_table("notifications").insert(data)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    # if SMS, actually send via Textbelt
+    if data["type"] == "sms":
+        _send_textbelt_sms(data["to"], data.get("subject") or data.get("body", ""))
+    return jsonify(rows[0] if rows else {"ok":True}), 201
+
+
+def _send_textbelt_sms(phone: str, message: str):
+    key = os.environ.get("TEXTBELT_KEY", "textbelt")
+    payload = json.dumps({"phone": phone, "message": message, "key": key}).encode()
+    try:
+        req = urllib.request.Request(
+            "https://textbelt.com/text",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read())
+        if result.get("success"):
+            log.info("SMS sent to %s (quota: %s)", phone, result.get("quotaRemaining", "?"))
+        else:
+            log.warning("SMS failed to %s: %s", phone, result.get("error", "unknown"))
+    except Exception as e:
+        log.error("SMS error for %s: %s", phone, e)
+
+
+@app.route("/api/admin/notifications")
+@_require_admin
+def admin_notifications_list():
+    rid = request.args.get("trip_id")
+    try:
+        if rid:
+            rows = sb_table("notifications").select(filters={"trip_id": rid},
+                columns="*", order="sent_at.desc", limit=200)
+        else:
+            rows = sb_table("notifications").select(columns="*", order="sent_at.desc", limit=200)
+    except SupabaseError as e:
+        return jsonify({"error": str(e)}), e.status
+    return jsonify(rows)
+
+
+# ----------------------------------------------------------------------------
+# Calendar Reminder Scheduler — checks Google Calendar every hour,
+# sends SMS 24h before pickup
+# ----------------------------------------------------------------------------
+
+_NOTIFIED_EVENTS = set()  # track event IDs already reminded
+
+
+def _ensure_token_file():
+    tok_b64 = os.environ.get("GOOGLE_TOKEN_B64")
+    if tok_b64:
+        token_path = os.path.join(os.path.dirname(__file__), "token.json")
+        if not os.path.exists(token_path):
+            import base64
+            with open(token_path, "wb") as f:
+                f.write(base64.b64decode(tok_b64))
+            log.info("Wrote token.json from GOOGLE_TOKEN_B64")
+
+_ensure_token_file()
+
+def _check_calendar_reminders():
+    """Fetch tomorrow's events and send reminder SMS for each.
