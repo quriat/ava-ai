@@ -669,6 +669,7 @@ function login(pin){
     .then(function(r){
       if(r.status === 302){
         // Success! Session cookie is set - redirect to load the SPA on same domain
+        localStorage.setItem('dispatch_session', '1');
         window.location.href = '/admin';
       } else {
         // Login page again — wrong PIN
