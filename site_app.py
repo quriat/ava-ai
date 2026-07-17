@@ -226,6 +226,19 @@ PAGE_META = {
     "locations/galveston": { "title": "Galveston Limo Service — AvaLimo | Island Transportation", "desc": "Galveston limo service from Houston. Cruise port transfers, beach weddings & island getaways.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
 }
 
+PAGE_H1 = {
+    "": 'Houston\'s Finest <span class="gold">Limo Service</span>',
+    "services": 'Houston <span class="gold">Chauffeur Services</span>',
+    "fleet": 'Our <span class="gold">Luxury Fleet</span>',
+    "book": 'Book Your <span class="gold">AvaLimo Ride</span>',
+    "blog": 'AvaLimo <span class="gold">Blog & Tips</span>',
+    "flight-status": 'Real-Time <span class="gold">Flight Status</span>',
+    "contact": 'Contact <span class="gold">AvaLimo</span>',
+    "faq": 'Frequently Asked <span class="gold">Questions</span>',
+    "policy": 'AvaLimo <span class="gold">Company Policy</span>',
+    "deposit": 'Secure <span class="gold">Online Payment</span>',
+}
+
 
 @app.route("/robots.txt")
 def robots_txt():
@@ -259,6 +272,7 @@ def sitemap_xml():
 def index(path):
     meta = None
     featured_post = None
+    page_h1 = 'Houston\'s Finest <span class="gold">Limo Service</span>'
     canonical_path = ""
     og_type = "website"
     og_image = "https://avalimo.net/static/cadillac_escalade.png"
@@ -308,6 +322,8 @@ def index(path):
                 og_image = f"https://avalimo.net{p.get('image', '/static/cadillac_escalade.png')}"
                 content_key = "blog"
                 featured_post = p
+                safe_title = p["title"].replace("<", "&lt;").replace(">", "&gt;")
+                page_h1 = f'{safe_title}'
                 break
         if meta is None:
             content_key = "404"
@@ -320,6 +336,7 @@ def index(path):
     elif path in PAGE_META:
         meta = PAGE_META[path]
         canonical_path = f"/{path}" if path else ""
+        page_h1 = PAGE_H1.get(path, page_h1)
     else:
         content_key = "404"
 
@@ -328,6 +345,7 @@ def index(path):
         canonical_path = ""
         og_type = "website"
         og_image = "https://avalimo.net/static/cadillac_escalade.png"
+        page_h1 = 'Page Not Found'
 
     canonical_url = f"https://avalimo.net{canonical_path}"
 
@@ -347,6 +365,38 @@ def index(path):
         </div>
       </div>"""
 
+    # BlogPosting schema for rich snippets
+    def _blog_schema(post):
+        return {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.get("title", ""),
+            "description": post.get("summary", ""),
+            "author": {"@type": "Person", "name": post.get("author", "AvaLimo")},
+            "datePublished": post.get("date", ""),
+            "dateModified": post.get("date", ""),
+            "image": "https://avalimo.net" + post.get("image", "/static/chauffeur_service.png"),
+            "publisher": {"@type": "Organization", "name": "AvaLimo",
+                          "logo": {"@type": "ImageObject", "url": "https://avalimo.net/static/chauffeur_service.png"}},
+            "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://avalimo.net/blog/{post.get('slug', '')}"},
+            "articleBody": re.sub("<[^>]+>", "", post.get("content", "")),
+        }
+
+    if featured_post:
+        blog_schema = f'<script type="application/ld+json">{json.dumps(_blog_schema(featured_post), ensure_ascii=False)}</script>'
+    elif content_key == "blog":
+        item_list = {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "url": f"https://avalimo.net/blog/{p.get('slug', '')}"}
+                for i, p in enumerate(BLOG_POSTS)
+            ],
+        }
+        blog_schema = f'<script type="application/ld+json">{json.dumps(item_list, ensure_ascii=False)}</script>'
+    else:
+        blog_schema = ""
+
     rendered = render_template_string(
         BASE_HTML,
         title=meta["title"],
@@ -363,6 +413,8 @@ def index(path):
         featured_post=featured_post,
         content_key=content_key,
         page_content_html=PAGE_CONTENT.get(path, {}).get("content", "") if content_key == "page" else "",
+        blog_schema=blog_schema,
+        page_h1=page_h1,
     )
     status_code = 404 if content_key == "404" else 200
     resp = app.make_response((rendered, status_code))
