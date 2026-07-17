@@ -1,0 +1,224 @@
+{
+  "name": "AvaLimo Telegram Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [250, 400],
+      "webhookId": "avalimo-bot-trigger",
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_TELEGRAM_CRED_ID",
+          "name": "Telegram API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const msg = ($json.message && $json.message.text) ? $json.message.text : '';\nconst chatId = $json.message ? $json.message.chat.id : ($json.chat ? $json.chat.id : null);\nconst isCommand = msg.startsWith('/');\nlet command = 'chat';\nif (msg.startsWith('/bookings')) command = 'bookings';\nelse if (msg.startsWith('/review')) command = 'review';\nelse if (msg.startsWith('/post')) command = 'post';\nelse if (msg.startsWith('/help') || msg.startsWith('/start')) command = 'help';\nreturn [{ json: { chatId, rawText: msg, command, cleaned: msg.replace(/^\\/\\w+\\s*/, '') } }];"
+      },
+      "id": "parse",
+      "name": "Parse Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "mode": "wait"
+      },
+      "id": "switch",
+      "name": "Route Command",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [710, 400],
+      "rules": {
+        "values": [
+          { "outputKey": "bookings", "conditions": { "string": [{ "value1": "={{$json.command}}", "operation": "equals", "value2": "bookings" }] } },
+          { "outputKey": "review", "conditions": { "string": [{ "value1": "{{$json.command}}", "operation": "equals", "value2": "review" }] } },
+          { "outputKey": "post", "conditions": { "string": [{ "value1": "{{$json.command}}", "operation": "equals", "value2": "post" }] } },
+          { "outputKey": "help", "conditions": { "string": [{ "value1": "{{$json.command}}", "operation": "equals", "value2": "help" }] } },
+          { "outputKey": "chat", "conditions": { "string": [{ "value1": "{{$json.command}}", "operation": "equals", "value2": "chat" }] } }
+        ]
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT name, pickup, dropoff, time, vehicle, pax, phone FROM bookings ORDER BY time DESC LIMIT 10",
+        "additionalFields": {
+          "mode": "indented"
+        }
+      },
+      "id": "pgBookings",
+      "name": "Get Recent Bookings",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [960, 250],
+      "credentials": {
+        "postgres": {
+          "id": "REPLACE_WITH_YOUR_POSTGRES_CRED_ID",
+          "name": "Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const rows = $json.all ? $json.all() : ($items ? $items() : []);\nconst data = Array.isArray(rows) ? rows.map(r => r.json || r) : (rows || []);\nif (!data.length) return [{ json: { text: 'No recent bookings found.' } }];\nconst lines = data.map(r => `• ${r.name} | ${r.vehicle || '?'} | ${r.pickup} → ${r.dropoff}\\n  ${r.time} | ☎ ${r.phone}`).join('\\n\\n');\nreturn [{ json: { text: '📋 Recent Bookings (last 10):\\n\\n' + lines } }];"
+      },
+      "id": "fmtBookings",
+      "name": "Format Bookings",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1200, 250]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { text: '⭐ Review Requests:\\n\\nUse the review-requests workflow or send the GBP review link after each ride.\\n\\nTip: avalimo.net/book drives most new clients. Track reviews in Google Business Profile → Reviews.' } }];"
+      },
+      "id": "fmtReview",
+      "name": "Review Info",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1200, 380]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { text: '🤖 AvaLimo Assistant\\n\\nCommands:\\n/bookings — recent reservations\\n/review — review status & tips\\n/post — trigger LinkedIn/auto-post\\n/help — this menu\\n\\nOr just ask me anything about AvaLimo (hours, fleet, pricing, airports).' } }];"
+      },
+      "id": "fmtHelp",
+      "name": "Help Menu",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1200, 510]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "message",
+        "model": "gpt-4o-mini",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are the assistant for AvaLimo, a Houston TX limo/chauffeur service. Phone: (832) 567-8050. Website: avalimo.net. Services: IAH & Hobby airport transfers (with flight tracking), corporate travel, weddings, proms, events, parties. Fleet: Mercedes S-Class (up to 3), Cadillac Escalade (up to 6), Mercedes Sprinter (up to 14). Flat-rate pricing, zero surge, 24/7. Be concise, friendly, and always encourage booking at avalimo.net/book or calling the number. If asked about pricing specifics you don't know, give a range and suggest calling."
+            },
+            {
+              "role": "user",
+              "content": "={{$json.cleaned}}"
+            }
+          ]
+        }
+      },
+      "id": "aiChat",
+      "name": "AI Chat",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [960, 540],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CRED_ID",
+          "name": "OpenAi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const out = $json.choices ? $json.choices[0].message.content : ($json.text || '...');\nreturn [{ json: { text: out } }];"
+      },
+      "id": "fmtChat",
+      "name": "Format Chat Reply",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1200, 540]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "message",
+        "model": "gpt-4o-mini",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are the social media assistant for AvaLimo, a Houston TX limo/chauffeur service (phone (832) 567-8050, avalimo.net). Write a short, professional LinkedIn post (max 200 words) promoting AvaLimo. Vary the angle each time: pick one of [airport transfers with flight tracking, wedding luxury, corporate chauffeur, Houston night-out, flat-rate no-surge pricing]. Include a soft CTA to book at avalimo.net/book or call. No hashtag spam. Output ONLY the post text."
+            },
+            {
+              "role": "user",
+              "content": "Write today's LinkedIn post.{{$json.cleaned}}"
+            }
+          ]
+        }
+      },
+      "id": "postAI",
+      "name": "Generate LinkedIn Post",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [960, 410],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CRED_ID",
+          "name": "OpenAi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const post = $json.choices ? $json.choices[0].message.content : ($json.text || '');\nreturn [{ json: { text: '📣 LinkedIn draft (review & paste to LinkedIn):\\n\\n' + post + '\\n\\n— AvaLimo | (832) 567-8050 | avalimo.net' } }];"
+      },
+      "id": "fmtPost",
+      "name": "Format Post",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1200, 410]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json.chatId}}",
+        "text": "={{$json.text}}",
+        "additionalFields": {}
+      },
+      "id": "reply",
+      "name": "Telegram Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1450, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_TELEGRAM_CRED_ID",
+          "name": "Telegram API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": { "main": [[{ "node": "Parse Message", "type": "main", "index": 0 }]] },
+    "Parse Message": { "main": [[{ "node": "Route Command", "type": "main", "index": 0 }]] },
+    "Route Command": {
+      "bookings": [[{ "node": "Get Recent Bookings", "type": "main", "index": 0 }]],
+      "review": [[{ "node": "Review Info", "type": "main", "index": 0 }]],
+      "post": [[{ "node": "Generate LinkedIn Post", "type": "main", "index": 0 }]],
+      "help": [[{ "node": "Help Menu", "type": "main", "index": 0 }]],
+      "chat": [[{ "node": "AI Chat", "type": "main", "index": 0 }]]
+    },
+    "Generate LinkedIn Post": { "main": [[{ "node": "Format Post", "type": "main", "index": 0 }]] },
+    "Format Post": { "main": [[{ "node": "Telegram Reply", "type": "main", "index": 0 }]] },
+    "Get Recent Bookings": { "main": [[{ "node": "Format Bookings", "type": "main", "index": 0 }]] },
+    "Format Bookings": { "main": [[{ "node": "Telegram Reply", "type": "main", "index": 0 }]] },
+    "Review Info": { "main": [[{ "node": "Telegram Reply", "type": "main", "index": 0 }]] },
+    "Help Menu": { "main": [[{ "node": "Telegram Reply", "type": "main", "index": 0 }]] },
+    "Post Stub": { "main": [[{ "node": "Telegram Reply", "type": "main", "index": 0 }]] },
+    "AI Chat": { "main": [[{ "node": "Format Chat Reply", "type": "main", "index": 0 }]] },
+    "Format Chat Reply": { "main": [[{ "node": "Telegram Reply", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}
