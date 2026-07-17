@@ -56,6 +56,16 @@ fbq('init','{FB_PIXEL_ID}');fbq('track','PageView');
 _blog_path = os.path.join(os.path.dirname(__file__), "blog_posts.json")
 BLOG_POSTS = json.load(open(_blog_path)) if os.path.exists(_blog_path) else []
 
+# Filter: only show posts with date <= today (scheduled publishing)
+_today_dt = __import__("datetime").date.today()
+def _parse_blog_date(d):
+    from datetime import datetime
+    try:
+        return datetime.strptime(d.strip(), "%B %d, %Y").date()
+    except:
+        return _today_dt
+BLOG_POSTS = [p for p in BLOG_POSTS if _parse_blog_date(p.get("date", "")) <= _today_dt]
+
 _PAGE_CONTENT_PATH = os.path.join(os.path.dirname(__file__), "page_content.json")
 PAGE_CONTENT = json.load(open(_PAGE_CONTENT_PATH)) if os.path.exists(_PAGE_CONTENT_PATH) else {}
 
