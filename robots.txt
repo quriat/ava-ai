@@ -2,5 +2,9 @@ User-agent: *
 Allow: /
 Disallow: /deposit
 Disallow: /api/
+Disallow: /category-sitemap.xml
+Disallow: /post-sitemap.xml
+Disallow: /page-sitemap.xml
+Disallow: /sitemap_index.xml
 
 Sitemap: https://avalimo.net/sitemap.xml
