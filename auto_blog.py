@@ -1,21 +1,28 @@
 #!/usr/bin/env python3
 """Auto-generate a daily blog post using Ollama and push to GitHub."""
-import json, os, subprocess, sys
+import json, os, subprocess, sys, re
 from datetime import date
 
 OLLAMA_URL = "http://168.231.74.172:32792/api/chat"
-MODEL = "kimi-k2.5:cloud"
+MODEL = "minimax-m3:cloud"
 REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 BLOG_FILE = os.path.join(REPO_DIR, "blog_posts.json")
 
 CATEGORIES = ["Airport Travel", "Travel Tips", "Weddings", "Corporate", "Events", "Fleet"]
 EMOJIS = {"Airport Travel": "&#9992;", "Travel Tips": "&#127542;", "Weddings": "&#128141;", "Corporate": "&#127963;", "Events": "&#127796;", "Fleet": "&#128664;"}
 
+def _make_slug(title):
+    slug = title.lower().strip()
+    slug = re.sub(r"[^a-z0-9\s-]", "", slug)
+    slug = re.sub(r"\s+", "-", slug)
+    slug = re.sub(r"-+", "-", slug)
+    return slug.strip("-")[:80]
+
 def generate_post():
     cat = CATEGORIES[date.today().toordinal() % len(CATEGORIES)]
     prompt = f'''Write a short Houston limo blog post (~200 words) in the "{cat}" category.
 Return ONLY valid JSON with these exact keys: title, summary, content (HTML paragraphs), date (today's date), read (e.g. "3 min read").
-No markdown, no explanation, no backticks — just raw JSON.'''
+No markdown, no explanation, no backticks --- just raw JSON.'''
     import urllib.request
     body = json.dumps({"model": MODEL, "messages": [{"role": "user", "content": prompt}], "stream": False}).encode()
     req = urllib.request.Request(OLLAMA_URL, data=body, headers={"Content-Type": "application/json"})
@@ -23,6 +30,8 @@ No markdown, no explanation, no backticks — just raw JSON.'''
     post = json.loads(resp["message"]["content"])
     post["emoji"] = EMOJIS[cat]
     post["cat"] = cat
+    if "slug" not in post:
+        post["slug"] = _make_slug(post.get("title", ""))
     return post
 
 def main():
@@ -37,3 +46,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
