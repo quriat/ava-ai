@@ -10,7 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 LOG_FILE="${SCRIPT_DIR}/blog_cron.log"
-OLLAMA_URL="http://168.231.74.172:32779/api/chat"
+OLLAMA_URL="http://168.231.74.172:32792/api/chat"
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting blog cron..." >> "$LOG_FILE"
 

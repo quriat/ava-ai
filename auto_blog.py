@@ -3,7 +3,7 @@
 import json, os, subprocess, sys
 from datetime import date
 
-OLLAMA_URL = "http://168.231.74.172:32779/api/chat"
+OLLAMA_URL = "http://168.231.74.172:32792/api/chat"
 MODEL = "kimi-k2.5:cloud"
 REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 BLOG_FILE = os.path.join(REPO_DIR, "blog_posts.json")
