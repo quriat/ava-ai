@@ -48,6 +48,11 @@
   --radius-lg: 16px;
   --radius-xl: 20px;
   
+  /* Skyline */
+  --skyline-src: url('/static/houston_skyline.svg');
+  --skyline-tint: rgba(8, 8, 8, 0.55);
+  --glow-gold: rgba(200, 168, 97, 0.12);
+
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
