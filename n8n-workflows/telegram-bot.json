@@ -53,7 +53,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT name, pickup, dropoff, time, vehicle, pax, phone FROM bookings ORDER BY time DESC LIMIT 10",
+        "query": "SELECT * FROM reservations ORDER BY created_at DESC LIMIT 10",
         "additionalFields": {
           "mode": "indented"
         }
