@@ -110,6 +110,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:80px}
 .hero-bg{position:absolute;inset:0;z-index:0;background:url(/static/houston-skyline.jpg) center bottom/cover no-repeat}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,oklch(12% .005 95/.6) 0%,oklch(12% .005 95/.3) 50%,oklch(12% .005 95/.7) 100%)}
 .hero .container{position:relative;z-index:2;width:100%}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
 .hero-text .tagline{color:var(--accent);font-size:14px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
@@ -308,13 +309,47 @@ footer ul a:hover{color:var(--accent)}
   .stat .num{font-size:22px}
   .section{padding:60px 0}
   .section-header h2{font-size:32px}
+  .hero{min-height:auto;padding-top:100px;padding-bottom:40px}
+  .hero-bg{background-position:center center}
+  .hero-text .tagline{font-size:11px;letter-spacing:2px}
+  .hero-btns .btn{padding:12px 24px;font-size:12px}
+  .quote-card{padding:24px}
+  .quote-card h3{font-size:18px}
+  .stats{margin-top:32px}
+  .nav-logo{font-size:22px}
+  .section-header .label{font-size:11px;letter-spacing:2px}
+  .footer-grid{grid-template-columns:1fr;gap:32px}
+  .footer-grid>div:first-child{grid-column:1/-1}
+  .blog-grid .blog-featured{grid-column:1}
+  .blog-grid{grid-template-columns:1fr}
+  .faq-q{font-size:14px}
 }
 @media(max-width:480px){
-  .hero-text h1{font-size:28px}
-  .hero-text h1 .brand{font-size:40px}
+  .hero-text h1{font-size:26px}
+  .hero-text h1 .brand{font-size:36px}
+  .hero-text p{font-size:14px;line-height:1.6}
   .section-header h2{font-size:26px}
-  .nav-logo{font-size:22px}
-  .quote-card{padding:24px}
+  .nav-logo{font-size:20px}
+  .quote-card{padding:20px}
+  .quote-card h3{font-size:16px}
+  .quote-form input,.quote-form select{padding:10px 12px;font-size:13px}
+  .container{padding:0 16px}
+  .hero{padding-top:80px;padding-bottom:24px}
+  .stats{gap:16px;flex-wrap:wrap}
+  .stat .num{font-size:20px}
+  .stat .lbl{font-size:10px}
+  .section{padding:48px 0}
+  .section-header h2{font-size:22px}
+  .section-header p{font-size:14px}
+  .trust-copy h2{font-size:28px}
+  .trust-copy .stat-row{flex-wrap:wrap;gap:16px}
+  .contact-row{gap:16px}
+  .contact-method{padding:16px}
+  .service-card{padding:20px}
+  .service-card .icon{width:44px;height:44px;font-size:20px}
+  .fleet-card .img-wrap{height:160px}
+  .fleet-card .body{padding:16px}
+  .blog-card{padding:20px}
 }
 </style>
 </head>
