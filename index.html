@@ -44,21 +44,21 @@
 <script src="https://web.squarecdn.com/v1/square.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/tokens.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#050505;
-  --bg2:#0a0a0a;
-  --bg3:#111;
-  --card:#0d0d0d;
-  --card-border:#1a1a1a;
-  --gold:#C9A84C;
-  --gold-light:#DFC16A;
-  --gold-dim:#8A7A3A;
-  --text:#e8e4dd;
-  --text2:#8a867e;
-  --text3:#555;
+  --bg:oklch(12% .005 95);
+  --bg-elevated:oklch(14.5% .006 95);
+  --surface:oklch(16.5% .007 95);
+  --surface-2:oklch(19% .008 95);
+  --fg:oklch(93% .012 95);
+  --muted:oklch(62% .014 90);
+  --muted-2:oklch(48% .012 90);
+  --border:oklch(28% .01 95);
+  --border-soft:oklch(24% .008 95);
+  --accent:oklch(76% .11 90);
+  --accent-soft:oklch(76% .11 90/.14);
+  --accent-deep:oklch(62% .1 88);
   --radius:12px;
   --radius-sm:8px;
   --maxw:1100px;
@@ -66,308 +66,264 @@
   --font-serif:'Playfair Display',serif;
 }
 html{scroll-behavior:smooth}
-body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:var(--gold);text-decoration:none;transition:color .3s}
-a:hover{color:var(--gold-light)}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none;transition:color .3s}
+a:hover{color:var(--accent-deep)}
 img{max-width:100%;height:auto}
 .container{max-width:var(--maxw);margin:0 auto;padding:0 20px}
-.gold{color:var(--gold)}
+.gold{color:var(--accent)}
 .serif{font-family:var(--font-serif)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border-radius:50px;font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .3s;border:none;text-transform:uppercase}
-.btn-gold{background:var(--gold);color:#0a0a0a}
-.btn-gold:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,.3)}
-.btn-outline{background:transparent;border:1.5px solid rgba(255,255,255,.15);color:var(--text)}
-.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
-.section{padding:100px 0}
+.btn-gold{background:var(--accent);color:oklch(12% .005 95)}
+.btn-gold:hover{background:var(--accent-deep);transform:translateY(-2px);box-shadow:0 8px 30px oklch(76% .11 90/.3)}
+.btn-outline{background:transparent;border:1.5px solid oklch(93% .012 95/.15);color:var(--fg)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.section{padding:100px 0;position:relative}
+.section::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80%;max-width:400px;height:1px;background:linear-gradient(90deg,transparent,var(--accent-soft),transparent)}
+.section:last-child::after{display:none}
 .section-header{text-align:center;margin-bottom:60px}
-.section-header .label{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+.section-header .label{color:var(--accent);font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
 .section-header h2{font-family:var(--font-serif);font-size:48px;font-weight:700;line-height:1.15}
-.section-header p{color:var(--text2);font-size:18px;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto}
-
-/* ─── Scroll Progress Bar ─── */
-#scrollBar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light));z-index:10000;width:0;transition:width .1s linear}
-
-/* ─── Marquee ─── */
-.marquee-section{padding:16px 0;border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border);overflow:hidden;background:var(--bg2)}
-.marquee-track{display:flex;gap:48px;animation:marqueeScroll 30s linear infinite;width:max-content}
-.marquee-track span{white-space:nowrap;font-size:13px;font-weight:500;color:rgba(255,255,255,.06);letter-spacing:.15em;text-transform:uppercase;display:flex;align-items:center;gap:32px}
-.marquee-track span em{color:rgba(201,168,76,.15);font-style:normal}
-@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-
-/* ─── Mobile CTA ─── */
-.mobile-cta{display:none;position:fixed;bottom:0;left:0;width:100%;z-index:9996;background:rgba(5,5,5,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.06)}
-.mobile-cta a{flex:1;padding:14px;text-align:center;font-size:14px;font-weight:600}
-.mobile-cta .mcta-call{color:var(--text)}
-.mobile-cta .mcta-book{background:var(--gold);color:#0a0a0a}
-@media(max-width:768px){.mobile-cta{display:flex}body{padding-bottom:52px}}
-
-/* ─── Exit-Intent Popup ─── */
-.exit-popup{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px)}
-.exit-popup.show{display:flex}
-.exit-popup-inner{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:40px;max-width:420px;width:90%;text-align:center;position:relative}
-.exit-popup-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text3);font-size:28px;cursor:pointer}
-.exit-popup h3{font-family:var(--font-serif);font-size:22px;margin-bottom:8px}
-.exit-popup p{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:20px}
-
-/* ─── Scrollbar ─── */
+.section-header p{color:var(--muted);font-size:18px;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto}
+#scrollBar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-deep));z-index:10000;width:0;transition:width .1s linear}
+.noise{position:fixed;inset:0;z-index:99998;pointer-events:none;opacity:.015;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
-
-/* ─── Nav ─── */
-.nav-phone a{color:var(--gold);font-size:14px;font-weight:600;letter-spacing:.5px;margin-right:16px;transition:color .3s}
-.nav-phone a:hover{color:var(--gold-light)}
-@media(max-width:768px){.nav-phone{display:none}}
-
+::-webkit-scrollbar-thumb{background:oklch(76% .11 90/.2);border-radius:3px}
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 0;transition:all .4s}
-nav.scrolled{background:rgba(5,5,5,.9);backdrop-filter:blur(24px);padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+nav.scrolled{background:oklch(12% .005 95/.9);backdrop-filter:blur(24px);padding:12px 0;border-bottom:1px solid oklch(93% .012 95/.04)}
 nav .container{display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-family:var(--font-serif);font-size:28px;font-weight:700;color:#fff;letter-spacing:2px}
-.nav-logo span{color:var(--gold)}
+.nav-logo{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--fg);letter-spacing:2px}
+.nav-logo span{color:var(--accent)}
+.nav-phone a{color:var(--accent);font-size:14px;font-weight:600;letter-spacing:.5px;margin-right:16px;transition:color .3s}
+.nav-phone a:hover{color:var(--accent-deep)}
+@media(max-width:768px){.nav-phone{display:none}}
 .nav-links{display:flex;align-items:center;gap:28px;list-style:none}
-.nav-links a{color:var(--text2);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:color .3s}
-.nav-links a:hover{color:var(--text)}
+.nav-links a{color:var(--muted);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--fg)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
-.hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
-
-/* ─── Section separators ─── */
-.section{position:relative}
-.section::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80%;max-width:400px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.06),transparent)}
-.section:last-child::after{display:none}
-
-/* ─── Subtle noise overlay ─── */
-.noise{position:fixed;inset:0;z-index:99998;pointer-events:none;opacity:.015;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px}
-
-/* ─── Hero ─── */
+.hamburger span{width:24px;height:2px;background:var(--fg);border-radius:2px;transition:all .3s}
+.marquee-section{padding:16px 0;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);overflow:hidden;background:var(--bg-elevated)}
+.marquee-track{display:flex;gap:48px;animation:marqueeScroll 30s linear infinite;width:max-content}
+.marquee-track span{white-space:nowrap;font-size:13px;font-weight:500;color:oklch(93% .012 95/.06);letter-spacing:.15em;text-transform:uppercase;display:flex;align-items:center;gap:32px}
+.marquee-track span em{color:oklch(76% .11 90/.15);font-style:normal}
+@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:80px}
-
-/* Hero background — video primary, skyline fallback */
-.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background-color:#050608}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background-color:oklch(12% .005 95)}
 .hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.35;filter:brightness(.7) saturate(1.2)}
 .hero-bg .fallback-img{width:100%;height:100%;object-fit:cover;opacity:.15;display:none}
-.hero-bg .skyline{position:absolute;inset:0;background-image:var(--skyline-src);background-size:cover;background-position:center bottom;background-repeat:no-repeat;opacity:0;filter:brightness(1.1) contrast(1.05);will-change:transform;transition:opacity .5s}
-.hero-bg .skyline::after{content:"";position:absolute;inset:0;background:rgba(8,8,8,0.12)}
-.hero-bg .stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 18%,rgba(255,255,255,.7),transparent),radial-gradient(1.2px 1.2px at 65% 12%,rgba(255,255,255,.5),transparent),radial-gradient(1px 1px at 82% 22%,rgba(255,255,255,.6),transparent),radial-gradient(1.3px 1.3px at 40% 28%,rgba(255,255,255,.4),transparent),radial-gradient(1px 1px at 12% 35%,rgba(255,255,255,.5),transparent),radial-gradient(1.4px 1.4px at 90% 15%,rgba(255,255,255,.6),transparent);background-repeat:no-repeat;animation:twinkle 6s ease-in-out infinite alternate;opacity:0}
+.hero-bg .skyline{position:absolute;inset:0;background-size:cover;background-position:center bottom;background-repeat:no-repeat;opacity:0;filter:brightness(1.1) contrast(1.05);will-change:transform;transition:opacity .5s}
+.hero-bg .skyline::after{content:"";position:absolute;inset:0;background:oklch(12% .005 95/.12)}
+.hero-bg .stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 18%,oklch(93% .012 95/.7),transparent),radial-gradient(1.2px 1.2px at 65% 12%,oklch(93% .012 95/.5),transparent),radial-gradient(1px 1px at 82% 22%,oklch(93% .012 95/.6),transparent),radial-gradient(1.3px 1.3px at 40% 28%,oklch(93% .012 95/.4),transparent),radial-gradient(1px 1px at 12% 35%,oklch(93% .012 95/.5),transparent),radial-gradient(1.4px 1.4px at 90% 15%,oklch(93% .012 95/.6),transparent);background-repeat:no-repeat;animation:twinkle 6s ease-in-out infinite alternate;opacity:0}
 @keyframes twinkle{from{opacity:.5}to{opacity:.9}}
-.hero-bg .glow{position:absolute;left:50%;bottom:-20%;width:120%;height:80%;transform:translateX(-50%);background:radial-gradient(ellipse at center,var(--glow-gold),transparent 70%);pointer-events:none;opacity:0}
-
-/* Hero animated grid */
-.hero-grid-lines{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-
-/* Hero moving light lines */
+.hero-bg .glow{position:absolute;left:50%;bottom:-20%;width:120%;height:80%;transform:translateX(-50%);background:radial-gradient(ellipse at center,oklch(76% .11 90/.08),transparent 70%);pointer-events:none;opacity:0}
+.hero-orbs{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero-orbs .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.18;animation:orbFloat 12s ease-in-out infinite alternate}
+.hero-orbs .orb-1{width:500px;height:500px;background:oklch(76% .11 90/.4);top:-15%;left:-10%;animation-delay:0s}
+.hero-orbs .orb-2{width:400px;height:400px;background:oklch(62% .1 88/.35);bottom:-20%;right:-5%;animation-delay:4s}
+.hero-orbs .orb-3{width:300px;height:300px;background:oklch(76% .11 90/.25);top:40%;left:50%;animation-delay:8s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.1)}100%{transform:translate(-20px,20px) scale(.95)}}
+.hero-grid-lines{position:absolute;inset:0;z-index:0;background-image:linear-gradient(oklch(93% .012 95/.02) 1px,transparent 1px),linear-gradient(90deg,oklch(93% .012 95/.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
 .hero-moving{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.hero-moving span{position:absolute;width:2px;height:200px;background:linear-gradient(transparent,rgba(201,168,76,.08),transparent);animation:heroLine 8s ease-in-out infinite}
+.hero-moving span{position:absolute;width:2px;height:200px;background:linear-gradient(transparent,oklch(76% .11 90/.08),transparent);animation:heroLine 8s ease-in-out infinite}
 .hero-moving span:nth-child(1){left:15%;top:10%;animation-delay:0s}
 .hero-moving span:nth-child(2){left:45%;top:20%;animation-delay:2.6s;height:160px}
 .hero-moving span:nth-child(3){left:75%;top:5%;animation-delay:5.2s;height:180px}
 @keyframes heroLine{0%,100%{transform:translateY(-50%);opacity:0}50%{transform:translateY(50%);opacity:1}}
-
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,5,.10) 0%,rgba(5,5,5,.35) 55%,rgba(5,5,5,.80) 100%);z-index:1}
+.hero-float-car{position:absolute;right:-5%;bottom:8%;width:55%;max-width:600px;z-index:1;pointer-events:none;animation:floatCar 8s ease-in-out infinite;opacity:.12}
+.hero-float-car img{width:100%;height:auto;filter:drop-shadow(0 20px 60px oklch(76% .11 90/.15))}
+@keyframes floatCar{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-20px) rotate(1deg)}}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,oklch(12% .005 95/.10) 0%,oklch(12% .005 95/.35) 55%,oklch(12% .005 95/.80) 100%);z-index:1}
 .hero .container{position:relative;z-index:2;width:100%}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
-.hero-text .tagline{color:var(--gold);font-size:14px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
-.hero-text .tagline::before{content:"";width:36px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.hero-text .tagline{color:var(--accent);font-size:14px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-text .tagline::before{content:"";width:36px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}
 .hero-text h1{font-family:var(--font-serif);font-size:72px;font-weight:700;line-height:1.05;margin-bottom:20px}
-.hero-text h1 em{font-style:italic;color:var(--gold)}
-.hero-text h1 .brand{display:block;font-size:104px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.05;margin-bottom:8px}
-.hero-text p{color:var(--text2);font-size:18px;line-height:1.7;margin-bottom:32px;max-width:480px}
+.hero-text h1 em{font-style:italic;color:var(--accent)}
+.hero-text h1 .brand{display:block;font-size:104px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 50%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.05;margin-bottom:8px}
+.hero-text p{color:var(--muted);font-size:18px;line-height:1.7;margin-bottom:32px;max-width:480px}
 .hero-btns{display:flex;gap:12px;flex-wrap:wrap}
-
-/* ─── Quote card ─── */
-.quote-card{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:36px;backdrop-filter:blur(12px)}
+.quote-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:16px;padding:36px;backdrop-filter:blur(12px);position:relative;overflow:hidden}
+.quote-card::before{content:'';position:absolute;inset:0;border-radius:16px;padding:1px;background:linear-gradient(135deg,transparent,oklch(76% .11 90/.12),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:0;transition:opacity .6s}
+.quote-card:hover::before{opacity:1}
 .quote-card h3{font-family:var(--font-serif);font-size:22px;margin-bottom:4px}
-.quote-card .sub{color:var(--text2);font-size:13px;margin-bottom:24px}
+.quote-card .sub{color:var(--muted);font-size:13px;margin-bottom:24px}
 .quote-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .quote-form .full{grid-column:1/-1}
-.quote-form label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase}
-.quote-form input,.quote-form select{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);transition:all .3s;outline:none}
-.quote-form input:focus,.quote-form select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.08)}
-.quote-form select option{background:#0a0a0a;color:var(--text)}
+.quote-form label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase}
+.quote-form input,.quote-form select,.quote-form textarea{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:oklch(12% .005 95/.4);color:var(--fg);font-size:14px;font-family:var(--font-sans);transition:all .3s;outline:none}
+.quote-form input:focus,.quote-form select:focus,.quote-form textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px oklch(76% .11 90/.08)}
+.quote-form select option{background:var(--bg);color:var(--fg)}
+.quote-form textarea{resize:vertical}
 .quote-form .btn{width:100%;margin-top:4px}
-.quote-phone{text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.04);color:var(--text2);font-size:13px}
-.quote-phone a{color:var(--text);font-weight:600}
+.quote-phone{text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid oklch(93% .012 95/.04);color:var(--muted);font-size:13px}
+.quote-phone a{color:var(--fg);font-weight:600}
 .stats{display:flex;gap:40px;margin-top:48px}
 .stat{text-align:center}
-.stat .num{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--gold)}
-.stat .lbl{color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-
-/* ─── Fleet ─── */
+.stat .num{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--accent)}
+.stat .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
 .fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.fleet-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden;transition:all .4s;position:relative}
-.fleet-card:hover{transform:translateY(-6px);border-color:rgba(201,168,76,.2);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.fleet-card .img-wrap{height:220px;background:linear-gradient(135deg,#0a0a0a,#000);display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
+.fleet-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);overflow:hidden;transition:all .4s;position:relative;cursor:pointer}
+.fleet-card:hover{transform:translateY(-6px);border-color:oklch(76% .11 90/.2);box-shadow:0 20px 60px oklch(12% .005 95/.5)}
+.fleet-card .img-wrap{height:220px;background:linear-gradient(135deg,var(--bg-elevated),oklch(8% .004 95));display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
 .fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .5s}
 .fleet-card:hover .img-wrap img{transform:scale(1.04)}
-.fleet-card .num{position:absolute;top:16px;left:16px;font-family:var(--font-serif);font-size:32px;font-weight:700;color:rgba(201,168,76,.08);line-height:1}
-.fleet-card .badge{position:absolute;top:16px;right:16px;background:rgba(201,168,76,.12);color:var(--gold);padding:4px 12px;border-radius:50px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.fleet-card .num{position:absolute;top:16px;left:16px;font-family:var(--font-serif);font-size:32px;font-weight:700;color:oklch(76% .11 90/.08);line-height:1}
+.fleet-card .badge{position:absolute;top:16px;right:16px;background:oklch(76% .11 90/.12);color:var(--accent);padding:4px 12px;border-radius:50px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .fleet-card .body{padding:24px}
 .fleet-card .body h3{font-family:var(--font-serif);font-size:20px;margin-bottom:4px}
-.fleet-card .body .cap{color:var(--text2);font-size:13px;margin-bottom:12px}
-.fleet-card .body p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:16px}
+.fleet-card .body .cap{color:var(--muted);font-size:13px;margin-bottom:12px}
+.fleet-card .body p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:16px}
 .fleet-card .body .btn{font-size:12px;padding:10px 24px}
-
-/* ─── Services ─── */
 .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.service-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:28px;transition:all .3s}
-.service-card:hover{border-color:rgba(201,168,76,.15);transform:translateY(-4px)}
-.service-card .icon{font-size:28px;margin-bottom:12px}
+.service-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:28px;transition:all .3s;position:relative;overflow:hidden}
+.service-card:hover{border-color:oklch(76% .11 90/.15);transform:translateY(-4px)}
+.service-card .icon{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,oklch(76% .11 90/.08),oklch(62% .1 88/.05));display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;transition:all .3s;border:1px solid oklch(76% .11 90/.06)}
+.service-card:hover .icon{background:linear-gradient(135deg,oklch(76% .11 90/.14),oklch(62% .1 88/.1));border-color:oklch(76% .11 90/.15);transform:translateY(-2px)}
 .service-card h4{font-family:var(--font-serif);font-size:18px;margin-bottom:6px}
-.service-card p{color:var(--text2);font-size:14px;line-height:1.6}
-.service-area{margin-top:40px;text-align:center;color:var(--text2);font-size:14px;padding:20px;border-top:1px solid var(--card-border)}
-
-/* ─── Testimonials ─── */
-.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.testimonial-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:28px}
-.testimonial-card .stars{color:var(--gold);font-size:14px;margin-bottom:8px}
-.testimonial-card blockquote{color:var(--text2);font-size:14px;line-height:1.7;font-style:italic;margin-bottom:16px}
-.testimonial-card .author{font-size:13px;font-weight:600}
-.testimonial-card .time{color:var(--text3);font-size:12px}
-
-/* ─── Booking section ─── */
-.booking-section{background:var(--bg2);border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border)}
-.contact-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px}
-.contact-method{padding:20px;border-radius:var(--radius);background:var(--card);border:1px solid var(--card-border);text-align:center}
-.contact-method .icon{font-size:24px;margin-bottom:8px}
-.contact-method .lbl{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.contact-method a{color:var(--text);font-size:18px;font-weight:600}
-.contact-method .note{color:var(--text2);font-size:12px;margin-top:4px}
-
-/* ─── FAQ ─── */
-.faq-grid{max-width:700px;margin:0 auto}
-.faq-item{border-bottom:1px solid var(--card-border);padding:20px 0;cursor:pointer}
-.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:500}
-.faq-q .arrow{color:var(--gold);font-size:12px;transition:transform .3s}
-.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
-.faq-a{max-height:0;overflow:hidden;transition:all .4s;color:var(--text2);font-size:14px;line-height:1.7}
-.faq-item.open .faq-a{max-height:300px;margin-top:12px}
-
-/* ─── Footer ─── */
-footer{padding:60px 0 40px;border-top:1px solid var(--card-border)}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
-footer h4{font-family:var(--font-serif);font-size:18px;margin-bottom:16px}
-footer .brand-large{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--text);margin-bottom:8px}
-footer .brand-large span{color:var(--gold)}
-footer p{color:var(--text2);font-size:13px;line-height:1.7}
-footer ul{list-style:none}
-footer ul li{margin-bottom:8px}
-footer ul a{color:var(--text2);font-size:13px}
-footer ul a:hover{color:var(--gold)}
-.footer-bottom{margin-top:40px;padding-top:20px;border-top:1px solid var(--card-border);text-align:center;color:var(--text3);font-size:12px}
-
-/* ─── Page header ─── */
-.page-header{padding:140px 0 60px;text-align:center}
-.page-header h2{font-family:var(--font-serif);font-size:48px;font-weight:600}
-.page-header p{color:var(--text2);font-size:16px;margin-top:12px}
-
-/* ─── Blog ─── */
+.service-card p{color:var(--muted);font-size:14px;line-height:1.6}
+.service-area{margin-top:40px;text-align:center;color:var(--muted);font-size:14px;padding:20px;border-top:1px solid var(--border-soft)}
+.trust-band{background:var(--bg-elevated);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft)}
+.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.trust-copy h2{font-family:var(--font-serif);font-size:40px;line-height:1.15;margin-bottom:16px}
+.trust-copy p{color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:24px}
+.trust-copy .stat-row{display:flex;gap:32px}
+.trust-copy .stat-item .num{font-family:var(--font-serif);font-size:32px;font-weight:700;color:var(--accent)}
+.trust-copy .stat-item .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.trust-stack{display:flex;flex-direction:column;gap:16px}
+.trust-testimonial{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:24px;transition:all .3s}
+.trust-testimonial:hover{border-color:oklch(76% .11 90/.15);transform:translateX(4px)}
+.trust-testimonial .stars{color:var(--accent);font-size:14px;margin-bottom:6px}
+.trust-testimonial blockquote{color:var(--muted);font-size:14px;line-height:1.7;font-style:italic;margin-bottom:8px}
+.trust-testimonial .author{font-size:13px;font-weight:600}
 .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.blog-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:28px;transition:all .3s;cursor:pointer}
-.blog-card:hover{transform:translateY(-4px);border-color:rgba(201,168,76,.15)}
+.blog-grid .blog-featured{grid-column:1/-1}
+.blog-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:28px;transition:all .3s;cursor:pointer}
+.blog-card:hover{transform:translateY(-4px);border-color:oklch(76% .11 90/.15)}
 .blog-card .thumb{font-size:32px;margin-bottom:12px}
-.blog-card .cat{color:var(--gold);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.blog-card .cat{color:var(--accent);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
 .blog-card h3{font-family:var(--font-serif);font-size:18px;margin-bottom:8px;line-height:1.3}
-.blog-card p{color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:12px}
-.blog-card .meta{color:var(--text3);font-size:11px;display:flex;gap:12px}
+.blog-card p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:12px}
+.blog-card .meta{color:var(--muted-2);font-size:11px;display:flex;gap:12px}
 .blog-card .article-content{display:none}
-
-/* ─── Deposit ─── */
-.deposit-wrap{max-width:500px;margin:0 auto;background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:36px}
+.cta-panel{background:var(--bg-elevated);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft)}
+.contact-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px}
+.contact-method{padding:24px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border-soft);text-align:center;transition:all .3s}
+.contact-method:hover{border-color:oklch(76% .11 90/.15);transform:translateY(-2px)}
+.contact-method .icon{font-size:24px;margin-bottom:8px}
+.contact-method .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.contact-method a{color:var(--fg);font-size:18px;font-weight:600}
+.contact-method .note{color:var(--muted);font-size:12px;margin-top:4px}
+.faq-grid{max-width:700px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border-soft);padding:20px 0;cursor:pointer}
+.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:500}
+.faq-q .arrow{color:var(--accent);font-size:12px;transition:transform .3s}
+.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:all .4s;color:var(--muted);font-size:14px;line-height:1.7}
+.faq-item.open .faq-a{max-height:300px;margin-top:12px}
+.deposit-wrap{max-width:500px;margin:0 auto;background:var(--surface);border:1px solid var(--border-soft);border-radius:16px;padding:36px}
 .deposit-amounts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
-.deposit-amounts button{padding:10px 20px;border-radius:50px;border:1px solid var(--card-border);background:transparent;color:var(--text);font-size:14px;cursor:pointer;transition:all .3s;font-family:var(--font-sans)}
-.deposit-amounts button.active,.deposit-amounts button:hover{border-color:var(--gold);color:var(--gold)}
+.deposit-amounts button{padding:10px 20px;border-radius:50px;border:1px solid var(--border-soft);background:transparent;color:var(--fg);font-size:14px;cursor:pointer;transition:all .3s;font-family:var(--font-sans)}
+.deposit-amounts button.active,.deposit-amounts button:hover{border-color:var(--accent);color:var(--accent)}
 #square-card{min-height:200px;margin-top:16px}
 #square-card iframe{color-scheme:dark}
-#square-card{--sq-color-input:#f0f0f0;--sq-color-placeholder:#666;--sq-color-focused:var(--gold);--sq-color-error:#ff6b6b}
-
-/* ─── Flight ─── */
-.flight-wrap{max-width:500px;margin:0 auto;background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:36px}
-.flight-wrap input{width:100%;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:16px;font-family:var(--font-sans);outline:none;transition:all .3s}
-.flight-wrap input:focus{border-color:var(--gold)}
-#flightResult{margin-top:20px;padding:16px;border-radius:var(--radius-sm);background:rgba(255,255,255,.02);display:none}
-
-/* ─── Animations ─── */
+#square-card{--sq-color-input:#f0f0f0;--sq-color-placeholder:#666;--sq-color-focused:var(--accent);--sq-color-error:#ff6b6b}
+.flight-wrap{max-width:500px;margin:0 auto;background:var(--surface);border:1px solid var(--border-soft);border-radius:16px;padding:36px}
+.flight-wrap input{width:100%;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:oklch(12% .005 95/.4);color:var(--fg);font-size:16px;font-family:var(--font-sans);outline:none;transition:all .3s}
+.flight-wrap input:focus{border-color:var(--accent)}
+#flightResult{margin-top:20px;padding:16px;border-radius:var(--radius-sm);background:oklch(16.5% .007 95/.5);display:none}
+footer{padding:60px 0 40px;border-top:1px solid var(--border-soft)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+footer h4{font-family:var(--font-serif);font-size:18px;margin-bottom:16px}
+footer .brand-large{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--fg);margin-bottom:8px}
+footer .brand-large span{color:var(--accent)}
+footer p{color:var(--muted);font-size:13px;line-height:1.7}
+footer ul{list-style:none}
+footer ul li{margin-bottom:8px}
+footer ul a{color:var(--muted);font-size:13px}
+footer ul a:hover{color:var(--accent)}
+.footer-bottom{margin-top:40px;padding-top:20px;border-top:1px solid var(--border-soft);text-align:center;color:var(--muted-2);font-size:12px}
+.footer-social{display:flex;gap:12px;margin-top:16px}
+.footer-social a{width:36px;height:36px;border-radius:50%;border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .3s}
+.footer-social a:hover{border-color:var(--accent);color:var(--accent)}
+.mobile-cta{display:none;position:fixed;bottom:0;left:0;width:100%;z-index:9996;background:oklch(12% .005 95/.95);backdrop-filter:blur(12px);border-top:1px solid oklch(93% .012 95/.06)}
+.mobile-cta a{flex:1;padding:14px;text-align:center;font-size:14px;font-weight:600}
+.mobile-cta .mcta-call{color:var(--fg)}
+.mobile-cta .mcta-book{background:var(--accent);color:oklch(12% .005 95)}
+@media(max-width:768px){.mobile-cta{display:flex}body{padding-bottom:52px}}
+.exit-popup{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:oklch(8% .003 95/.7);backdrop-filter:blur(8px)}
+.exit-popup.show{display:flex}
+.exit-popup-inner{background:var(--bg-elevated);border:1px solid oklch(93% .012 95/.08);border-radius:24px;padding:40px;max-width:420px;width:90%;text-align:center;position:relative}
+.exit-popup-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--muted-2);font-size:28px;cursor:pointer}
+.exit-popup h3{font-family:var(--font-serif);font-size:22px;margin-bottom:8px}
+.exit-popup p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+.page-header{padding:140px 0 60px;text-align:center}
+.page-header h2{font-family:var(--font-serif);font-size:48px;font-weight:600}
+.page-header p{color:var(--muted);font-size:16px;margin-top:12px}
+.post-content{max-width:700px;margin:0 auto}
+.post-content h2{font-family:var(--font-serif);font-size:28px;margin:32px 0 16px}
+.post-content h3{font-family:var(--font-serif);font-size:22px;margin:24px 0 12px}
+.post-content p{color:var(--muted);font-size:16px;line-height:1.8;margin-bottom:16px}
+.post-content ul,.post-content ol{padding-left:24px;margin-bottom:16px}
+.post-content li{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:6px}
+.post-content strong{color:var(--fg)}
+.post-content a{color:var(--accent)}
+.error-page{text-align:center;padding:140px 20px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.error-page h1{font-family:var(--font-serif);font-size:120px;color:var(--accent);line-height:1}
+.error-page p{color:var(--muted);margin:16px 0 32px}
 .fade-up{opacity:0;transform:translateY(24px);transition:all .6s cubic-bezier(.22,1,.36,1)}
 .fade-up.visible{opacity:1;transform:translateY(0)}
-
-/* Scale in on scroll */
 .scale-in{opacity:0;transform:scale(.92);transition:all .7s cubic-bezier(.22,1,.36,1)}
 .scale-in.visible{opacity:1;transform:scale(1)}
-
-/* Slide from left/right */
 .slide-left{opacity:0;transform:translateX(-30px);transition:all .6s cubic-bezier(.22,1,.36,1)}
 .slide-right{opacity:0;transform:translateX(30px);transition:all .6s cubic-bezier(.22,1,.36,1)}
 .slide-left.visible,.slide-right.visible{opacity:1;transform:translateX(0)}
-
-/* Card hover glow */
 .fleet-card,.service-card,.testimonial-card,.blog-card{transition:all .4s cubic-bezier(.22,1,.36,1)}
-.fleet-card:hover,.service-card:hover,.testimonial-card:hover,.blog-card:hover{transform:translateY(-6px);border-color:rgba(201,168,76,.2);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(201,168,76,.03)}
-
-/* Quote card subtle border glow */
-.quote-card{transition:all .4s;position:relative}
-.quote-card::before{content:'';position:absolute;inset:-1px;border-radius:17px;background:linear-gradient(135deg,transparent,rgba(201,168,76,.08),transparent);opacity:0;transition:opacity .6s;z-index:-1}
-.quote-card:hover::before{opacity:1}
-
-/* Hero content entrance */
+.fleet-card:hover,.service-card:hover,.testimonial-card:hover,.blog-card:hover{transform:translateY(-6px);border-color:oklch(76% .11 90/.2);box-shadow:0 20px 60px oklch(12% .005 95/.5),0 0 40px oklch(76% .11 90/.03)}
 .hero-text .hero-badge{animation:fadeSlideUp .8s .2s both}
 .hero-text h1{animation:fadeSlideUp .8s .4s both}
 .hero-text p{animation:fadeSlideUp .8s .6s both}
 .hero-text .hero-btns{animation:fadeSlideUp .8s .8s both}
 @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
-/* Gold shimmer on headings */
-.gold-shimmer{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 40%,var(--gold) 70%,var(--gold-light) 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s ease-in-out infinite}
+.gold-shimmer{background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 40%,var(--accent) 70%,var(--accent-deep) 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s ease-in-out infinite}
 @keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-
-/* ─── Chat ─── */
-.chat-btn{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--gold);border:none;color:#0a0a0a;font-size:24px;cursor:pointer;z-index:999;box-shadow:0 4px 20px rgba(201,168,76,.3);transition:all .3s}
-.chat-btn:hover{transform:scale(1.1);box-shadow:0 8px 36px rgba(201,168,76,.5)}
-.chat-pulse{position:absolute;inset:0;border-radius:50%;background:var(--gold);opacity:.4;z-index:-1;animation:chatPulse 2s infinite}
+.chat-btn{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--accent);border:none;color:oklch(12% .005 95);font-size:24px;cursor:pointer;z-index:999;box-shadow:0 4px 20px oklch(76% .11 90/.3);transition:all .3s}
+.chat-btn:hover{transform:scale(1.1);box-shadow:0 8px 36px oklch(76% .11 90/.5)}
+.chat-pulse{position:absolute;inset:0;border-radius:50%;background:var(--accent);opacity:.4;z-index:-1;animation:chatPulse 2s infinite}
 @keyframes chatPulse{0%{transform:scale(1);opacity:.4}100%{transform:scale(1.5);opacity:0}}
 @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.chat-box{position:fixed;bottom:90px;right:24px;width:360px;max-height:500px;background:var(--card);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;display:none;z-index:999;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.chat-box{position:fixed;bottom:90px;right:24px;width:360px;max-height:500px;background:var(--surface);border:1px solid var(--border-soft);border-radius:16px;overflow:hidden;display:none;z-index:999;box-shadow:0 20px 60px oklch(8% .003 95/.6)}
 .chat-box.open{display:flex;flex-direction:column}
-.chat-header{padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:10px}
+.chat-header{padding:16px 20px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px}
 .chat-header .name{font-weight:600;font-size:14px}
 .chat-header .status{color:#4ade80;font-size:10px}
 .chat-msgs{padding:16px 20px;overflow-y:auto;flex:1;min-height:200px;max-height:300px}
 .chat-msg{margin-bottom:12px;animation:msgIn .3s}
-.chat-msg.bot .bubble{background:rgba(255,255,255,.04);padding:10px 14px;border-radius:12px 12px 12px 4px;font-size:13px;line-height:1.5;color:var(--text2)}
+.chat-msg.bot .bubble{background:oklch(16.5% .007 95/.5);padding:10px 14px;border-radius:12px 12px 12px 4px;font-size:13px;line-height:1.5;color:var(--muted)}
 .chat-msg.user{text-align:right}
-.chat-msg.user .bubble{background:rgba(201,168,76,.12);padding:10px 14px;border-radius:12px 12px 4px 12px;font-size:13px;display:inline-block;color:var(--text)}
+.chat-msg.user .bubble{background:var(--accent-soft);padding:10px 14px;border-radius:12px 12px 4px 12px;font-size:13px;display:inline-block;color:var(--fg)}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.chat-input-wrap{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--card-border)}
-.chat-input-wrap input{flex:1;padding:10px 14px;border-radius:50px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:13px;font-family:var(--font-sans);outline:none}
-.chat-input-wrap input:focus{border-color:var(--gold)}
-.chat-input-wrap button{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;color:#0a0a0a;font-size:16px;cursor:pointer;transition:transform .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.chat-input-wrap{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border-soft)}
+.chat-input-wrap input{flex:1;padding:10px 14px;border-radius:50px;border:1px solid var(--border-soft);background:oklch(12% .005 95/.4);color:var(--fg);font-size:13px;font-family:var(--font-sans);outline:none}
+.chat-input-wrap input:focus{border-color:var(--accent)}
+.chat-input-wrap button{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;color:oklch(12% .005 95);font-size:16px;cursor:pointer;transition:transform .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .chat-input-wrap button:hover{transform:scale(1.1)}
-
-/* ─── 404 ─── */
-.error-page{text-align:center;padding:140px 20px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.error-page h1{font-family:var(--font-serif);font-size:120px;color:var(--gold);line-height:1}
-.error-page p{color:var(--text2);margin:16px 0 32px}
-
-/* ─── Blog post page ─── */
-.post-content{max-width:700px;margin:0 auto}
-.post-content h2{font-family:var(--font-serif);font-size:28px;margin:32px 0 16px}
-.post-content h3{font-family:var(--font-serif);font-size:22px;margin:24px 0 12px}
-.post-content p{color:var(--text2);font-size:16px;line-height:1.8;margin-bottom:16px}
-.post-content ul,.post-content ol{padding-left:24px;margin-bottom:16px}
-.post-content li{color:var(--text2);font-size:15px;line-height:1.7;margin-bottom:6px}
-.post-content strong{color:var(--text)}
-.post-content a{color:var(--gold)}
-
-/* ─── Mobile ─── */
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:oklch(76% .11 90/.1);border:1px solid oklch(76% .11 90/.15);border-radius:50px;padding:8px 18px;font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.5px;text-transform:uppercase}
+.hero-badge .pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulseDot 2s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 @media(max-width:900px){
   .hero-grid{grid-template-columns:1fr;gap:32px}
   .hero-text h1{font-size:36px}
   .hero-text h1 .brand{font-size:52px}
   .hero-text p{font-size:15px}
+  .hero-float-car{display:none}
   .fleet-grid,.services-grid,.testimonials-grid,.blog-grid{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr;gap:24px}
   .contact-row{grid-template-columns:1fr}
   .quote-form{grid-template-columns:1fr}
   .stats{gap:24px}
-  .nav-links{display:none;position:fixed;top:0;right:0;bottom:0;width:280px;background:rgba(10,10,10,.98);backdrop-filter:blur(20px);flex-direction:column;padding:80px 32px;gap:20px;border-left:1px solid var(--card-border);z-index:1001;transform:translateX(100%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
+  .trust-grid{grid-template-columns:1fr;gap:32px}
+  .nav-links{display:none;position:fixed;top:0;right:0;bottom:0;width:280px;background:oklch(10% .004 95/.98);backdrop-filter:blur(20px);flex-direction:column;padding:80px 32px;gap:20px;border-left:1px solid var(--border-soft);z-index:1001;transform:translateX(100%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
   .nav-links.open{display:flex;transform:translateX(0)}
   .hamburger{display:flex;z-index:1002}
   .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
@@ -376,11 +332,6 @@ footer ul a:hover{color:var(--gold)}
   .stat .num{font-size:22px}
   .section{padding:60px 0}
   .section-header h2{font-size:32px}
-  .hero-badge{font-size:11px;padding:6px 14px}
-  .hero-text .hero-badge{animation-delay:.1s}
-  .hero-text h1{animation-delay:.2s}
-  .hero-text p{animation-delay:.3s}
-  .hero-text .hero-btns{animation-delay:.4s}
 }
 @media(max-width:480px){
   .hero-text h1{font-size:28px}
@@ -388,8 +339,6 @@ footer ul a:hover{color:var(--gold)}
   .section-header h2{font-size:26px}
   .nav-logo{font-size:22px}
   .quote-card{padding:24px}
-  .hero-badge{font-size:10px;padding:4px 12px}
-  .hero-badge .pulse-dot{width:4px;height:4px}
 }
 </style>
 </head>
@@ -468,10 +417,10 @@ footer ul a:hover{color:var(--gold)}
 <div><label>Passengers</label><input type="number" id="bk-pax" min="1" max="14" value="1"></div>
 <div class="full"><label>Service Type</label><select id="bk-service"><option value="">Select...</option><option value="Airport Transfer">Airport Transfer</option><option value="Corporate">Corporate</option><option value="Wedding">Wedding</option><option value="Event">Event</option><option value="Other">Other</option></select></div>
 <div class="full"><label>Flight Number (if airport)</label><input type="text" id="bk-flight" placeholder="e.g. UA1234"></div>
-<div class="full"><label>Special Requests</label><textarea id="bk-notes" rows="3" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none;resize:vertical"></textarea></div>
+<div class="full"><label>Special Requests</label><textarea id="bk-notes" rows="3"></textarea></div>
 <div class="full" style="text-align:center;margin-top:8px"><button type="submit" class="btn btn-gold" style="font-size:15px;padding:16px 48px">Request Booking</button></div>
 </form>
-<div id="bk-thanks" style="display:none;text-align:center;padding:60px 0"><p style="font-size:28px;margin-bottom:12px">✓</p><h3 style="font-family:var(--font-serif);font-size:28px;margin-bottom:8px">Thanks for your booking!</h3><p style="color:var(--text2)">We'll confirm your ride shortly. Need immediate assistance? Call (832) 567-8050.</p></div>
+<div id="bk-thanks" style="display:none;text-align:center;padding:60px 0"><p style="font-size:28px;margin-bottom:12px">✓</p><h3 style="font-family:var(--font-serif);font-size:28px;margin-bottom:8px">Thanks for your booking!</h3><p style="color:var(--muted)">We'll confirm your ride shortly. Need immediate assistance? Call (832) 567-8050.</p></div>
 </div>
 </div></section>
 
@@ -488,7 +437,7 @@ footer ul a:hover{color:var(--gold)}
 <div><label>Email</label><input type="email" id="c-email"></div>
 <div><label>Phone</label><input type="tel" id="c-phone"></div>
 <div class="full"><label>Subject</label><select id="c-subject"><option value="">Select...</option><option value="General Inquiry">General Inquiry</option><option value="Book a Ride">Book a Ride</option><option value="Corporate Account">Corporate Account</option><option value="Event Quote">Event Quote</option><option value="Partnership">Partnership</option></select></div>
-<div class="full"><label>Message</label><textarea id="c-msg" rows="4" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none;resize:vertical" required></textarea></div>
+<div class="full"><label>Message</label><textarea id="c-msg" rows="4" required></textarea></div>
 <div class="full" style="text-align:center"><button type="submit" class="btn btn-gold">Send Message</button></div>
 </form>
 </div>
@@ -518,21 +467,21 @@ footer ul a:hover{color:var(--gold)}
 {% elif content_key == 'policy' %}
 <div class="page-header"><div class="container"><h2>Company <span class="gold">Policy</span></h2></div></div>
 <section class="section" style="padding-top:0"><div class="container" style="max-width:700px">
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Booking &amp; Reservations</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">All reservations are confirmed upon receipt of a booking deposit. Deposits are fully refundable with 24-hour cancellation notice. Same-day bookings are subject to availability.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Cancellation Policy</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">Cancel or modify up to 24 hours before pickup for a full refund. Cancellations within 24 hours may incur a charge of 50% of the fare. No-shows are charged in full.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Waiting Time</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">Airport pickups include 60 minutes of complimentary waiting time from landing. All other pickups include 15 minutes. Additional waiting time is billed at $1 per minute.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Smoking &amp; Cleanliness</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">All vehicles are strictly non-smoking. A $250 cleaning fee will be charged for smoking, spills, or excessive mess.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Privacy</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">We respect your privacy. Personal information collected during booking is used solely for providing our services and will never be shared with third parties without your consent.</p>
+<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Booking &amp; Reservations</h3><p style="color:var(--muted);font-size:15px;line-height:1.8">All reservations are confirmed upon receipt of a booking deposit. Deposits are fully refundable with 24-hour cancellation notice. Same-day bookings are subject to availability.</p>
+<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Cancellation Policy</h3><p style="color:var(--muted);font-size:15px;line-height:1.8">Cancel or modify up to 24 hours before pickup for a full refund. Cancellations within 24 hours may incur a charge of 50% of the fare. No-shows are charged in full.</p>
+<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Waiting Time</h3><p style="color:var(--muted);font-size:15px;line-height:1.8">Airport pickups include 60 minutes of complimentary waiting time from landing. All other pickups include 15 minutes. Additional waiting time is billed at $1 per minute.</p>
+<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Smoking &amp; Cleanliness</h3><p style="color:var(--muted);font-size:15px;line-height:1.8">All vehicles are strictly non-smoking. A $250 cleaning fee will be charged for smoking, spills, or excessive mess.</p>
+<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Privacy</h3><p style="color:var(--muted);font-size:15px;line-height:1.8">We respect your privacy. Personal information collected during booking is used solely for providing our services and will never be shared with third parties without your consent.</p>
 </div></section>
 
 {% elif content_key == 'deposit' %}
 <div class="page-header"><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
 <section class="section" style="padding-top:0"><div class="container"><div class="deposit-wrap">
-<div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Deposit Amount</label>
+<div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Deposit Amount</label>
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-  <span style="font-size:20px;font-weight:700;color:var(--gold)">$</span>
-  <input id="dep-amount" type="number" value="250" min="1" style="width:120px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:18px;font-family:var(--font-sans);outline:none" oninput="updateDepositPresets(this.value)">
-  <span style="color:var(--text3);font-size:13px">Refundable with 24h cancellation</span>
+  <span style="font-size:20px;font-weight:700;color:var(--accent)">$</span>
+  <input id="dep-amount" type="number" value="250" min="1" style="width:120px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:oklch(12% .005 95/.4);color:var(--fg);font-size:18px;font-family:var(--font-sans);outline:none" oninput="updateDepositPresets(this.value)">
+  <span style="color:var(--muted-2);font-size:13px">Refundable with 24h cancellation</span>
 </div>
 <div class="deposit-amounts" style="margin-bottom:16px">
   <button onclick="setDeposit(50)" id="dep-50">$50</button>
@@ -544,30 +493,29 @@ footer ul a:hover{color:var(--gold)}
 </div>
 </div>
 <div class="pay-fields">
-<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Cardholder Name</label><input id="dep-name" type="text" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
-<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Email for Receipt</label><input id="dep-email" type="email" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
-<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Card Details</label><div id="square-card" style="padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);min-height:56px"></div></div>
+<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Cardholder Name</label><input id="dep-name" type="text" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:oklch(12% .005 95/.4);color:var(--fg);font-size:14px;font-family:var(--font-sans);outline:none"></div>
+<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Email for Receipt</label><input id="dep-email" type="email" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:oklch(12% .005 95/.4);color:var(--fg);font-size:14px;font-family:var(--font-sans);outline:none"></div>
+<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Card Details</label><div id="square-card" style="padding:14px 18px;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:oklch(12% .005 95/.4);min-height:56px"></div></div>
 <div id="sq-errors" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:12px;text-align:center"></div>
 <button class="btn btn-gold" style="width:100%;justify-content:center;padding:16px;font-size:16px" id="dep-pay-btn" onclick="processSquarePayment()">Pay Deposit</button>
-<p style="color:var(--text3);font-size:12px;text-align:center;margin-top:16px">🔒 Secured by Square. Your card info never touches our server.</p>
+<p style="color:var(--muted-2);font-size:12px;text-align:center;margin-top:16px">Secured by Square. Your card info never touches our server.</p>
 </div>
 <div id="dep-processing" style="display:none;text-align:center;padding:40px 20px">
   <div style="font-size:32px;margin-bottom:16px;animation:spin 1s linear infinite">&#8635;</div>
-  <p style="color:var(--text2)">Processing your payment...</p>
+  <p style="color:var(--muted)">Processing your payment...</p>
 </div>
 <div id="dep-thanks" style="display:none;text-align:center;padding:20px">
   <div style="font-size:48px;margin-bottom:12px">&#10003;</div>
   <h3 style="font-family:var(--font-serif);font-size:24px;margin-bottom:8px">Deposit <span class="gold">Received</span></h3>
-  <p style="color:var(--text2);font-size:14px" id="dep-thanks-msg">Your booking is secured. You'll receive a confirmation email shortly.</p>
+  <p style="color:var(--muted);font-size:14px" id="dep-thanks-msg">Your booking is secured. You'll receive a confirmation email shortly.</p>
 </div>
 </div></div></section>
 
 {% elif content_key == 'page' %}
-<!-- SEO page content -->
 <section class="section" style="padding-top:120px">
   <div class="container" style="max-width:1200px;margin:0 auto;padding:0 20px">
     {{ page_content_html | safe }}
-    <div style="text-align:center;margin-top:60px;padding-top:40px;border-top:1px solid var(--card-border)">
+    <div style="text-align:center;margin-top:60px;padding-top:40px;border-top:1px solid var(--border-soft)">
       <a href="/book" class="btn btn-gold" style="font-size:15px;padding:16px 40px">Book Your Ride</a>
       <a href="/" class="btn btn-outline" style="font-size:15px;padding:16px 40px;margin-left:12px">Back to Home</a>
     </div>
@@ -578,9 +526,7 @@ footer ul a:hover{color:var(--gold)}
 <div class="error-page"><h1>404</h1><p>Sorry, the page you requested could not be found.</p><a href="/" class="btn btn-gold">Back to Home</a></div>
 
 {% else %}
-<!-- ══════ HOMEPAGE ══════ -->
-
-<!-- Hero -->
+<!-- HOMEPAGE -->
 <section class="hero" id="home">
   <div class="hero-bg" aria-hidden="true">
     <video autoplay muted loop playsinline poster="/static/cadillac_escalade.png">
@@ -591,12 +537,20 @@ footer ul a:hover{color:var(--gold)}
     <div class="stars"></div>
     <div class="glow"></div>
   </div>
+  <div class="hero-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
   <div class="hero-grid-lines"></div>
   <div class="hero-moving" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="hero-float-car" aria-hidden="true">
+    <img src="/static/cadillac_escalade.png" alt="" loading="lazy">
+  </div>
   <div class="hero-overlay"></div>
   <div class="container">
     <div class="hero-grid">
-      <div class="hero-text fade-up">
+      <div class="hero-text">
         <div class="hero-badge"><span class="pulse-dot"></span> Houston's Premium Chauffeur Service</div>
         <h1><span class="brand gold-shimmer">AvaLimo</span> Arrive in <em>absolute</em> luxury.</h1>
         <p>Airport transfers, corporate travel, weddings and nights out. Flat rates, zero surge, always on time.</p>
@@ -609,7 +563,7 @@ footer ul a:hover{color:var(--gold)}
           <div class="stat"><div class="num">500+</div><div class="lbl">Rides</div></div>
           <div class="stat"><div class="num">24/7</div><div class="lbl">Available</div></div>
         </div>
-        <p style="margin-top:24px;font-size:13px;color:var(--text2)">Already booked? <a href="/deposit" style="color:var(--gold);font-weight:600;text-decoration:none">Pay your deposit &rarr;</a></p>
+        <p style="margin-top:24px;font-size:13px;color:var(--muted)">Already booked? <a href="/deposit" style="color:var(--accent);font-weight:600;text-decoration:none">Pay your deposit &rarr;</a></p>
       </div>
       <div class="fade-up" style="transition-delay:.2s">
         <div class="quote-card" id="quote">
@@ -639,8 +593,8 @@ footer ul a:hover{color:var(--gold)}
 <!-- Marquee -->
 <div class="marquee-section">
   <div class="marquee-track">
-    <span>Houston <em>•</em> IAH Airport <em>•</em> Hobby Airport <em>•</em> Sugar Land <em>•</em> The Woodlands <em>•</em> Katy <em>•</em> Missouri City <em>•</em> Pearland <em>•</em> Galveston <em>•</em> League City <em>•</em> Baytown <em>•</em> Spring <em>•</em> Cypress <em>•</em></span>
-    <span>Houston <em>•</em> IAH Airport <em>•</em> Hobby Airport <em>•</em> Sugar Land <em>•</em> The Woodlands <em>•</em> Katy <em>•</em> Missouri City <em>•</em> Pearland <em>•</em> Galveston <em>•</em> League City <em>•</em> Baytown <em>•</em> Spring <em>•</em> Cypress <em>•</em></span>
+    <span>Houston <em>&bull;</em> IAH Airport <em>&bull;</em> Hobby Airport <em>&bull;</em> Sugar Land <em>&bull;</em> The Woodlands <em>&bull;</em> Katy <em>&bull;</em> Missouri City <em>&bull;</em> Pearland <em>&bull;</em> Galveston <em>&bull;</em> League City <em>&bull;</em> Baytown <em>&bull;</em> Spring <em>&bull;</em> Cypress <em>&bull;</em></span>
+    <span>Houston <em>&bull;</em> IAH Airport <em>&bull;</em> Hobby Airport <em>&bull;</em> Sugar Land <em>&bull;</em> The Woodlands <em>&bull;</em> Katy <em>&bull;</em> Missouri City <em>&bull;</em> Pearland <em>&bull;</em> Galveston <em>&bull;</em> League City <em>&bull;</em> Baytown <em>&bull;</em> Spring <em>&bull;</em> Cypress <em>&bull;</em></span>
   </div>
 </div>
 
@@ -653,7 +607,7 @@ footer ul a:hover{color:var(--gold)}
       <p>Every vehicle is meticulously maintained, immaculately cleaned, and ready before you are.</p>
     </div>
     <div class="fleet-grid">
-      <div class="fleet-card fade-up">
+      <div class="fleet-card fade-up" data-vehicle="Sedan">
         <div class="img-wrap"><span class="num">01</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class" loading="lazy"></div>
         <div class="body">
           <h3>Mercedes S-Class</h3>
@@ -662,7 +616,7 @@ footer ul a:hover{color:var(--gold)}
           <a href="/book" class="btn btn-outline">Book</a>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.1s">
+      <div class="fleet-card fade-up" style="transition-delay:.1s" data-vehicle="SUV">
         <div class="img-wrap"><span class="num">02</span><span class="badge">Most Booked</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade" loading="lazy"></div>
         <div class="body">
           <h3>Cadillac Escalade</h3>
@@ -671,7 +625,7 @@ footer ul a:hover{color:var(--gold)}
           <a href="/book" class="btn btn-outline">Book</a>
         </div>
       </div>
-      <div class="fleet-card fade-up" style="transition-delay:.2s">
+      <div class="fleet-card fade-up" style="transition-delay:.2s" data-vehicle="Sprinter">
         <div class="img-wrap"><span class="num">03</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter" loading="lazy"></div>
         <div class="body">
           <h3>Mercedes Sprinter</h3>
@@ -704,38 +658,83 @@ footer ul a:hover{color:var(--gold)}
   </div>
 </section>
 
-<!-- Testimonials -->
-<section class="section" id="testimonials">
+<!-- Trust Band -->
+<section class="section trust-band" id="testimonials">
   <div class="container">
-    <div class="section-header fade-up">
-      <div class="label">Testimonials</div>
-      <h2>What our clients say</h2>
-    </div>
-    <div class="testimonials-grid">
-      <div class="testimonial-card fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;Everything was perfect, from booking to arrival. The vehicle was immaculate and the driver was professional and courteous. Will definitely use again.&rdquo;</blockquote>
-        <div class="author">David M.</div>
-        <div class="time">2 weeks ago</div>
+    <div class="trust-grid">
+      <div class="trust-copy fade-up">
+        <h2>Trusted by 500+ Houston riders</h2>
+        <p>Five-star rated on Google. Every ride includes flight tracking, meet-and-greet, and 24/7 dispatch. Here's what our clients say.</p>
+        <div class="stat-row">
+          <div class="stat-item"><div class="num">4.9</div><div class="lbl">Google Rating</div></div>
+          <div class="stat-item"><div class="num">500+</div><div class="lbl">Rides Completed</div></div>
+          <div class="stat-item"><div class="num">0</div><div class="lbl">Surge Fees</div></div>
+        </div>
       </div>
-      <div class="testimonial-card fade-up" style="transition-delay:.1s">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;Best airport transfer I've ever had. My flight was delayed and they were still waiting when I landed. So glad I found AvaLimo.&rdquo;</blockquote>
-        <div class="author">Jennifer K.</div>
-        <div class="time">1 month ago</div>
-      </div>
-      <div class="testimonial-card fade-up" style="transition-delay:.2s">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;Used them for our wedding, absolutely perfect. The S-Class was stunning and the chauffeur helped with everything.&rdquo;</blockquote>
-        <div class="author">Michael &amp; Sarah T.</div>
-        <div class="time">3 weeks ago</div>
+      <div class="trust-stack">
+        <div class="trust-testimonial fade-up">
+          <div class="stars">★★★★★</div>
+          <blockquote>&ldquo;Everything was perfect, from booking to arrival. The vehicle was immaculate and the driver was professional and courteous. Will definitely use again.&rdquo;</blockquote>
+          <div class="author">David M.</div>
+        </div>
+        <div class="trust-testimonial fade-up" style="transition-delay:.1s">
+          <div class="stars">★★★★★</div>
+          <blockquote>&ldquo;Best airport transfer I've ever had. My flight was delayed and they were still waiting when I landed. So glad I found AvaLimo.&rdquo;</blockquote>
+          <div class="author">Jennifer K.</div>
+        </div>
+        <div class="trust-testimonial fade-up" style="transition-delay:.2s">
+          <div class="stars">★★★★★</div>
+          <blockquote>&ldquo;Used them for our wedding, absolutely perfect. The S-Class was stunning and the chauffeur helped with everything.&rdquo;</blockquote>
+          <div class="author">Michael &amp; Sarah T.</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Booking CTA -->
-<section class="section booking-section" id="book-cta">
+<!-- Blog -->
+<section class="section" id="blog">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="label">From the Blog</div>
+      <h2>Houston travel guides</h2>
+      <p>Expert tips on airports, events, and getting around Houston in style.</p>
+    </div>
+    <div class="blog-grid">
+      <div class="blog-card blog-featured fade-up">
+        <div class="thumb">📖</div>
+        <div class="cat">Featured</div>
+        <h3>The Complete Guide to IAH Airport Transfers</h3>
+        <p>Navigating George Bush Intercontinental doesn't have to be stressful. Here's everything you need to know about luxury airport transfers in Houston.</p>
+        <div class="meta"><span>Jul 2026</span><span>5 min read</span></div>
+      </div>
+      <div class="blog-card fade-up" style="transition-delay:.1s">
+        <div class="thumb">✈</div>
+        <div class="cat">Travel Tips</div>
+        <h3>IAH vs Hobby: Which Houston Airport Should You Fly Into?</h3>
+        <p>A local's comparison of Houston's two major airports and which one works best for your trip.</p>
+        <div class="meta"><span>Jun 2026</span><span>4 min read</span></div>
+      </div>
+      <div class="blog-card fade-up" style="transition-delay:.15s">
+        <div class="thumb">💍</div>
+        <div class="cat">Weddings</div>
+        <h3>Houston Wedding Transportation: The Complete Checklist</h3>
+        <p>From engagement party to honeymoon departure, here's how to plan every ride for your big day.</p>
+        <div class="meta"><span>May 2026</span><span>6 min read</span></div>
+      </div>
+      <div class="blog-card fade-up" style="transition-delay:.2s">
+        <div class="thumb">🎉</div>
+        <div class="cat">Events</div>
+        <h3>Concert Night Done Right: Skip Houston Parking Forever</h3>
+        <p>Toyota Center, NRG Stadium, 713 Music Hall — here's why a chauffeur beats parking every time.</p>
+        <div class="meta"><span>Apr 2026</span><span>3 min read</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Panel -->
+<section class="section cta-panel" id="book-cta">
   <div class="container">
     <div class="section-header fade-up">
       <div class="label">Ready When You Are</div>
@@ -777,16 +776,50 @@ footer ul a:hover{color:var(--gold)}
 <footer>
   <div class="container">
     <div class="footer-grid">
-      <div><div class="brand-large">Ava<span>Limo</span></div><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort &mdash; every time.</p></div>
-      <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/pricing">Pricing</a></li><li><a href="/wedding-limo">Wedding</a></li><li><a href="/book">Book Now</a></li><li><a href="/deposit">Pay Deposit</a></li><li><a href="/contact">Contact</a></li></ul></div>
-      <div><h4>Services</h4><ul><li><a href="/airport-iah">IAH Transfers</a></li><li><a href="/airport-hobby">Hobby Transfers</a></li><li><a href="/corporate-transportation">Corporate Travel</a></li><li><a href="/party-bus">Party Bus</a></li><li><a href="/wine-tours">Wine Tours</a></li></ul></div>
-      <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li><li>Houston, TX</li></ul><div class="footer-social" style="margin-top:16px;display:flex;gap:12px"><a href="#" aria-label="Facebook" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .3s"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a><a href="#" aria-label="Instagram" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .3s"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a></div></div>
+      <div>
+        <div class="brand-large">Ava<span>Limo</span></div>
+        <p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort &mdash; every time.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/fleet">Fleet</a></li>
+          <li><a href="/pricing">Pricing</a></li>
+          <li><a href="/wedding-limo">Wedding</a></li>
+          <li><a href="/book">Book Now</a></li>
+          <li><a href="/deposit">Pay Deposit</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="/airport-iah">IAH Transfers</a></li>
+          <li><a href="/airport-hobby">Hobby Transfers</a></li>
+          <li><a href="/corporate-transportation">Corporate Travel</a></li>
+          <li><a href="/party-bus">Party Bus</a></li>
+          <li><a href="/wine-tours">Wine Tours</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+18325678050">(832) 567-8050</a></li>
+          <li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li>
+          <li>Houston, TX</li>
+        </ul>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+        </div>
+      </div>
     </div>
     <div class="footer-bottom">&copy; 2026 AvaLimo. All rights reserved.</div>
   </div>
 </footer>
 
-<!-- Mobile CTA -->
+<!-- Mobile Dock -->
 <div class="mobile-cta">
   <a href="tel:+18325678050" class="mcta-call">📞 Call Now</a>
   <a href="/book" class="mcta-book">Book Your Ride</a>
@@ -800,7 +833,7 @@ footer ul a:hover{color:var(--gold)}
     <h3>Wait! Don't Go Yet.</h3>
     <p>Book your Houston luxury ride now and get a <strong>free upgrade</strong> to our premium fleet. Limited availability.</p>
     <a href="/book" class="btn btn-gold" style="font-size:15px;padding:16px 40px" onclick="document.getElementById('exitPopup').classList.remove('show')">Book Your Ride</a>
-    <p style="margin-top:12px;font-size:12px;color:var(--text3)">Or call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a></p>
+    <p style="margin-top:12px;font-size:12px;color:var(--muted-2)">Or call <a href="tel:+18325678050" style="color:var(--accent)">(832) 567-8050</a></p>
   </div>
 </div>
 
@@ -809,7 +842,7 @@ footer ul a:hover{color:var(--gold)}
 <div class="chat-box" id="chatBox">
   <div class="chat-header"><span style="font-size:20px">🚗</span><div><div class="name">AvaLimo Assistant</div><div class="status">● Online</div></div></div>
   <div class="chat-msgs" id="chatMsgs">
-    <div class="chat-msg bot"><div class="bubble">Hi! I'm the AvaLimo Assistant. How can I help you today? 😊<br><br>You can ask me about:<br>• Booking a ride<br>• Our fleet &amp; prices<br>• Airport transfers<br>• Cancellation policy</div></div>
+    <div class="chat-msg bot"><div class="bubble">Hi! I'm the AvaLimo Assistant. How can I help you today?<br><br>You can ask me about:<br>• Booking a ride<br>• Our fleet &amp; prices<br>• Airport transfers<br>• Cancellation policy</div></div>
   </div>
   <div class="chat-input-wrap">
     <input type="text" id="chatInput" placeholder="Type a message...">
@@ -818,60 +851,57 @@ footer ul a:hover{color:var(--gold)}
 </div>
 
 <script>
-// ─── Scroll Progress Bar ───
+// Scroll Progress Bar
 window.addEventListener('scroll',function(){var s=window.scrollY/(document.documentElement.scrollHeight-window.innerHeight);document.getElementById('scrollBar').style.width=(s*100)+'%'});
 
-// ─── Exit-Intent Popup ───
+// Exit-Intent Popup
 (function(){var shown=false;document.addEventListener('mouseleave',function(e){if(shown||e.clientY>0)return;shown=true;setTimeout(function(){document.getElementById('exitPopup').classList.add('show')},300)})})();
 
-// ─── Nav scroll ───
+// Nav scroll
 window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)});
 
-// ─── Hero parallax ───
+// Hero parallax
 var skyline=document.querySelector('.skyline[data-parallax]');
-if(skyline){window.addEventListener('scroll',function(){var y=window.scrollY;skyline.style.transform='translateY('+(y*0.18)+'px)'},{passive:true})}
+if(skyline){window.addEventListener('scroll',function(){skyline.style.transform='translateY('+(window.scrollY*0.18)+'px)'},{passive:true})}
 var heroVideo=document.querySelector('.hero-bg video');
 if(heroVideo){window.addEventListener('scroll',function(){heroVideo.style.transform='translateY('+(window.scrollY*0.15)+'px)'},{passive:true})}
 
-// ─── Hamburger ───
+// Hamburger
 document.getElementById('hamburger').addEventListener('click',function(){this.classList.toggle('open');document.getElementById('navLinks').classList.toggle('open')});
 document.getElementById('navLinks').querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open');document.getElementById('hamburger').classList.remove('open')})});
 
-// ─── Fade up with IntersectionObserver ───
+// IntersectionObserver reveal
 var observer=new IntersectionObserver(function(e){e.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:.1});
 document.querySelectorAll('.fade-up, .scale-in, .slide-left, .slide-right').forEach(function(el){observer.observe(el)});
 
-// ─── Parallax hero video ───
-window.addEventListener('scroll',function(){var v=document.querySelector('.hero-bg video');if(v){var s=window.scrollY;v.style.transform='translateY('+(s*0.15)+'px)'}});
-
-// ─── FAQ ───
+// FAQ
 document.querySelectorAll('.faq-item').forEach(function(item){item.addEventListener('click',function(){this.classList.toggle('open')})});
 
-// ─── Booking form ───
+// Booking form (homepage)
 document.getElementById('bookingForm')&&document.getElementById('bookingForm').addEventListener('submit',function(e){
   e.preventDefault();
   var body={name:document.getElementById('b-name').value,phone:document.getElementById('b-phone').value,email:document.getElementById('b-email').value,pickup:document.getElementById('b-pickup').value,dropoff:document.getElementById('b-dropoff').value,time:document.getElementById('b-time').value,vehicle:document.getElementById('b-vehicle').value,pax:document.getElementById('b-pax').value,notes:document.getElementById('b-notes').value};
   fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
   .then(function(r){return r.json()})
   .then(function(d){alert(d.message||'Booking submitted!');this.reset()}.bind(this))
-  .catch(function(err){alert('Error submitting booking. Please call (832) 567-8050.')});
+  .catch(function(){alert('Error submitting booking. Please call (832) 567-8050.')});
 });
 
-// ─── Book page form ───
+// Book page form
 document.getElementById('bookForm')&&document.getElementById('bookForm').addEventListener('submit',function(e){
   e.preventDefault();
   function val(id){var el=document.getElementById(id);return el?el.value:''}
   var body={name:val('bk-name'),phone:val('bk-phone'),email:val('bk-email'),pickup:val('bk-pickup'),dropoff:val('bk-dropoff'),time:val('bk-time'),vehicle:val('bk-vehicle'),pax:val('bk-pax'),service:val('bk-service'),flight:val('bk-flight'),notes:val('bk-notes')};
   fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
   .then(function(r){return r.json()})
-  .then(function(d){
+  .then(function(){
     document.getElementById('bookForm').style.display='none';
     document.getElementById('bk-thanks').style.display='block';
   })
-  .catch(function(err){alert('Error submitting. Please call (832) 567-8050.')});
+  .catch(function(){alert('Error submitting. Please call (832) 567-8050.')});
 });
 
-// ─── Contact form ───
+// Contact form
 document.getElementById('contactForm')&&document.getElementById('contactForm').addEventListener('submit',function(e){
   e.preventDefault();
   var btn=this.querySelector('button[type="submit"]');btn.textContent='Sending...';btn.disabled=true;
@@ -882,7 +912,7 @@ document.getElementById('contactForm')&&document.getElementById('contactForm').a
   .catch(function(){alert('Error sending. Please call (832) 567-8050.');btn.textContent='Send Message';btn.disabled=false});
 });
 
-// ─── Chat ───
+// Chat
 document.getElementById('chatBtn').addEventListener('click',function(){document.getElementById('chatBox').classList.toggle('open')});
 function sendChat(){
   var input=document.getElementById('chatInput');
@@ -892,40 +922,62 @@ function sendChat(){
   input.value='';msgs.scrollTop=msgs.scrollHeight;
   var w=msg.toLowerCase();
   var reply='';
-  if(w.match(/book|ride|quote|reserv/))reply='Ready to book? <a href="/book" style="color:#C9A84C">Fill out our form</a> or call (832) 567-8050. We confirm within minutes!';
-  else if(w.match(/price|cost|rate|fare/))reply='Our rates start at $100 for sedans and SUVs. Pricing depends on vehicle and distance. <a href="/book" style="color:#C9A84C">Get a free quote</a> or call (832) 567-8050.';
-  else if(w.match(/airport|iah|hobby|flight/))reply='We cover both IAH and Hobby with real-time flight tracking. <a href="/book" style="color:#C9A84C">Book your airport transfer</a> or track your flight on our <a href="/flight-status" style="color:#C9A84C">flight status page</a>.';
-  else if(w.match(/fleet|vehicle|car|s-class|escalade|sprinter/))reply='Our fleet: Mercedes S-Class (up to 3), Cadillac Escalade (up to 6), and Mercedes Sprinter (up to 14). <a href="/fleet" style="color:#C9A84C">View the fleet</a>.';
-  else if(w.match(/cancel|refund|policy/))reply='Cancel up to 24 hours before pickup for a full refund. See our <a href="/policy" style="color:#C9A84C">full policy</a>.';
-  else if(w.match(/wedding/))reply='We provide white-glove wedding transportation. S-Class, Escalade, or Sprinter for the wedding party. <a href="/book" style="color:#C9A84C">Book now</a>.';
+  if(w.match(/book|ride|quote|reserv/))reply='Ready to book? <a href="/book" style="color:var(--accent)">Fill out our form</a> or call (832) 567-8050. We confirm within minutes!';
+  else if(w.match(/price|cost|rate|fare/))reply='Our rates start at $100 for sedans and SUVs. Pricing depends on vehicle and distance. <a href="/book" style="color:var(--accent)">Get a free quote</a> or call (832) 567-8050.';
+  else if(w.match(/airport|iah|hobby|flight/))reply='We cover both IAH and Hobby with real-time flight tracking. <a href="/book" style="color:var(--accent)">Book your airport transfer</a> or track your flight on our <a href="/flight-status" style="color:var(--accent)">flight status page</a>.';
+  else if(w.match(/fleet|vehicle|car|s-class|escalade|sprinter/))reply='Our fleet: Mercedes S-Class (up to 3), Cadillac Escalade (up to 6), and Mercedes Sprinter (up to 14). <a href="/fleet" style="color:var(--accent)">View the fleet</a>.';
+  else if(w.match(/cancel|refund|policy/))reply='Cancel up to 24 hours before pickup for a full refund. See our <a href="/policy" style="color:var(--accent)">full policy</a>.';
+  else if(w.match(/wedding/))reply='We provide white-glove wedding transportation. S-Class, Escalade, or Sprinter for the wedding party. <a href="/book" style="color:var(--accent)">Book now</a>.';
   else if(w.match(/hello|hi|hey|good/))reply='Hello! How can I help you today? You can ask about booking, pricing, our fleet, or anything else!';
   else reply="I'm not sure about that. You can ask about booking, pricing, our fleet, airport transfers, or cancellations. Or call (832) 567-8050 for immediate help.";
   setTimeout(function(){msgs.innerHTML+='<div class="chat-msg bot"><div class="bubble">'+reply+'</div></div>';msgs.scrollTop=msgs.scrollHeight},400);
 }
 
-// ─── Flight tracking ───
+// Fleet card click sets vehicle select
+document.querySelectorAll('.fleet-card[data-vehicle]').forEach(function(card){
+  card.addEventListener('click',function(e){
+    if(e.target.closest('.btn'))return;
+    var v=this.getAttribute('data-vehicle');
+    var sel=document.getElementById('b-vehicle');
+    if(sel){sel.value=v;document.querySelector('#quote').scrollIntoView({behavior:'smooth',block:'center'})}
+  });
+});
+
+// DateTime prefills to next hour
+(function(){
+  var now=new Date();
+  now.setHours(now.getHours()+1,0,0,0);
+  var pad=function(n){return n<10?'0'+n:n};
+  var ds=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'T'+pad(now.getHours())+':'+pad(now.getMinutes());
+  var bTime=document.getElementById('b-time');
+  if(bTime)bTime.value=ds;
+  var bkTime=document.getElementById('bk-time');
+  if(bkTime)bkTime.value=ds;
+})();
+
+// Flight tracking
 function trackFlight(){
   var q=document.getElementById('flight-input').value.trim().toUpperCase().replace(/ /g,'');
   if(!q)return;
   var r=document.getElementById('flightResult');
-  r.style.display='block';r.innerHTML='<p style="color:var(--text2)">Looking up '+q+'...</p>';
+  r.style.display='block';r.innerHTML='<p style="color:var(--muted)">Looking up '+q+'...</p>';
   fetch('/api/flight?q='+encodeURIComponent(q)).then(function(res){return res.json()}).then(function(d){
     if(d.status==='ok'&&d.flight){
-      r.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><span style="font-size:24px">✈</span><div><strong style="font-size:18px">'+d.flight.airline+' '+d.flight.flight+'</strong><br><span style="color:var(--text2);font-size:13px">'+d.flight.departure+' → '+d.flight.arrival+'</span></div></div><div style="font-size:14px;color:var(--gold)">● '+d.flight.status+'</div><div style="margin-top:8px;font-size:13px;color:var(--text2)">Scheduled: '+d.flight.scheduled+' | Estimated: '+d.flight.estimated+'</div>';
-    }else{r.innerHTML='<p style="color:var(--text2)">No flight found for '+q+'. Please check the flight number and try again.</p>'}
-  }).catch(function(){r.innerHTML='<p style="color:var(--text2)">Unable to look up flight. Please try again.</p>'});
+      r.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><span style="font-size:24px">✈</span><div><strong style="font-size:18px">'+d.flight.airline+' '+d.flight.flight+'</strong><br><span style="color:var(--muted);font-size:13px">'+d.flight.departure+' → '+d.flight.arrival+'</span></div></div><div style="font-size:14px;color:var(--accent)">● '+d.flight.status+'</div><div style="margin-top:8px;font-size:13px;color:var(--muted)">Scheduled: '+d.flight.scheduled+' | Estimated: '+d.flight.estimated+'</div>';
+    }else{r.innerHTML='<p style="color:var(--muted)">No flight found for '+q+'. Please check the flight number and try again.</p>'}
+  }).catch(function(){r.innerHTML='<p style="color:var(--muted)">Unable to look up flight. Please try again.</p>'});
 }
 document.getElementById('flight-input')&&document.getElementById('flight-input').addEventListener('keydown',function(e){if(e.key==='Enter')trackFlight()});
 
-// ─── Deposit / Square Payment ───
+// Square Payment
 var sqCard=null;
 function initSquareCard(){
-  if(!document.getElementById('square-card')) return;
+  if(!document.getElementById('square-card'))return;
   var appId='{{ sq_app_id }}';
   var locId='{{ sq_location_id }}';
-  if(!appId||appId===''||!locId||locId==='') return;
+  if(!appId||appId===''||!locId||locId==='')return;
   if(!window.Square){setTimeout(initSquareCard,500);return;}
-  if(sqCard) return;
+  if(sqCard)return;
   var payments=window.Square.payments(appId,locId);
   payments.card().then(function(c){
     sqCard=c;
@@ -944,7 +996,7 @@ function setDeposit(amount){
 function updateDepositPresets(val){
   document.querySelectorAll('.deposit-amounts button').forEach(function(b){b.classList.remove('active')});
   var presets=[50,100,250,500,1000];
-  if(presets.indexOf(parseInt(val))>=0) document.getElementById('dep-'+parseInt(val)).classList.add('active');
+  if(presets.indexOf(parseInt(val))>=0)document.getElementById('dep-'+parseInt(val)).classList.add('active');
   else document.getElementById('dep-custom').classList.add('active');
 }
 
@@ -965,19 +1017,14 @@ function processSquarePayment(){
       fetch('/api/square-pay',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          source_id:res.token,
-          amount:cents,
-          name:name,
-          email:document.getElementById('dep-email').value
-        })
+        body:JSON.stringify({source_id:res.token,amount:cents,name:name,email:document.getElementById('dep-email').value})
       }).then(function(r){return r.json()}).then(function(d){
         document.getElementById('dep-processing').style.display='none';
         if(d.status==='ok'){
           document.querySelector('.pay-fields').style.display='none';
           document.getElementById('dep-thanks-msg').textContent='Payment of $'+amount+' received. '+d.message;
           document.getElementById('dep-thanks').style.display='block';
-        } else {
+        }else{
           btn.disabled=false;btn.textContent='Pay Deposit';
           var errEl=document.getElementById('sq-errors');
           errEl.textContent=d.message||'Payment failed. Try again.';
@@ -988,7 +1035,7 @@ function processSquarePayment(){
         document.getElementById('dep-processing').style.display='none';
         alert('Network error. Please try again.');
       });
-    } else {
+    }else{
       btn.disabled=false;btn.textContent='Pay Deposit';
       document.getElementById('dep-processing').style.display='none';
       var errEl=document.getElementById('sq-errors');
