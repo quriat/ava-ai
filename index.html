@@ -366,6 +366,7 @@
         <a href="/" class="nav-brand">Ava<span>Limo</span></a>
         <ul class="nav-links">
             <li><a href="/#home">Home</a></li>
+            <li><a href="/pricing">Pricing</a></li>
             <li><a href="/fleet">Fleet</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/blog">Blog</a></li>
@@ -380,6 +381,7 @@
     <div class="mobile-menu" id="mobileMenu">
         <button class="mobile-close" onclick="toggleMenu()">&times;</button>
         <a href="/" onclick="toggleMenu()">Home</a>
+        <a href="/pricing" onclick="toggleMenu()">Pricing</a>
         <a href="/fleet" onclick="toggleMenu()">Fleet</a>
         <a href="/services" onclick="toggleMenu()">Services</a>
         <a href="/blog" onclick="toggleMenu()">Blog</a>
@@ -515,8 +517,7 @@
     const appId = '{{ sq_app_id }}';
     const locationId = '{{ sq_location_id }}';
     if (!appId || appId.includes('fake')) {
-        document.getElementById('card-container').innerHTML = '<p style="color:var(--gray);font-size:0.85rem;padding:10px">Square not configured. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> to pay.</p>';
-        document.getElementById('dep-submit').disabled = true;
+        document.getElementById('card-container').innerHTML = '<p style="color:var(--gray);font-size:0.85rem;padding:10px">Card payment unavailable. Fill in your details below and we\'ll call you to process payment.</p>';
         return;
     }
     try {
@@ -572,7 +573,7 @@ async function handleDeposit(e) {
             btn.disabled = false;
         }
     } else {
-        // Fallback: submit to /api/deposit
+        // Fallback: submit to /api/deposit (no card required)
         try {
             const resp = await fetch('/api/deposit', {
                 method: 'POST',
@@ -584,10 +585,17 @@ async function handleDeposit(e) {
                 })
             });
             const data = await resp.json();
-            document.getElementById('depositForm').style.display = 'none';
-            document.getElementById('deposit-success').style.display = 'block';
+            if (data.status === 'ok') {
+                document.getElementById('depositForm').style.display = 'none';
+                document.getElementById('deposit-success').style.display = 'block';
+            } else {
+                errEl.textContent = data.message || 'Submission failed. Please call us.';
+                errEl.style.display = 'block';
+                btn.textContent = 'Pay Now';
+                btn.disabled = false;
+            }
         } catch (err) {
-            errEl.textContent = 'Payment error. Please try again or call us.';
+            errEl.textContent = 'Error submitting. Please call (832) 567-8050.';
             errEl.style.display = 'block';
             btn.textContent = 'Pay Now';
             btn.disabled = false;
@@ -841,6 +849,7 @@ async function handleDeposit(e) {
             </div>
             <div class="footer-col">
                 <h4>Company</h4>
+                <a href="/pricing">Pricing</a>
                 <a href="/fleet">Our Fleet</a>
                 <a href="/services">Services</a>
                 <a href="/blog">Blog</a>
