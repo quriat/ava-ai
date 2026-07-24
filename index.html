@@ -6,8 +6,12 @@
     <title>{{ title }}</title>
     <meta name="description" content="{{ meta_desc }}">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a0a0a">
     {{ sc_meta | safe }}
     <link rel="canonical" href="{{ canonical_url }}" id="canonical-url">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <meta property="og:locale" content="en_US">
     <meta property="og:site_name" content="AvaLimo">
     <meta property="og:title" content="{{ title }}">
@@ -30,10 +34,62 @@
       "image": "https://avalimo.net/static/cadillac_escalade.png",
       "url": "https://avalimo.net",
       "telephone": "+18325678050",
-      "address": {"@type": "PostalAddress","addressLocality": "Houston","addressRegion": "TX","addressCountry": "US"},
-      "geo": {"@type": "GeoCoordinates","latitude": 29.7604,"longitude": -95.3698},
+      "email": "dispatch@avalimo.net",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Houston",
+        "addressLocality": "Houston",
+        "addressRegion": "TX",
+        "postalCode": "77001",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 29.7604,
+        "longitude": -95.3698
+      },
       "priceRange": "$$",
-      "openingHours": "Mo-Su 00:00-23:59"
+      "openingHours": "Mo-Su 00:00-23:59",
+      "areaServed": [
+        {"@type": "City", "name": "Houston", "sameAs": "https://en.wikipedia.org/wiki/Houston"},
+        {"@type": "City", "name": "Galveston", "sameAs": "https://en.wikipedia.org/wiki/Galveston,_Texas"},
+        {"@type": "City", "name": "Sugar Land", "sameAs": "https://en.wikipedia.org/wiki/Sugar_Land,_Texas"},
+        {"@type": "City", "name": "The Woodlands", "sameAs": "https://en.wikipedia.org/wiki/The_Woodlands,_Texas"},
+        {"@type": "City", "name": "Katy", "sameAs": "https://en.wikipedia.org/wiki/Katy,_Texas"},
+        {"@type": "City", "name": "Pearland", "sameAs": "https://en.wikipedia.org/wiki/Pearland,_Texas"},
+        {"@type": "Airport", "name": "George Bush Intercontinental Airport", "iataCode": "IAH"},
+        {"@type": "Airport", "name": "William P. Hobby Airport", "iataCode": "HOU"}
+      ],
+      "serviceType": [
+        "Airport Transfer",
+        "Corporate Transportation",
+        "Wedding Limo Service",
+        "Event Transportation",
+        "Black Car Service",
+        "Party Bus Rental",
+        "Wine Tour Transportation"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "AvaLimo Fleet",
+        "itemListElement": [
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mercedes S-Class", "description": "Executive sedan for airport transfers and corporate travel"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Cadillac Escalade", "description": "Luxury SUV for groups and special occasions"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mercedes Sprinter", "description": "Premium van for group transportation and events"}}
+        ]
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "127",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://www.facebook.com/AvaLimoHTX",
+        "https://www.instagram.com/AvaLimoHTX",
+        "https://x.com/AvaLimoHTX"
+      ]
     }
     </script>
     {{ blog_schema | safe }}
