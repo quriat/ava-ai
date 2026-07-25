@@ -192,7 +192,7 @@ footer ul a:hover{color:var(--gold)}
 .footer-bottom{margin-top:40px;padding-top:20px;border-top:1px solid var(--card-border);text-align:center;color:var(--text3);font-size:12px}
 
 /* ─── Page header ─── */
-.page-header{padding:140px 0 60px;text-align:center}
+.page-header{padding:140px 0 60px;text-align:center;position:relative;overflow:hidden}
 .page-header h2{font-family:var(--font-serif);font-size:48px;font-weight:600}
 .page-header p{color:var(--text2);font-size:16px;margin-top:12px}
 
@@ -313,11 +313,11 @@ footer ul a:hover{color:var(--gold)}
 
 {% if content_key == 'blog' and featured_post %}
 <!-- Blog post -->
-<div class="page-header"><div class="container"><h2>{{ featured_post.title }}</h2><p>{{ featured_post.date }} &bull; {{ featured_post.read }}</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>{{ featured_post.title }}</h2><p>{{ featured_post.date }} &bull; {{ featured_post.read }}</p></div></div>
 <section class="section" style="padding-top:0"><div class="container post-content">{{ featured_post.content | safe }}</div></section>
 
 {% elif content_key == 'services' %}
-<div class="page-header"><div class="container"><h2>Our <span class="gold">Services</span></h2><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Our <span class="gold">Services</span></h2><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
 <section class="section" style="padding-top:0">
 <div class="container">
 <div class="services-grid">
@@ -332,7 +332,7 @@ footer ul a:hover{color:var(--gold)}
 </section>
 
 {% elif content_key == 'fleet' %}
-<div class="page-header"><div class="container"><h2>Our <span class="gold">Fleet</span></h2><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Our <span class="gold">Fleet</span></h2><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
 <section class="section" style="padding-top:0">
 <div class="container">
 <div class="fleet-grid">
@@ -344,11 +344,11 @@ footer ul a:hover{color:var(--gold)}
 </section>
 
 {% elif content_key == 'blog' %}
-<div class="page-header"><div class="container"><h2>Our <span class="gold">Blog</span></h2><p>Expert guides on Houston travel, luxury transportation, and more.</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Our <span class="gold">Blog</span></h2><p>Expert guides on Houston travel, luxury transportation, and more.</p></div></div>
 <section class="section" style="padding-top:0"><div class="container"><div class="blog-grid">{{ blog_posts_html | safe }}</div></div></section>
 
 {% elif content_key == 'book' %}
-<div class="page-header"><div class="container"><h2>Book Your <span class="gold">Ride</span></h2><p>Fill out the form and we'll confirm your ride within minutes.</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Book Your <span class="gold">Ride</span></h2><p>Fill out the form and we'll confirm your ride within minutes.</p></div></div>
 <section class="section" style="padding-top:0"><div class="container">
 <div class="quote-card" style="max-width:600px;margin:0 auto">
 <form class="quote-form" id="bookForm">
@@ -370,7 +370,7 @@ footer ul a:hover{color:var(--gold)}
 </div></section>
 
 {% elif content_key == 'contact' %}
-<div class="page-header"><div class="container"><h2>Get in <span class="gold">Touch</span></h2><p>We're here 24/7 to help with your transportation needs.</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Get in <span class="gold">Touch</span></h2><p>We're here 24/7 to help with your transportation needs.</p></div></div>
 <section class="section" style="padding-top:0"><div class="container">
 <div class="contact-row" style="max-width:700px;margin:0 auto">
 <div class="contact-method"><div class="icon">📞</div><div class="lbl">Phone</div><a href="tel:+18325678050">(832) 567-8050</a><div class="note">24/7 Dispatch &bull; Always answered</div></div>
@@ -389,7 +389,7 @@ footer ul a:hover{color:var(--gold)}
 </div></section>
 
 {% elif content_key == 'flight-status' %}
-<div class="page-header"><div class="container"><h2>Flight <span class="gold">Status</span></h2><p>Track your flight in real-time. We monitor every flight for our airport transfer clients.</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Flight <span class="gold">Status</span></h2><p>Track your flight in real-time. We monitor every flight for our airport transfer clients.</p></div></div>
 <section class="section" style="padding-top:0"><div class="container">
 <div class="flight-wrap">
 <input type="text" id="flight-input" placeholder="e.g. UA1234, AA5678" style="text-transform:uppercase">
@@ -399,7 +399,7 @@ footer ul a:hover{color:var(--gold)}
 </div></section>
 
 {% elif content_key == 'faq' %}
-<div class="page-header"><div class="container"><h2>Frequently Asked <span class="gold">Questions</span></h2></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Frequently Asked <span class="gold">Questions</span></h2></div></div>
 <section class="section" style="padding-top:0"><div class="container"><div class="faq-grid">
 <div class="faq-item fade-up"><div class="faq-q"><span>How do I book a ride?</span><span class="arrow">▼</span></div><div class="faq-a">You can book online using our booking form, call us at (832) 567-8050, or email adam@avalimo.net. Online booking is fastest — just fill in your details and we'll confirm within minutes.</div></div>
 <div class="faq-item fade-up" style="transition-delay:.1s"><div class="faq-q"><span>Do you service both IAH and Hobby?</span><span class="arrow">▼</span></div><div class="faq-a">Yes! We cover both George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports. We also serve Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring and Cypress.</div></div>
@@ -410,7 +410,7 @@ footer ul a:hover{color:var(--gold)}
 </div></div></section>
 
 {% elif content_key == 'policy' %}
-<div class="page-header"><div class="container"><h2>Company <span class="gold">Policy</span></h2></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Company <span class="gold">Policy</span></h2></div></div>
 <section class="section" style="padding-top:0"><div class="container" style="max-width:700px">
 <h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Booking &amp; Reservations</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">All reservations are confirmed upon receipt of a booking deposit. Deposits are fully refundable with 24-hour cancellation notice. Same-day bookings are subject to availability.</p>
 <h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Cancellation Policy</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">Cancel or modify up to 24 hours before pickup for a full refund. Cancellations within 24 hours may incur a charge of 50% of the fare. No-shows are charged in full.</p>
@@ -420,7 +420,7 @@ footer ul a:hover{color:var(--gold)}
 </div></section>
 
 {% elif content_key == 'deposit' %}
-<div class="page-header"><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
+<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
 <section class="section" style="padding-top:0"><div class="container"><div class="deposit-wrap">
 <div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Deposit Amount</label>
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
@@ -458,8 +458,9 @@ footer ul a:hover{color:var(--gold)}
 
 {% elif content_key == 'page' %}
 <!-- SEO page content -->
-<section class="section" style="padding-top:120px">
-  <div class="container" style="max-width:1200px;margin:0 auto;padding:0 20px">
+<section class="section page-header" style="padding-top:140px">
+  <div class="hero-video-wrap"><video autoplay muted loop playsinline poster="/static/chauffeur_service.png"><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div>
+  <div class="container" style="max-width:1200px;margin:0 auto;padding:0 20px;position:relative;z-index:2">
     {{ page_content_html | safe }}
     <div style="text-align:center;margin-top:60px;padding-top:40px;border-top:1px solid var(--card-border)">
       <a href="/book" class="btn btn-gold" style="font-size:15px;padding:16px 40px">Book Your Ride</a>
