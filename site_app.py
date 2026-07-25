@@ -257,6 +257,17 @@ def sitemap_xml():
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
+    # Serve static landing pages directly from static/ directory
+    if path:
+        static_html = os.path.join(os.path.dirname(__file__), "static", path, "index.html")
+        if os.path.isfile(static_html):
+            with open(static_html, encoding="utf-8") as f:
+                html = f.read()
+            resp = app.make_response((html, 200))
+            resp.headers["Content-Type"] = "text/html"
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            return resp
+
     meta = None
     featured_post = None
     canonical_path = ""
@@ -293,6 +304,13 @@ def index(path):
         "spring": "",
         "cypress-limo": "",
         "cypress": "",
+        # SEO: redirect old thin URLs to new rich landing pages
+        "airport-hobby": "hobby-airport-car-service",
+        "airport-iah": "iah-airport-car-service",
+        "corporate-transportation": "houston-corporate-car-service",
+        "wedding-limo": "houston-wedding-limo",
+        "prom-limo": "houston-prom-limo",
+        "galveston-cruise-transport": "houston-to-galveston-cruise-transfer",
     }
     if path in legacy_redirects:
         target = legacy_redirects[path]
