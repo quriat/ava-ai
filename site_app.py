@@ -236,17 +236,20 @@ def sitemap_xml():
         _today = _dt.date.today().isoformat()
         pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit"]
         seo_pages = ["pricing", "wedding-limo", "prom-limo", "quinceanera-limo", "corporate-transportation", "airport-iah", "airport-hobby", "airport-24-7-service", "black-car-service", "chauffeur-service", "party-bus", "event-transportation", "bachelorette-party", "galveston-cruise-transport", "wine-tours", "new-years-eve-limo"]
+        rich_landing_pages = ["hobby-airport-car-service", "iah-airport-car-service", "houston-corporate-car-service", "houston-wedding-limo", "houston-prom-limo", "houston-to-galveston-cruise-transfer", "medical-center-limo"]
         fleet_pages = ["fleet/mercedes-s-class", "fleet/cadillac-escalade", "fleet/mercedes-sprinter"]
         loc_pages = ["locations/galveston"]
         blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>' for p in BLOG_POSTS if p.get("slug"))
         urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>{"daily" if p == "" else "weekly"}</changefreq><priority>{"1.0" if p == "" else "0.8"}</priority></url>' for p in pages)
         seo_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>' for p in seo_pages)
+        rich_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' for p in rich_landing_pages)
         fleet_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' for p in fleet_pages)
         loc_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>' for p in loc_pages)
         xml = f'''<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     {urls}
     {seo_urls}
+    {rich_urls}
     {fleet_urls}
     {loc_urls}
     {blog_urls}
