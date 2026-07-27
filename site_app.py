@@ -764,25 +764,32 @@ SERVICES:
 - Hourly Charters
 
 FLEET & PRICING:
-- Mercedes S-Class (sedan): 1-3 passengers, Starting $45/hr or $100 flat rate
-- Cadillac Escalade (SUV): 1-6 passengers, Starting $65/hr or $125 flat rate
-- Mercedes Sprinter (van): 1-14 passengers, Starting $150/hr or $250 flat rate
+- Mercedes S-Class (sedan): 1-3 passengers, minimum $120
+- Cadillac Escalade (SUV): 1-6 passengers, minimum $120
+- Mercedes Sprinter (van): 1-14 passengers, minimum $250
 
-COMMON ROUTES (Flat Rates):
-- IAH to Galleria: $65
-- IAH to Downtown: $60
-- IAH to Katy: $75
-- IAH to The Woodlands: $70
-- IAH to Sugar Land: $80
-- IAH to Medical Center: $65
-- HOU to Galleria: $50
-- HOU to Downtown: $45
-- HOU to Medical Center: $45
-- HOU to Katy: $65
-- Downtown to Galleria: $35
-- Houston to Galveston: $175
+COMMON ROUTES (Flat Rates for S-Class & Escalade):
+- IAH to Downtown: $120
+- IAH to Galleria: $120
+- IAH to Sugar Land: $180
+- IAH to The Woodlands: $180
+- IAH to Katy: $180
+- IAH to Pearland: $180
+- IAH to Missouri City: $180
+- IAH to Galveston: $180
+- Hobby to Downtown: $100
+- Hobby to Galleria: $100
 - Houston to Austin: $450
 - Houston to San Antonio: $500
+
+SPRINTER ROUTES (higher rates):
+- IAH to Downtown: $250
+- IAH to Galleria: $250
+- IAH to Sugar Land: $300
+- IAH to The Woodlands: $300
+- IAH to Katy: $300
+- IAH to Galveston: $500
+- Hobby to Downtown: $200
 
 SERVICE AREAS:
 Houston, Katy, Sugar Land, The Woodlands, Memorial, River Oaks, Galleria, Downtown, Heights, Midtown, Museum District, Texas Medical Center, Bellaire, West University, Pearland, Friendswood, League City, Galveston
