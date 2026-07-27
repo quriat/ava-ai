@@ -13,6 +13,7 @@ import pickle
 import base64
 import urllib.request
 from flask import Flask, request, jsonify, render_template_string, redirect
+import openai
 
 try:
     import requests as _req
@@ -204,7 +205,7 @@ PAGE_META = {
     "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
-    "pricing": { "title": "Limo Rental Cost Houston — AvaLimo Pricing", "desc": "Transparent flat-rate pricing for Houston limo service. Mercedes S-Class from $120, Escalade from $120, Sprinter from $190. No surge fees.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "pricing": { "title": "Limo Rental Cost Houston — AvaLimo Pricing", "desc": "Transparent flat-rate pricing for Houston limo service. S-Class $100/hr, Escalade $120/hr, Sprinter $180/hr + 20% gratuity. No surge fees.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "wedding-limo": { "title": "Wedding Limo Houston — AvaLimo | Luxury Wedding Transportation", "desc": "Houston wedding limo service. Mercedes S-Class, Cadillac Escalade & Sprinter for your special day.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "prom-limo": { "title": "Prom Limo Houston — AvaLimo | Safe Prom Transportation 2026", "desc": "Prom limo service in Houston. Safe, stylish prom transportation for groups up to 14.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sprinter.png" },
     "quinceanera-limo": { "title": "Quinceañera Limo Houston — AvaLimo | Quince Transportation", "desc": "Quinceañera limo service in Houston. Luxury transportation for your quince celebration.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
@@ -226,6 +227,19 @@ PAGE_META = {
     "locations/galveston": { "title": "Galveston Limo Service — AvaLimo | Island Transportation", "desc": "Galveston limo service from Houston. Cruise port transfers, beach weddings & island getaways.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
 }
 
+PAGE_H1 = {
+    "": 'Houston\'s Finest <span class="gold">Limo Service</span>',
+    "services": 'Houston <span class="gold">Chauffeur Services</span>',
+    "fleet": 'Our <span class="gold">Luxury Fleet</span>',
+    "book": 'Book Your <span class="gold">AvaLimo Ride</span>',
+    "blog": 'AvaLimo <span class="gold">Blog & Tips</span>',
+    "flight-status": 'Real-Time <span class="gold">Flight Status</span>',
+    "contact": 'Contact <span class="gold">AvaLimo</span>',
+    "faq": 'Frequently Asked <span class="gold">Questions</span>',
+    "policy": 'AvaLimo <span class="gold">Company Policy</span>',
+    "deposit": 'Secure <span class="gold">Online Payment</span>',
+}
+
 
 @app.route("/robots.txt")
 def robots_txt():
@@ -236,20 +250,17 @@ def sitemap_xml():
         _today = _dt.date.today().isoformat()
         pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit"]
         seo_pages = ["pricing", "wedding-limo", "prom-limo", "quinceanera-limo", "corporate-transportation", "airport-iah", "airport-hobby", "airport-24-7-service", "black-car-service", "chauffeur-service", "party-bus", "event-transportation", "bachelorette-party", "galveston-cruise-transport", "wine-tours", "new-years-eve-limo"]
-        rich_landing_pages = ["hobby-airport-car-service", "iah-airport-car-service", "houston-corporate-car-service", "houston-wedding-limo", "houston-prom-limo", "houston-to-galveston-cruise-transfer", "medical-center-limo"]
         fleet_pages = ["fleet/mercedes-s-class", "fleet/cadillac-escalade", "fleet/mercedes-sprinter"]
         loc_pages = ["locations/galveston"]
         blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>' for p in BLOG_POSTS if p.get("slug"))
         urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>{"daily" if p == "" else "weekly"}</changefreq><priority>{"1.0" if p == "" else "0.8"}</priority></url>' for p in pages)
         seo_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>' for p in seo_pages)
-        rich_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>' for p in rich_landing_pages)
         fleet_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' for p in fleet_pages)
         loc_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{_today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>' for p in loc_pages)
         xml = f'''<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     {urls}
     {seo_urls}
-    {rich_urls}
     {fleet_urls}
     {loc_urls}
     {blog_urls}
@@ -260,19 +271,9 @@ def sitemap_xml():
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
-    # Serve static landing pages directly from static/ directory
-    if path:
-        static_html = os.path.join(os.path.dirname(__file__), "static", path, "index.html")
-        if os.path.isfile(static_html):
-            with open(static_html, encoding="utf-8") as f:
-                html = f.read()
-            resp = app.make_response((html, 200))
-            resp.headers["Content-Type"] = "text/html"
-            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-            return resp
-
     meta = None
     featured_post = None
+    page_h1 = 'Houston\'s Finest <span class="gold">Limo Service</span>'
     canonical_path = ""
     og_type = "website"
     og_image = "https://avalimo.net/static/cadillac_escalade.png"
@@ -307,13 +308,6 @@ def index(path):
         "spring": "",
         "cypress-limo": "",
         "cypress": "",
-        # SEO: redirect old thin URLs to new rich landing pages
-        "airport-hobby": "hobby-airport-car-service",
-        "airport-iah": "iah-airport-car-service",
-        "corporate-transportation": "houston-corporate-car-service",
-        "wedding-limo": "houston-wedding-limo",
-        "prom-limo": "houston-prom-limo",
-        "galveston-cruise-transport": "houston-to-galveston-cruise-transfer",
     }
     if path in legacy_redirects:
         target = legacy_redirects[path]
@@ -329,6 +323,8 @@ def index(path):
                 og_image = f"https://avalimo.net{p.get('image', '/static/cadillac_escalade.png')}"
                 content_key = "blog"
                 featured_post = p
+                safe_title = p["title"].replace("<", "&lt;").replace(">", "&gt;")
+                page_h1 = f'{safe_title}'
                 break
         if meta is None:
             content_key = "404"
@@ -341,6 +337,7 @@ def index(path):
     elif path in PAGE_META:
         meta = PAGE_META[path]
         canonical_path = f"/{path}" if path else ""
+        page_h1 = PAGE_H1.get(path, page_h1)
     else:
         content_key = "404"
 
@@ -349,6 +346,7 @@ def index(path):
         canonical_path = ""
         og_type = "website"
         og_image = "https://avalimo.net/static/cadillac_escalade.png"
+        page_h1 = 'Page Not Found'
 
     canonical_url = f"https://avalimo.net{canonical_path}"
 
@@ -368,6 +366,38 @@ def index(path):
         </div>
       </div>"""
 
+    # BlogPosting schema for rich snippets
+    def _blog_schema(post):
+        return {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.get("title", ""),
+            "description": post.get("summary", ""),
+            "author": {"@type": "Person", "name": post.get("author", "AvaLimo")},
+            "datePublished": post.get("date", ""),
+            "dateModified": post.get("date", ""),
+            "image": "https://avalimo.net" + post.get("image", "/static/chauffeur_service.png"),
+            "publisher": {"@type": "Organization", "name": "AvaLimo",
+                          "logo": {"@type": "ImageObject", "url": "https://avalimo.net/static/chauffeur_service.png"}},
+            "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://avalimo.net/blog/{post.get('slug', '')}"},
+            "articleBody": re.sub("<[^>]+>", "", post.get("content", "")),
+        }
+
+    if featured_post:
+        blog_schema = f'<script type="application/ld+json">{json.dumps(_blog_schema(featured_post), ensure_ascii=False)}</script>'
+    elif content_key == "blog":
+        item_list = {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "url": f"https://avalimo.net/blog/{p.get('slug', '')}"}
+                for i, p in enumerate(BLOG_POSTS)
+            ],
+        }
+        blog_schema = f'<script type="application/ld+json">{json.dumps(item_list, ensure_ascii=False)}</script>'
+    else:
+        blog_schema = ""
+
     rendered = render_template_string(
         BASE_HTML,
         title=meta["title"],
@@ -384,6 +414,8 @@ def index(path):
         featured_post=featured_post,
         content_key=content_key,
         page_content_html=PAGE_CONTENT.get(path, {}).get("content", "") if content_key == "page" else "",
+        blog_schema=blog_schema,
+        page_h1=page_h1,
     )
     status_code = 404 if content_key == "404" else 200
     resp = app.make_response((rendered, status_code))
@@ -706,6 +738,96 @@ def _reminder_loop():
 _ensure_google_files()
 threading.Thread(target=_reminder_loop, daemon=True).start()
 print("Calendar reminder scheduler started", file=sys.stderr, flush=True)
+
+
+# ─── AI Chat Endpoint ───
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
+
+CHAT_SYSTEM_PROMPT = """You are the AvaLimo AI Assistant for AvaLimo, Houston's premier luxury limousine service.
+
+BUSINESS INFO:
+- Company: AvaLimo
+- Phone: (832) 567-8050
+- Website: avalimo.net
+- Location: Houston, TX
+- Hours: 24/7 service
+
+SERVICES:
+- Airport Transfers (IAH & Hobby)
+- Corporate/Business Travel
+- Weddings & Special Events
+- Night Out/Prom
+- Concerts & Sports Events
+- Wine Tours
+- Bachelor/Bachelorette Parties
+- Hourly Charters
+
+FLEET & PRICING:
+- Mercedes S-Class (sedan): 1-3 passengers, Starting $45/hr or $100 flat rate
+- Cadillac Escalade (SUV): 1-6 passengers, Starting $65/hr or $125 flat rate
+- Mercedes Sprinter (van): 1-14 passengers, Starting $150/hr or $250 flat rate
+
+COMMON ROUTES (Flat Rates):
+- IAH to Galleria: $65
+- IAH to Downtown: $60
+- IAH to Katy: $75
+- IAH to The Woodlands: $70
+- IAH to Sugar Land: $80
+- IAH to Medical Center: $65
+- HOU to Galleria: $50
+- HOU to Downtown: $45
+- HOU to Medical Center: $45
+- HOU to Katy: $65
+- Downtown to Galleria: $35
+- Houston to Galveston: $175
+- Houston to Austin: $450
+- Houston to San Antonio: $500
+
+SERVICE AREAS:
+Houston, Katy, Sugar Land, The Woodlands, Memorial, River Oaks, Galleria, Downtown, Heights, Midtown, Museum District, Texas Medical Center, Bellaire, West University, Pearland, Friendswood, League City, Galveston
+
+BOOKING:
+- Online: avalimo.net/book
+- Phone: (832) 567-8050
+- Minimum 2-hour advance recommended
+- Same-day bookings available (call to check)
+
+PAYMENT:
+- Credit cards accepted (Visa, MC, Amex, Discover)
+- Corporate accounts available
+- Gratuity not included (18-20% suggested)
+
+POLICIES:
+- Cancellation: 24 hours notice for full refund
+- Late cancellation: 50% charge
+- No-show: Full charge
+- Overtime: 1.5x hourly rate
+- Waiting time: 15 min grace period, then $1/min
+
+RULES:
+- Be helpful, professional, and friendly
+- Give specific quotes when possible
+- Always offer to help book or connect with dispatch
+- Keep responses concise
+"""
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    data = request.json
+    messages = data.get("messages", [])
+    full_messages = [{"role": "system", "content": CHAT_SYSTEM_PROMPT}] + messages
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=full_messages,
+            max_tokens=500,
+            temperature=0.7
+        )
+        reply = response.choices[0].message.content
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

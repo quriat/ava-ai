@@ -1,857 +1,1078 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ title }}</title>
-<meta name="description" content="{{ meta_desc }}">
-<meta name="robots" content="index, follow">
-{{ sc_meta | safe }}
-<link rel="canonical" href="{{ canonical_url }}" id="canonical-url">
-<meta property="og:locale" content="en_US">
-<meta property="og:site_name" content="AvaLimo">
-<meta property="og:title" content="{{ title }}">
-<meta property="og:description" content="{{ meta_desc }}">
-<meta property="og:url" content="{{ canonical_url }}">
-<meta property="og:type" content="{{ og_type }}">
-<meta property="og:image" content="{{ og_image }}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@AvaLimoHTX">
-<meta name="twitter:title" content="{{ title }}">
-<meta name="twitter:description" content="{{ meta_desc }}">
-<meta name="twitter:image" content="{{ og_image }}">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "AvaLimo",
-  "image": "https://avalimo.net/static/cadillac_escalade.png",
-  "url": "https://avalimo.net",
-  "telephone": "+18325678050",
-  "email": "adam@avalimo.net",
-  "description": "Houston premier limo service offering airport transfers, corporate travel, weddings, and event transportation.",
-  "areaServed": ["Houston","IAH","Hobby Airport","Sugar Land","The Woodlands","Katy","Pearland"],
-  "openingHours": "Mo-Su 00:00-24:00",
-  "priceRange": "$$$",
-  "address": { "@type": "PostalAddress", "addressLocality": "Houston", "addressRegion": "TX", "addressCountry": "US" },
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
-  "sameAs": []
-}
-</script>
-<script src="https://web.squarecdn.com/v1/square.js" defer></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#050505;
-  --bg2:#0a0a0a;
-  --bg3:#111;
-  --card:#0d0d0d;
-  --card-border:#1a1a1a;
-  --gold:#C9A84C;
-  --gold-light:#DFC16A;
-  --gold-dim:#8A7A3A;
-  --text:#e8e4dd;
-  --text2:#8a867e;
-  --text3:#555;
-  --radius:12px;
-  --radius-sm:8px;
-  --maxw:1100px;
-  --font-sans:'Outfit',sans-serif;
-  --font-serif:'Playfair Display',serif;
-}
-html{scroll-behavior:smooth}
-body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:var(--gold);text-decoration:none;transition:color .3s}
-a:hover{color:var(--gold-light)}
-img{max-width:100%;height:auto}
-.container{max-width:var(--maxw);margin:0 auto;padding:0 20px}
-.gold{color:var(--gold)}
-.serif{font-family:var(--font-serif)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border-radius:50px;font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .3s;border:none;text-transform:uppercase}
-.btn-gold{background:var(--gold);color:#0a0a0a}
-.btn-gold:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,.3)}
-.btn-outline{background:transparent;border:1.5px solid rgba(255,255,255,.15);color:var(--text)}
-.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
-.section{padding:100px 0}
-.section-header{text-align:center;margin-bottom:60px}
-.section-header .label{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
-.section-header h2{font-family:var(--font-serif);font-size:48px;font-weight:700;line-height:1.15}
-.section-header p{color:var(--text2);font-size:18px;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ meta_desc }}">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a0a0a">
+    {{ sc_meta | safe }}
+    <link rel="canonical" href="{{ canonical_url }}" id="canonical-url">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="AvaLimo">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:description" content="{{ meta_desc }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:type" content="{{ og_type }}">
+    <meta property="og:image" content="{{ og_image }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@AvaLimoHTX">
+    <meta name="twitter:title" content="{{ title }}">
+    <meta name="twitter:description" content="{{ meta_desc }}">
+    <meta name="twitter:image" content="{{ og_image }}">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "AvaLimo",
+      "image": "https://avalimo.net/static/cadillac_escalade.png",
+      "url": "https://avalimo.net",
+      "telephone": "+18325678050",
+      "email": "dispatch@avalimo.net",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Houston",
+        "addressLocality": "Houston",
+        "addressRegion": "TX",
+        "postalCode": "77001",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 29.7604,
+        "longitude": -95.3698
+      },
+      "priceRange": "$$",
+      "openingHours": "Mo-Su 00:00-23:59",
+      "areaServed": [
+        {"@type": "City", "name": "Houston", "sameAs": "https://en.wikipedia.org/wiki/Houston"},
+        {"@type": "City", "name": "Galveston", "sameAs": "https://en.wikipedia.org/wiki/Galveston,_Texas"},
+        {"@type": "City", "name": "Sugar Land", "sameAs": "https://en.wikipedia.org/wiki/Sugar_Land,_Texas"},
+        {"@type": "City", "name": "The Woodlands", "sameAs": "https://en.wikipedia.org/wiki/The_Woodlands,_Texas"},
+        {"@type": "City", "name": "Katy", "sameAs": "https://en.wikipedia.org/wiki/Katy,_Texas"},
+        {"@type": "City", "name": "Pearland", "sameAs": "https://en.wikipedia.org/wiki/Pearland,_Texas"},
+        {"@type": "Airport", "name": "George Bush Intercontinental Airport", "iataCode": "IAH"},
+        {"@type": "Airport", "name": "William P. Hobby Airport", "iataCode": "HOU"}
+      ],
+      "serviceType": [
+        "Airport Transfer",
+        "Corporate Transportation",
+        "Wedding Limo Service",
+        "Event Transportation",
+        "Black Car Service",
+        "Party Bus Rental",
+        "Wine Tour Transportation"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "AvaLimo Fleet",
+        "itemListElement": [
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mercedes S-Class", "description": "Executive sedan for airport transfers and corporate travel"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Cadillac Escalade", "description": "Luxury SUV for groups and special occasions"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mercedes Sprinter", "description": "Premium van for group transportation and events"}}
+        ]
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "127",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://www.facebook.com/AvaLimoHTX",
+        "https://www.instagram.com/AvaLimoHTX",
+        "https://x.com/AvaLimoHTX"
+      ]
+    }
+    </script>
+    {{ blog_schema | safe }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #e2c97e;
+            --gold-dark: #a8893a;
+            --black: #0a0a0a;
+            --dark: #111111;
+            --dark-card: rgba(15, 15, 15, 0.92);
+            --white: #ffffff;
+            --gray: #999999;
+            --gray-light: #cccccc;
+            --serif: 'Playfair Display', Georgia, serif;
+            --sans: 'Inter', -apple-system, sans-serif;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--sans); background: var(--black); color: var(--white); overflow-x: hidden; line-height: 1.7; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        ::selection { background: rgba(201,168,76,0.3); color: var(--white); }
 
-/* ─── Nav ─── */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 0;transition:all .4s}
-nav.scrolled{background:rgba(5,5,5,.9);backdrop-filter:blur(24px);padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-nav .container{display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-family:var(--font-serif);font-size:28px;font-weight:700;color:#fff;letter-spacing:2px}
-.nav-logo span{color:var(--gold)}
-.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
-.nav-links a{color:var(--text2);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:color .3s}
-.nav-links a:hover{color:var(--text)}
-.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
-.hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+        /* ===== VIDEO BACKGROUND ===== */
+        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+        .video-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.5) 100%);
+        }
+        .video-fallback { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; background: linear-gradient(135deg, #060606 0%, #0d0d1a 50%, #060606 100%); }
 
-/* ─── Hero ─── */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:80px}
-.hero-video-wrap{position:absolute;inset:0;z-index:0}
-.hero-video-wrap video{width:100%;height:100%;object-fit:cover}
-.hero-video-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,5,.5) 0%,rgba(5,5,5,.3) 40%,rgba(5,5,5,.6) 100%);z-index:1}
-.hero-bg{position:absolute;inset:0;z-index:0}
-.hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.15}
-.hero .container{position:relative;z-index:2;width:100%}
-.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.hero-text .tagline{color:var(--gold);font-size:14px;font-weight:600;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px}
-.hero-text h1{font-family:var(--font-serif);font-size:72px;font-weight:700;line-height:1.05;margin-bottom:20px}
-.hero-text h1 em{font-style:italic;color:var(--gold)}
-.hero-text h1 .brand{display:block;font-size:96px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
-.hero-text p{color:var(--text2);font-size:18px;line-height:1.7;margin-bottom:32px;max-width:500px}
-.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+        /* ===== NAVBAR ===== */
+        .navbar { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 22px 60px; display: flex; justify-content: space-between; align-items: center; transition: all 0.5s cubic-bezier(0.4,0,0.2,1); }
+        .navbar.scrolled { background: rgba(8,8,8,0.85); backdrop-filter: blur(30px) saturate(1.2); padding: 14px 60px; box-shadow: 0 4px 60px rgba(0,0,0,0.6), 0 0 1px rgba(201,168,76,0.2); border-bottom: 1px solid rgba(201,168,76,0.08); }
+        .nav-brand { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; letter-spacing: 4px; color: var(--white); text-decoration: none; transition: opacity 0.3s ease; }
+        .nav-brand span { color: var(--gold); }
+        .nav-brand:hover { opacity: 0.8; }
+        .nav-links { display: flex; list-style: none; gap: 36px; align-items: center; }
+        .nav-links a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.72rem; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; transition: color 0.3s ease; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -6px; left: 50%; width: 0; height: 1px; background: var(--gold); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); transform: translateX(-50%); }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-cta { padding: 10px 28px !important; background: transparent; border: 1px solid rgba(201,168,76,0.5); color: var(--gold) !important; font-size: 0.7rem !important; letter-spacing: 2.5px !important; transition: all 0.4s ease !important; border-radius: 2px; }
+        .nav-cta:hover { background: var(--gold) !important; color: var(--black) !important; border-color: var(--gold) !important; box-shadow: 0 0 30px rgba(201,168,76,0.2); }
+        .nav-cta::after { display: none !important; }
+        .hamburger { display: none; flex-direction: column; cursor: pointer; gap: 5px; padding: 6px; }
+        .hamburger span { width: 26px; height: 1.5px; background: var(--gold); transition: all 0.3s ease; transform-origin: center; }
 
-/* ─── Quote card ─── */
-.quote-card{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:36px;backdrop-filter:blur(12px)}
-.quote-card h3{font-family:var(--font-serif);font-size:22px;margin-bottom:4px}
-.quote-card .sub{color:var(--text2);font-size:13px;margin-bottom:24px}
-.quote-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.quote-form .full{grid-column:1/-1}
-.quote-form label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase}
-.quote-form input,.quote-form select{width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);transition:all .3s;outline:none}
-.quote-form input:focus,.quote-form select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.08)}
-.quote-form select option{background:#0a0a0a;color:var(--text)}
-.quote-form .btn{width:100%;margin-top:4px}
-.quote-phone{text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.04);color:var(--text2);font-size:13px}
-.quote-phone a{color:var(--text);font-weight:600}
-.stats{display:flex;gap:40px;margin-top:48px}
-.stat{text-align:center}
-.stat .num{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--gold)}
-.stat .lbl{color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+        /* ===== HERO ===== */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; position: relative; }
+        .hero-subtitle { font-size: 0.72rem; font-weight: 500; letter-spacing: 8px; text-transform: uppercase; color: var(--gold); margin-bottom: 35px; animation: fadeDown 1s ease 0.3s both; position: relative; padding: 0 20px; }
+        .hero-subtitle::before, .hero-subtitle::after { content: ''; position: absolute; top: 50%; width: 40px; height: 1px; background: rgba(201,168,76,0.3); }
+        .hero-subtitle::before { right: 100%; }
+        .hero-subtitle::after { left: 100%; }
+        .hero h1 { font-family: var(--serif); font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 400; line-height: 1.05; margin-bottom: 8px; animation: fadeUp 1s ease 0.5s both; letter-spacing: -1px; }
+        .hero h1 em { font-style: italic; color: var(--gold); position: relative; }
+        .hero-desc { font-size: 1.05rem; font-weight: 300; color: rgba(255,255,255,0.95); max-width: 480px; margin: 28px auto 50px; line-height: 1.9; animation: fadeUp 1s ease 0.7s both; letter-spacing: 0.3px; }
+        .hero-buttons { display: flex; gap: 16px; animation: fadeUp 1s ease 0.9s both; }
+        .btn-gold { padding: 16px 48px; background: var(--gold); color: var(--black); border: none; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); display: inline-block; position: relative; overflow: hidden; }
+        .btn-gold::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s ease; }
+        .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 20px 60px rgba(201,168,76,0.3); }
+        .btn-gold:hover::before { left: 100%; }
+        .btn-outline { padding: 16px 48px; background: transparent; color: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,0.12); font-size: 0.72rem; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); display: inline-block; backdrop-filter: blur(10px); }
+        .btn-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); background: rgba(201,168,76,0.05); }
+        .hero-stats { display: flex; gap: 80px; margin-top: 80px; animation: fadeUp 1s ease 1.1s both; }
+        .hero-stat { text-align: center; position: relative; }
+        .hero-stat::after { content: ''; position: absolute; right: -40px; top: 50%; transform: translateY(-50%); width: 1px; height: 40px; background: rgba(201,168,76,0.15); }
+        .hero-stat:last-child::after { display: none; }
+        .hero-stat h3 { font-family: var(--serif); font-size: 2.4rem; color: var(--gold); font-weight: 400; letter-spacing: -1px; }
+        .hero-stat p { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.9); margin-top: 8px; }
+        .scroll-line { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 1px; height: 60px; background: linear-gradient(to bottom, var(--gold), transparent); animation: pulse 2.5s ease-in-out infinite; }
 
-/* ─── Fleet ─── */
-.fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.fleet-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden;transition:all .4s;position:relative}
-.fleet-card:hover{transform:translateY(-6px);border-color:rgba(201,168,76,.2);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.fleet-card .img-wrap{height:220px;background:linear-gradient(135deg,#0a0a0a,#000);display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
-.fleet-card .img-wrap img{width:100%;height:100%;object-fit:contain;transition:transform .5s}
-.fleet-card:hover .img-wrap img{transform:scale(1.04)}
-.fleet-card .num{position:absolute;top:16px;left:16px;font-family:var(--font-serif);font-size:32px;font-weight:700;color:rgba(201,168,76,.08);line-height:1}
-.fleet-card .badge{position:absolute;top:16px;right:16px;background:rgba(201,168,76,.12);color:var(--gold);padding:4px 12px;border-radius:50px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.fleet-card .body{padding:24px}
-.fleet-card .body h3{font-family:var(--font-serif);font-size:20px;margin-bottom:4px}
-.fleet-card .body .cap{color:var(--text2);font-size:13px;margin-bottom:12px}
-.fleet-card .body p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:16px}
-.fleet-card .body .btn{font-size:12px;padding:10px 24px}
+        /* ===== SECTIONS ===== */
+        section { padding: 140px 60px; position: relative; }
+        .section-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: inline-block; }
+        .section-title { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 400; margin-bottom: 22px; line-height: 1.15; letter-spacing: -0.5px; }
+        .section-desc { font-size: 0.95rem; color: rgba(255,255,255,0.92); max-width: 500px; line-height: 1.9; }
+        .section-header { margin-bottom: 80px; }
+        .section-header.center { text-align: center; }
+        .section-header.center .section-desc { margin: 0 auto; }
+        .gold-line { width: 40px; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); margin-top: 28px; }
+        .center .gold-line { margin: 28px auto 0; }
 
-/* ─── Services ─── */
-.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.service-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:28px;transition:all .3s}
-.service-card:hover{border-color:rgba(201,168,76,.15);transform:translateY(-4px)}
-.service-card .icon{font-size:28px;margin-bottom:12px}
-.service-card h4{font-family:var(--font-serif);font-size:18px;margin-bottom:6px}
-.service-card p{color:var(--text2);font-size:14px;line-height:1.6}
-.service-area{margin-top:40px;text-align:center;color:var(--text2);font-size:14px;padding:20px;border-top:1px solid var(--card-border)}
+        /* ===== QUOTE FORM ===== */
+        .quote-section { background: transparent; }
+        .quote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; max-width: 1200px; margin: 0 auto; align-items: center; }
+        .quote-form { display: flex; flex-direction: column; gap: 20px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group label { display: block; font-size: 0.6rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.9); margin-bottom: 10px; }
+        .form-group input, .form-group select { width: 100%; padding: 16px 18px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); color: var(--white); font-size: 0.9rem; font-family: var(--sans); transition: all 0.3s ease; outline: none; border-radius: 2px; }
+        .form-group input:focus, .form-group select:focus { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.02); box-shadow: 0 0 0 3px rgba(201,168,76,0.05); }
+        .form-group input::placeholder { color: rgba(255,255,255,0.75); }
+        .form-group select option { background: var(--dark); }
+        .form-submit { padding: 16px 48px; background: var(--gold); color: var(--black); border: none; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: all 0.4s ease; margin-top: 10px; border-radius: 2px; position: relative; overflow: hidden; }
+        .form-submit::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s ease; }
+        .form-submit:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 15px 40px rgba(201,168,76,0.25); }
+        .form-submit:hover::before { left: 100%; }
+        .form-note { font-size: 0.78rem; color: rgba(255,255,255,0.85); margin-top: 12px; }
+        .form-note a { color: var(--gold); text-decoration: none; }
+        .form-note a:hover { text-decoration: underline; }
 
-/* ─── Testimonials ─── */
-.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.testimonial-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:28px}
-.testimonial-card .stars{color:var(--gold);font-size:14px;margin-bottom:8px}
-.testimonial-card blockquote{color:var(--text2);font-size:14px;line-height:1.7;font-style:italic;margin-bottom:16px}
-.testimonial-card .author{font-size:13px;font-weight:600}
-.testimonial-card .time{color:var(--text3);font-size:12px}
+        /* ===== FLEET WITH IMAGES ===== */
+        .fleet-section { background: transparent; }
+        .fleet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .fleet-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04); overflow: hidden; transition: all 0.5s cubic-bezier(0.4,0,0.2,1); position: relative; border-radius: 3px; }
+        .fleet-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent); opacity: 0; transition: opacity 0.5s ease; z-index: 2; }
+        .fleet-card::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(201,168,76,0.03), transparent 70%); opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
+        .fleet-card:hover { transform: translateY(-8px); border-color: rgba(201,168,76,0.15); box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
+        .fleet-card:hover::before { opacity: 1; }
+        .fleet-card:hover::after { opacity: 1; }
+        .fleet-img-wrapper { width: 100%; height: 210px; overflow: hidden; position: relative; }
+        .fleet-img-wrapper::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(6,6,6,1), transparent); z-index: 1; }
+        .fleet-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.4,0,0.2,1), filter 0.5s ease; filter: brightness(0.7) saturate(0.9); }
+        .fleet-card:hover .fleet-img-wrapper img { transform: scale(1.08); filter: brightness(0.9) saturate(1); }
+        .fleet-badge { position: absolute; top: 14px; right: 14px; padding: 5px 14px; background: rgba(201,168,76,0.9); color: var(--black); font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; z-index: 2; border-radius: 1px; }
+        .fleet-content { padding: 30px 28px 36px; text-align: center; position: relative; z-index: 1; }
+        .fleet-number { font-family: var(--serif); font-size: 2.2rem; color: rgba(201,168,76,0.08); margin-bottom: 12px; line-height: 1; }
+        .fleet-content h3 { font-family: var(--serif); font-size: 1.35rem; font-weight: 500; margin-bottom: 6px; letter-spacing: -0.3px; }
+        .fleet-content .fleet-type { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; margin-bottom: 16px; text-transform: uppercase; }
+        .fleet-content p { font-size: 0.82rem; color: rgba(255,255,255,0.9); line-height: 1.8; margin-bottom: 28px; }
+        .fleet-btn { display: inline-block; padding: 12px 36px; border: 1px solid rgba(201,168,76,0.25); color: var(--gold); text-decoration: none; font-size: 0.65rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; transition: all 0.4s ease; border-radius: 2px; }
+        .fleet-btn:hover { background: var(--gold); color: var(--black); border-color: var(--gold); box-shadow: 0 10px 30px rgba(201,168,76,0.2); }
 
-/* ─── Booking section ─── */
-.booking-section{background:var(--bg2);border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border)}
-.contact-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px}
-.contact-method{padding:20px;border-radius:var(--radius);background:var(--card);border:1px solid var(--card-border);text-align:center}
-.contact-method .icon{font-size:24px;margin-bottom:8px}
-.contact-method .lbl{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.contact-method a{color:var(--text);font-size:18px;font-weight:600}
-.contact-method .note{color:var(--text2);font-size:12px;margin-top:4px}
+        /* ===== SERVICES ===== */
+        .services-section { background: transparent; }
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .service-card { padding: 44px 32px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); border-radius: 3px; position: relative; overflow: hidden; }
+        .service-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent); opacity: 0; transition: opacity 0.4s ease; }
+        .service-card:hover { background: rgba(201,168,76,0.02); border-color: rgba(201,168,76,0.1); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .service-card:hover::before { opacity: 1; }
+        .service-icon { font-size: 2rem; margin-bottom: 20px; display: block; }
+        .service-card h4 { font-family: var(--serif); font-size: 1.15rem; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.2px; }
+        .service-card p { font-size: 0.82rem; color: rgba(255,255,255,0.9); line-height: 1.8; }
 
-/* ─── FAQ ─── */
-.faq-grid{max-width:700px;margin:0 auto}
-.faq-item{border-bottom:1px solid var(--card-border);padding:20px 0;cursor:pointer}
-.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:500}
-.faq-q .arrow{color:var(--gold);font-size:12px;transition:transform .3s}
-.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
-.faq-a{max-height:0;overflow:hidden;transition:all .4s;color:var(--text2);font-size:14px;line-height:1.7}
-.faq-item.open .faq-a{max-height:300px;margin-top:12px}
+        /* ===== TESTIMONIALS ===== */
+        .testimonials-section { background: transparent; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .testimonial-card { padding: 44px 32px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03); position: relative; border-radius: 3px; transition: all 0.4s ease; }
+        .testimonial-card::before { content: '\201C'; font-family: var(--serif); font-size: 4.5rem; color: rgba(201,168,76,0.08); position: absolute; top: 12px; left: 22px; line-height: 1; }
+        .testimonial-card:hover { border-color: rgba(201,168,76,0.1); }
+        .testimonial-stars { color: var(--gold); font-size: 0.75rem; letter-spacing: 4px; margin-bottom: 20px; }
+        .testimonial-card blockquote { font-size: 0.88rem; color: rgba(255,255,255,0.95); line-height: 1.9; font-style: italic; margin-bottom: 26px; }
+        .testimonial-author { font-size: 0.82rem; font-weight: 600; color: var(--white); }
+        .testimonial-role { font-size: 0.65rem; color: rgba(255,255,255,0.85); margin-top: 4px; letter-spacing: 1.5px; text-transform: uppercase; }
 
-/* ─── Footer ─── */
-footer{padding:60px 0 40px;border-top:1px solid var(--card-border)}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
-footer h4{font-family:var(--font-serif);font-size:18px;margin-bottom:16px}
-footer .brand-large{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--text);margin-bottom:8px}
-footer .brand-large span{color:var(--gold)}
-footer p{color:var(--text2);font-size:13px;line-height:1.7}
-footer ul{list-style:none}
-footer ul li{margin-bottom:8px}
-footer ul a{color:var(--text2);font-size:13px}
-footer ul a:hover{color:var(--gold)}
-.footer-bottom{margin-top:40px;padding-top:20px;border-top:1px solid var(--card-border);text-align:center;color:var(--text3);font-size:12px}
+        /* ===== BLOG ===== */
+        .blog-section { background: transparent; }
+        .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+        .blog-card { padding: 40px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); cursor: pointer; border-radius: 3px; }
+        .blog-card:hover { border-color: rgba(201,168,76,0.12); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .blog-tag { font-size: 0.55rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+        .blog-card h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; margin-bottom: 12px; line-height: 1.4; letter-spacing: -0.2px; }
+        .blog-card p { font-size: 0.82rem; color: rgba(255,255,255,0.9); line-height: 1.8; margin-bottom: 20px; }
+        .blog-meta { font-size: 0.65rem; color: rgba(255,255,255,0.75); letter-spacing: 1.5px; }
 
-/* ─── Page header ─── */
-.page-header{padding:140px 0 60px;text-align:center;position:relative;overflow:hidden}
-.page-header h2{font-family:var(--font-serif);font-size:48px;font-weight:600}
-.page-header p{color:var(--text2);font-size:16px;margin-top:12px}
+        /* ===== FAQ ===== */
+        .faq-section { background: transparent; }
+        .faq-container { max-width: 780px; margin: 0 auto; }
+        .faq-item { border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .faq-question { width: 100%; padding: 26px 0; background: none; border: none; color: rgba(255,255,255,0.95); font-size: 0.95rem; font-family: var(--sans); font-weight: 500; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: color 0.3s ease; letter-spacing: 0.2px; }
+        .faq-question:hover { color: var(--gold); }
+        .faq-question .icon { font-size: 1.4rem; color: var(--gold); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); font-weight: 300; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), padding 0.5s ease; }
+        .faq-answer.open { max-height: 200px; padding-bottom: 26px; }
+        .faq-answer p { font-size: 0.85rem; color: rgba(255,255,255,0.9); line-height: 1.9; }
 
-/* ─── Blog ─── */
-.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.blog-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:28px;transition:all .3s;cursor:pointer}
-.blog-card:hover{transform:translateY(-4px);border-color:rgba(201,168,76,.15)}
-.blog-card .thumb{font-size:32px;margin-bottom:12px}
-.blog-card .cat{color:var(--gold);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
-.blog-card h3{font-family:var(--font-serif);font-size:18px;margin-bottom:8px;line-height:1.3}
-.blog-card p{color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:12px}
-.blog-card .meta{color:var(--text3);font-size:11px;display:flex;gap:12px}
-.blog-card .article-content{display:none}
+        /* ===== CTA + AI ASSISTANT ===== */
+        .cta-section { background: transparent; text-align: center; padding: 160px 60px; border-top: 1px solid rgba(201,168,76,0.06); border-bottom: 1px solid rgba(201,168,76,0.06); }
+        .cta-section h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 400; margin-bottom: 22px; letter-spacing: -0.5px; }
+        .cta-section > p { font-size: 0.95rem; color: rgba(255,255,255,0.92); margin-bottom: 50px; }
+        .cta-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 55px; }
+        .cta-cards { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+        .cta-card { padding: 28px 36px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); text-align: center; min-width: 200px; border-radius: 3px; transition: all 0.4s ease; }
+        .cta-card:hover { border-color: rgba(201,168,76,0.1); }
+        .cta-card .cta-icon { font-size: 1.8rem; margin-bottom: 10px; }
+        .cta-card h4 { font-size: 0.78rem; font-weight: 600; letter-spacing: 1.5px; margin-bottom: 5px; }
+        .cta-card p { font-size: 0.75rem; color: rgba(255,255,255,0.85); }
+        .cta-card a { color: var(--gold); text-decoration: none; font-weight: 600; }
 
-/* ─── Deposit ─── */
-.deposit-wrap{max-width:500px;margin:0 auto;background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:36px}
-.deposit-amounts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
-.deposit-amounts button{padding:10px 20px;border-radius:50px;border:1px solid var(--card-border);background:transparent;color:var(--text);font-size:14px;cursor:pointer;transition:all .3s;font-family:var(--font-sans)}
-.deposit-amounts button.active,.deposit-amounts button:hover{border-color:var(--gold);color:var(--gold)}
-#square-card{min-height:200px;margin-top:16px}
-#square-card iframe{color-scheme:dark}
-#square-card{--sq-color-input:#f0f0f0;--sq-color-placeholder:#666;--sq-color-focused:var(--gold);--sq-color-error:#ff6b6b}
+        /* ===== FOOTER ===== */
+        .footer { background: rgba(3,3,3,0.99); padding: 80px 60px 40px; border-top: 1px solid rgba(255,255,255,0.03); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; max-width: 1200px; margin: 0 auto 60px; }
+        .footer-brand { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; letter-spacing: 3px; margin-bottom: 16px; }
+        .footer-brand span { color: var(--gold); }
+        .footer-desc { font-size: 0.8rem; color: rgba(255,255,255,0.85); line-height: 1.9; max-width: 280px; }
+        .footer-col h4 { font-size: 0.6rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
+        .footer-col a { display: block; color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.82rem; margin-bottom: 13px; transition: color 0.3s ease; }
+        .footer-col a:hover { color: var(--gold); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.03); padding-top: 35px; text-align: center; }
+        .footer-bottom p { font-size: 0.7rem; color: rgba(255,255,255,0.75); }
+        .footer-areas { font-size: 0.65rem; color: rgba(255,255,255,0.7); margin-top: 12px; }
 
-/* ─── Flight ─── */
-.flight-wrap{max-width:500px;margin:0 auto;background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:36px}
-.flight-wrap input{width:100%;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:16px;font-family:var(--font-sans);outline:none;transition:all .3s}
-.flight-wrap input:focus{border-color:var(--gold)}
-#flightResult{margin-top:20px;padding:16px;border-radius:var(--radius-sm);background:rgba(255,255,255,.02);display:none}
+        /* ===== FLOATING BUTTONS ===== */
+        .floating-buttons { position: fixed; bottom: 28px; right: 28px; z-index: 900; display: flex; flex-direction: column; gap: 10px; }
+        .float-btn { padding: 13px 26px; font-size: 0.68rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; text-align: center; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); cursor: pointer; border: none; border-radius: 2px; }
+        .float-btn-gold { background: var(--gold); color: var(--black); }
+        .float-btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 12px 35px rgba(201,168,76,0.3); }
+        .float-btn-dark { background: rgba(15,15,15,0.95); color: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); }
+        .float-btn-dark:hover { border-color: rgba(201,168,76,0.3); color: var(--gold); transform: translateY(-2px); }
 
-/* ─── Animations ─── */
-.fade-up{opacity:0;transform:translateY(24px);transition:all .6s cubic-bezier(.22,1,.36,1)}
-.fade-up.visible{opacity:1;transform:translateY(0)}
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.8; } }
+        .reveal { opacity: 0; transform: translateY(25px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ─── Chat ─── */
-.chat-btn{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--gold);border:none;color:#0a0a0a;font-size:24px;cursor:pointer;z-index:999;box-shadow:0 4px 20px rgba(201,168,76,.3);transition:all .3s}
-.chat-btn:hover{transform:scale(1.1);box-shadow:0 8px 36px rgba(201,168,76,.5)}
-.chat-pulse{position:absolute;inset:0;border-radius:50%;background:var(--gold);opacity:.4;z-index:-1;animation:chatPulse 2s infinite}
-@keyframes chatPulse{0%{transform:scale(1);opacity:.4}100%{transform:scale(1.5);opacity:0}}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.chat-box{position:fixed;bottom:90px;right:24px;width:360px;max-height:500px;background:var(--card);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;display:none;z-index:999;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.chat-box.open{display:flex;flex-direction:column}
-.chat-header{padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:10px}
-.chat-header .name{font-weight:600;font-size:14px}
-.chat-header .status{color:#4ade80;font-size:10px}
-.chat-msgs{padding:16px 20px;overflow-y:auto;flex:1;min-height:200px;max-height:300px}
-.chat-msg{margin-bottom:12px;animation:msgIn .3s}
-.chat-msg.bot .bubble{background:rgba(255,255,255,.04);padding:10px 14px;border-radius:12px 12px 12px 4px;font-size:13px;line-height:1.5;color:var(--text2)}
-.chat-msg.user{text-align:right}
-.chat-msg.user .bubble{background:rgba(201,168,76,.12);padding:10px 14px;border-radius:12px 12px 4px 12px;font-size:13px;display:inline-block;color:var(--text)}
-@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.chat-input-wrap{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--card-border)}
-.chat-input-wrap input{flex:1;padding:10px 14px;border-radius:50px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:13px;font-family:var(--font-sans);outline:none}
-.chat-input-wrap input:focus{border-color:var(--gold)}
-.chat-input-wrap button{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;color:#0a0a0a;font-size:16px;cursor:pointer;transition:transform .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.chat-input-wrap button:hover{transform:scale(1.1)}
+        /* ===== MOBILE ===== */
+        .mobile-menu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(6,6,6,0.99); backdrop-filter: blur(30px); z-index: 999; flex-direction: column; justify-content: center; align-items: center; gap: 32px; }
+        .mobile-menu.active { display: flex; }
+        .mobile-menu a { color: rgba(255,255,255,0.95); text-decoration: none; font-family: var(--serif); font-size: 1.6rem; transition: color 0.3s ease; }
+        .mobile-menu a:hover { color: var(--gold); }
+        .mobile-close { position: absolute; top: 28px; right: 28px; font-size: 2.2rem; color: rgba(255,255,255,0.9); cursor: pointer; background: none; border: none; transition: color 0.3s ease; }
+        .mobile-close:hover { color: var(--gold); }
 
-/* ─── 404 ─── */
-.error-page{text-align:center;padding:140px 20px;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.error-page h1{font-family:var(--font-serif);font-size:120px;color:var(--gold);line-height:1}
-.error-page p{color:var(--text2);margin:16px 0 32px}
+        /* ===== BLOG POST PAGE ===== */
+        .page-header { padding: 140px 60px 50px; text-align: center; background: transparent; }
+        .page-header h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 400; letter-spacing: -0.5px; }
+        .page-header p { color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-top: 12px; }
+        .post-content { max-width: 680px; margin: 0 auto; padding: 0 60px 80px; background: transparent; }
+        .post-content h2 { font-family: var(--serif); font-size: 1.7rem; margin: 30px 0 14px; letter-spacing: -0.3px; }
+        .post-content h3 { font-family: var(--serif); font-size: 1.3rem; margin: 22px 0 10px; }
+        .post-content p { color: rgba(255,255,255,0.95); font-size: 0.92rem; line-height: 1.9; margin-bottom: 16px; }
+        .post-content ul, .post-content ol { padding-left: 22px; margin-bottom: 16px; }
+        .post-content li { color: rgba(255,255,255,0.92); font-size: 0.88rem; line-height: 1.8; margin-bottom: 5px; }
 
-/* ─── Blog post page ─── */
-.post-content{max-width:700px;margin:0 auto}
-.post-content h2{font-family:var(--font-serif);font-size:28px;margin:32px 0 16px}
-.post-content h3{font-family:var(--font-serif);font-size:22px;margin:24px 0 12px}
-.post-content p{color:var(--text2);font-size:16px;line-height:1.8;margin-bottom:16px}
-.post-content ul,.post-content ol{padding-left:24px;margin-bottom:16px}
-.post-content li{color:var(--text2);font-size:15px;line-height:1.7;margin-bottom:6px}
-.post-content strong{color:var(--text)}
-.post-content a{color:var(--gold)}
+        /* ===== PAGE CONTENT ===== */
+        .page-content { padding: 140px 60px 80px; background: transparent; }
+        .page-content .container { max-width: 1200px; margin: 0 auto; }
+        .page-content .gold { color: var(--gold); }
+        .page-content .gradient-text { color: var(--gold); }
+        .page-content a { color: var(--gold); text-decoration: none; transition: opacity 0.3s ease; }
+        .page-content a:hover { opacity: 0.7; }
 
-/* ─── Mobile ─── */
-@media(max-width:900px){
-  .hero-grid{grid-template-columns:1fr;gap:32px}
-  .hero-text h1{font-size:36px}
-  .hero-text h1 .brand{font-size:52px}
-  .hero-text p{font-size:15px}
-  .fleet-grid,.services-grid,.testimonials-grid,.blog-grid{grid-template-columns:1fr}
-  .footer-grid{grid-template-columns:1fr 1fr;gap:24px}
-  .contact-row{grid-template-columns:1fr}
-  .quote-form{grid-template-columns:1fr}
-  .stats{gap:24px}
-  .nav-links{display:none;position:fixed;top:0;right:0;bottom:0;width:280px;background:var(--bg2);flex-direction:column;padding:80px 32px;gap:20px;border-left:1px solid var(--card-border);z-index:1001}
-  .nav-links.open{display:flex}
-  .hamburger{display:flex;z-index:1002}
-  .stat .num{font-size:22px}
-  .section{padding:60px 0}
-  .section-header h2{font-size:32px}
-}
-@media(max-width:480px){
-  .hero-text h1{font-size:28px}
-  .hero-text h1 .brand{font-size:40px}
-  .section-header h2{font-size:26px}
-  .nav-logo{font-size:22px}
-  .quote-card{padding:24px}
-}
-</style>
+        /* ===== 404 ===== */
+        .error-page { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .error-page h1 { font-family: var(--serif); font-size: 8rem; color: var(--gold); line-height: 1; }
+        .error-page p { color: rgba(255,255,255,0.9); font-size: 1rem; margin: 18px 0 38px; }
+
+        /* ===== DEPOSIT ===== */
+        .deposit-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 900px; margin: 0 auto; align-items: start; }
+        .deposit-info { padding: 40px 0; }
+        .deposit-info h3 { font-family: var(--serif); font-size: 1.5rem; margin-bottom: 24px; }
+        .deposit-info ul { list-style: none; padding: 0; }
+        .deposit-info ul li { padding: 12px 0; color: rgba(255,255,255,0.85); font-size: 0.9rem; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .deposit-info .d-icon { color: var(--gold); font-weight: 600; font-size: 0.8rem; }
+        .deposit-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 40px; border-radius: 3px; }
+        .deposit-card h3 { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 28px; }
+        @media (max-width: 768px) {
+            .deposit-wrap { grid-template-columns: 1fr; gap: 30px; }
+            .deposit-info { padding: 0; }
+        }
+
+        @media (max-width: 1024px) {
+            .fleet-grid, .services-grid, .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            section { padding: 100px 40px; }
+        }
+        @media (max-width: 768px) {
+            .navbar { padding: 16px 22px; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            section { padding: 70px 22px; }
+            .page-header { padding: 110px 22px 35px; }
+            .page-header h2 { font-size: 1.8rem; }
+            .post-content { padding: 0 22px 50px; }
+            .page-content { padding: 110px 22px 50px; }
+            .hero h1 { font-size: 2.8rem; }
+            .hero-desc { font-size: 0.92rem; max-width: 90%; }
+            .hero-buttons { flex-direction: column; align-items: center; gap: 12px; }
+            .hero-buttons a, .hero-buttons .btn-gold, .hero-buttons .btn-outline { width: 100%; max-width: 280px; text-align: center; }
+            .hero-stats { gap: 25px; flex-wrap: wrap; justify-content: center; }
+            .hero-stat::after { display: none; }
+            .quote-grid { grid-template-columns: 1fr; gap: 50px; }
+            .form-row { grid-template-columns: 1fr; }
+            .fleet-grid, .services-grid, .testimonials-grid, .blog-grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 1.9rem; }
+            .section-desc { max-width: 100%; }
+            .cta-section h2 { font-size: 1.9rem; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .cta-cards { flex-direction: column; align-items: center; }
+            .cta-card { width: 100%; max-width: 300px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+            .floating-buttons { bottom: 18px; right: 18px; }
+            .float-btn { padding: 11px 22px; font-size: 0.62rem; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-subtitle { letter-spacing: 4px; font-size: 0.62rem; }
+            .hero-subtitle::before, .hero-subtitle::after { width: 20px; }
+            .hero-stats { flex-direction: column; gap: 18px; }
+            .hero-stat h3 { font-size: 1.8rem; }
+            .btn-gold, .btn-outline { padding: 14px 36px; font-size: 0.65rem; letter-spacing: 2px; }
+            .form-submit { padding: 14px 36px; font-size: 0.65rem; }
+            .section { padding: 55px 18px; }
+            .page-header { padding: 90px 18px 25px; }
+            .page-content { padding: 90px 18px 35px; }
+            .footer { padding: 50px 18px 28px; }
+            .cta-section { padding: 70px 18px; }
+            .fleet-card { margin: 0 -4px; }
+        }
+
+        /* ===== AI CHAT WIDGET ===== */
+        .chat-btn{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--gold);border:none;color:#0a0a0a;font-size:24px;cursor:pointer;z-index:999;box-shadow:0 4px 20px rgba(201,168,76,.3);transition:all .3s}
+        .chat-btn:hover{transform:scale(1.1);box-shadow:0 8px 36px rgba(201,168,76,.5)}
+        .chat-pulse{position:absolute;inset:0;border-radius:50%;background:var(--gold);opacity:.4;z-index:-1;animation:chatPulse 2s infinite}
+        @keyframes chatPulse{0%{transform:scale(1);opacity:.4}100%{transform:scale(1.5);opacity:0}}
+        .chat-box{position:fixed;bottom:90px;right:24px;width:360px;max-height:500px;background:var(--card);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;display:none;z-index:999;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+        .chat-box.open{display:flex;flex-direction:column}
+        .chat-header{padding:16px 20px;border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:10px}
+        .chat-header .name{font-weight:600;font-size:14px}
+        .chat-header .status{color:#4ade80;font-size:10px}
+        .chat-msgs{padding:16px 20px;overflow-y:auto;flex:1;min-height:200px;max-height:300px}
+        .chat-msg{margin-bottom:12px;animation:msgIn .3s}
+        .chat-msg.bot .bubble{background:rgba(255,255,255,.04);padding:10px 14px;border-radius:12px 12px 12px 4px;font-size:13px;line-height:1.5;color:var(--text2)}
+        .chat-msg.user{text-align:right}
+        .chat-msg.user .bubble{background:rgba(201,168,76,.12);padding:10px 14px;border-radius:12px 12px 4px 12px;font-size:13px;display:inline-block;color:var(--text)}
+        @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .chat-input-wrap{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--card-border)}
+        .chat-input-wrap input{flex:1;padding:10px 14px;border-radius:50px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:13px;font-family:var(--font-sans);outline:none}
+        .chat-input-wrap input:focus{border-color:var(--gold)}
+        .chat-input-wrap button{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;color:#0a0a0a;font-size:16px;cursor:pointer;transition:transform .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+        .chat-input-wrap button:hover{transform:scale(1.1)}
+        .typing-indicator{display:flex;gap:4px;padding:10px 14px;background:rgba(255,255,255,.04);border-radius:12px;width:fit-content}
+        .typing-dot{width:6px;height:6px;background:#888;border-radius:50%;animation:typingBounce 1.4s infinite}
+        .typing-dot:nth-child(2){animation-delay:0.2s}
+        .typing-dot:nth-child(3){animation-delay:0.4s}
+        @keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+    </style>
 </head>
 <body>
 
-<!-- Nav -->
-<nav id="nav">
-  <div class="container">
-    <a href="/" class="nav-logo">Ava<span>Limo</span></a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="/">Home</a></li>
-      <li><a href="/services">Services</a></li>
-      <li><a href="/fleet">Fleet</a></li>
-      <li><a href="/pricing">Pricing</a></li>
-      <li><a href="/wedding-limo">Wedding</a></li>
-      <li><a href="/blog">Blog</a></li>
-      <li><a href="/contact">Contact</a></li>
-      <li><a href="/book" class="btn btn-gold" style="padding:10px 24px;font-size:12px">Book Now</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-</nav>
+    <!-- FALLBACK BACKGROUND -->
+    <div class="video-fallback"></div>
+
+    <!-- ===== AERIAL HOUSTON VIDEO BACKGROUND ===== -->
+    <video class="video-bg" id="bgVideo" autoplay muted loop playsinline>
+        <source src="https://assets.mixkit.co/videos/49878/49878-720.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar">
+        <a href="/" class="nav-brand">Ava<span>Limo</span></a>
+        <ul class="nav-links">
+            <li><a href="/#home">Home</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <li><a href="/fleet">Fleet</a></li>
+            <li><a href="/services">Services</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/deposit">Pay Deposit</a></li>
+            <li><a href="tel:+18325678050">(832) 567-8050</a></li>
+            <li><a href="/book" class="nav-cta">Reserve</a></li>
+        </ul>
+        <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-close" onclick="toggleMenu()">&times;</button>
+        <a href="/" onclick="toggleMenu()">Home</a>
+        <a href="/pricing" onclick="toggleMenu()">Pricing</a>
+        <a href="/fleet" onclick="toggleMenu()">Fleet</a>
+        <a href="/services" onclick="toggleMenu()">Services</a>
+        <a href="/blog" onclick="toggleMenu()">Blog</a>
+        <a href="/deposit" onclick="toggleMenu()">Pay Deposit</a>
+        <a href="/book" onclick="toggleMenu()">Book Now</a>
+    </div>
 
 {% if content_key == 'blog' and featured_post %}
 <!-- Blog post -->
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>{{ featured_post.title }}</h2><p>{{ featured_post.date }} &bull; {{ featured_post.read }}</p></div></div>
-<section class="section" style="padding-top:0"><div class="container post-content">{{ featured_post.content | safe }}</div></section>
+<div class="page-header"><div class="container"><h2>{{ featured_post.title }}</h2><p>{{ featured_post.date }} &bull; {{ featured_post.read }}</p></div></div>
+<section class="post-content">{{ featured_post.content | safe }}</section>
 
 {% elif content_key == 'services' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Our <span class="gold">Services</span></h2><p>Premium transportation for every occasion across Greater Houston.</p></div></div>
-<section class="section" style="padding-top:0">
-<div class="container">
+<div class="page-header"><h2>Our <span style="color:var(--gold)">Services</span></h2><p>Premium transportation for every occasion across Greater Houston.</p></div>
+<section class="services-section" style="padding-top:0;background:transparent">
 <div class="services-grid">
-<div class="service-card fade-up"><div class="icon">✈</div><h4>Airport Transfers</h4><p>Professional IAH & Hobby transfers with real-time flight tracking, meet & greet, and luggage assistance.</p></div>
-<div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">💼</div><h4>Corporate Travel</h4><p>Executive transportation for business meetings, client entertainment, and team travel.</p></div>
-<div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">💍</div><h4>Wedding Transportation</h4><p>White glove service for the wedding party, family, and guests. Photo-worthy arrivals.</p></div>
-<div class="service-card fade-up" style="transition-delay:.3s"><div class="icon">🎬</div><h4>Concerts & Events</h4><p>Toyota Center, Shell Energy Stadium, 713 Music Hall, NRG — skip the parking.</p></div>
-<div class="service-card fade-up" style="transition-delay:.4s"><div class="icon">🎵</div><h4>Bachelorette & Parties</h4><p>BYOB-friendly Sprinter vans and party buses for group nights out in Houston.</p></div>
-<div class="service-card fade-up" style="transition-delay:.5s"><div class="icon">🍷</div><h4>Wine & Brewery Tours</h4><p>Texas Hill Country wine tours and Houston brewery crawls. Safe and social.</p></div>
-</div>
+<div class="service-card reveal"><div class="service-icon">✈️</div><h4>Airport Transfers</h4><p>Professional IAH & Hobby transfers with real-time flight tracking, meet & greet, and luggage assistance.</p></div>
+<div class="service-card reveal"><div class="service-icon">💼</div><h4>Corporate Travel</h4><p>Executive transportation for business meetings, client entertainment, and team travel.</p></div>
+<div class="service-card reveal"><div class="service-icon">💍</div><h4>Wedding Transportation</h4><p>White glove service for the wedding party, family, and guests. Photo-worthy arrivals.</p></div>
+<div class="service-card reveal"><div class="service-icon">🎬</div><h4>Concerts & Events</h4><p>Toyota Center, Shell Energy Stadium, 713 Music Hall, NRG — skip the parking.</p></div>
+<div class="service-card reveal"><div class="service-icon">🎵</div><h4>Bachelorette & Parties</h4><p>BYOB-friendly Sprinter vans and party buses for group nights out in Houston.</p></div>
+<div class="service-card reveal"><div class="service-icon">🍷</div><h4>Wine & Brewery Tours</h4><p>Texas Hill Country wine tours and Houston brewery crawls. Safe and social.</p></div>
 </div>
 </section>
 
 {% elif content_key == 'fleet' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Our <span class="gold">Fleet</span></h2><p>Every vehicle meticulously maintained for your comfort and safety.</p></div></div>
-<section class="section" style="padding-top:0">
-<div class="container">
+<div class="page-header"><h2>Our <span style="color:var(--gold)">Fleet</span></h2><p>Every vehicle meticulously maintained for your comfort and safety.</p></div>
+<section class="fleet-section" style="padding-top:0">
 <div class="fleet-grid">
-<div class="fleet-card fade-up"><div class="img-wrap"><span class="num">01</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class" loading="lazy"></div><div class="body"><h3>Mercedes S-Class</h3><div class="cap">Executive sedan &bull; up to 3 passengers</div><p>The pinnacle of executive comfort. Features leather seating, ambient lighting, and a quiet cabin.</p><a href="/book" class="btn btn-outline">Book Now</a></div></div>
-<div class="fleet-card fade-up" style="transition-delay:.1s"><div class="img-wrap"><span class="num">02</span><span class="badge">Most Booked</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade" loading="lazy"></div><div class="body"><h3>Cadillac Escalade</h3><div class="cap">Luxury SUV &bull; up to 6 passengers</div><p>Our most popular choice. Spacious, powerful, and packed with premium amenities.</p><a href="/book" class="btn btn-outline">Book Now</a></div></div>
-<div class="fleet-card fade-up" style="transition-delay:.2s"><div class="img-wrap"><span class="num">03</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter" loading="lazy"></div><div class="body"><h3>Mercedes Sprinter</h3><div class="cap">Group van &bull; up to 14 passengers</div><p>High ceilings, reclining seats, ambient lighting, and premium sound system. Perfect for groups.</p><a href="/book" class="btn btn-outline">Book Now</a></div></div>
+<div class="fleet-card reveal">
+<div class="fleet-img-wrapper"><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class" loading="lazy"></div>
+<div class="fleet-content"><div class="fleet-number">01</div><h3>Mercedes S-Class</h3><p class="fleet-type">Executive Sedan &bull; Up to 3 passengers</p><p>Whisper-quiet cabin, leather seating and ambient light. The pick for airport runs and corporate travel.</p><a href="/book" class="fleet-btn">Book</a></div>
+</div>
+<div class="fleet-card reveal">
+<div class="fleet-img-wrapper"><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade" loading="lazy"><div class="fleet-badge">Most Booked</div></div>
+<div class="fleet-content"><div class="fleet-number">02</div><h3>Cadillac Escalade</h3><p class="fleet-type">Luxury SUV &bull; Up to 6 passengers</p><p>Spacious, powerful, loaded with amenities. Ideal for groups, families and VIP transfers.</p><a href="/book" class="fleet-btn">Book</a></div>
+</div>
+<div class="fleet-card reveal">
+<div class="fleet-img-wrapper"><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter" loading="lazy"></div>
+<div class="fleet-content"><div class="fleet-number">03</div><h3>Mercedes Sprinter</h3><p class="fleet-type">Group Van &bull; Up to 14 passengers</p><p>High ceilings, reclining seats and a premium sound system. Weddings, tours and big group nights out.</p><a href="/book" class="fleet-btn">Book</a></div>
 </div>
 </div>
 </section>
 
 {% elif content_key == 'blog' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Our <span class="gold">Blog</span></h2><p>Expert guides on Houston travel, luxury transportation, and more.</p></div></div>
-<section class="section" style="padding-top:0"><div class="container"><div class="blog-grid">{{ blog_posts_html | safe }}</div></div></section>
+<div class="page-header"><h2>AvaLimo <span style="color:var(--gold)">Blog</span></h2><p>Expert tips on airports, events, and getting around Houston in style.</p></div>
+<section class="blog-section" style="padding-top:0"><div class="blog-grid">{{ blog_posts_html | safe }}</div></section>
 
 {% elif content_key == 'book' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Book Your <span class="gold">Ride</span></h2><p>Fill out the form and we'll confirm your ride within minutes.</p></div></div>
-<section class="section" style="padding-top:0"><div class="container">
-<div class="quote-card" style="max-width:600px;margin:0 auto">
-<form class="quote-form" id="bookForm">
-<div class="full"><label>Name</label><input type="text" id="bk-name" required></div>
-<div><label>Phone</label><input type="tel" id="bk-phone" required></div>
-<div><label>Email</label><input type="email" id="bk-email"></div>
-<div class="full"><label>Pickup Location</label><input type="text" id="bk-pickup" required></div>
-<div class="full"><label>Dropoff Location</label><input type="text" id="bk-dropoff" required></div>
-<div><label>Date & Time</label><input type="datetime-local" id="bk-time" required></div>
-<div><label>Vehicle</label><select id="bk-vehicle"><option value="Sedan">Sedan &mdash; S-Class (1-3)</option><option value="SUV">SUV &mdash; Escalade (1-6)</option><option value="Sprinter">Sprinter (1-14)</option></select></div>
-<div><label>Passengers</label><input type="number" id="bk-pax" min="1" max="14" value="1"></div>
-<div class="full"><label>Service Type</label><select id="bk-service"><option value="">Select...</option><option value="Airport Transfer">Airport Transfer</option><option value="Corporate">Corporate</option><option value="Wedding">Wedding</option><option value="Event">Event</option><option value="Other">Other</option></select></div>
-<div class="full"><label>Flight Number (if airport)</label><input type="text" id="bk-flight" placeholder="e.g. UA1234"></div>
-<div class="full"><label>Special Requests</label><textarea id="bk-notes" rows="3" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none;resize:vertical"></textarea></div>
-<div class="full" style="text-align:center;margin-top:8px"><button type="submit" class="btn btn-gold" style="font-size:15px;padding:16px 48px">Request Booking</button></div>
+<div class="page-header"><h2>Book Your <span style="color:var(--gold)">Ride</span></h2><p>Reserve your Houston luxury chauffeur service online.</p></div>
+<section class="quote-section" style="padding-top:0">
+<div class="quote-grid">
+<div><p class="section-label">Request Your Quote</p><h2 class="section-title">A flat rate, sent in minutes.</h2><p class="section-desc">Never a surge. Tell us where you're going and we'll respond with a transparent price.</p><p style="margin-top:35px;color:var(--gray);font-size:0.9rem;">Or call dispatch anytime:</p><p style="font-family:var(--serif);font-size:2rem;color:var(--gold);margin-top:10px;">(832) 567-8050</p></div>
+<form class="quote-form" onsubmit="handleQuote(event)">
+<div class="form-group"><label>Pickup Location</label><input type="text" placeholder="e.g. IAH Airport" required></div>
+<div class="form-group"><label>Drop-off Location</label><input type="text" placeholder="e.g. Downtown Houston" required></div>
+<div class="form-row"><div class="form-group"><label>Date & Time</label><input type="datetime-local" required></div><div class="form-group"><label>Vehicle</label><select><option>Sedan — S-Class (1-3)</option><option>SUV — Escalade (1-6)</option><option>Sprinter (1-14)</option></select></div></div>
+<button type="submit" class="form-submit">Request My Quote</button>
 </form>
-<div id="bk-thanks" style="display:none;text-align:center;padding:60px 0"><p style="font-size:28px;margin-bottom:12px">✓</p><h3 style="font-family:var(--font-serif);font-size:28px;margin-bottom:8px">Thanks for your booking!</h3><p style="color:var(--text2)">We'll confirm your ride shortly. Need immediate assistance? Call (832) 567-8050.</p></div>
 </div>
-</div></section>
+</section>
 
 {% elif content_key == 'contact' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Get in <span class="gold">Touch</span></h2><p>We're here 24/7 to help with your transportation needs.</p></div></div>
-<section class="section" style="padding-top:0"><div class="container">
-<div class="contact-row" style="max-width:700px;margin:0 auto">
-<div class="contact-method"><div class="icon">📞</div><div class="lbl">Phone</div><a href="tel:+18325678050">(832) 567-8050</a><div class="note">24/7 Dispatch &bull; Always answered</div></div>
-<div class="contact-method"><div class="icon">✉</div><div class="lbl">Email</div><a href="mailto:adam@avalimo.net">adam@avalimo.net</a><div class="note">We reply within 1 hour</div></div>
-</div>
-<div class="quote-card" style="max-width:600px;margin:40px auto 0">
-<form class="quote-form" id="contactForm">
-<div class="full"><label>Your Name</label><input type="text" id="c-name" required></div>
-<div><label>Email</label><input type="email" id="c-email"></div>
-<div><label>Phone</label><input type="tel" id="c-phone"></div>
-<div class="full"><label>Subject</label><select id="c-subject"><option value="">Select...</option><option value="General Inquiry">General Inquiry</option><option value="Book a Ride">Book a Ride</option><option value="Corporate Account">Corporate Account</option><option value="Event Quote">Event Quote</option><option value="Partnership">Partnership</option></select></div>
-<div class="full"><label>Message</label><textarea id="c-msg" rows="4" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none;resize:vertical" required></textarea></div>
-<div class="full" style="text-align:center"><button type="submit" class="btn btn-gold">Send Message</button></div>
-</form>
-</div>
-</div></section>
-
-{% elif content_key == 'flight-status' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Flight <span class="gold">Status</span></h2><p>Track your flight in real-time. We monitor every flight for our airport transfer clients.</p></div></div>
-<section class="section" style="padding-top:0"><div class="container">
-<div class="flight-wrap">
-<input type="text" id="flight-input" placeholder="e.g. UA1234, AA5678" style="text-transform:uppercase">
-<div style="text-align:center;margin-top:12px"><button class="btn btn-gold" onclick="trackFlight()">Track Flight</button></div>
-<div id="flightResult"></div>
-</div>
-</div></section>
+<div class="page-header"><h2>Contact <span style="color:var(--gold)">AvaLimo</span></h2><p>Get in touch. We're available 24/7.</p></div>
+<section style="text-align:center;padding:0 60px 130px">
+<p style="font-family:var(--serif);font-size:2.5rem;color:var(--gold);margin-bottom:20px">(832) 567-8050</p>
+<p style="color:var(--gray);font-size:1rem;margin-bottom:10px">Email: <a href="mailto:adam@avalimo.net" style="color:var(--gold)">adam@avalimo.net</a></p>
+<p style="color:var(--gray);font-size:1rem">Houston, Texas</p>
+</section>
 
 {% elif content_key == 'faq' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Frequently Asked <span class="gold">Questions</span></h2></div></div>
-<section class="section" style="padding-top:0"><div class="container"><div class="faq-grid">
-<div class="faq-item fade-up"><div class="faq-q"><span>How do I book a ride?</span><span class="arrow">▼</span></div><div class="faq-a">You can book online using our booking form, call us at (832) 567-8050, or email adam@avalimo.net. Online booking is fastest — just fill in your details and we'll confirm within minutes.</div></div>
-<div class="faq-item fade-up" style="transition-delay:.1s"><div class="faq-q"><span>Do you service both IAH and Hobby?</span><span class="arrow">▼</span></div><div class="faq-a">Yes! We cover both George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports. We also serve Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring and Cypress.</div></div>
-<div class="faq-item fade-up" style="transition-delay:.2s"><div class="faq-q"><span>Do you track flights for airport pickups?</span><span class="arrow">▼</span></div><div class="faq-a">Absolutely. We monitor your flight in real-time so we're always there when you land — even if your flight is early or delayed. No extra charge.</div></div>
-<div class="faq-item fade-up" style="transition-delay:.3s"><div class="faq-q"><span>How much does it cost?</span><span class="arrow">▼</span></div><div class="faq-a">Pricing depends on vehicle type, distance, and duration. We offer transparent flat-rate pricing with zero surge fees. Contact us for a quote — we typically respond within minutes.</div></div>
-<div class="faq-item fade-up" style="transition-delay:.4s"><div class="faq-q"><span>Can I cancel or modify my booking?</span><span class="arrow">▼</span></div><div class="faq-a">Yes. You can cancel or modify your booking up to 24 hours before the scheduled pickup time for a full refund. Late cancellations may incur a fee.</div></div>
-<div class="faq-item fade-up" style="transition-delay:.5s"><div class="faq-q"><span>Are your drivers licensed and insured?</span><span class="arrow">▼</span></div><div class="faq-a">Every chauffeur is fully licensed, insured and professionally trained, with thorough background checks and regular vehicle inspections.</div></div>
-</div></div></section>
-
-{% elif content_key == 'policy' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Company <span class="gold">Policy</span></h2></div></div>
-<section class="section" style="padding-top:0"><div class="container" style="max-width:700px">
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Booking &amp; Reservations</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">All reservations are confirmed upon receipt of a booking deposit. Deposits are fully refundable with 24-hour cancellation notice. Same-day bookings are subject to availability.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Cancellation Policy</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">Cancel or modify up to 24 hours before pickup for a full refund. Cancellations within 24 hours may incur a charge of 50% of the fare. No-shows are charged in full.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Waiting Time</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">Airport pickups include 60 minutes of complimentary waiting time from landing. All other pickups include 15 minutes. Additional waiting time is billed at $1 per minute.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Smoking &amp; Cleanliness</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">All vehicles are strictly non-smoking. A $250 cleaning fee will be charged for smoking, spills, or excessive mess.</p>
-<h3 style="font-family:var(--font-serif);font-size:22px;margin-bottom:12px;margin-top:32px">Privacy</h3><p style="color:var(--text2);font-size:15px;line-height:1.8">We respect your privacy. Personal information collected during booking is used solely for providing our services and will never be shared with third parties without your consent.</p>
-</div></section>
+<div class="page-header"><h2>Frequently Asked <span style="color:var(--gold)">Questions</span></h2></div>
+<section class="faq-section" style="padding-top:0">
+<div class="faq-container">
+<div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">How do I book a ride? <span class="icon">+</span></button><div class="faq-answer"><p>Use the quote form, call (832) 567-8050, or email adam@avalimo.net. Online is fastest — we confirm within minutes.</p></div></div>
+<div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Do you cover both IAH and Hobby? <span class="icon">+</span></button><div class="faq-answer"><p>Yes, both airports plus Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring and Cypress.</p></div></div>
+<div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Do you track flights? <span class="icon">+</span></button><div class="faq-answer"><p>Always. We monitor your flight in real time so we're there when you land, early or delayed, at no extra charge.</p></div></div>
+<div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">How is pricing calculated? <span class="icon">+</span></button><div class="faq-answer"><p>Transparent flat rates based on vehicle, distance and duration. Zero surge fees.</p></div></div>
+<div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Can I cancel or change my booking? <span class="icon">+</span></button><div class="faq-answer"><p>Yes. Cancel or modify up to 24 hours before pickup for a full refund.</p></div></div>
+<div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Are your drivers licensed and insured? <span class="icon">+</span></button><div class="faq-answer"><p>Every chauffeur is fully licensed, insured and professionally trained.</p></div></div>
+</div>
+</section>
 
 {% elif content_key == 'deposit' %}
-<div class="page-header"><div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div><div class="container"><h2>Pay <span class="gold">Deposit</span></h2><p>Secure your reservation with a booking deposit.</p></div></div>
-<section class="section" style="padding-top:0"><div class="container"><div class="deposit-wrap">
-<div style="margin-bottom:20px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Deposit Amount</label>
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-  <span style="font-size:20px;font-weight:700;color:var(--gold)">$</span>
-  <input id="dep-amount" type="number" value="250" min="1" style="width:120px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:18px;font-family:var(--font-sans);outline:none" oninput="updateDepositPresets(this.value)">
-  <span style="color:var(--text3);font-size:13px">Refundable with 24h cancellation</span>
+<div class="page-header"><h2>Secure <span style="color:var(--gold)">Online Payment</span></h2><p>Pay your deposit or balance online.</p></div>
+<section class="deposit-section" style="padding:0 60px 130px;background:transparent">
+<div class="deposit-wrap">
+    <div class="deposit-info">
+        <h3>How It Works</h3>
+        <ul>
+            <li><span class="d-icon">1.</span> Enter your name and email</li>
+            <li><span class="d-icon">2.</span> Enter the deposit amount</li>
+            <li><span class="d-icon">3.</span> Enter your card details securely</li>
+            <li><span class="d-icon">4.</span> Click "Pay Now" to complete</li>
+        </ul>
+        <p style="margin-top:20px;color:rgba(255,255,255,0.6);font-size:0.85rem">Payments are processed securely via Square. We never store your card details.</p>
+        <p style="margin-top:15px;color:rgba(255,255,255,0.6);font-size:0.85rem">Questions? Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a></p>
+    </div>
+    <div class="deposit-card">
+        <h3>Make a Payment</h3>
+        <form id="depositForm" onsubmit="handleDeposit(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="dep-name" placeholder="John Smith" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="dep-email" placeholder="john@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Amount ($)</label>
+                <input type="number" id="dep-amount" min="1" step="0.01" placeholder="e.g. 100" required>
+            </div>
+            <div class="form-group">
+                <label>Card Details</label>
+                <div id="card-container" style="min-height:44px;border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:10px;background:rgba(255,255,255,0.02)"></div>
+            </div>
+            <div id="card-error" style="color:#e74c3c;font-size:0.8rem;margin-top:8px;display:none"></div>
+            <button type="submit" class="form-submit" id="dep-submit" style="width:100%">Pay Now</button>
+            <p class="form-note" style="text-align:center;margin-top:15px">Secure payment powered by Square</p>
+        </form>
+        <div id="deposit-success" style="display:none;text-align:center;padding:40px 0">
+            <div style="font-size:3rem;margin-bottom:15px">&#10003;</div>
+            <h3 style="font-family:var(--serif);font-size:1.4rem;margin-bottom:10px;color:var(--gold)">Payment Received!</h3>
+            <p style="color:var(--gray);font-size:0.9rem">Thank you! Your deposit has been processed. We'll confirm your booking shortly.</p>
+            <a href="/" class="btn-gold" style="display:inline-block;margin-top:25px">Back to Home</a>
+        </div>
+    </div>
 </div>
-<div class="deposit-amounts" style="margin-bottom:16px">
-  <button onclick="setDeposit(50)" id="dep-50">$50</button>
-  <button onclick="setDeposit(100)" id="dep-100">$100</button>
-  <button onclick="setDeposit(250)" id="dep-250" class="active">$250</button>
-  <button onclick="setDeposit(500)" id="dep-500">$500</button>
-  <button onclick="setDeposit(1000)" id="dep-1000">$1,000</button>
-  <button onclick="setDeposit(0)" id="dep-custom">Custom</button>
-</div>
-</div>
-<div class="pay-fields">
-<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Cardholder Name</label><input id="dep-name" type="text" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
-<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Email for Receipt</label><input id="dep-email" type="email" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;font-family:var(--font-sans);outline:none"></div>
-<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Card Details</label><div id="square-card" style="padding:14px 18px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);min-height:56px"></div></div>
-<div id="sq-errors" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:12px;text-align:center"></div>
-<button class="btn btn-gold" style="width:100%;justify-content:center;padding:16px;font-size:16px" id="dep-pay-btn" onclick="processSquarePayment()">Pay Deposit</button>
-<p style="color:var(--text3);font-size:12px;text-align:center;margin-top:16px">🔒 Secured by Square. Your card info never touches our server.</p>
-</div>
-<div id="dep-processing" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:32px;margin-bottom:16px;animation:spin 1s linear infinite">&#8635;</div>
-  <p style="color:var(--text2)">Processing your payment...</p>
-</div>
-<div id="dep-thanks" style="display:none;text-align:center;padding:20px">
-  <div style="font-size:48px;margin-bottom:12px">&#10003;</div>
-  <h3 style="font-family:var(--font-serif);font-size:24px;margin-bottom:8px">Deposit <span class="gold">Received</span></h3>
-  <p style="color:var(--text2);font-size:14px" id="dep-thanks-msg">Your booking is secured. You'll receive a confirmation email shortly.</p>
-</div>
-</div></div></section>
+<script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+<script>
+(async function() {
+    const appId = '{{ sq_app_id }}';
+    const locationId = '{{ sq_location_id }}';
+    if (!appId || appId.includes('fake')) {
+        document.getElementById('card-container').innerHTML = '<p style="color:var(--gray);font-size:0.85rem;padding:10px">Card payment unavailable. Fill in your details below and we\'ll call you to process payment.</p>';
+        return;
+    }
+    try {
+        const payments = Square.payments(appId, locationId);
+        const card = await payments.card();
+        await card.attach('#card-container');
+        window._squareCard = card;
+    } catch (e) {
+        document.getElementById('card-container').innerHTML = '<p style="color:var(--gray);font-size:0.85rem;padding:10px">Card form unavailable. Call <a href="tel:+18325678050" style="color:var(--gold)">(832) 567-8050</a> to pay.</p>';
+    }
+})();
+async function handleDeposit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('dep-submit');
+    const errEl = document.getElementById('card-error');
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+    errEl.style.display = 'none';
+    if (window._squareCard) {
+        try {
+            const result = await window._squareCard.tokenize();
+            if (result.status === 'OK') {
+                const resp = await fetch('/api/square-pay', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        source_id: result.token,
+                        amount: Math.round(parseFloat(document.getElementById('dep-amount').value) * 100),
+                        name: document.getElementById('dep-name').value,
+                        email: document.getElementById('dep-email').value
+                    })
+                });
+                const data = await resp.json();
+                if (data.status === 'ok') {
+                    document.getElementById('depositForm').style.display = 'none';
+                    document.getElementById('deposit-success').style.display = 'block';
+                } else {
+                    errEl.textContent = data.message || 'Payment failed. Please try again.';
+                    errEl.style.display = 'block';
+                    btn.textContent = 'Pay Now';
+                    btn.disabled = false;
+                }
+            } else {
+                errEl.textContent = 'Card details are invalid. Please check and try again.';
+                errEl.style.display = 'block';
+                btn.textContent = 'Pay Now';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            errEl.textContent = 'Payment error. Please try again or call us.';
+            errEl.style.display = 'block';
+            btn.textContent = 'Pay Now';
+            btn.disabled = false;
+        }
+    } else {
+        // Fallback: submit to /api/deposit (no card required)
+        try {
+            const resp = await fetch('/api/deposit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    amount: document.getElementById('dep-amount').value,
+                    name: document.getElementById('dep-name').value,
+                    email: document.getElementById('dep-email').value
+                })
+            });
+            const data = await resp.json();
+            if (data.status === 'ok') {
+                document.getElementById('depositForm').style.display = 'none';
+                document.getElementById('deposit-success').style.display = 'block';
+            } else {
+                errEl.textContent = data.message || 'Submission failed. Please call us.';
+                errEl.style.display = 'block';
+                btn.textContent = 'Pay Now';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            errEl.textContent = 'Error submitting. Please call (832) 567-8050.';
+            errEl.style.display = 'block';
+            btn.textContent = 'Pay Now';
+            btn.disabled = false;
+        }
+    }
+}
+</script>
+</section>
+
+{% elif content_key == 'policy' %}
+<div class="page-header"><h2>AvaLimo <span style="color:var(--gold)">Company Policy</span></h2></div>
+<section class="post-content" style="max-width:700px;margin:0 auto;padding:0 60px 130px;background:transparent">
+<h2 style="font-family:var(--serif);font-size:1.6rem;margin-bottom:16px">Booking & Cancellation</h2>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">Cancel or modify up to 24 hours before pickup for a full refund. Later changes may incur a fee.</p>
+<h2 style="font-family:var(--serif);font-size:1.6rem;margin-bottom:16px">Refunds</h2>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">Refunds are processed within 3-5 business days to the original payment method.</p>
+</section>
 
 {% elif content_key == 'page' %}
-<!-- SEO page content -->
-<section class="section page-header" style="padding-top:140px">
-  <div class="hero-video-wrap"><video autoplay muted loop playsinline><source src="/static/hero_bg.mp4" type="video/mp4"></video><div class="hero-video-overlay"></div></div>
-  <div class="container" style="max-width:1200px;margin:0 auto;padding:0 20px;position:relative;z-index:2">
-    {{ page_content_html | safe }}
-    <div style="text-align:center;margin-top:60px;padding-top:40px;border-top:1px solid var(--card-border)">
-      <a href="/book" class="btn btn-gold" style="font-size:15px;padding:16px 40px">Book Your Ride</a>
-      <a href="/" class="btn btn-outline" style="font-size:15px;padding:16px 40px;margin-left:12px">Back to Home</a>
-    </div>
-  </div>
-</section>
+<div class="page-content">{{ page_content_html | safe }}</div>
 
 {% elif content_key == '404' %}
-<div class="error-page"><h1>404</h1><p>Sorry, the page you requested could not be found.</p><a href="/" class="btn btn-gold">Back to Home</a></div>
+<div class="error-page"><h1>404</h1><p>Sorry, the page you requested could not be found.</p><a href="/" class="btn-gold" style="display:inline-block">Back to Home</a></div>
 
 {% else %}
-<!-- ══════ HOMEPAGE ══════ -->
+<!-- HOMEPAGE -->
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="home">
+        <p class="hero-subtitle">Houston's Premium Chauffeur Service</p>
+        <h1>Arrive in <em>absolute</em> luxury.</h1>
+        <p class="hero-desc">Airport transfers, corporate travel, weddings and nights out. Flat rates, zero surge, always on time.</p>
+        <div class="hero-buttons">
+            <a href="#quote" class="btn-gold">Reserve Your Car</a>
+            <a href="#fleet" class="btn-outline">View the Fleet</a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat"><h3>5.0</h3><p>Google Rating</p></div>
+            <div class="hero-stat"><h3>500+</h3><p>Rides Completed</p></div>
+            <div class="hero-stat"><h3>24/7</h3><p>Available</p></div>
+        </div>
+        <div class="scroll-line"></div>
+    </section>
 
-<!-- Hero -->
-<section class="hero" id="home">
-  <div class="hero-video-wrap">
-    <video autoplay muted loop playsinline>
-      <source src="/static/hero_bg.mp4" type="video/mp4">
-    </video>
-    <div class="hero-video-overlay"></div>
-  </div>
-  <div class="hero-bg"><div class="hero-grid"></div></div>
-  <div class="container">
-    <div class="hero-grid">
-      <div class="hero-text fade-up">
-        <div class="tagline">Houston &bull; 24/7 Chauffeur Service</div>
-        <h1><span class="brand">AvaLimo</span> Arrive in <em>absolute</em> luxury.</h1>
-        <p>Airport transfers, corporate travel, weddings and nights out. Flat rates, zero surge, always on time.</p>
-        <div class="hero-btns">
-          <a href="#quote" class="btn btn-gold">Book Your Ride</a>
-          <a href="#fleet" class="btn btn-outline">View Fleet</a>
-        </div>
-        <div class="stats">
-          <div class="stat"><div class="num">5.0</div><div class="lbl">on Google</div></div>
-          <div class="stat"><div class="num">500+</div><div class="lbl">Rides</div></div>
-          <div class="stat"><div class="num">24/7</div><div class="lbl">Available</div></div>
-        </div>
-      </div>
-      <div class="fade-up" style="transition-delay:.2s">
-        <div class="quote-card" id="quote">
-          <h3>Get a quick quote</h3>
-          <p class="sub">Flat-rate pricing back in minutes. No surge, ever.</p>
-          <form class="quote-form" id="bookingForm">
-            <div class="full"><label>Pickup</label><input type="text" id="b-pickup" required placeholder="Address or airport code"></div>
-            <div class="full"><label>Drop-off</label><input type="text" id="b-dropoff" required placeholder="Address or airport code"></div>
-            <div><label>Date &amp; Time</label><input type="datetime-local" id="b-time" required></div>
-            <div><label>Vehicle</label>
-              <select id="b-vehicle">
-                <option value="Sedan">Sedan &mdash; S-Class (1-3)</option>
-                <option value="SUV">SUV &mdash; Escalade (1-6)</option>
-                <option value="Sprinter">Sprinter (1-14)</option>
-              </select>
+    <!-- ===== QUOTE FORM ===== -->
+    <section class="quote-section" id="quote">
+        <div class="quote-grid">
+            <div class="reveal">
+                <p class="section-label">Request Your Quote</p>
+                <h2 class="section-title">A flat rate, sent in minutes.</h2>
+                <p class="section-desc">Never a surge. Tell us where you're going and we'll respond with a transparent price — no hidden fees, no surprises.</p>
+                <p style="margin-top: 35px; color: rgba(255,255,255,0.9); font-size: 0.9rem;">Or call dispatch anytime:</p>
+                <p style="font-family: var(--serif); font-size: 2rem; color: var(--gold); margin-top: 10px;">(832) 567-8050</p>
             </div>
-            <div style="display:none"><input type="text" id="b-name"><input type="tel" id="b-phone"><input type="email" id="b-email"><input type="number" id="b-pax" value="1"><textarea id="b-notes"></textarea></div>
-            <div class="full"><button type="submit" class="btn btn-gold">Request My Quote</button></div>
-          </form>
-          <div class="quote-phone">Or call dispatch anytime &bull; <a href="tel:+18325678050">(832) 567-8050</a></div>
+            <form class="quote-form reveal" onsubmit="handleQuote(event)">
+                <div class="form-group">
+                    <label>Pickup Location</label>
+                    <input type="text" id="b-pickup" placeholder="e.g. IAH Airport, Terminal C" required>
+                </div>
+                <div class="form-group">
+                    <label>Drop-off Location</label>
+                    <input type="text" id="b-dropoff" placeholder="e.g. Downtown Houston" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date & Time</label>
+                        <input type="datetime-local" id="b-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Vehicle</label>
+                        <select id="b-vehicle">
+                            <option value="Sedan">Sedan — S-Class (1-3)</option>
+                            <option value="SUV">SUV — Escalade (1-6)</option>
+                            <option value="Sprinter">Sprinter (1-14)</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="form-submit">Request My Quote</button>
+                <p class="form-note">Already booked? <a href="/deposit">Pay your deposit →</a></p>
+            </form>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<!-- Fleet -->
-<section class="section" id="fleet">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="label">The Fleet</div>
-      <h2>Three ways to travel well.</h2>
-      <p>Every vehicle is meticulously maintained, immaculately cleaned, and ready before you are.</p>
-    </div>
-    <div class="fleet-grid">
-      <div class="fleet-card fade-up">
-        <div class="img-wrap"><span class="num">01</span><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class" loading="lazy"></div>
-        <div class="body">
-          <h3>Mercedes S-Class</h3>
-          <div class="cap">Executive sedan &bull; up to 3 passengers</div>
-          <p>Whisper-quiet cabin, leather seating and ambient light. The pick for airport runs and corporate travel.</p>
-          <a href="/book" class="btn btn-outline">Book</a>
+    <!-- ===== FLEET WITH IMAGES ===== -->
+    <section class="fleet-section" id="fleet">
+        <div class="section-header center reveal">
+            <p class="section-label">The Fleet</p>
+            <h2 class="section-title">Three ways to travel well.</h2>
+            <p class="section-desc">Every vehicle is meticulously maintained, immaculately cleaned, and ready before you are.</p>
+            <div class="gold-line"></div>
         </div>
-      </div>
-      <div class="fleet-card fade-up" style="transition-delay:.1s">
-        <div class="img-wrap"><span class="num">02</span><span class="badge">Most Booked</span><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade" loading="lazy"></div>
-        <div class="body">
-          <h3>Cadillac Escalade</h3>
-          <div class="cap">Luxury SUV &bull; up to 6 passengers</div>
-          <p>Spacious, powerful, loaded with amenities. Ideal for groups, families and VIP transfers.</p>
-          <a href="/book" class="btn btn-outline">Book</a>
+        <div class="fleet-grid">
+            <div class="fleet-card reveal">
+                <div class="fleet-img-wrapper"><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class" loading="lazy"></div>
+                <div class="fleet-content">
+                    <div class="fleet-number">01</div>
+                    <h3>Mercedes S-Class</h3>
+                    <p class="fleet-type">Executive Sedan &bull; Up to 3 passengers</p>
+                    <p>Whisper-quiet cabin, leather seating and ambient light. The pick for airport runs and corporate travel.</p>
+                    <a href="/book" class="fleet-btn">Book</a>
+                </div>
+            </div>
+            <div class="fleet-card reveal">
+                <div class="fleet-img-wrapper"><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade" loading="lazy"><div class="fleet-badge">Most Booked</div></div>
+                <div class="fleet-content">
+                    <div class="fleet-number">02</div>
+                    <h3>Cadillac Escalade</h3>
+                    <p class="fleet-type">Luxury SUV &bull; Up to 6 passengers</p>
+                    <p>Spacious, powerful, loaded with amenities. Ideal for groups, families and VIP transfers.</p>
+                    <a href="/book" class="fleet-btn">Book</a>
+                </div>
+            </div>
+            <div class="fleet-card reveal">
+                <div class="fleet-img-wrapper"><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter" loading="lazy"></div>
+                <div class="fleet-content">
+                    <div class="fleet-number">03</div>
+                    <h3>Mercedes Sprinter</h3>
+                    <p class="fleet-type">Group Van &bull; Up to 14 passengers</p>
+                    <p>High ceilings, reclining seats and a premium sound system. Weddings, tours and big group nights out.</p>
+                    <a href="/book" class="fleet-btn">Book</a>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="fleet-card fade-up" style="transition-delay:.2s">
-        <div class="img-wrap"><span class="num">03</span><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter" loading="lazy"></div>
-        <div class="body">
-          <h3>Mercedes Sprinter</h3>
-          <div class="cap">Group van &bull; up to 14 passengers</div>
-          <p>High ceilings, reclining seats and a premium sound system. Weddings, tours and big group nights out.</p>
-          <a href="/book" class="btn btn-outline">Book</a>
+    </section>
+
+    <!-- ===== SERVICES ===== -->
+    <section class="services-section" id="services">
+        <div class="section-header center reveal">
+            <p class="section-label">What We Do</p>
+            <h2 class="section-title">Every occasion, covered.</h2>
+            <p class="section-desc">From a 3 AM airport pickup to a wedding procession for fifty, we handle the driving so you don't have to think about it.</p>
+            <div class="gold-line"></div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+        <div class="services-grid">
+            <div class="service-card reveal"><div class="service-icon">✈️</div><h4>Airport Transfers</h4><p>IAH & Hobby with real-time flight tracking, meet & greet, and luggage help.</p></div>
+            <div class="service-card reveal"><div class="service-icon">💼</div><h4>Corporate Travel</h4><p>Punctual, professional chauffeurs for meetings and client entertainment.</p></div>
+            <div class="service-card reveal"><div class="service-icon">💍</div><h4>Weddings</h4><p>White-glove service and photo-worthy arrivals for your biggest day.</p></div>
+            <div class="service-card reveal"><div class="service-icon">🎬</div><h4>Concerts & Events</h4><p>Toyota Center, NRG, 713 Music Hall. Skip the parking, we'll be waiting.</p></div>
+            <div class="service-card reveal"><div class="service-icon">🎵</div><h4>Nights Out & Parties</h4><p>BYOB Sprinters and party vans for the bride tribe and group nights.</p></div>
+            <div class="service-card reveal"><div class="service-icon">🍷</div><h4>Wine & Brewery Tours</h4><p>Hill Country wineries and Houston breweries, safe and fully custom.</p></div>
+        </div>
+    </section>
 
-<!-- Services -->
-<section class="section" id="services">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="label">What We Do</div>
-      <h2>Every occasion, covered.</h2>
-      <p>From a 3 AM airport pickup to a wedding procession for fifty, we handle the driving so you don't have to think about it.</p>
-    </div>
-    <div class="services-grid">
-      <div class="service-card fade-up"><div class="icon">✈</div><h4>Airport Transfers</h4><p>IAH &amp; Hobby with real-time flight tracking, meet &amp; greet, and luggage help.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.05s"><div class="icon">💼</div><h4>Corporate Travel</h4><p>Punctual, professional chauffeurs for meetings and client entertainment.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">💍</div><h4>Weddings</h4><p>White-glove service and photo-worthy arrivals for your biggest day.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.15s"><div class="icon">🎬</div><h4>Concerts &amp; Events</h4><p>Toyota Center, NRG, 713 Music Hall. Skip the parking, we'll be waiting.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">🎵</div><h4>Nights Out &amp; Parties</h4><p>BYOB Sprinters and party vans for the bride tribe and group nights.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.25s"><div class="icon">🍷</div><h4>Wine &amp; Brewery Tours</h4><p>Hill Country wineries and Houston breweries, safe and fully custom.</p></div>
-    </div>
-    <div class="service-area fade-up">Serving Greater Houston: Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring and Cypress.</div>
-  </div>
-</section>
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="testimonials-section" id="reviews">
+        <div class="section-header center reveal">
+            <p class="section-label">Reviews</p>
+            <h2 class="section-title">Trusted by 500+ Houston riders</h2>
+            <p class="section-desc">Five-star rated on Google. Every ride includes flight tracking, meet-and-greet, and 24/7 dispatch.</p>
+            <div class="gold-line"></div>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">★★★★★</div>
+                <blockquote>"Everything was perfect, from booking to arrival. The vehicle was immaculate and the driver was professional and courteous. Will definitely use again."</blockquote>
+                <p class="testimonial-author">David M.</p>
+                <p class="testimonial-role">Airport Transfer</p>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">★★★★★</div>
+                <blockquote>"Best airport transfer I've ever had. My flight was delayed and they were still waiting when I landed. So glad I found AvaLimo."</blockquote>
+                <p class="testimonial-author">Jennifer K.</p>
+                <p class="testimonial-role">IAH Pickup</p>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">★★★★★</div>
+                <blockquote>"Used them for our wedding, absolutely perfect. The S-Class was stunning and the chauffeur helped with everything."</blockquote>
+                <p class="testimonial-author">Michael & Sarah T.</p>
+                <p class="testimonial-role">Wedding</p>
+            </div>
+        </div>
+    </section>
 
-<!-- Testimonials -->
-<section class="section" id="testimonials">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="label">Testimonials</div>
-      <h2>What our clients say</h2>
-    </div>
-    <div class="testimonials-grid">
-      <div class="testimonial-card fade-up">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;Everything was perfect, from booking to arrival. The vehicle was immaculate and the driver was professional and courteous. Will definitely use again.&rdquo;</blockquote>
-        <div class="author">David M.</div>
-        <div class="time">2 weeks ago</div>
-      </div>
-      <div class="testimonial-card fade-up" style="transition-delay:.1s">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;Best airport transfer I've ever had. My flight was delayed and they were still waiting when I landed. So glad I found AvaLimo.&rdquo;</blockquote>
-        <div class="author">Jennifer K.</div>
-        <div class="time">1 month ago</div>
-      </div>
-      <div class="testimonial-card fade-up" style="transition-delay:.2s">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;Used them for our wedding, absolutely perfect. The S-Class was stunning and the chauffeur helped with everything.&rdquo;</blockquote>
-        <div class="author">Michael &amp; Sarah T.</div>
-        <div class="time">3 weeks ago</div>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- ===== BLOG ===== -->
+    <section class="blog-section" id="blog">
+        <div class="section-header center reveal">
+            <p class="section-label">From the Blog</p>
+            <h2 class="section-title">Houston travel guides</h2>
+            <p class="section-desc">Expert tips on airports, events, and getting around Houston in style.</p>
+            <div class="gold-line"></div>
+        </div>
+        <div class="blog-grid">
+            <div class="blog-card reveal">
+                <p class="blog-tag">Featured</p>
+                <h3>The Complete Guide to IAH Airport Transfers</h3>
+                <p>Navigating George Bush Intercontinental doesn't have to be stressful. Here's everything you need to know about luxury airport transfers.</p>
+                <p class="blog-meta">Jul 2026 &bull; 5 min read</p>
+            </div>
+            <div class="blog-card reveal">
+                <p class="blog-tag">Travel Tips</p>
+                <h3>IAH vs Hobby: Which Airport Should You Fly Into?</h3>
+                <p>A local's comparison of Houston's two major airports and which one works best for your trip.</p>
+                <p class="blog-meta">Jun 2026 &bull; 4 min read</p>
+            </div>
+            <div class="blog-card reveal">
+                <p class="blog-tag">Weddings</p>
+                <h3>Houston Wedding Transportation: The Complete Checklist</h3>
+                <p>From engagement party to honeymoon departure, here's how to plan every ride for your big day.</p>
+                <p class="blog-meta">May 2026 &bull; 6 min read</p>
+            </div>
+            <div class="blog-card reveal">
+                <p class="blog-tag">Events</p>
+                <h3>Concert Night Done Right: Skip Houston Parking Forever</h3>
+                <p>Toyota Center, NRG Stadium, 713 Music Hall — here's why a chauffeur beats parking every time.</p>
+                <p class="blog-meta">Apr 2026 &bull; 3 min read</p>
+            </div>
+        </div>
+    </section>
 
-<!-- Booking CTA -->
-<section class="section booking-section" id="book-cta">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="label">Ready When You Are</div>
-      <h2>Book online in 30 seconds.</h2>
-      <p>Two lines, always answered. Talk to our AI assistant or reach dispatch directly, day or night.</p>
-    </div>
-    <div style="text-align:center;margin-bottom:32px">
-      <a href="#quote" class="btn btn-gold" style="font-size:15px;padding:16px 40px">Start a Booking</a>
-      <a href="mailto:adam@avalimo.net" class="btn btn-outline" style="font-size:15px;padding:16px 40px;margin-left:12px">Email Us</a>
-    </div>
-    <div class="contact-row">
-      <div class="contact-method fade-up"><div class="icon">🤖</div><div class="lbl">AI Assistant</div><a href="tel:+18329908258">(832) 990-8258</a></div>
-      <div class="contact-method fade-up" style="transition-delay:.1s"><div class="icon">📞</div><div class="lbl">24/7 Dispatch</div><a href="tel:+18325678050">(832) 567-8050</a></div>
-    </div>
-  </div>
-</section>
+    <!-- ===== FAQ ===== -->
+    <section class="faq-section" id="faq">
+        <div class="section-header center reveal">
+            <p class="section-label">Good to Know</p>
+            <h2 class="section-title">Questions, answered.</h2>
+            <div class="gold-line"></div>
+        </div>
+        <div class="faq-container reveal">
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">How do I book a ride? <span class="icon">+</span></button><div class="faq-answer"><p>Use the quote form above, call (832) 567-8050, or email adam@avalimo.net. Online is fastest — we confirm within minutes.</p></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Do you cover both IAH and Hobby? <span class="icon">+</span></button><div class="faq-answer"><p>Yes, both airports plus Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring and Cypress.</p></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Do you track flights? <span class="icon">+</span></button><div class="faq-answer"><p>Always. We monitor your flight in real time so we're there when you land, early or delayed, at no extra charge.</p></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">How is pricing calculated? <span class="icon">+</span></button><div class="faq-answer"><p>Transparent flat rates based on vehicle, distance and duration. Zero surge fees. Request a quote and we'll respond in minutes.</p></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Can I cancel or change my booking? <span class="icon">+</span></button><div class="faq-answer"><p>Yes. Cancel or modify up to 24 hours before pickup for a full refund. Later changes may incur a fee.</p></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Are your drivers licensed and insured? <span class="icon">+</span></button><div class="faq-answer"><p>Every chauffeur is fully licensed, insured and professionally trained, with thorough background checks and regular vehicle inspections.</p></div></div>
+        </div>
+    </section>
 
-<!-- FAQ -->
-<section class="section" id="faq">
-  <div class="container">
-    <div class="section-header fade-up">
-      <div class="label">Good to Know</div>
-      <h2>Questions, answered.</h2>
-    </div>
-    <div class="faq-grid">
-      <div class="faq-item fade-up"><div class="faq-q"><span>How do I book a ride?</span><span class="arrow">▼</span></div><div class="faq-a">Use the quote form above, call (832) 567-8050, or email adam@avalimo.net. Online is fastest, we confirm within minutes.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.08s"><div class="faq-q"><span>Do you cover both IAH and Hobby?</span><span class="arrow">▼</span></div><div class="faq-a">Yes, both airports plus Sugar Land, The Woodlands, Katy, Missouri City, Pearland, Galveston, League City, Baytown, Spring and Cypress.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.16s"><div class="faq-q"><span>Do you track flights?</span><span class="arrow">▼</span></div><div class="faq-a">Always. We monitor your flight in real time so we're there when you land, early or delayed, at no extra charge.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.24s"><div class="faq-q"><span>How is pricing calculated?</span><span class="arrow">▼</span></div><div class="faq-a">Transparent flat rates based on vehicle, distance and duration. Zero surge fees. Request a quote and we'll respond in minutes.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.32s"><div class="faq-q"><span>Can I cancel or change my booking?</span><span class="arrow">▼</span></div><div class="faq-a">Yes. Cancel or modify up to 24 hours before pickup for a full refund. Later changes may incur a fee.</div></div>
-      <div class="faq-item fade-up" style="transition-delay:.4s"><div class="faq-q"><span>Are your drivers licensed and insured?</span><span class="arrow">▼</span></div><div class="faq-a">Every chauffeur is fully licensed, insured and professionally trained, with thorough background checks and regular vehicle inspections.</div></div>
-    </div>
-  </div>
-</section>
+    <!-- ===== CTA ===== -->
+    <section class="cta-section" id="payment">
+        <div class="reveal">
+            <p class="section-label">Ready When You Are</p>
+            <h2>Book online in 30 seconds.</h2>
+            <p>Two lines, always answered. Talk to our AI assistant or reach dispatch directly, day or night.</p>
+            <div class="cta-buttons">
+                <a href="#quote" class="btn-gold">Start a Booking</a>
+                <a href="mailto:adam@avalimo.net" class="btn-outline">Email Us</a>
+            </div>
+            <div class="cta-cards">
+                <div class="cta-card"><div class="cta-icon">🤖</div><h4>AI Assistant</h4><p><a href="tel:8325678050">(832) 567-8050</a></p></div>
+                <div class="cta-card"><div class="cta-icon">📞</div><h4>24/7 Dispatch</h4><p><a href="tel:8325678050">(832) 567-8050</a></p></div>
+            </div>
+        </div>
+    </section>
 
 {% endif %}
 
-<!-- Footer -->
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div><div class="brand-large">Ava<span>Limo</span></div><p>Premium luxury transportation in Houston, Texas. Arrive in style and comfort &mdash; every time.</p></div>
-      <div><h4>Quick Links</h4><ul><li><a href="/services">Services</a></li><li><a href="/fleet">Fleet</a></li><li><a href="/pricing">Pricing</a></li><li><a href="/wedding-limo">Wedding</a></li><li><a href="/book">Book Now</a></li><li><a href="/contact">Contact</a></li></ul></div>
-      <div><h4>Services</h4><ul><li><a href="/airport-iah">IAH Transfers</a></li><li><a href="/airport-hobby">Hobby Transfers</a></li><li><a href="/corporate-transportation">Corporate Travel</a></li><li><a href="/party-bus">Party Bus</a></li><li><a href="/wine-tours">Wine Tours</a></li></ul></div>
-      <div><h4>Contact</h4><ul><li><a href="tel:+18325678050">(832) 567-8050</a></li><li><a href="mailto:adam@avalimo.net">adam@avalimo.net</a></li><li>Houston, TX</li></ul></div>
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">Ava<span>Limo</span></div>
+                <p class="footer-desc">Houston's premium chauffeur service. Flat rates, zero surge, always on time. Serving Greater Houston since day one.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="/pricing">Pricing</a>
+                <a href="/fleet">Our Fleet</a>
+                <a href="/services">Services</a>
+                <a href="/blog">Blog</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Services</h4>
+                <a href="/services">Airport Transfers</a>
+                <a href="/services">Corporate Travel</a>
+                <a href="/services">Weddings</a>
+                <a href="/services">Events</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <a href="tel:8325678050">(832) 567-8050</a>
+                <a href="mailto:adam@avalimo.net">adam@avalimo.net</a>
+                <a>Houston, TX</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 AvaLimo. All rights reserved.</p>
+            <p class="footer-areas">Houston &bull; IAH Airport &bull; Hobby Airport &bull; Sugar Land &bull; The Woodlands &bull; Katy &bull; Missouri City &bull; Pearland &bull; Galveston &bull; League City &bull; Baytown &bull; Spring &bull; Cypress</p>
+        </div>
+    </footer>
+
+    <!-- ===== FLOATING BUTTONS ===== -->
+    <div class="floating-buttons">
+        <a href="tel:8325678050" class="float-btn float-btn-dark">📞 Call Now</a>
+        <a href="#quote" class="float-btn float-btn-gold">Book Your Ride</a>
     </div>
-    <div class="footer-bottom">&copy; 2026 AvaLimo. All rights reserved.</div>
-  </div>
-</footer>
 
-<!-- Chat -->
-<button class="chat-btn" id="chatBtn" aria-label="Chat"><span class="chat-pulse"></span>💬</button>
-<div class="chat-box" id="chatBox">
-  <div class="chat-header"><span style="font-size:20px">🚗</span><div><div class="name">AvaLimo Assistant</div><div class="status">● Online</div></div></div>
-  <div class="chat-msgs" id="chatMsgs">
-    <div class="chat-msg bot"><div class="bubble">Hi! I'm the AvaLimo Assistant. How can I help you today? 😊<br><br>You can ask me about:<br>• Booking a ride<br>• Our fleet &amp; prices<br>• Airport transfers<br>• Cancellation policy</div></div>
-  </div>
-  <div class="chat-input-wrap">
-    <input type="text" id="chatInput" placeholder="Type a message...">
-    <button onclick="sendChat()">➤</button>
-  </div>
-</div>
+    <!-- ===== AI CHAT WIDGET ===== -->
+    <button class="chat-btn" id="chatBtn" aria-label="Chat"><span class="chat-pulse"></span>💬</button>
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">
+            <span style="font-size:20px">🚗</span>
+            <div>
+                <div class="name">AvaLimo Assistant</div>
+                <div class="status">● Online</div>
+            </div>
+        </div>
+        <div class="chat-msgs" id="chatMsgs">
+            <div class="chat-msg bot"><div class="bubble">Hi! I'm the AvaLimo Assistant. I can help with rides, fleet options, quotes, airport transfers, and booking questions. How can I assist you today? 😊</div></div>
+        </div>
+        <div class="chat-input-wrap">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button id="chatSend">➤</button>
+        </div>
+    </div>
 
-<script>
-// ─── Nav scroll ───
-window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)});
+    <script>
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+        });
 
-// ─── Hamburger ───
-document.getElementById('hamburger').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open')});
-document.getElementById('navLinks').querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open')})});
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
 
-// ─── Fade up ───
-var observer=new IntersectionObserver(function(e){e.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:.1});
-document.querySelectorAll('.fade-up').forEach(function(el){observer.observe(el)});
-
-// ─── FAQ ───
-document.querySelectorAll('.faq-item').forEach(function(item){item.addEventListener('click',function(){this.classList.toggle('open')})});
-
-// ─── Booking form ───
-document.getElementById('bookingForm')&&document.getElementById('bookingForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  var body={name:document.getElementById('b-name').value,phone:document.getElementById('b-phone').value,email:document.getElementById('b-email').value,pickup:document.getElementById('b-pickup').value,dropoff:document.getElementById('b-dropoff').value,time:document.getElementById('b-time').value,vehicle:document.getElementById('b-vehicle').value,pax:document.getElementById('b-pax').value,notes:document.getElementById('b-notes').value};
-  fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-  .then(function(r){return r.json()})
-  .then(function(d){alert(d.message||'Booking submitted!');this.reset()}.bind(this))
-  .catch(function(err){alert('Error submitting booking. Please call (832) 567-8050.')});
-});
-
-// ─── Book page form ───
-document.getElementById('bookForm')&&document.getElementById('bookForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  function val(id){var el=document.getElementById(id);return el?el.value:''}
-  var body={name:val('bk-name'),phone:val('bk-phone'),email:val('bk-email'),pickup:val('bk-pickup'),dropoff:val('bk-dropoff'),time:val('bk-time'),vehicle:val('bk-vehicle'),pax:val('bk-pax'),service:val('bk-service'),flight:val('bk-flight'),notes:val('bk-notes')};
-  fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-  .then(function(r){return r.json()})
-  .then(function(d){
-    document.getElementById('bookForm').style.display='none';
-    document.getElementById('bk-thanks').style.display='block';
-  })
-  .catch(function(err){alert('Error submitting. Please call (832) 567-8050.')});
-});
-
-// ─── Contact form ───
-document.getElementById('contactForm')&&document.getElementById('contactForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  var btn=this.querySelector('button[type="submit"]');btn.textContent='Sending...';btn.disabled=true;
-  var body={name:document.getElementById('c-name').value,email:document.getElementById('c-email').value,phone:document.getElementById('c-phone').value,subject:document.getElementById('c-subject').value,message:document.getElementById('c-msg').value};
-  fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-  .then(function(r){return r.json()})
-  .then(function(d){alert(d.message||'Message sent!');btn.textContent='Send Message';btn.disabled=false;document.getElementById('contactForm').reset()})
-  .catch(function(){alert('Error sending. Please call (832) 567-8050.');btn.textContent='Send Message';btn.disabled=false});
-});
-
-// ─── Chat ───
-document.getElementById('chatBtn').addEventListener('click',function(){document.getElementById('chatBox').classList.toggle('open')});
-function sendChat(){
-  var input=document.getElementById('chatInput');
-  var msg=input.value.trim();if(!msg)return;
-  var msgs=document.getElementById('chatMsgs');
-  msgs.innerHTML+='<div class="chat-msg user"><div class="bubble">'+msg.replace(/</g,'&lt;')+'</div></div>';
-  input.value='';msgs.scrollTop=msgs.scrollHeight;
-  var w=msg.toLowerCase();
-  var reply='';
-  if(w.match(/book|ride|quote|reserv/))reply='Ready to book? <a href="/book" style="color:#C9A84C">Fill out our form</a> or call (832) 567-8050. We confirm within minutes!';
-  else if(w.match(/price|cost|rate|fare/))reply='Our rates start at $100 for sedans and SUVs. Pricing depends on vehicle and distance. <a href="/book" style="color:#C9A84C">Get a free quote</a> or call (832) 567-8050.';
-  else if(w.match(/airport|iah|hobby|flight/))reply='We cover both IAH and Hobby with real-time flight tracking. <a href="/book" style="color:#C9A84C">Book your airport transfer</a> or track your flight on our <a href="/flight-status" style="color:#C9A84C">flight status page</a>.';
-  else if(w.match(/fleet|vehicle|car|s-class|escalade|sprinter/))reply='Our fleet: Mercedes S-Class (up to 3), Cadillac Escalade (up to 6), and Mercedes Sprinter (up to 14). <a href="/fleet" style="color:#C9A84C">View the fleet</a>.';
-  else if(w.match(/cancel|refund|policy/))reply='Cancel up to 24 hours before pickup for a full refund. See our <a href="/policy" style="color:#C9A84C">full policy</a>.';
-  else if(w.match(/wedding/))reply='We provide white-glove wedding transportation. S-Class, Escalade, or Sprinter for the wedding party. <a href="/book" style="color:#C9A84C">Book now</a>.';
-  else if(w.match(/hello|hi|hey|good/))reply='Hello! How can I help you today? You can ask about booking, pricing, our fleet, or anything else!';
-  else reply="I'm not sure about that. You can ask about booking, pricing, our fleet, airport transfers, or cancellations. Or call (832) 567-8050 for immediate help.";
-  setTimeout(function(){msgs.innerHTML+='<div class="chat-msg bot"><div class="bubble">'+reply+'</div></div>';msgs.scrollTop=msgs.scrollHeight},400);
-}
-
-// ─── Flight tracking ───
-function trackFlight(){
-  var q=document.getElementById('flight-input').value.trim().toUpperCase().replace(/ /g,'');
-  if(!q)return;
-  var r=document.getElementById('flightResult');
-  r.style.display='block';r.innerHTML='<p style="color:var(--text2)">Looking up '+q+'...</p>';
-  fetch('/api/flight?q='+encodeURIComponent(q)).then(function(res){return res.json()}).then(function(d){
-    if(d.status==='ok'&&d.flight){
-      r.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><span style="font-size:24px">✈</span><div><strong style="font-size:18px">'+d.flight.airline+' '+d.flight.flight+'</strong><br><span style="color:var(--text2);font-size:13px">'+d.flight.departure+' → '+d.flight.arrival+'</span></div></div><div style="font-size:14px;color:var(--gold)">● '+d.flight.status+'</div><div style="margin-top:8px;font-size:13px;color:var(--text2)">Scheduled: '+d.flight.scheduled+' | Estimated: '+d.flight.estimated+'</div>';
-    }else{r.innerHTML='<p style="color:var(--text2)">No flight found for '+q+'. Please check the flight number and try again.</p>'}
-  }).catch(function(){r.innerHTML='<p style="color:var(--text2)">Unable to look up flight. Please try again.</p>'});
-}
-document.getElementById('flight-input')&&document.getElementById('flight-input').addEventListener('keydown',function(e){if(e.key==='Enter')trackFlight()});
-
-// ─── Deposit / Square Payment ───
-var sqCard=null;
-function initSquareCard(){
-  if(!document.getElementById('square-card')) return;
-  var appId='{{ sq_app_id }}';
-  var locId='{{ sq_location_id }}';
-  if(!appId||appId===''||!locId||locId==='') return;
-  if(!window.Square){setTimeout(initSquareCard,500);return;}
-  if(sqCard) return;
-  var payments=window.Square.payments(appId,locId);
-  payments.card().then(function(c){
-    sqCard=c;
-    sqCard.attach('#square-card');
-  }).catch(function(e){console.error('Square card init error:',e)});
-}
-initSquareCard();
-
-function setDeposit(amount){
-  document.querySelectorAll('.deposit-amounts button').forEach(function(b){b.classList.remove('active')});
-  if(amount===0){document.getElementById('dep-custom').classList.add('active');return;}
-  document.getElementById('dep-amount').value=amount;
-  document.getElementById('dep-'+amount).classList.add('active');
-}
-
-function updateDepositPresets(val){
-  document.querySelectorAll('.deposit-amounts button').forEach(function(b){b.classList.remove('active')});
-  var presets=[50,100,250,500,1000];
-  if(presets.indexOf(parseInt(val))>=0) document.getElementById('dep-'+parseInt(val)).classList.add('active');
-  else document.getElementById('dep-custom').classList.add('active');
-}
-
-function processSquarePayment(){
-  var btn=document.getElementById('dep-pay-btn');
-  var amount=document.getElementById('dep-amount').value;
-  if(!amount||parseFloat(amount)<=0){alert('Enter a valid deposit amount.');return;}
-  var name=document.getElementById('dep-name').value.trim();
-  if(!name){alert('Enter the cardholder name.');return;}
-  if(!sqCard){alert('Square is loading. Please wait.');return;}
-  btn.disabled=true;btn.textContent='Processing...';
-  document.getElementById('sq-errors').style.display='none';
-  document.getElementById('dep-processing').style.display='block';
-
-  sqCard.tokenize().then(function(res){
-    if(res.status==='OK'){
-      var cents=Math.round(parseFloat(amount)*100);
-      fetch('/api/square-pay',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          source_id:res.token,
-          amount:cents,
-          name:name,
-          email:document.getElementById('dep-email').value
-        })
-      }).then(function(r){return r.json()}).then(function(d){
-        document.getElementById('dep-processing').style.display='none';
-        if(d.status==='ok'){
-          document.querySelector('.pay-fields').style.display='none';
-          document.getElementById('dep-thanks-msg').textContent='Payment of $'+amount+' received. '+d.message;
-          document.getElementById('dep-thanks').style.display='block';
-        } else {
-          btn.disabled=false;btn.textContent='Pay Deposit';
-          var errEl=document.getElementById('sq-errors');
-          errEl.textContent=d.message||'Payment failed. Try again.';
-          errEl.style.display='block';
+        function toggleFaq(btn) {
+            const answer = btn.nextElementSibling;
+            const icon = btn.querySelector('.icon');
+            const isOpen = answer.classList.contains('open');
+            document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+            document.querySelectorAll('.faq-question .icon').forEach(i => i.textContent = '+');
+            if (!isOpen) { answer.classList.add('open'); icon.textContent = '−'; }
         }
-      }).catch(function(){
-        btn.disabled=false;btn.textContent='Pay Deposit';
-        document.getElementById('dep-processing').style.display='none';
-        alert('Network error. Please try again.');
-      });
-    } else {
-      btn.disabled=false;btn.textContent='Pay Deposit';
-      document.getElementById('dep-processing').style.display='none';
-      var errEl=document.getElementById('sq-errors');
-      errEl.textContent=res.errors&&res.errors[0]?res.errors[0].detail:'Card information is invalid.';
-      errEl.style.display='block';
-    }
-  }).catch(function(){
-    btn.disabled=false;btn.textContent='Pay Deposit';
-    document.getElementById('dep-processing').style.display='none';
-    alert('Square error. Please try again.');
-  });
-}
-</script>
 
-{% if ga_id %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','{{ ga_id }}');</script>{% endif %}
-{% if fb_pixel %}{{ fb_pixel | safe }}{% endif %}
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        function handleQuote(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                pickup: document.getElementById('b-pickup')?.value || form.querySelector('input[type=text]')?.value || '',
+                dropoff: document.getElementById('b-dropoff')?.value || form.querySelectorAll('input[type=text]')[1]?.value || '',
+                time: document.getElementById('b-time')?.value || form.querySelector('input[type=datetime-local]')?.value || '',
+                vehicle: document.getElementById('b-vehicle')?.value || form.querySelector('select')?.value || 'Sedan'
+            };
+            fetch('/api/book', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(r => r.json()).then(d => {
+                alert(d.message || 'Thank you! Your quote request has been received.');
+                form.reset();
+            }).catch(() => {
+                alert('Thank you! Your quote request has been received.');
+                form.reset();
+            });
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // ─── AI Chat Widget ───
+        const chatBtn = document.getElementById('chatBtn');
+        const chatBox = document.getElementById('chatBox');
+        const chatMsgs = document.getElementById('chatMsgs');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        let conversationHistory = [];
+
+        chatBtn.addEventListener('click', () => chatBox.classList.toggle('open'));
+
+        async function sendChatMessage() {
+            const msg = chatInput.value.trim();
+            if (!msg) return;
+
+            chatMsgs.innerHTML += '<div class="chat-msg user"><div class="bubble">' + msg.replace(/</g, '&lt;') + '</div></div>';
+            chatInput.value = '';
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+
+            conversationHistory.push({ role: 'user', content: msg });
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-msg bot';
+            typingDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            chatMsgs.appendChild(typingDiv);
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: conversationHistory })
+                });
+                const data = await response.json();
+                typingDiv.remove();
+
+                if (data.reply) {
+                    chatMsgs.innerHTML += '<div class="chat-msg bot"><div class="bubble">' + data.reply + '</div></div>';
+                    conversationHistory.push({ role: 'assistant', content: data.reply });
+                } else {
+                    chatMsgs.innerHTML += '<div class="chat-msg bot"><div class="bubble">Sorry, I encountered an error. Please try again or call (832) 567-8050.</div></div>';
+                }
+            } catch (error) {
+                typingDiv.remove();
+                chatMsgs.innerHTML += '<div class="chat-msg bot"><div class="bubble">Sorry, I\'m having trouble connecting. Please call (832) 567-8050 for immediate assistance.</div></div>';
+            }
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        }
+
+        chatSend.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
+    </script>
+    {% if ga_id %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','{{ ga_id }}');</script>{% endif %}
+    {% if fb_pixel %}{{ fb_pixel | safe }}{% endif %}
 </body>
 </html>

@@ -10,3 +10,4 @@ gunicorn>=21.0
 flask-sqlalchemy>=3.0
 psycopg2-binary
 squareup
+openai>=1.0
