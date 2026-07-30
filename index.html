@@ -1021,14 +1021,13 @@ async function handleDeposit(e) {
         const MAPS_API_KEY = '';
         const RATES = {
             vehicles: {
-                'Sedan':    { mult: 1.00, min: 100 },
-                'SUV':      { mult: 1.30, min: 120 },
-                'Sprinter': { mult: 1.70, min: 180 }
+                'Sedan':    { mult: 1.00, min: 100, base: 60,  perMile: 3.00 },
+                'SUV':      { mult: 1.30, min: 120, base: 80,  perMile: 4.00 },
+                'Sprinter': { mult: 1.70, min: 180, base: 120, perMile: 5.50 }
             },
             flat: {
-                'cypress|iah': 130, 'downtown|galleria': 100, 'downtown|hobby': 100,
-                'downtown|iah': 100, 'downtown|medical': 100, 'downtown|sugarland': 100,
-                'galleria|hobby': 100, 'galleria|iah': 100, 'hobby|medical': 100,
+                'cypress|iah': 130, 'downtown|hobby': 100,
+                'downtown|iah': 100, 'galleria|hobby': 100, 'galleria|iah': 100, 'hobby|medical': 100,
                 'hobby|sugarland': 100, 'hobby|woodlands': 120, 'iah|katy': 125,
                 'iah|leaguecity': 125, 'iah|medical': 100, 'iah|pearland': 115,
                 'iah|sugarland': 120, 'iah|woodlands': 130
@@ -1056,25 +1055,50 @@ async function handleDeposit(e) {
             if(day === 5 || day === 6){ pct += RATES.weekend.pct; parts.push('Weekend +10%'); }
             return {pct, label: parts.join(' · ')};
         }
-        // Sync estimate from flat-rate table. (Distance API deferred when MAPS_API_KEY set.)
-        function calcQuote(pickup, dropoff, vehicle, dt){
-            const v = RATES.vehicles[vehicle] || RATES.vehicles['Sedan'];
-            const key = routeKey(pickup, dropoff);
-            let base = (key && RATES.flat[key] != null) ? RATES.flat[key] : null;
-            if(base == null) return { empty:true, msg:'Enter a major Houston route (e.g. IAH → Downtown) or call (832) 567-8050 for a custom quote.' };
-            const subtotal = base * v.mult;
-            const adj = timeAdjust(dt);
-            const raw = Math.round(subtotal * (1 + adj.pct));
-            const total = Math.max(raw, v.min);
-            const lines = [
-                { k: 'Flat rate ('+normLoc(pickup)+' → '+normLoc(dropoff)+')', v: '$'+base.toFixed(2) },
-                { k: vehicle+' rate', v: '×'+v.mult.toFixed(2) }
-            ];
-            if(total > raw) lines.push({ k: vehicle+' minimum', v: '$'+v.min });
-            else if(adj.label) lines.push({ k: adj.label, v: '+'+(adj.pct*100).toFixed(0)+'%' });
-            return { total, lines };
+        function normVehicle(v){ if(!v) return 'Sedan'; return (v.split(' ')[0] || 'Sedan'); }
+        // Distance via Google Maps Distance Matrix API (returns miles or null)
+        async function getMiles(a,b){
+            if(!MAPS_API_KEY) return null;
+            try{
+                const url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins='+encodeURIComponent(a)+'&destinations='+encodeURIComponent(b)+'&units=imperial&key='+MAPS_API_KEY;
+                const r = await fetch(url); const j = await r.json();
+                const el = j && j.rows && j.rows[0] && j.rows[0].elements && j.rows[0].elements[0];
+                if(el && el.status === 'OK' && el.distance) return el.distance.value / 1609.34;
+            }catch(e){}
+            return null;
         }
-        function renderQuote(form){
+        // Async quote: flat rate for known routes, else distance-based mileage
+        async function calcQuote(pickup, dropoff, vehicle, dt){
+            const v = RATES.vehicles[normVehicle(vehicle)] || RATES.vehicles['Sedan'];
+            const key = routeKey(pickup, dropoff);
+            const adj = timeAdjust(dt);
+            if(key && RATES.flat[key] != null){
+                const base = RATES.flat[key] * v.mult;
+                const raw = Math.round(base * (1 + adj.pct));
+                const total = Math.max(raw, v.min);
+                const lines = [
+                    { k: 'Flat rate ('+normLoc(pickup)+' → '+normLoc(dropoff)+')', v: '$'+(RATES.flat[key]).toFixed(2) },
+                    { k: vehicle+' rate', v: '×'+v.mult.toFixed(2) }
+                ];
+                if(total > raw) lines.push({ k: vehicle+' minimum', v: '$'+v.min });
+                else if(adj.label) lines.push({ k: adj.label, v: '+'+(adj.pct*100).toFixed(0)+'%' });
+                return { total, lines };
+            }
+            const miles = await getMiles(pickup, dropoff);
+            if(miles && miles > 0){
+                const raw = Math.round((v.base + v.perMile * miles) * (1 + adj.pct));
+                const total = Math.max(raw, v.min);
+                const lines = [
+                    { k: 'Base ('+vehicle+')', v: '$'+v.base.toFixed(2) },
+                    { k: 'Distance '+miles.toFixed(1)+' mi × $'+v.perMile.toFixed(2), v: '$'+(v.perMile*miles).toFixed(2) }
+                ];
+                if(adj.label) lines.push({ k: adj.label, v: '+'+(adj.pct*100).toFixed(0)+'%' });
+                if(raw < v.min) lines.push({ k: vehicle+' minimum', v: '$'+v.min });
+                return { total, lines };
+            }
+            return { empty:true, msg:'Enter a major Houston route (e.g. IAH → Downtown) or call (832) 567-8050 for a custom quote.' };
+        }
+        async function renderQuote(form){
             const result = form.querySelector('.quote-result'); if(!result) return;
             const priceEl = result.querySelector('.qr-price');
             const bd = result.querySelector('.qr-breakdown');
@@ -1084,7 +1108,8 @@ async function handleDeposit(e) {
             const dt = form.querySelector('input[type=datetime-local]')?.value || '';
             const vehicle = form.querySelector('select')?.value || 'Sedan';
             if(!pickup || !dropoff){ priceEl.textContent='—'; bd.innerHTML='<div class="qr-empty">Enter pickup & drop-off for an instant fare.</div>'; return; }
-            const r = calcQuote(pickup, dropoff, vehicle, dt);
+            priceEl.innerHTML = '<small style="font-size:1rem;color:rgba(255,255,255,0.5)">calculating…</small>';
+            const r = await calcQuote(pickup, dropoff, vehicle, dt);
             if(r.empty){ priceEl.textContent='—'; bd.innerHTML='<div class="qr-empty">'+r.msg+'</div>'; return; }
             priceEl.innerHTML = '$'+r.total+' <small>est.</small>';
             bd.innerHTML = r.lines.map(l=>'<div><span>'+l.k+'</span><span>'+l.v+'</span></div>').join('');
@@ -1098,7 +1123,7 @@ async function handleDeposit(e) {
         }
         document.querySelectorAll('.quote-form').forEach(setupQuoteForm);
 
-        function handleQuote(e) {
+        async function handleQuote(e) {
             e.preventDefault();
             const form = e.target;
             const inputs = form.querySelectorAll('input[type=text]');
@@ -1106,9 +1131,9 @@ async function handleDeposit(e) {
             const dropoff = inputs[1]?.value || '';
             const dt = form.querySelector('input[type=datetime-local]')?.value || '';
             const vehicle = form.querySelector('select')?.value || 'Sedan';
-            const r = calcQuote(pickup, dropoff, vehicle, dt);
+            const r = await calcQuote(pickup, dropoff, vehicle, dt);
             const price = r.total || null;
-            const data = { pickup, dropoff, time: dt, vehicle, price };
+            const data = { pickup, dropoff, time: dt, vehicle: normVehicle(vehicle), price };
             fetch('/api/book', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
