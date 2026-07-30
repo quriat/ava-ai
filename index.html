@@ -118,7 +118,7 @@
         .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
         .video-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.5) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.7) 100%);
         }
         .video-fallback { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; background: linear-gradient(135deg, #060606 0%, #0d0d1a 50%, #060606 100%); }
 
@@ -175,7 +175,7 @@
         .center .gold-line { margin: 28px auto 0; }
 
         /* ===== QUOTE FORM ===== */
-        .quote-section { background: transparent; }
+        .quote-section { background: rgba(10,10,10,0.85); }
         .quote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; max-width: 1200px; margin: 0 auto; align-items: center; }
         .quote-form { display: flex; flex-direction: column; gap: 20px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -187,15 +187,26 @@
         .form-submit { padding: 16px 48px; background: var(--gold); color: var(--black); border: none; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: all 0.4s ease; margin-top: 10px; border-radius: 2px; position: relative; overflow: hidden; }
         .form-submit::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s ease; }
         .form-submit:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 15px 40px rgba(201,168,76,0.25); }
+
+        /* ===== INSTANT QUOTE RESULT ===== */
+        .quote-result { margin: 6px 0 4px; padding: 22px 24px; border: 1px solid rgba(201,168,76,0.25); border-radius: 4px; background: rgba(201,168,76,0.04); }
+        .qr-label { font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+        .qr-price { font-family: var(--serif); font-size: 2.6rem; line-height: 1; color: var(--white); }
+        .qr-price small { font-family: var(--sans); font-size: 0.8rem; color: rgba(255,255,255,0.55); letter-spacing: 1px; margin-left: 6px; }
+        .qr-breakdown { margin-top: 14px; font-size: 0.78rem; color: rgba(255,255,255,0.7); line-height: 1.9; }
+        .qr-breakdown div { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.07); padding: 3px 0; }
+        .qr-breakdown div span:last-child { color: var(--white); }
+        .qr-note { margin-top: 12px; font-size: 0.68rem; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
+        .qr-empty { color: rgba(255,255,255,0.4); font-size: 0.82rem; font-style: italic; }
         .form-submit:hover::before { left: 100%; }
         .form-note { font-size: 0.78rem; color: rgba(255,255,255,0.85); margin-top: 12px; }
         .form-note a { color: var(--gold); text-decoration: none; }
         .form-note a:hover { text-decoration: underline; }
 
         /* ===== FLEET WITH IMAGES ===== */
-        .fleet-section { background: transparent; }
+        .fleet-section { background: rgba(10,10,10,0.85); }
         .fleet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
-        .fleet-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04); overflow: hidden; transition: all 0.5s cubic-bezier(0.4,0,0.2,1); position: relative; border-radius: 3px; }
+        .fleet-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); overflow: hidden; transition: all 0.5s cubic-bezier(0.4,0,0.2,1); position: relative; border-radius: 3px; }
         .fleet-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent); opacity: 0; transition: opacity 0.5s ease; z-index: 2; }
         .fleet-card::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(201,168,76,0.03), transparent 70%); opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
         .fleet-card:hover { transform: translateY(-8px); border-color: rgba(201,168,76,0.15); box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
@@ -215,9 +226,9 @@
         .fleet-btn:hover { background: var(--gold); color: var(--black); border-color: var(--gold); box-shadow: 0 10px 30px rgba(201,168,76,0.2); }
 
         /* ===== SERVICES ===== */
-        .services-section { background: transparent; }
+        .services-section { background: rgba(10,10,10,0.85); }
         .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .service-card { padding: 44px 32px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); border-radius: 3px; position: relative; overflow: hidden; }
+        .service-card { padding: 44px 32px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); border-radius: 3px; position: relative; overflow: hidden; }
         .service-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent); opacity: 0; transition: opacity 0.4s ease; }
         .service-card:hover { background: rgba(201,168,76,0.02); border-color: rgba(201,168,76,0.1); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         .service-card:hover::before { opacity: 1; }
@@ -226,9 +237,9 @@
         .service-card p { font-size: 0.82rem; color: rgba(255,255,255,0.9); line-height: 1.8; }
 
         /* ===== TESTIMONIALS ===== */
-        .testimonials-section { background: transparent; }
+        .testimonials-section { background: rgba(10,10,10,0.85); }
         .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
-        .testimonial-card { padding: 44px 32px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03); position: relative; border-radius: 3px; transition: all 0.4s ease; }
+        .testimonial-card { padding: 44px 32px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); position: relative; border-radius: 3px; transition: all 0.4s ease; }
         .testimonial-card::before { content: '\201C'; font-family: var(--serif); font-size: 4.5rem; color: rgba(201,168,76,0.08); position: absolute; top: 12px; left: 22px; line-height: 1; }
         .testimonial-card:hover { border-color: rgba(201,168,76,0.1); }
         .testimonial-stars { color: var(--gold); font-size: 0.75rem; letter-spacing: 4px; margin-bottom: 20px; }
@@ -237,9 +248,9 @@
         .testimonial-role { font-size: 0.65rem; color: rgba(255,255,255,0.85); margin-top: 4px; letter-spacing: 1.5px; text-transform: uppercase; }
 
         /* ===== BLOG ===== */
-        .blog-section { background: transparent; }
+        .blog-section { background: rgba(10,10,10,0.85); }
         .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
-        .blog-card { padding: 40px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); cursor: pointer; border-radius: 3px; }
+        .blog-card { padding: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); cursor: pointer; border-radius: 3px; }
         .blog-card:hover { border-color: rgba(201,168,76,0.12); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         .blog-tag { font-size: 0.55rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
         .blog-card h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; margin-bottom: 12px; line-height: 1.4; letter-spacing: -0.2px; }
@@ -247,7 +258,7 @@
         .blog-meta { font-size: 0.65rem; color: rgba(255,255,255,0.75); letter-spacing: 1.5px; }
 
         /* ===== FAQ ===== */
-        .faq-section { background: transparent; }
+        .faq-section { background: rgba(10,10,10,0.85); }
         .faq-container { max-width: 780px; margin: 0 auto; }
         .faq-item { border-bottom: 1px solid rgba(255,255,255,0.04); }
         .faq-question { width: 100%; padding: 26px 0; background: none; border: none; color: rgba(255,255,255,0.95); font-size: 0.95rem; font-family: var(--sans); font-weight: 500; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: color 0.3s ease; letter-spacing: 0.2px; }
@@ -258,7 +269,7 @@
         .faq-answer p { font-size: 0.85rem; color: rgba(255,255,255,0.9); line-height: 1.9; }
 
         /* ===== CTA + AI ASSISTANT ===== */
-        .cta-section { background: transparent; text-align: center; padding: 160px 60px; border-top: 1px solid rgba(201,168,76,0.06); border-bottom: 1px solid rgba(201,168,76,0.06); }
+        .cta-section { background: rgba(10,10,10,0.85); text-align: center; padding: 160px 60px; border-top: 1px solid rgba(201,168,76,0.06); border-bottom: 1px solid rgba(201,168,76,0.06); }
         .cta-section h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 400; margin-bottom: 22px; letter-spacing: -0.5px; }
         .cta-section > p { font-size: 0.95rem; color: rgba(255,255,255,0.92); margin-bottom: 50px; }
         .cta-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 55px; }
@@ -337,7 +348,7 @@
         .deposit-info ul { list-style: none; padding: 0; }
         .deposit-info ul li { padding: 12px 0; color: rgba(255,255,255,0.85); font-size: 0.9rem; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
         .deposit-info .d-icon { color: var(--gold); font-weight: 600; font-size: 0.8rem; }
-        .deposit-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 40px; border-radius: 3px; }
+        .deposit-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 40px; border-radius: 3px; }
         .deposit-card h3 { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 28px; }
         @media (max-width: 768px) {
             .deposit-wrap { grid-template-columns: 1fr; gap: 30px; }
@@ -510,6 +521,12 @@
 <div class="form-group"><label>Pickup Location</label><input type="text" placeholder="e.g. IAH Airport" required></div>
 <div class="form-group"><label>Drop-off Location</label><input type="text" placeholder="e.g. Downtown Houston" required></div>
 <div class="form-row"><div class="form-group"><label>Date & Time</label><input type="datetime-local" required></div><div class="form-group"><label>Vehicle</label><select><option>Sedan — S-Class (1-3)</option><option>SUV — Escalade (1-6)</option><option>Sprinter (1-14)</option></select></div></div>
+<div class="quote-result" id="quote-result">
+  <div class="qr-label">Estimated fare</div>
+  <div class="qr-price" id="qr-price">—</div>
+  <div class="qr-breakdown" id="qr-breakdown"></div>
+  <div class="qr-note">Live estimate. Final price confirmed at booking — never a surge.</div>
+</div>
 <button type="submit" class="form-submit">Request My Quote</button>
 </form>
 </div>
@@ -742,6 +759,12 @@ async function handleDeposit(e) {
                             <option value="Sprinter">Sprinter (1-14)</option>
                         </select>
                     </div>
+                </div>
+                <div class="quote-result" id="quote-result">
+                    <div class="qr-label">Estimated fare</div>
+                    <div class="qr-price" id="qr-price">—</div>
+                    <div class="qr-breakdown" id="qr-breakdown"></div>
+                    <div class="qr-note">Live estimate. Final price confirmed at booking — never a surge.</div>
                 </div>
                 <button type="submit" class="form-submit">Request My Quote</button>
                 <p class="form-note">Already booked? <a href="/deposit">Pay your deposit →</a></p>
@@ -992,25 +1015,110 @@ async function handleDeposit(e) {
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+        // ===== AvaLimo Instant Quote Engine =====
+        // EDIT RATES with your real numbers. Flat rates = one-way SEDAN price;
+        // SUV/Sprinter apply a multiplier. Add MAPS_API_KEY for arbitrary-address distance pricing.
+        const MAPS_API_KEY = '';
+        const RATES = {
+            vehicles: {
+                'Sedan':    { mult: 1.00, min: 100 },
+                'SUV':      { mult: 1.30, min: 120 },
+                'Sprinter': { mult: 1.70, min: 180 }
+            },
+            flat: {
+                'cypress|iah': 130, 'downtown|galleria': 45, 'downtown|hobby': 70,
+                'downtown|iah': 85, 'downtown|medical': 50, 'downtown|sugarland': 95,
+                'galleria|hobby': 80, 'galleria|iah': 95, 'hobby|medical': 78,
+                'hobby|sugarland': 95, 'hobby|woodlands': 120, 'iah|katy': 125,
+                'iah|leaguecity': 125, 'iah|medical': 90, 'iah|pearland': 115,
+                'iah|sugarland': 120, 'iah|woodlands': 130
+            },
+            lateNight: { start: 22, end: 6, pct: 0.15 },
+            weekend: { pct: 0.10 }
+        };
+        const ALIAS = {
+            'iah':'iah','george bush':'iah','bush':'iah','intercontinental':'iah','houston airport':'iah','iah airport':'iah',
+            'hobby':'hobby','hobby airport':'hobby',
+            'downtown':'downtown','dt':'downtown','houston':'downtown',
+            'galleria':'galleria','the galleria':'galleria',
+            'medical':'medical','texas medical':'medical','tmc':'medical','medical center':'medical',
+            'sugarland':'sugarland','sugar land':'sugarland','missouri city':'sugarland',
+            'woodlands':'woodlands','the woodlands':'woodlands',
+            'katy':'katy','pearland':'pearland','league city':'leaguecity','cypress':'cypress'
+        };
+        function normLoc(s){ if(!s) return ''; s=s.toLowerCase().trim(); for(const k in ALIAS) if(s.includes(k)) return ALIAS[k]; return s.replace(/[^a-z0-9]/g,''); }
+        function routeKey(a,b){ const x=normLoc(a), y=normLoc(b); if(!x||!y) return null; return [x,y].sort().join('|'); }
+        function timeAdjust(dt){
+            if(!dt) return {pct:0, label:null};
+            const d = new Date(dt); if(isNaN(d)) return {pct:0,label:null};
+            const h = d.getHours(), day = d.getDay(); let pct = 0; const parts = [];
+            if(h >= RATES.lateNight.start || h < RATES.lateNight.end){ pct += RATES.lateNight.pct; parts.push('Late-night +15%'); }
+            if(day === 5 || day === 6){ pct += RATES.weekend.pct; parts.push('Weekend +10%'); }
+            return {pct, label: parts.join(' · ')};
+        }
+        // Sync estimate from flat-rate table. (Distance API deferred when MAPS_API_KEY set.)
+        function calcQuote(pickup, dropoff, vehicle, dt){
+            const v = RATES.vehicles[vehicle] || RATES.vehicles['Sedan'];
+            const key = routeKey(pickup, dropoff);
+            let base = (key && RATES.flat[key] != null) ? RATES.flat[key] : null;
+            if(base == null) return { empty:true, msg:'Enter a major Houston route (e.g. IAH → Downtown) or call (832) 567-8050 for a custom quote.' };
+            const subtotal = base * v.mult;
+            const adj = timeAdjust(dt);
+            const raw = Math.round(subtotal * (1 + adj.pct));
+            const total = Math.max(raw, v.min);
+            const lines = [
+                { k: 'Flat rate ('+normLoc(pickup)+' → '+normLoc(dropoff)+')', v: '$'+base.toFixed(2) },
+                { k: vehicle+' rate', v: '×'+v.mult.toFixed(2) }
+            ];
+            if(total > raw) lines.push({ k: vehicle+' minimum', v: '$'+v.min });
+            else if(adj.label) lines.push({ k: adj.label, v: '+'+(adj.pct*100).toFixed(0)+'%' });
+            return { total, lines };
+        }
+        function renderQuote(form){
+            const result = form.querySelector('.quote-result'); if(!result) return;
+            const priceEl = result.querySelector('.qr-price');
+            const bd = result.querySelector('.qr-breakdown');
+            const inputs = form.querySelectorAll('input[type=text]');
+            const pickup = inputs[0]?.value || '';
+            const dropoff = inputs[1]?.value || '';
+            const dt = form.querySelector('input[type=datetime-local]')?.value || '';
+            const vehicle = form.querySelector('select')?.value || 'Sedan';
+            if(!pickup || !dropoff){ priceEl.textContent='—'; bd.innerHTML='<div class="qr-empty">Enter pickup & drop-off for an instant fare.</div>'; return; }
+            const r = calcQuote(pickup, dropoff, vehicle, dt);
+            if(r.empty){ priceEl.textContent='—'; bd.innerHTML='<div class="qr-empty">'+r.msg+'</div>'; return; }
+            priceEl.innerHTML = '$'+r.total+' <small>est.</small>';
+            bd.innerHTML = r.lines.map(l=>'<div><span>'+l.k+'</span><span>'+l.v+'</span></div>').join('');
+        }
+        function setupQuoteForm(form){
+            form.querySelectorAll('input, select').forEach(el=>{
+                el.addEventListener('input', ()=>renderQuote(form));
+                el.addEventListener('change', ()=>renderQuote(form));
+            });
+            renderQuote(form);
+        }
+        document.querySelectorAll('.quote-form').forEach(setupQuoteForm);
+
         function handleQuote(e) {
             e.preventDefault();
             const form = e.target;
-            const data = {
-                pickup: document.getElementById('b-pickup')?.value || form.querySelector('input[type=text]')?.value || '',
-                dropoff: document.getElementById('b-dropoff')?.value || form.querySelectorAll('input[type=text]')[1]?.value || '',
-                time: document.getElementById('b-time')?.value || form.querySelector('input[type=datetime-local]')?.value || '',
-                vehicle: document.getElementById('b-vehicle')?.value || form.querySelector('select')?.value || 'Sedan'
-            };
+            const inputs = form.querySelectorAll('input[type=text]');
+            const pickup = inputs[0]?.value || '';
+            const dropoff = inputs[1]?.value || '';
+            const dt = form.querySelector('input[type=datetime-local]')?.value || '';
+            const vehicle = form.querySelector('select')?.value || 'Sedan';
+            const r = calcQuote(pickup, dropoff, vehicle, dt);
+            const price = r.total || null;
+            const data = { pickup, dropoff, time: dt, vehicle, price };
             fetch('/api/book', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
-            }).then(r => r.json()).then(d => {
-                alert(d.message || 'Thank you! Your quote request has been received.');
-                form.reset();
+            }).then(res => res.json()).then(d => {
+                const msg = price ? `Estimated fare: $${price}. ${d.message || 'Request received — dispatch will confirm.'}` : (d.message || 'Thank you! Your quote request has been received.');
+                alert(msg); form.reset(); renderQuote(form);
             }).catch(() => {
-                alert('Thank you! Your quote request has been received.');
-                form.reset();
+                alert(price ? `Estimated fare: $${price}. Request received — we'll confirm by dispatch.` : 'Thank you! Your quote request has been received.');
+                form.reset(); renderQuote(form);
             });
         }
 
