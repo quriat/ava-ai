@@ -1018,7 +1018,7 @@ async function handleDeposit(e) {
         // ===== AvaLimo Instant Quote Engine =====
         // EDIT RATES with your real numbers. Flat rates = one-way SEDAN price;
         // SUV/Sprinter apply a multiplier. Add MAPS_API_KEY for arbitrary-address distance pricing.
-        const MAPS_API_KEY = '';
+        const MAPS_API_KEY = 'AIzaSyDXYxmw3vLUyIDRRc8E-fVSERqmSZN9-3w';
         const RATES = {
             vehicles: {
                 'Sedan':    { mult: 1.00, min: 100, base: 60,  perMile: 3.00 },
@@ -1060,10 +1060,20 @@ async function handleDeposit(e) {
         async function getMiles(a,b){
             if(!MAPS_API_KEY) return null;
             try{
-                const url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins='+encodeURIComponent(a)+'&destinations='+encodeURIComponent(b)+'&units=imperial&key='+MAPS_API_KEY;
-                const r = await fetch(url); const j = await r.json();
-                const el = j && j.rows && j.rows[0] && j.rows[0].elements && j.rows[0].elements[0];
-                if(el && el.status === 'OK' && el.distance) return el.distance.value / 1609.34;
+                const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
+                const body = JSON.stringify({ origin: { address: a }, destination: { address: b }, travelMode: 'DRIVE' });
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': MAPS_API_KEY,
+                        'X-Goog-FieldMask': 'routes.distanceMeters'
+                    },
+                    body: body
+                });
+                const j = await r.json();
+                const meters = j && j.routes && j.routes[0] && j.routes[0].distanceMeters;
+                if(meters) return meters / 1609.34;
             }catch(e){}
             return null;
         }
