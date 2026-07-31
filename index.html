@@ -1010,13 +1010,14 @@ async function handleDeposit(e) {
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
         // ===== AvaLimo Instant Quote Engine =====
-        // EDIT RATES with your real numbers. Flat rates = one-way SEDAN price;
-        // SUV ×1.0 (same as sedan), Sprinter ×1.7. Floored to per-vehicle minimum.
+        // EDIT RATES with your real numbers. Distance pricing: base + $/mile, floored to vehicle minimum.
+        // Known flat routes act as a floor so far routes always cost their true distance price.
+        const MAPS_API_KEY = 'AIzaSyDXYxmw3vLUyIDRRc8E-fVSERqmSZN9-3w';
         const RATES = {
             vehicles: {
-                'Sedan':    { mult: 1.00, min: 100 },
-                'SUV':      { mult: 1.00, min: 100 },
-                'Sprinter': { mult: 1.70, min: 180 }
+                'Sedan':    { mult: 1.00, min: 100, base: 100, perMile: 2.00 },
+                'SUV':      { mult: 1.00, min: 100, base: 100, perMile: 2.00 },
+                'Sprinter': { mult: 1.70, min: 180, base: 180, perMile: 2.00 }
             },
             flat: {
                 'cypress|iah': 130, 'downtown|hobby': 100,
@@ -1049,21 +1050,53 @@ async function handleDeposit(e) {
             return {pct, label: parts.join(' · ')};
         }
         function normVehicle(v){ if(!v) return 'Sedan'; return (v.split(' ')[0] || 'Sedan'); }
-        // Flat-rate quote: known route price × vehicle multiplier, floored to vehicle minimum.
+        // Distance via Google Routes API (returns miles or null)
+        async function getMiles(a,b){
+            if(!MAPS_API_KEY) return null;
+            try{
+                const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
+                const body = JSON.stringify({ origin: { address: a }, destination: { address: b }, travelMode: 'DRIVE' });
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': MAPS_API_KEY,
+                        'X-Goog-FieldMask': 'routes.distanceMeters'
+                    },
+                    body: body
+                });
+                const j = await r.json();
+                const meters = j && j.routes && j.routes[0] && j.routes[0].distanceMeters;
+                if(meters) return meters / 1609.34;
+            }catch(e){}
+            return null;
+        }
+        // Async quote: base + $/mile, floored to vehicle minimum. Known flat routes are a floor.
         async function calcQuote(pickup, dropoff, vehicle, dt){
             const v = RATES.vehicles[normVehicle(vehicle)] || RATES.vehicles['Sedan'];
             const key = routeKey(pickup, dropoff);
             const adj = timeAdjust(dt);
-            if(key && RATES.flat[key] != null){
-                const base = RATES.flat[key] * v.mult;
-                const raw = Math.round(base * (1 + adj.pct));
-                const total = Math.max(raw, v.min);
-                const lines = [
-                    { k: 'Flat rate ('+normLoc(pickup)+' → '+normLoc(dropoff)+')', v: '$'+(RATES.flat[key]).toFixed(2) },
-                    { k: vehicle+' rate', v: '×'+v.mult.toFixed(2) }
-                ];
-                if(total > raw) lines.push({ k: vehicle+' minimum', v: '$'+v.min });
-                else if(adj.label) lines.push({ k: adj.label, v: '+'+(adj.pct*100).toFixed(0)+'%' });
+            const flatPrice = (key && RATES.flat[key] != null) ? RATES.flat[key] * v.mult : null;
+            const miles = await getMiles(pickup, dropoff);
+            const lines = [];
+            if(miles && miles > 0){
+                const distPrice = v.base + v.perMile * miles;
+                const raw = Math.max(flatPrice || 0, distPrice) * (1 + adj.pct);
+                const total = Math.max(Math.round(raw), v.min);
+                lines.push({ k: 'Base ('+vehicle+')', v: '$'+v.base.toFixed(2) });
+                lines.push({ k: 'Distance '+miles.toFixed(1)+' mi × $'+v.perMile.toFixed(2), v: '$'+(v.perMile*miles).toFixed(2) });
+                if(flatPrice && flatPrice > distPrice) lines.push({ k: 'Flat rate ('+normLoc(pickup)+' → '+normLoc(dropoff)+')', v: '$'+flatPrice.toFixed(2) });
+                if(adj.label) lines.push({ k: adj.label, v: '+'+(adj.pct*100).toFixed(0)+'%' });
+                if(total > Math.round(raw)) lines.push({ k: vehicle+' minimum', v: '$'+v.min });
+                return { total, lines };
+            }
+            if(flatPrice){
+                const raw = flatPrice * (1 + adj.pct);
+                const total = Math.max(Math.round(raw), v.min);
+                lines.push({ k: 'Flat rate ('+normLoc(pickup)+' → '+normLoc(dropoff)+')', v: '$'+RATES.flat[key].toFixed(2) });
+                lines.push({ k: vehicle+' rate', v: '×'+v.mult.toFixed(2) });
+                if(adj.label) lines.push({ k: adj.label, v: '+'+(adj.pct*100).toFixed(0)+'%' });
+                if(total > Math.round(raw)) lines.push({ k: vehicle+' minimum', v: '$'+v.min });
                 return { total, lines };
             }
             return { empty:true, msg:'Enter a major Houston route (e.g. IAH → Downtown) or call (832) 567-8050 for a custom quote.' };
