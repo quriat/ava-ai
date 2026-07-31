@@ -690,7 +690,50 @@ async function handleDeposit(e) {
 {% elif content_key == 'policy' %}
 <div class="page-header"><h2>AvaLimo <span style="color:var(--gold)">Company Policy</span></h2></div>
 <section class="post-content" style="max-width:700px;margin:0 auto;padding:0 60px 130px;background:transparent">
-<h2 style="font-family:var(--serif);font-size:1.6rem;margin-bottom:16px">Booking & Cancellation</h2>
+
+<h2 style="font-family:var(--serif);font-size:1.6rem;margin-bottom:16px">Privacy Policy</h2>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">This Privacy Policy explains how AvaLimo ("we", "us") collects, uses, and protects information when you visit <strong>avalimo.net</strong> or book a ride. By using our site you agree to the practices described below.</p>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">Information We Collect</h3>
+<ul style="color:var(--gray);line-height:1.9;margin-bottom:16px;padding-left:20px">
+    <li><strong>Booking &amp; contact details</strong> you submit through our forms: name, phone, email, pickup/drop-off locations, date/time, vehicle choice, and any notes you provide.</li>
+    <li><strong>Usage data</strong> via Google Analytics (measurement ID G-STY7CSKRMX): pages visited, approximate location, device/browser type, and referral source. This data is collected in aggregate and is not used to personally identify you.</li>
+    <li><strong>Payment information</strong> is processed by Square, Inc. on their secure servers. We do not store your card number.</li>
+</ul>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">Cookies &amp; Analytics</h3>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">We use cookies and similar technologies to make our site work and to measure performance. Google Analytics cookies help us understand how visitors use the site so we can improve it. We ask for your consent before enabling these tracking cookies. You can accept or reject them using the consent banner, and you can withdraw consent at any time by clearing your browser's cookies/local storage. You may also opt out of Google Analytics tracking by installing the <a href="https://tools.google.com/dlpage/gaoptout" style="color:var(--gold)">Google Analytics opt-out browser add-on</a>.</p>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">How We Use Your Information</h3>
+<ul style="color:var(--gray);line-height:1.9;margin-bottom:16px;padding-left:20px">
+    <li>To confirm and provide the transportation you request.</li>
+    <li>To communicate with you about your booking via phone, text, or email.</li>
+    <li>To send booking reminders (including SMS) if you opt in.</li>
+    <li>To improve our website, services, and customer experience.</li>
+    <li>To comply with legal obligations.</li>
+</ul>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">Sharing of Information</h3>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">We do not sell your personal information. We share data only with service providers who help us operate (email/SMS delivery, payment processing via Square, analytics via Google) or when required by law. Under the California Consumer Privacy Act (CCPA), you have the right to know what personal information we collect and to request its deletion — contact us to exercise these rights.</p>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">Your Rights &amp; Choices</h3>
+<ul style="color:var(--gray);line-height:1.9;margin-bottom:16px;padding-left:20px">
+    <li>Access, correct, or delete your personal information.</li>
+    <li>Opt out of marketing messages at any time.</li>
+    <li>Opt out of non-essential cookies via the consent banner.</li>
+    <li>Request a copy of the data we hold about you.</li>
+</ul>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">Data Retention &amp; Security</h3>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">We retain booking records only as long as needed to provide services and meet legal requirements. We use reasonable administrative, technical, and physical safeguards to protect your information. Data is transmitted securely over HTTPS.</p>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">Children's Privacy</h3>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">Our services are not directed to children under 16, and we do not knowingly collect their information.</p>
+
+<h3 style="font-family:var(--serif);font-size:1.2rem;margin:28px 0 12px;color:var(--gold)">Contact Us</h3>
+<p style="color:var(--gray);line-height:1.9;margin-bottom:16px">For privacy questions or requests, contact us at <a href="mailto:adam@avalimo.net" style="color:var(--gold)">adam@avalimo.net</a> or call <a href="tel:8325678050" style="color:var(--gold)">(832) 567-8050</a>.</p>
+
+<h2 style="font-family:var(--serif);font-size:1.6rem;margin:36px 0 16px">Booking &amp; Cancellation</h2>
 <p style="color:var(--gray);line-height:1.9;margin-bottom:16px">Cancel or modify up to 24 hours before pickup for a full refund. Later changes may incur a fee.</p>
 <h2 style="font-family:var(--serif);font-size:1.6rem;margin-bottom:16px">Refunds</h2>
 <p style="color:var(--gray);line-height:1.9;margin-bottom:16px">Refunds are processed within 3-5 business days to the original payment method.</p>
@@ -942,6 +985,7 @@ async function handleDeposit(e) {
                 <a href="/services">Services</a>
                 <a href="/blog">Blog</a>
                 <a href="/contact">Contact</a>
+                <a href="/policy">Privacy Policy</a>
             </div>
             <div class="footer-col">
                 <h4>Services</h4>
@@ -1208,7 +1252,53 @@ async function handleDeposit(e) {
         chatSend.addEventListener('click', sendChatMessage);
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
     </script>
-    {% if ga_id %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','{{ ga_id }}');</script>{% endif %}
-    {% if fb_pixel %}{{ fb_pixel | safe }}{% endif %}
+    {% if ga_id or fb_pixel_id %}<script>
+    function initAnalytics(){
+        {% if ga_id %}
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id={{ ga_id }}';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ ga_id }}');
+        {% endif %}
+        {% if fb_pixel_id %}
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init','{{ fb_pixel_id }}');fbq('track','PageView');
+        {% endif %}
+    }
+    (function(){
+        try {
+            var c = localStorage.getItem('avalimo_consent');
+            if (c === 'accepted') { window.__analyticsLoaded = true; initAnalytics(); }
+        } catch(e) {}
+    })();
+    </script>{% endif %}
+
+    <div id="cookieBanner" role="dialog" aria-label="Cookie consent" style="position:fixed;left:16px;right:16px;bottom:16px;max-width:520px;background:#111;border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:18px 20px;z-index:9999;box-shadow:0 12px 40px rgba(0,0,0,0.6);display:none;font-family:var(--font-sans);font-size:0.85rem;line-height:1.6;color:rgba(255,255,255,0.9)">
+        <p style="margin:0 0 12px">We use cookies and Google Analytics to understand how visitors use our site and to improve your experience. See our <a href="/policy" style="color:var(--gold);text-decoration:underline">Privacy Policy</a> for details.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button onclick="setConsent(true)" style="flex:1;min-width:120px;padding:10px 16px;background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;font-weight:600;cursor:pointer">Accept All</button>
+            <button onclick="setConsent(false)" style="flex:1;min-width:120px;padding:10px 16px;background:transparent;color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.3);border-radius:8px;cursor:pointer">Reject</button>
+        </div>
+    </div>
+    <script>
+    function setConsent(accepted){
+        try {
+            localStorage.setItem('avalimo_consent', accepted ? 'accepted' : 'rejected');
+            document.getElementById('cookieBanner').style.display = 'none';
+            if (accepted && !window.__analyticsLoaded) { window.__analyticsLoaded = true; initAnalytics(); }
+        } catch(e) {}
+    }
+    (function(){
+        try {
+            if (!localStorage.getItem('avalimo_consent')) {
+                document.getElementById('cookieBanner').style.display = 'block';
+            }
+        } catch(e) {}
+    })();
+    </script>
 </body>
 </html>

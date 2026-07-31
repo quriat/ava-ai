@@ -27,6 +27,32 @@ except ImportError:
 
 app = Flask(__name__)
 
+
+@app.after_request
+def add_security_and_cache_headers(resp):
+    resp.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    resp.headers.setdefault(
+        "Content-Security-Policy",
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://sandbox.web.squarecdn.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
+        "img-src 'self' data: blob: https://www.google-analytics.com https://www.facebook.com; "
+        "media-src 'self' https://assets.mixkit.co; "
+        "connect-src 'self' https://www.google-analytics.com https://routes.googleapis.com https://sandbox.web.squarecdn.com; "
+        "frame-src https://sandbox.web.squarecdn.com; "
+        "base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests",
+    )
+    if request.path.startswith("/static/"):
+        resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        resp.headers.pop("Pragma", None)
+        resp.headers.pop("Expires", None)
+    return resp
+
+
 _env_path = os.path.join(os.path.dirname(__file__), ".env")
 if os.path.exists(_env_path):
     with open(_env_path) as f:
@@ -406,6 +432,7 @@ def index(path):
         og_type=og_type,
         og_image=og_image,
         ga_id=GA_ID,
+        fb_pixel_id=FB_PIXEL_ID,
         sc_meta=SC_META,
         fb_pixel=FB_PIXEL,
         sq_app_id=SQ_APP_ID,
