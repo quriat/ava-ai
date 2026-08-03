@@ -209,7 +209,7 @@
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "5820707923",
         "text": "Email sequence triggered: {{ $json.sequence }} for {{ $json.customer.name }} ({{ $json.customer.email }})",
         "additionalFields": {}
       },

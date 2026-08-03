@@ -78,7 +78,7 @@
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "5820707923",
         "text": "Competitor Alert: {{ $json.competitor }} ranking for '{{ $json.keyword }}' at position {{ $json.estimatedPosition }}",
         "additionalFields": {}
       },

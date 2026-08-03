@@ -16,7 +16,7 @@
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "5820707923",
         "text": "AvaLimo Deploy Alert | Environment: {{ $json.body.environment }} | Commit: {{ $json.body.commit.substring(0,7) }} | Author: {{ $json.body.author }} | Message: {{ $json.body.message }}",
         "additionalFields": {}
       },

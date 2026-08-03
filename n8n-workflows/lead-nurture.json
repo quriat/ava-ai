@@ -16,7 +16,7 @@
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "5820707923",
         "text": "New AvaLimo Lead! Name: {{ $json.body.name }} | Phone: {{ $json.body.phone }} | Email: {{ $json.body.email }} | Pickup: {{ $json.body.pickup }} | Dropoff: {{ $json.body.dropoff }} | Vehicle: {{ $json.body.vehicle }} | Date: {{ $json.body.time }}",
         "additionalFields": {}
       },

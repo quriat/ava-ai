@@ -103,7 +103,7 @@
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "5820707923",
         "text": "Review request sent to {{ $json.customer_name }} ({{ $json.service }}) via email.",
         "additionalFields": {}
       },
@@ -115,7 +115,7 @@
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "5820707923",
         "text": "Review request sent to {{ $json.customer_name }} ({{ $json.service }}) via SMS fallback.",
         "additionalFields": {}
       },
