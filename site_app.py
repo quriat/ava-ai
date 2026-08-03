@@ -221,7 +221,7 @@ BASE_HTML = open(_INDEX_PATH, encoding="utf-8").read() if os.path.exists(_INDEX_
 
 
 PAGE_META = {
-    "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7, zero surge pricing. Book online.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
