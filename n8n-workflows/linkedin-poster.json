@@ -29,6 +29,8 @@
     },
     {
       "parameters": {
+        "chatId": "5820707923",
+        "text": "LinkedIn post published: {{ $json.text }}",
         "options": {}
       },
       "id": "notify-telegram",
