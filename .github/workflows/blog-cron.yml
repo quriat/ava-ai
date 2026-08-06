@@ -1,0 +1,46 @@
+name: Daily Blog Post
+on:
+  schedule:
+    # 13:00 UTC = 8:00 AM America/Chicago
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-blog-post
+  cancel-in-progress: false
+
+jobs:
+  blog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Generate and push blog post
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BLOG_PAT: ${{ secrets.BLOG_GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Prefer a PAT (triggers the deploy workflow on push); GITHUB_TOKEN
+          # pushes do NOT trigger downstream workflows, so the site won't rebuild.
+          PUSH_TOKEN="${BLOG_PAT:-$GH_TOKEN}"
+          git config user.name "AvaLimo Blog Bot"
+          git config user.email "bot@avalimo.net"
+          git remote set-url origin "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          for attempt in 1 2 3; do
+            if python3 auto_blog.py; then
+              echo "Blog post generated and pushed."
+              exit 0
+            fi
+            echo "Attempt ${attempt}/3 failed; retrying in 60s..."
+            sleep 60
+          done
+          echo "All attempts failed." >&2
+          exit 1
