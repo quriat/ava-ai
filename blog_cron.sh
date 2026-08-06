@@ -10,12 +10,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 LOG_FILE="${SCRIPT_DIR}/blog_cron.log"
-OLLAMA_URL="http://168.231.74.172:32792/api/chat"
+OLLAMA_URL="http://168.231.74.172:32792"
+OLLAMA_CHAT_URL="${OLLAMA_URL}/api/chat"
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting blog cron..." >> "$LOG_FILE"
 
-# Check if Ollama is reachable
-if ! curl -sf --max-time 5 "$OLLAMA_URL" > /dev/null 2>&1; then
+# Check if Ollama is reachable (root returns 200; /api/chat returns 405 on GET)
+if ! curl -sf --max-time 5 "$OLLAMA_URL/" > /dev/null 2>&1; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Ollama server at $OLLAMA_URL is not reachable. Skipping." >> "$LOG_FILE"
   exit 1
 fi
