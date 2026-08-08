@@ -18,6 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # The site deploys from `main` (Coolify builds this branch). Schedules
+          # only fire on the default branch (`staging`), so always work on main.
+          ref: main
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
@@ -28,8 +31,9 @@ jobs:
           BLOG_PAT: ${{ secrets.BLOG_GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          # Prefer a PAT (triggers the deploy workflow on push); GITHUB_TOKEN
-          # pushes do NOT trigger downstream workflows, so the site won't rebuild.
+          # A PAT (BLOG_GITHUB_TOKEN) also triggers the docker-build workflow;
+          # GITHUB_TOKEN is fine for the site itself — Coolify's GitHub App
+          # webhook rebuilds the site on any push to main.
           PUSH_TOKEN="${BLOG_PAT:-$GH_TOKEN}"
           git config user.name "AvaLimo Blog Bot"
           git config user.email "bot@avalimo.net"
