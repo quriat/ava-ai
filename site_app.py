@@ -486,6 +486,21 @@ def book_ride():
     log_to_google_sheets("Bookings", data)
     threading.Thread(target=_fire_n8n_reminder, args=(data,), daemon=True).start()
     threading.Thread(target=_fire_n8n_review, args=(data,), daemon=True).start()
+    # Send an SMS confirmation to the client if a phone was provided
+    phone = (data.get("phone") or "").strip()
+    if phone:
+        pickup = (data.get("pickup") or "").strip()
+        dropoff = (data.get("dropoff") or "").strip()
+        time = (data.get("time") or "").strip()
+        vehicle = (data.get("vehicle") or "").strip()
+        msg = (
+            f"Hi! This is AvaLimo confirming your request. "
+            f"Pickup: {pickup or 'TBD'}. Drop-off: {dropoff or 'TBD'}."
+            + (f" Time: {time}." if time else "")
+            + (f" Vehicle: {vehicle}." if vehicle else "")
+            + " Dispatch will confirm shortly. Reply or call (832) 567-8050 for changes."
+        )
+        threading.Thread(target=_send_pingram_sms, args=(phone, msg), daemon=True).start()
     return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})
 
 
@@ -633,23 +648,37 @@ def _ensure_google_files():
                     f.write(base64.b64decode(val))
 
 
-def _send_textbelt_sms(phone: str, message: str):
-    key = os.environ.get("TEXTBELT_KEY", "textbelt")
-    payload = json.dumps({"phone": phone, "message": message, "key": key}).encode()
+def _send_pingram_sms(phone: str, message: str):
+    """Send an SMS via Pingram using the dedicated 832 number."""
+    api_key = os.environ.get("PINGRAM_API_KEY", "")
+    from_sms = os.environ.get("PINGRAM_FROM_SMS", "+18322254911")
+    if not api_key:
+        print("Pingram SMS: PINGRAM_API_KEY not set", file=sys.stderr, flush=True)
+        return
+    payload = json.dumps({
+        "type": "sms",
+        "to": {"id": phone, "number": phone},
+        "sms": {"message": message, "from": from_sms},
+    }).encode()
     try:
         req = urllib.request.Request(
-            "https://textbelt.com/text",
+            "https://api.pingram.io/send",
             data=payload,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + api_key,
+            },
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             result = json.loads(resp.read())
-        if result.get("success"):
-            print(f"SMS sent to {phone} (quota: {result.get('quotaRemaining', '?')})", file=sys.stderr, flush=True)
-        else:
-            print(f"SMS failed to {phone}: {result.get('error', 'unknown')}", file=sys.stderr, flush=True)
+        print(f"Pingram SMS sent to {phone} (tracking: {result.get('trackingId', '?')})", file=sys.stderr, flush=True)
     except Exception as e:
-        print(f"SMS error for {phone}: {e}", file=sys.stderr, flush=True)
+        print(f"Pingram SMS error for {phone}: {e}", file=sys.stderr, flush=True)
+
+
+def _send_textbelt_sms(phone: str, message: str):
+    """Backward-compatible alias that routes through Pingram."""
+    _send_pingram_sms(phone, message)
 
 
 def _check_calendar_reminders():

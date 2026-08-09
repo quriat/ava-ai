@@ -530,7 +530,7 @@
 <div class="page-header"><h2>Contact <span style="color:var(--gold)">AvaLimo</span></h2><p>Get in touch. We're available 24/7.</p></div>
 <section style="text-align:center;padding:0 60px 130px">
 <p style="font-family:var(--serif);font-size:2.5rem;color:var(--gold);margin-bottom:20px">(832) 567-8050</p>
-<p style="color:var(--gray);font-size:1rem;margin-bottom:10px">Email: <a href="mailto:adam@avalimo.net" style="color:var(--gold)">adam@avalimo.net</a></p>
+<p style="color:var(--gray);font-size:1rem;margin-bottom:10px">Text us: <a href="sms:+18322254911" style="color:var(--gold)">(832) 225-4911</a> &nbsp;·&nbsp; Email: <a href="mailto:adam@avalimo.net" style="color:var(--gold)">adam@avalimo.net</a></p>
 <p style="color:var(--gray);font-size:1rem">Houston, Texas</p>
 </section>
 
@@ -796,6 +796,10 @@ async function handleDeposit(e) {
                             <option value="Sprinter">Sprinter (1-14)</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label>Phone (for SMS confirmation)</label>
+                    <input type="tel" id="b-phone" placeholder="e.g. (832) 555-1234" required>
                 </div>
                 <div class="quote-result" id="quote-result">
                     <div class="qr-label">Estimated fare</div>
@@ -1178,9 +1182,10 @@ async function handleDeposit(e) {
             const dropoff = inputs[1]?.value || '';
             const dt = form.querySelector('input[type=datetime-local]')?.value || '';
             const vehicle = form.querySelector('select')?.value || 'Sedan';
+            const phone = form.querySelector('input[type=tel]')?.value || '';
             const r = await calcQuote(pickup, dropoff, vehicle, dt);
             const price = r.total || null;
-            const data = { pickup, dropoff, time: dt, vehicle: normVehicle(vehicle), price };
+            const data = { pickup, dropoff, time: dt, vehicle: normVehicle(vehicle), price, phone };
             fetch('/api/book', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
