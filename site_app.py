@@ -728,16 +728,17 @@ def _check_calendar_reminders():
         return
 
     now = _dt.datetime.now(_dt.timezone.utc)
-    tomorrow_start = (now + _dt.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    tomorrow_end = tomorrow_start + _dt.timedelta(days=1)
+    # Look ahead 48 hours so we can catch each trip at the ~24h-before mark.
+    window_start = now
+    window_end = now + _dt.timedelta(hours=48)
 
     try:
         events = (
             service.events()
             .list(
                 calendarId="primary",
-                timeMin=tomorrow_start.isoformat(),
-                timeMax=tomorrow_end.isoformat(),
+                timeMin=window_start.isoformat(),
+                timeMax=window_end.isoformat(),
                 singleEvents=True,
                 orderBy="startTime",
             )
@@ -755,6 +756,17 @@ def _check_calendar_reminders():
         description = (ev.get("description") or "")
         start = ev.get("start", {})
 
+        # Only send when the trip starts ~24 hours from now (within the hourly check window).
+        if "dateTime" not in start:
+            continue
+        try:
+            trip_dt = _dt.datetime.fromisoformat(start["dateTime"].replace("Z", "+00:00"))
+        except Exception:
+            continue
+        hours_until = (trip_dt - now).total_seconds() / 3600.0
+        if not (23.0 <= hours_until <= 25.0):
+            continue
+
         phone = ""
         phone_match = re.search(r"(?:Phone|phone|PHONE)\s*[:=]\s*([+\d\s\-()]+)", description)
         if phone_match:
@@ -767,10 +779,7 @@ def _check_calendar_reminders():
             print(f"Skipping '{summary}' — no phone number in description", file=sys.stderr, flush=True)
             continue
 
-        pickup_str = ""
-        if "dateTime" in start:
-            dt = _dt.datetime.fromisoformat(start["dateTime"].replace("Z", "+00:00"))
-            pickup_str = dt.strftime("%I:%M %p")
+        pickup_str = trip_dt.strftime("%I:%M %p")
 
         pickup_loc = ""
         loc_match = re.search(r"(?:Pickup|pickup|PICKUP)\s*(?::|=)\s*(.+)", description)
