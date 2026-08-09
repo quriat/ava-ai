@@ -506,11 +506,45 @@
 <div class="page-header"><h1>AvaLimo <span style="color:var(--gold)">Blog</span></h1><p>Expert tips on airports, events, and getting around Houston in style.</p></div>
 <section class="blog-section" style="padding-top:0"><div class="blog-grid">{{ blog_posts_html | safe }}</div></section>
 
+{% elif content_key == 'flight-status' %}
+<div class="page-header"><h2>Real-Time <span style="color:var(--gold)">Flight Status</span></h2><p>Track any flight in real time. We monitor your flight so we're there when you land — early or delayed.</p></div>
+<section class="quote-section" style="padding-top:0">
+<div class="quote-grid">
+<div>
+<p class="section-label">Flight Tracker</p>
+<h2 class="section-title">Enter your flight number</h2>
+<p class="section-desc">Free real-time status for IAH, Hobby &amp; all airlines.</p>
+</div>
+<div>
+<div class="form-group"><label>Flight Number</label><input type="text" id="ft-input" placeholder="e.g. UA1234" style="width:100%;padding:16px 18px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);color:var(--white);font-size:0.9rem;border-radius:2px;"></div>
+<button type="button" class="form-submit" onclick="trackFlight()">Track Flight</button>
+<div class="quote-result" id="ft-result" style="margin-top:20px;padding:22px 24px;border:1px solid rgba(201,168,76,0.25);border-radius:4px;background:rgba(201,168,76,0.04);">
+<div class="qr-label">Flight status</div>
+<div class="qr-price" id="ft-status" style="font-size:1.4rem;">—</div>
+<div class="qr-breakdown" id="ft-detail" style="margin-top:10px;color:var(--gray);font-size:0.9rem;"></div>
+</div>
+</div>
+</div>
+</section>
+<script>
+function trackFlight(){
+  var q=document.getElementById('ft-input').value.trim().toUpperCase().replace(/ /g,'');
+  var st=document.getElementById('ft-status'), dt=document.getElementById('ft-detail');
+  if(!q){st.textContent='Enter a flight number';dt.innerHTML='';return;}
+  st.textContent='Checking…';
+  fetch('/api/flight?q='+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(d){
+    if(d.status==='error'){st.textContent='Not found';dt.innerHTML=d.message||'No data for that flight.';return;}
+    st.textContent=(d.status||'unknown').toUpperCase();
+    dt.innerHTML='<div>'+d.flight+' &mdash; '+d.airline+'</div><div>'+d.route+'</div><div>Scheduled: '+d.sched+' &nbsp; Estimated: '+d.est+'</div><div>Gate: '+d.gate+' &nbsp; Terminal: '+d.term+'</div>';
+  }).catch(function(){st.textContent='Error';dt.innerHTML='Could not reach flight service.';});
+}
+</script>
+
 {% elif content_key == 'book' %}
 <div class="page-header"><h2>Book Your <span style="color:var(--gold)">Ride</span></h2><p>Reserve your Houston luxury chauffeur service online.</p></div>
 <section class="quote-section" style="padding-top:0">
 <div class="quote-grid">
-<div><p class="section-label">Request Your Quote</p><h2 class="section-title">A flat rate, sent in minutes.</h2><p class="section-desc">Never a surge. Tell us where you're going and we'll respond with a transparent price.</p><p style="margin-top:35px;color:var(--gray);font-size:0.9rem;">Or call dispatch anytime:</p><p style="font-family:var(--serif);font-size:2rem;color:var(--gold);margin-top:10px;">(832) 567-8050</p></div>
+<div><p class="section-label">Request Your Quote</p><h2 class="section-title">A flat rate, sent in minutes.</h2><p class="section-desc">Never a surge. Tell us where you're going and we'll respond with a transparent price.</p><p style="margin-top:35px;color:var(--gray);font-size:0.9rem;">Or call dispatch anytime:</p><p style="font-family:var(--serif);font-size:2rem;color:var(--gold);margin-top:10px;">(832) 567-8050</p><p style="color:var(--gray);font-size:0.9rem;margin-top:8px;">Text us: <a href="sms:+18322254911" style="color:var(--gold)">(832) 225-4911</a></p></div>
 <form class="quote-form" onsubmit="handleQuote(event)">
 <div class="form-group"><label>Pickup Location</label><input type="text" placeholder="e.g. IAH Airport" required></div>
 <div class="form-group"><label>Drop-off Location</label><input type="text" placeholder="e.g. Downtown Houston" required></div>
