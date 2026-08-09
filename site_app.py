@@ -503,12 +503,11 @@ def book_ride():
             + " Dispatch will confirm shortly. Reply or call (832) 567-8050 for changes."
         )
         threading.Thread(target=_send_pingram_sms, args=(phone, msg), daemon=True).start()
-        # Store the trip for flight-delay monitoring
-        if flight:
-            _store_trip_for_monitoring({
-                "phone": phone, "flight": flight.upper().replace(" ", ""),
-                "pickup": pickup, "dropoff": dropoff, "time": time, "vehicle": vehicle,
-            })
+        # Store the trip for 24h reminders and flight-delay monitoring
+        _store_trip_for_monitoring({
+            "phone": phone, "flight": flight.upper().replace(" ", ""),
+            "pickup": pickup, "dropoff": dropoff, "time": time, "vehicle": vehicle,
+        })
     return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})
 
 
@@ -894,10 +893,50 @@ def _flight_monitor_loop():
         time.sleep(600)
 
 
+_TRIP_REMINDED: set = set()
+
+
+def _check_trip_reminders():
+    """Send a 24h-before reminder SMS for trips booked via the website form."""
+    now = _dt.datetime.now(_dt.timezone.utc)
+    trips = _load_trips()
+    for trip in trips:
+        phone = (trip.get("phone") or "").strip()
+        time_str = (trip.get("time") or "").strip()
+        if not phone or not time_str:
+            continue
+        key = f"{phone}:{time_str}"
+        if key in _TRIP_REMINDED:
+            continue
+        try:
+            trip_dt = _dt.datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+        except Exception:
+            continue
+        hours_until = (trip_dt - now).total_seconds() / 3600.0
+        if not (23.0 <= hours_until <= 25.0):
+            continue
+        pickup = (trip.get("pickup") or "").strip()
+        dropoff = (trip.get("dropoff") or "").strip()
+        vehicle = (trip.get("vehicle") or "").strip()
+        pickup_str = trip_dt.strftime("%I:%M %p")
+        msg = (
+            f"Hi! This is AvaLimo confirming your pickup "
+            f"{'at ' + pickup + ' ' if pickup else ''}"
+            f"tomorrow at {pickup_str}"
+            + (f" to {dropoff}." if dropoff else ".")
+            + (f" Vehicle: {vehicle}." if vehicle else "")
+            + " Reply or call (832) 567-8050 for changes."
+        )
+        _send_pingram_sms(phone, msg)
+        _TRIP_REMINDED.add(key)
+        print(f"24h reminder SMS sent to {phone} for {time_str}", file=sys.stderr, flush=True)
+
+
 def _reminder_loop():
     while True:
         try:
             _check_calendar_reminders()
+            _check_trip_reminders()
         except Exception as e:
             print(f"Reminder check error: {e}", file=sys.stderr, flush=True)
         time.sleep(3600)
