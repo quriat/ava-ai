@@ -493,14 +493,22 @@ def book_ride():
         dropoff = (data.get("dropoff") or "").strip()
         time = (data.get("time") or "").strip()
         vehicle = (data.get("vehicle") or "").strip()
+        flight = (data.get("flight") or "").strip()
         msg = (
             f"Hi! This is AvaLimo confirming your request. "
             f"Pickup: {pickup or 'TBD'}. Drop-off: {dropoff or 'TBD'}."
             + (f" Time: {time}." if time else "")
             + (f" Vehicle: {vehicle}." if vehicle else "")
+            + (f" Flight: {flight}." if flight else "")
             + " Dispatch will confirm shortly. Reply or call (832) 567-8050 for changes."
         )
         threading.Thread(target=_send_pingram_sms, args=(phone, msg), daemon=True).start()
+        # Store the trip for flight-delay monitoring
+        if flight:
+            _store_trip_for_monitoring({
+                "phone": phone, "flight": flight.upper().replace(" ", ""),
+                "pickup": pickup, "dropoff": dropoff, "time": time, "vehicle": vehicle,
+            })
     return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})
 
 
@@ -782,6 +790,101 @@ def _check_calendar_reminders():
         print(f"Reminder SMS sent for '{summary}' to {phone}", file=sys.stderr, flush=True)
 
 
+_TRIPS_PATH = os.path.join(os.path.dirname(__file__), "trips.json")
+_FLIGHT_NOTIFIED: set = set()
+
+
+def _load_trips():
+    try:
+        if os.path.exists(_TRIPS_PATH):
+            with open(_TRIPS_PATH, encoding="utf-8") as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"Load trips failed: {e}", file=sys.stderr, flush=True)
+    return []
+
+
+def _save_trips(trips):
+    try:
+        with open(_TRIPS_PATH, "w", encoding="utf-8") as f:
+            json.dump(trips, f, indent=2)
+    except Exception as e:
+        print(f"Save trips failed: {e}", file=sys.stderr, flush=True)
+
+
+def _store_trip_for_monitoring(trip):
+    trips = _load_trips()
+    trips.append(trip)
+    _save_trips(trips)
+    print(f"Stored trip for flight monitoring: {trip.get('flight')} -> {trip.get('phone')}", file=sys.stderr, flush=True)
+
+
+def _check_flight_status(flight):
+    """Return (status, sched, est) for a flight, or None on failure."""
+    if not AV_API_KEY:
+        return None
+    try:
+        import requests as req
+        resp = req.get("https://api.aviationstack.com/v1/flights", params={
+            "access_key": AV_API_KEY, "flight_iata": flight
+        }, timeout=10)
+        data = resp.json()
+        if not data.get("data"):
+            return None
+        f = data["data"][0]
+        dep = f.get("departure", {})
+        status = f.get("flight_status", "unknown")
+        sched = dep.get("scheduled") or ""
+        est = dep.get("estimated") or ""
+        return status, sched, est
+    except Exception as e:
+        print(f"Flight check error for {flight}: {e}", file=sys.stderr, flush=True)
+        return None
+
+
+def _monitor_flights():
+    trips = _load_trips()
+    for trip in trips:
+        flight = (trip.get("flight") or "").strip()
+        phone = (trip.get("phone") or "").strip()
+        if not flight or not phone:
+            continue
+        key = f"{flight}:{phone}"
+        if key in _FLIGHT_NOTIFIED:
+            continue
+        result = _check_flight_status(flight)
+        if not result:
+            continue
+        status, sched, est = result
+        # Notify on delay or cancellation
+        if status in ("cancelled", "canceled"):
+            msg = (
+                f"Hi! Your flight {flight} has been CANCELLED. "
+                f"Please call (832) 567-8050 to adjust your AvaLimo pickup."
+            )
+            _send_pingram_sms(phone, msg)
+            _FLIGHT_NOTIFIED.add(key)
+            print(f"Flight {flight} cancelled — notified {phone}", file=sys.stderr, flush=True)
+        elif status == "delayed":
+            msg = (
+                f"Hi! Your flight {flight} is DELAYED. "
+                f"We're monitoring it and will be there when you land. "
+                f"Call (832) 567-8050 for changes."
+            )
+            _send_pingram_sms(phone, msg)
+            _FLIGHT_NOTIFIED.add(key)
+            print(f"Flight {flight} delayed — notified {phone}", file=sys.stderr, flush=True)
+
+
+def _flight_monitor_loop():
+    while True:
+        try:
+            _monitor_flights()
+        except Exception as e:
+            print(f"Flight monitor error: {e}", file=sys.stderr, flush=True)
+        time.sleep(600)
+
+
 def _reminder_loop():
     while True:
         try:
@@ -793,7 +896,8 @@ def _reminder_loop():
 
 _ensure_google_files()
 threading.Thread(target=_reminder_loop, daemon=True).start()
-print("Calendar reminder scheduler started", file=sys.stderr, flush=True)
+threading.Thread(target=_flight_monitor_loop, daemon=True).start()
+print("Calendar reminder + flight monitor schedulers started", file=sys.stderr, flush=True)
 
 
 # ─── AI Chat Endpoint ───
