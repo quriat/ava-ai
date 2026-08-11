@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
-    <meta name="description" content="{{ meta_desc }}">
+    <title>{{ title | safe }}</title>
+    <meta name="description" content="{{ meta_desc | safe }}">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#0a0a0a">
     {{ sc_meta | safe }}
@@ -14,8 +14,8 @@
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <meta property="og:locale" content="en_US">
     <meta property="og:site_name" content="AvaLimo">
-    <meta property="og:title" content="{{ title }}">
-    <meta property="og:description" content="{{ meta_desc }}">
+    <meta property="og:title" content="{{ title | safe }}">
+    <meta property="og:description" content="{{ meta_desc | safe }}">
     <meta property="og:url" content="{{ canonical_url }}">
     <meta property="og:type" content="{{ og_type }}">
     <meta property="og:image" content="{{ og_image }}">
@@ -23,8 +23,8 @@
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@AvaLimoHTX">
-    <meta name="twitter:title" content="{{ title }}">
-    <meta name="twitter:description" content="{{ meta_desc }}">
+    <meta name="twitter:title" content="{{ title | safe }}">
+    <meta name="twitter:description" content="{{ meta_desc | safe }}">
     <meta name="twitter:image" content="{{ og_image }}">
     <script type="application/ld+json">
     {
@@ -37,16 +37,16 @@
       "email": "dispatch@avalimo.net",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Houston",
-        "addressLocality": "Houston",
+        "streetAddress": "Lamb Creek",
+        "addressLocality": "Missouri City",
         "addressRegion": "TX",
-        "postalCode": "77001",
+        "postalCode": "77459",
         "addressCountry": "US"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": 29.7604,
-        "longitude": -95.3698
+        "latitude": 29.5269,
+        "longitude": -95.5341
       },
       "priceRange": "$$",
       "openingHours": "Mo-Su 00:00-23:59",
@@ -140,6 +140,7 @@
         .hero-subtitle::after { left: 100%; }
         .hero h1 { font-family: var(--serif); font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 400; line-height: 1.05; margin-bottom: 8px; animation: fadeUp 1s ease 0.5s both; letter-spacing: -1px; }
         .hero h1 em { font-style: italic; color: var(--gold); position: relative; }
+        .hero h1 .gold { color: var(--gold); }
         .hero-desc { font-size: 1.05rem; font-weight: 300; color: rgba(255,255,255,0.95); max-width: 480px; margin: 28px auto 50px; line-height: 1.9; animation: fadeUp 1s ease 0.7s both; letter-spacing: 0.3px; }
         .hero-buttons { display: flex; gap: 16px; animation: fadeUp 1s ease 0.9s both; }
         .btn-gold { padding: 16px 48px; background: var(--gold); color: var(--black); border: none; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); display: inline-block; position: relative; overflow: hidden; }
@@ -314,6 +315,7 @@
         /* ===== BLOG POST PAGE ===== */
         .page-header { padding: 140px 60px 50px; text-align: center; background: transparent; }
         .page-header h1, .page-header h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 400; letter-spacing: -0.5px; }
+        .page-header h1 .gold, .page-header h2 .gold { color: var(--gold); }
         .page-header p { color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-top: 12px; }
         .post-content { max-width: 680px; margin: 0 auto; padding: 0 60px 80px; background: transparent; }
         .post-content h2 { font-family: var(--serif); font-size: 1.7rem; margin: 30px 0 14px; letter-spacing: -0.3px; }
@@ -467,11 +469,11 @@
 
 {% if content_key == 'blog' and featured_post %}
 <!-- Blog post -->
-<div class="page-header"><div class="container"><h2>{{ featured_post.title }}</h2><p>{{ featured_post.date }} &bull; {{ featured_post.read }}</p></div></div>
+<div class="page-header"><div class="container"><h1>{{ page_h1 | safe }}</h1><p>{{ featured_post.date }} &bull; {{ featured_post.read }}</p></div></div>
 <section class="post-content">{{ featured_post.content | safe }}</section>
 
 {% elif content_key == 'services' %}
-<div class="page-header"><h2>Our <span style="color:var(--gold)">Services</span></h2><p>Premium transportation for every occasion across Greater Houston.</p></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1><p>Premium transportation for every occasion across Greater Houston.</p></div>
 <section class="services-section" style="padding-top:0;background:transparent">
 <div class="services-grid">
 <div class="service-card reveal"><div class="service-icon">✈️</div><h4>Airport Transfers</h4><p>Professional IAH & Hobby transfers with real-time flight tracking, meet & greet, and luggage assistance.</p></div>
@@ -484,7 +486,7 @@
 </section>
 
 {% elif content_key == 'fleet' %}
-<div class="page-header"><h2>Our <span style="color:var(--gold)">Fleet</span></h2><p>Every vehicle meticulously maintained for your comfort and safety.</p></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1><p>Every vehicle meticulously maintained for your comfort and safety.</p></div>
 <section class="fleet-section" style="padding-top:0">
 <div class="fleet-grid">
 <div class="fleet-card reveal">
@@ -503,11 +505,11 @@
 </section>
 
 {% elif content_key == 'blog' %}
-<div class="page-header"><h1>AvaLimo <span style="color:var(--gold)">Blog</span></h1><p>Expert tips on airports, events, and getting around Houston in style.</p></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1><p>Expert tips on airports, events, and getting around Houston in style.</p></div>
 <section class="blog-section" style="padding-top:0"><div class="blog-grid">{{ blog_posts_html | safe }}</div></section>
 
 {% elif content_key == 'flight-status' %}
-<div class="page-header"><h2>Real-Time <span style="color:var(--gold)">Flight Status</span></h2><p>Track any flight in real time. We monitor your flight so we're there when you land — early or delayed.</p></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1><p>Track any flight in real time. We monitor your flight so we're there when you land — early or delayed.</p></div>
 <section class="quote-section" style="padding-top:0">
 <div class="quote-grid">
 <div>
@@ -541,7 +543,7 @@ function trackFlight(){
 </script>
 
 {% elif content_key == 'book' %}
-<div class="page-header"><h2>Book Your <span style="color:var(--gold)">Ride</span></h2><p>Reserve your Houston luxury chauffeur service online.</p></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1><p>Reserve your Houston luxury chauffeur service online.</p></div>
 <section class="quote-section" style="padding-top:0">
 <div class="quote-grid">
 <div><p class="section-label">Request Your Quote</p><h2 class="section-title">A flat rate, sent in minutes.</h2><p class="section-desc">Never a surge. Tell us where you're going and we'll respond with a transparent price.</p><p style="margin-top:35px;color:var(--gray);font-size:0.9rem;">Or call dispatch anytime:</p><p style="font-family:var(--serif);font-size:2rem;color:var(--gold);margin-top:10px;">(832) 567-8050</p><p style="color:var(--gray);font-size:0.9rem;margin-top:8px;">Text us: <a href="sms:+18322254911" style="color:var(--gold)">(832) 225-4911</a></p></div>
@@ -563,15 +565,15 @@ function trackFlight(){
 </section>
 
 {% elif content_key == 'contact' %}
-<div class="page-header"><h2>Contact <span style="color:var(--gold)">AvaLimo</span></h2><p>Get in touch. We're available 24/7.</p></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1><p>Get in touch. We're available 24/7.</p></div>
 <section style="text-align:center;padding:0 60px 130px">
 <p style="font-family:var(--serif);font-size:2.5rem;color:var(--gold);margin-bottom:20px">(832) 567-8050</p>
 <p style="color:var(--gray);font-size:1rem;margin-bottom:10px">Text us: <a href="sms:+18322254911" style="color:var(--gold)">(832) 225-4911</a> &nbsp;·&nbsp; Email: <a href="mailto:adam@avalimo.net" style="color:var(--gold)">adam@avalimo.net</a></p>
-<p style="color:var(--gray);font-size:1rem">Houston, Texas</p>
+<p style="color:var(--gray);font-size:1rem">Missouri City, Texas</p>
 </section>
 
 {% elif content_key == 'faq' %}
-<div class="page-header"><h2>Frequently Asked <span style="color:var(--gold)">Questions</span></h2></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1></div>
 <section class="faq-section" style="padding-top:0">
 <div class="faq-container">
 <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">How do I book a ride? <span class="icon">+</span></button><div class="faq-answer"><p>Use the quote form, call (832) 567-8050, or email adam@avalimo.net. Online is fastest — we confirm within minutes.</p></div></div>
@@ -584,7 +586,7 @@ function trackFlight(){
 </section>
 
 {% elif content_key == 'deposit' %}
-<div class="page-header"><h2>Secure <span style="color:var(--gold)">Online Payment</span></h2><p>Pay your deposit or balance online.</p></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1><p>Pay your deposit or balance online.</p></div>
 <section class="deposit-section" style="padding:0 60px 130px;background:transparent">
 <div class="deposit-wrap">
     <div class="deposit-info">
@@ -724,7 +726,7 @@ async function handleDeposit(e) {
 </section>
 
 {% elif content_key == 'policy' %}
-<div class="page-header"><h2>AvaLimo <span style="color:var(--gold)">Company Policy</span></h2></div>
+<div class="page-header"><h1>{{ page_h1 | safe }}</h1></div>
 <section class="post-content" style="max-width:700px;margin:0 auto;padding:0 60px 130px;background:transparent">
 
 <h2 style="font-family:var(--serif);font-size:1.6rem;margin-bottom:16px">Privacy Policy</h2>
@@ -786,7 +788,7 @@ async function handleDeposit(e) {
     <!-- ===== HERO ===== -->
     <section class="hero" id="home">
         <p class="hero-subtitle">Houston's Premium Chauffeur Service</p>
-        <h1>Arrive in <em>absolute</em> luxury.</h1>
+        <h1>{{ page_h1 | safe }}</h1>
         <p class="hero-desc">Airport transfers, corporate travel, weddings and nights out. Flat rates, zero surge, always on time.</p>
         <div class="hero-buttons">
             <a href="#quote" class="btn-gold">Reserve Your Car</a>
