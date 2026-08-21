@@ -84,9 +84,9 @@ def main():
     if commit.returncode != 0:
         print("Nothing new to commit.")
         return 0
-    # Push to staging (the GitHub default branch and Coolify's deploy source)
+    # Push to main (the GitHub default branch and Coolify's deploy source)
     # regardless of which local branch is checked out.
-    subprocess.run(["git", "-C", REPO_DIR, "push", "origin", "HEAD:staging"], check=True)
+    subprocess.run(["git", "-C", REPO_DIR, "push", "origin", "HEAD:main"], check=True)
     print(f"Posted: {new['title']}")
     return 0
 
