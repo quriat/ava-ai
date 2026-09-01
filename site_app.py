@@ -201,7 +201,7 @@ PAGE_META = {
     "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "blog": { "title": "Blog — AvaLimo | Houston Limo Service Insights & Tips", "desc": "Expert guides on Houston airport transfers, wedding limo tips, corporate travel, and luxury transportation. Daily articles from Houston's premier chauffeur service.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "flight-status": { "title": "Flight Status — AvaLimo | Real-Time Flight Tracker", "desc": "Track your flight in real-time. Free flight status tool for IAH, Hobby & all airlines.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
-    "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 567-8050 or message us online. 24/7 dispatch.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "contact": { "title": "Contact — AvaLimo | Houston Limo Service", "desc": "Get in touch with AvaLimo. Call (832) 917-6331 or message us online. 24/7 dispatch.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "faq": { "title": "FAQ — AvaLimo | Frequently Asked Questions", "desc": "Answers to common questions about booking, pricing, cancellations & more.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "policy": { "title": "Policy — AvaLimo | Company Policy", "desc": "AvaLimo company policy: booking, cancellation, refund & privacy terms.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "deposit": { "title": "Pay Online — AvaLimo | Secure Payment Portal", "desc": "Pay your deposit or balance online. Secure Square payment portal for AvaLimo reservations.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
@@ -719,7 +719,7 @@ def _check_calendar_reminders():
             f"Hi {summary}, this is AvaLimo confirming your "
             f"{'pickup at ' + pickup_loc + ' ' if pickup_loc else ''}"
             f"tomorrow at {pickup_str}. "
-            f"Reply or call (832) 567-8050 for changes."
+            f"Reply or call (832) 917-6331 for changes."
         )
         _send_textbelt_sms(phone, msg)
         _NOTIFIED_EVENTS.add(eid)
@@ -748,7 +748,7 @@ CHAT_SYSTEM_PROMPT = """You are the AvaLimo AI Assistant for AvaLimo, Houston's 
 
 BUSINESS INFO:
 - Company: AvaLimo
-- Phone: (832) 567-8050
+- Phone: (832) 917-6331
 - Website: avalimo.net
 - Location: Houston, TX
 - Hours: 24/7 service
@@ -789,7 +789,7 @@ Houston, Katy, Sugar Land, The Woodlands, Memorial, River Oaks, Galleria, Downto
 
 BOOKING:
 - Online: avalimo.net/book
-- Phone: (832) 567-8050
+- Phone: (832) 917-6331
 - Minimum 2-hour advance recommended
 - Same-day bookings available (call to check)
 
