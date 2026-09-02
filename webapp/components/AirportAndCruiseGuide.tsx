@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plane, Anchor, ChevronDown, ChevronUp, HelpCircle, MapPin, CheckCircle2, ShieldCheck, Clock, Phone, AlertCircle } from 'lucide-react';
 import { AIRPORT_GUIDES, GALVESTON_CRUISE_INFO, FAQS, POPULAR_ROUTES, COMPANY_INFO } from '../data/avalimoData';
 
@@ -10,6 +10,13 @@ interface AirportAndCruiseGuideProps {
 const AirportAndCruiseGuide: React.FC<AirportAndCruiseGuideProps> = ({ onBookAirport, onBookCruise }) => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeTab, setActiveTab] = useState<'airports' | 'cruise' | 'rates' | 'faqs'>('airports');
+
+  // Open the FAQ tab when the navbar "FAQ" link is used
+  useEffect(() => {
+    const openFaqs = () => setActiveTab('faqs');
+    window.addEventListener('avalimo:open-faqs', openFaqs);
+    return () => window.removeEventListener('avalimo:open-faqs', openFaqs);
+  }, []);
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);

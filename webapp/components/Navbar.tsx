@@ -19,6 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
     { name: 'Rates', value: 'rates' },
     { name: 'End of Trip Review', value: 'review-dispatcher', isHighlight: true },
     { name: 'Reviews', value: 'reviews' },
+    { name: 'Blog', value: 'blog' },
     { name: 'FAQ', value: 'faq' },
   ];
 
@@ -64,6 +65,14 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
             >
               <Phone size={13} className="mr-1.5 text-amber-500 animate-bounce-slow" />
               <span>{COMPANY_INFO.phone}</span>
+            </a>
+            <a 
+              href="tel:+18329176331" 
+              className="hidden lg:flex items-center text-gray-300 hover:text-amber-300 font-semibold tracking-wide"
+              title="AI Concierge Line — 24/7"
+            >
+              <Phone size={12} className="mr-1.5 text-gray-500" />
+              <span>AI: {COMPANY_INFO.aiConciergePhone}</span>
             </a>
           </div>
         </div>

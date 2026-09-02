@@ -823,9 +823,15 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
               >
                 Call Dispatch: {COMPANY_INFO.phone}
               </a>
+              <a
+                href="tel:+18329176331"
+                className="w-full bg-neutral-800 hover:bg-neutral-700 text-gray-200 hover:text-amber-300 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center"
+              >
+                AI Concierge: {COMPANY_INFO.aiConciergePhone}
+              </a>
               <button
                 onClick={() => setSubmittedBooking(null)}
-                className="w-full bg-neutral-800 hover:bg-neutral-700 text-gray-300 py-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors"
+                className="w-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-gray-300 py-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors"
               >
                 Close & Return
               </button>

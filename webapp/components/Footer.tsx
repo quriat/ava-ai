@@ -36,6 +36,12 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectVehicle }) => {
             >
               Direct: {COMPANY_INFO.phone}
             </a>
+            <a
+              href="tel:+18329176331"
+              className="bg-transparent hover:bg-neutral-900 text-gray-200 hover:text-amber-300 border border-neutral-700 px-6 py-3.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all text-center"
+            >
+              AI Line: {COMPANY_INFO.aiConciergePhone}
+            </a>
           </div>
         </div>
       </div>

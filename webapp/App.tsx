@@ -48,10 +48,16 @@ function App() {
     let elementId = '';
     if (page === 'services' || page === 'services-section') elementId = 'services-section';
     if (page === 'fleet' || page === 'fleet-section') elementId = 'fleet-section';
-    if (page === 'rates' || page === 'rates-section' || page === 'airports' || page === 'galveston') elementId = 'rates-section';
+    if (page === 'rates' || page === 'rates-section' || page === 'airports' || page === 'galveston' || page === 'airport-galveston') elementId = 'rates-section';
     if (page === 'areas' || page === 'areas-section') elementId = 'areas-section';
     if (page === 'reviews' || page === 'reviews-section') elementId = 'reviews-section';
+    if (page === 'blog' || page === 'blog-section') elementId = 'blog-section';
     if (page === 'book' || page === 'contact' || page === 'booking-section') elementId = 'booking-section';
+    if (page === 'faq') {
+      // FAQs live as a tab inside the Airport & Galveston guide — open that tab, then scroll
+      window.dispatchEvent(new CustomEvent('avalimo:open-faqs'));
+      elementId = 'rates-section';
+    }
 
     if (elementId) {
       const element = document.getElementById(elementId);

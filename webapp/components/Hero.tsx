@@ -110,7 +110,14 @@ const Hero: React.FC<HeroProps> = ({ onBookNow, onViewFleet, onOpenAirportGuide 
                 className="inline-flex items-center text-xs text-amber-400 hover:text-amber-300 font-semibold px-3 py-2"
               >
                 <Phone size={14} className="mr-1.5 animate-pulse" />
-                24/7 Direct: {COMPANY_INFO.phone}
+                24/7 Dispatch: {COMPANY_INFO.phone}
+              </a>
+              <a 
+                href="tel:+18329176331"
+                className="inline-flex items-center text-xs text-gray-300 hover:text-amber-300 font-semibold px-3 py-2"
+              >
+                <Phone size={13} className="mr-1.5 text-gray-500" />
+                AI Concierge: {COMPANY_INFO.aiConciergePhone}
               </a>
             </div>
           </div>
