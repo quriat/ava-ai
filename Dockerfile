@@ -35,4 +35,4 @@ COPY deploy/supervisord-v2.conf /etc/supervisor/conf.d/supervisord-v2.conf
 RUN mkdir -p /var/log/supervisor /var/log/nginx /var/lib/nginx
 
 EXPOSE 5002
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord-v2.conf"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
