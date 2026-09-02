@@ -65,7 +65,7 @@
         "fromEmail": "adam@avalimo.net",
         "toEmail": "={{ $json.customer_email }}",
         "subject": "How was your ride with AvaLimo?",
-        "text": "Hi {{ $json.customer_name }},\n\nThank you for choosing AvaLimo for your {{ $json.service }} yesterday. We hope you had a great experience!\n\nIf you have a moment, we would really appreciate a quick review on Google. It helps other Houston travelers find us and keeps our team motivated to deliver the best service.\n\nLeave a review: https://search.google.com/local/writereview?placeid=YOUR_GOOGLE_PLACE_ID\n\nThank you for supporting a local Houston business!\n\nBest regards,\nAdam J\nAvaLimo Houston\n8325678050\n"
+        "text": "Hi {{ $json.customer_name }},\n\nThank you for choosing AvaLimo for your {{ $json.service }} yesterday. We hope you had a great experience!\n\nIf you have a moment, we would really appreciate a quick review on Google. It helps other Houston travelers find us and keeps our team motivated to deliver the best service.\n\nLeave a review: https://search.google.com/local/writereview?placeid=ChIJSZpoR7TvQIYRWBRoVXu3j7w\n\nThank you for supporting a local Houston business!\n\nBest regards,\nAdam J\nAvaLimo Houston\n8325678050\n"
       },
       "id": "email-review",
       "name": "Send Review Email",
@@ -127,7 +127,7 @@
     },
     {
       "parameters": {
-        "functionCode": "// Build SMS message\nconst ride = $input.first().json;\nconst reviewUrl = 'https://search.google.com/local/writereview?placeid=YOUR_GOOGLE_PLACE_ID';\nconst shortUrl = reviewUrl; // Use bit.ly or similar for short URL\n\nreturn [{\n  json: {\n    to: ride.customer_phone,\n    message: `Hi ${ride.customer_name}, thanks for riding with AvaLimo! Quick review? ${shortUrl} - Adam`,\n    customer_name: ride.customer_name,\n    service: ride.service\n  }\n}];"
+        "functionCode": "// Build SMS message\nconst ride = $input.first().json;\nconst reviewUrl = 'https://search.google.com/local/writereview?placeid=ChIJSZpoR7TvQIYRWBRoVXu3j7w';\nconst shortUrl = reviewUrl; // Use bit.ly or similar for short URL\n\nreturn [{\n  json: {\n    to: ride.customer_phone,\n    message: `Hi ${ride.customer_name}, thanks for riding with AvaLimo! Quick review? ${shortUrl} - Adam`,\n    customer_name: ride.customer_name,\n    service: ride.service\n  }\n}];"
       },
       "id": "sms-message",
       "name": "Build SMS",
