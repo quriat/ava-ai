@@ -148,7 +148,7 @@ const TestimonialsAndAreas: React.FC<TestimonialsAndAreasProps> = ({ onBookNow, 
                 </button>
                 
                 <a
-                  href="https://search.google.com/local/writereview?placeid=ChIJSZpoR7TvQIYRWBRoVXu3j7w"
+                  href="https://search.google.com/local/writereview?placeid=ChIJc1e3WqDEQIYRU94L0eH_pQI"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-neutral-800 hover:bg-neutral-700 text-gray-200 font-semibold py-3.5 px-5 rounded-xl text-xs tracking-wider uppercase transition-colors border border-neutral-700 flex items-center justify-center space-x-1.5"

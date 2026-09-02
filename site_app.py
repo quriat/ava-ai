@@ -452,6 +452,22 @@ def _fire_n8n_review(data):
         print(f"n8n review webhook failed: {e}")
 
 
+@app.route("/api/blog")
+def api_blog():
+    """Latest blog posts for the React homepage (oldest-first storage)."""
+    posts = [
+        {
+            "slug": p.get("slug", ""),
+            "title": p.get("title", ""),
+            "summary": p.get("summary", ""),
+            "date": p.get("date", ""),
+        }
+        for p in reversed(BLOG_POSTS)
+        if p.get("slug")
+    ][:4]
+    return jsonify({"status": "ok", "posts": posts})
+
+
 @app.route("/api/book", methods=["POST"])
 def book_ride():
     data = request.get_json() or {}

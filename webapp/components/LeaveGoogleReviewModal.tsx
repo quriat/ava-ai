@@ -52,7 +52,7 @@ const QUICK_PROMPTS = [
 ];
 
 // Official Google Review / Search Link for AvaLimo Houston
-export const DEFAULT_GOOGLE_REVIEW_URL = 'https://www.google.com/maps/search/?api=1&query=AvaLimo+Houston+Luxury+Transportation';
+export const DEFAULT_GOOGLE_REVIEW_URL = 'https://search.google.com/local/writereview?placeid=ChIJSZpoR7TvQIYRWBRoVXu3j7w';
 
 export const getGoogleReviewUrl = () => {
   try {

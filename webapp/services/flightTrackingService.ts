@@ -268,7 +268,87 @@ const generateRealisticFlightData = (
 };
 
 /**
- * Main Flight Tracker Function using Gemini with Fallback
+ * Real live flight data from the AvaLimo backend (/api/flight, Aviationstack-backed).
+ * Returns null when the backend has no data for this flight (caller falls back to AI).
+ */
+const fetchLiveFlightData = async (
+  cleanInput: string,
+  targetDate: string,
+  flightType: 'arrival' | 'departure',
+  customBuffer?: number
+): Promise<FlightDetails | null> => {
+  try {
+    const q = cleanInput.replace(/\s+/g, '');
+    const resp = await fetch(`/api/flight?q=${encodeURIComponent(q)}`);
+    if (!resp.ok) return null;
+    const d = await resp.json();
+    if (d?.status !== 'ok' || !d.route) return null;
+
+    const [depIata, arrIata] = String(d.route).split('→').map((s: string) => s.trim());
+    // We only chauffeur arrivals into Houston; treat IAH/HOU as destination
+    const arrivingHouston = arrIata === 'IAH' || arrIata === 'HOU';
+    const destCode = arrivingHouston ? arrIata : (depIata === 'IAH' || depIata === 'HOU' ? depIata : arrIata);
+    const isHobby = destCode === 'HOU';
+    const isIntl = !/^(UA|WN|AA|DL|NK|F9|B6|AS|MQ|OO|YX|9E|G4)$/i.test(String(d.airline || ''));
+
+    const prefixMatch = cleanInput.match(/^([A-Z]{2})/);
+    const airlineCode = prefixMatch ? prefixMatch[1] : 'UA';
+    const number = (cleanInput.match(/(\d+)/) || [])[1] || '';
+    const airlineInfo = AIRLINE_MAP[airlineCode] || { name: d.airline || 'Airline', code: airlineCode, defaultAirport: 'IAH', isIntl: false };
+    const terminal = d.term || (isHobby ? 'Main Terminal' : 'Terminal C');
+    const gate = d.gate && d.gate !== '—' ? `Gate ${d.gate}` : undefined;
+
+    const estArr = d.est || d.sched || '14:30';
+    const schedArr = d.sched || estArr;
+    const bufferMinutes = customBuffer !== undefined
+      ? customBuffer
+      : isIntl ? 65 : 35;
+
+    return {
+      flightNumber: `${airlineInfo.code} ${number}`.trim() || cleanInput,
+      airline: d.airline || airlineInfo.name,
+      airlineCode: airlineInfo.code,
+      flightType,
+      isInternational: isIntl,
+      status: (() => {
+        const s = String(d.status || '').toLowerCase();
+        if (s.includes('landed')) return 'Landed';
+        if (s.includes('delay')) return 'Delayed';
+        if (s.includes('en') && s.includes('route')) return 'En Route';
+        if (s.includes('cancel')) return 'Delayed';
+        if (s.includes('early')) return 'Early';
+        return 'On Time';
+      })(),
+      delayMinutes: 0,
+      aircraft: d.aircraft || undefined,
+      origin: {
+        city: depIata || 'Origin',
+        code: depIata || 'ORIG',
+        airportName: depIata ? `${depIata} Airport` : 'Origin Airport',
+        scheduledDeparture: d.sched || '—',
+      },
+      destination: {
+        city: 'Houston',
+        code: destCode,
+        airportName: isHobby ? 'William P. Hobby Airport (HOU)' : 'George Bush Intercontinental Airport (IAH)',
+        scheduledArrival: schedArr,
+        estimatedArrival: estArr,
+        terminal,
+        gate,
+        baggageClaim: undefined,
+      },
+      recommendedBufferMinutes: bufferMinutes,
+      suggestedPickupTime: addMinutesToTime(estArr, bufferMinutes),
+      suggestedPickupDate: targetDate,
+      trackingNote: `LIVE data: ${d.airline || airlineInfo.name} ${cleanInput} — status ${d.status || 'tracked'}, arrival ${estArr} at ${destCode} ${terminal}. Chauffeur monitors wheels-down automatically.`
+    };
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Main Flight Tracker Function: live backend data first, Gemini second, local generator last
  */
 export const trackFlightNumber = async (
   flightInput: string,
@@ -282,7 +362,11 @@ export const trackFlightNumber = async (
 
   const cleanInput = flightInput.trim().toUpperCase();
 
-  // Try Gemini AI real-time tracking if API key is present
+  // 1) Real live data from the backend (Aviationstack via /api/flight)
+  const live = await fetchLiveFlightData(cleanInput, targetDate, flightType, customBufferMinutes);
+  if (live) return live;
+
+  // 2) Try Gemini AI tracking if API key is present
   const ai = getAiClient();
   if (ai) {
     try {

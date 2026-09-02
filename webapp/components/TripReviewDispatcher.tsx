@@ -25,8 +25,9 @@ import {
 } from 'lucide-react';
 import { COMPANY_INFO } from '../data/avalimoData';
 
-// Official Working Google Maps Search / Business Link for AvaLimo Houston
-export const DEFAULT_GOOGLE_REVIEW_URL = 'https://www.google.com/maps/search/?api=1&query=AvaLimo+Houston+Luxury+Transportation';
+// Official Google review-composer deep link for AvaLimo Houston Luxury Transportation
+// (opens the star-rating dialog directly — verified against the Business Profile g.page link)
+export const DEFAULT_GOOGLE_REVIEW_URL = 'https://search.google.com/local/writereview?placeid=ChIJSZpoR7TvQIYRWBRoVXu3j7w';
 export const AVALIMO_REVIEW_LANDING_URL = 'https://avalimo.net?review=true';
 
 export interface DispatchedReviewLog {
