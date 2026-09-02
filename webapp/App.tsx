@@ -5,6 +5,7 @@ import Services from './components/Services';
 import Fleet from './components/Fleet';
 import AirportAndCruiseGuide from './components/AirportAndCruiseGuide';
 import TestimonialsAndAreas from './components/TestimonialsAndAreas';
+import BlogSection from './components/BlogSection';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
 import AIConcierge from './components/AIConcierge';
@@ -159,6 +160,9 @@ function App() {
               onBookNow={handleSelectServiceArea}
             />
           </div>
+
+          {/* Latest Blog Posts (links to /blog) */}
+          <BlogSection />
 
           {/* Full-Featured Reservation Engine */}
           <div id="booking-section">
