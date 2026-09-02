@@ -8,7 +8,6 @@ import TestimonialsAndAreas from './components/TestimonialsAndAreas';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
 import AIConcierge from './components/AIConcierge';
-import CorporatePortal from './components/CorporatePortal';
 import TripReviewDispatcher from './components/TripReviewDispatcher';
 import LeaveGoogleReviewModal from './components/LeaveGoogleReviewModal';
 import { TripType } from './types';
@@ -41,7 +40,7 @@ function App() {
   const handleNavigation = (page: string) => {
     setCurrentPage(page);
     
-    if (page === 'home' || page === 'corporate' || page === 'review-dispatcher') {
+    if (page === 'home' || page === 'review-dispatcher') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -110,20 +109,10 @@ function App() {
       {/* Navigation Bar */}
       <Navbar onNavigate={handleNavigation} currentPage={currentPage} />
       
-      {currentPage === 'corporate' ? (
-        <main>
-          <CorporatePortal 
-            onBookForEmployee={(employeeData) => {
-              setBookingPrefill({
-                pickupLocation: '1200 Smith St (Downtown)',
-                dropoffLocation: 'George Bush Intercontinental Airport (IAH)',
-                specialInstructions: `Corporate Traveler: ${employeeData.name || ''} (${employeeData.costCenter || ''})`
-              });
-              handleNavigation('booking-section');
-            }}
-          />
-        </main>
-      ) : currentPage === 'review-dispatcher' ? (
+      {/* NOTE: Corporate Portal + internal Review Dispatcher are intentionally NOT
+          reachable from the public site. They are internal tools, re-enable only
+          behind real authentication. */}
+      {currentPage === 'review-dispatcher' ? (
         <main>
           <TripReviewDispatcher />
         </main>

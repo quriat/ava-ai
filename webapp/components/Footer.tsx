@@ -159,8 +159,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectVehicle }) => {
               <Star size={12} className="fill-amber-400" />
               <span>Google Reviews (4.9★)</span>
             </button>
-            <button onClick={() => onNavigate('corporate')} className="text-gray-300 hover:text-white transition-colors">
-              Corporate Portal & Invoicing
+            <button onClick={() => onNavigate('rates-section')} className="text-gray-300 hover:text-white transition-colors">
+              Corporate Transportation
             </button>
             <button onClick={() => onNavigate('rates-section')} className="hover:text-gray-300 transition-colors">
               Rates & Airports

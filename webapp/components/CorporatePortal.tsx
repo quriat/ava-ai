@@ -60,13 +60,13 @@ export const CorporatePortal: React.FC<CorporatePortalProps> = ({
   onClose
 }) => {
   // Auth state
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  const [selectedAccount, setSelectedAccount] = useState<CorporateAccount>(DEMO_CORPORATE_ACCOUNTS[0]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [selectedAccount, setSelectedAccount] = useState<CorporateAccount | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'invoices' | 'employees' | 'book'>('overview');
   
   // Login form state (if logged out)
-  const [loginEmail, setLoginEmail] = useState('e.rostova@apexenergy.com');
-  const [loginPassword, setLoginPassword] = useState('••••••••••••');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [showApplyModal, setShowApplyModal] = useState(false);
 
@@ -128,11 +128,16 @@ export const CorporatePortal: React.FC<CorporatePortalProps> = ({
   const [bookingCostCenter, setBookingCostCenter] = useState('CC-EXEC-101');
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
-  // Handle Login
+  // Handle Login — only authorized corporate contacts/employees may sign in.
+  // Accepted demo password for all accounts: "avalimo2024" (replace with real SSO later).
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail.trim()) {
       setLoginError('Please enter a valid corporate email address');
+      return;
+    }
+    if (loginPassword !== 'avalimo2024') {
+      setLoginError('Incorrect password. Contact your account manager if you need access.');
       return;
     }
     const matched = DEMO_CORPORATE_ACCOUNTS.find(
@@ -144,18 +149,7 @@ export const CorporatePortal: React.FC<CorporatePortalProps> = ({
       setIsLoggedIn(true);
       setLoginError('');
     } else {
-      // Default to Apex Energy for seamless demo
-      setSelectedAccount(DEMO_CORPORATE_ACCOUNTS[0]);
-      setIsLoggedIn(true);
-      setLoginError('');
-    }
-  };
-
-  const handleAccountSwitch = (accountId: string) => {
-    const acc = DEMO_CORPORATE_ACCOUNTS.find(a => a.id === accountId);
-    if (acc) {
-      setSelectedAccount(acc);
-      setSelectedBookingEmployeeId(acc.employees[0]?.id || '');
+      setLoginError('This email is not registered to a corporate account. Please contact dispatch at (832) 567-8050.');
     }
   };
 
@@ -377,18 +371,14 @@ export const CorporatePortal: React.FC<CorporatePortalProps> = ({
           <div className="mb-6 p-3 bg-neutral-950 rounded-xl border border-amber-500/20 text-xs">
             <div className="font-semibold text-amber-400 mb-2 flex items-center">
               <Sparkles size={14} className="mr-1.5" />
-              1-Click Demo Corporate Accounts:
+              Registered Corporate Accounts:
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {DEMO_CORPORATE_ACCOUNTS.map((acc) => (
                 <button
                   key={acc.id}
                   type="button"
-                  onClick={() => {
-                    setSelectedAccount(acc);
-                    setLoginEmail(acc.primaryContactEmail);
-                    setIsLoggedIn(true);
-                  }}
+                  onClick={() => setLoginEmail(acc.primaryContactEmail)}
                   className="text-left p-2 rounded bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 hover:border-amber-500/50 transition-colors"
                 >
                   <div className="font-bold text-white text-[11px] truncate">{acc.companyName}</div>
@@ -601,23 +591,8 @@ export const CorporatePortal: React.FC<CorporatePortalProps> = ({
           </div>
         </div>
 
-        {/* Corporate Controls & Demo Switcher */}
+        {/* Corporate Controls (client switcher removed — access is per logged-in account) */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-          <div className="flex items-center space-x-1.5 bg-neutral-950 px-3 py-1.5 rounded-lg border border-neutral-800 text-xs">
-            <span className="text-gray-400 text-[11px] hidden sm:inline">Switch Client:</span>
-            <select
-              value={selectedAccount.id}
-              onChange={(e) => handleAccountSwitch(e.target.value)}
-              className="bg-transparent text-white text-xs font-semibold focus:outline-none cursor-pointer"
-            >
-              {DEMO_CORPORATE_ACCOUNTS.map(a => (
-                <option key={a.id} value={a.id} className="bg-neutral-900 text-white">
-                  {a.companyName}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <button
             onClick={() => setActiveTab('book')}
             className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs uppercase tracking-wider flex items-center space-x-1.5 shadow-md"
@@ -627,7 +602,7 @@ export const CorporatePortal: React.FC<CorporatePortalProps> = ({
           </button>
 
           <button
-            onClick={() => setIsLoggedIn(false)}
+            onClick={() => { setIsLoggedIn(false); setSelectedAccount(null); }}
             title="Sign out of corporate portal"
             className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-neutral-800 transition-colors"
           >

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Phone, Shield, Plane, Clock, Mail, Building2, MessageSquareText } from 'lucide-react';
+import { Menu, X, Phone, Shield, Plane, Clock, Mail, MessageSquareText } from 'lucide-react';
 import { COMPANY_INFO } from '../data/avalimoData';
 import ServiceAlertsBanner from './ServiceAlertsBanner';
 
@@ -17,7 +17,6 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
     { name: 'Services', value: 'services' },
     { name: 'Airport & Galveston', value: 'airport-galveston' },
     { name: 'Rates', value: 'rates' },
-    { name: 'Corporate Portal', value: 'corporate', isCorporate: true },
     { name: 'End of Trip Review', value: 'review-dispatcher', isHighlight: true },
     { name: 'Reviews', value: 'reviews' },
     { name: 'FAQ', value: 'faq' },
@@ -58,13 +57,6 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
             >
               <MessageSquareText size={12} className="mr-1 text-amber-400" />
               End-of-Trip Review App
-            </button>
-            <button
-              onClick={() => handleNav('corporate')}
-              className="hidden sm:flex items-center text-gray-300 hover:text-white transition-colors bg-neutral-900 px-2 py-0.5 rounded text-[11px] font-semibold border border-neutral-800"
-            >
-              <Building2 size={12} className="mr-1 text-amber-400" />
-              Corporate
             </button>
             <a 
               href={`tel:${COMPANY_INFO.phoneRaw}`} 
@@ -107,12 +99,12 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
                 className={`text-xs uppercase tracking-widest font-medium transition-all py-1 flex items-center ${
                   currentPage === link.value 
                     ? 'text-amber-400 border-b-2 border-amber-400 font-semibold' 
-                    : link.isCorporate 
-                      ? 'text-amber-300 hover:text-amber-200 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-500/30'
+                    : link.isHighlight
+                      ? 'text-amber-300 hover:text-amber-200'
                       : 'text-gray-300 hover:text-amber-400'
                 }`}
               >
-                {link.isCorporate && <Building2 size={12} className="mr-1 text-amber-400" />}
+                {link.isHighlight && <MessageSquareText size={12} className="mr-1 text-amber-400" />}
                 {link.name}
               </button>
             ))}
@@ -120,13 +112,6 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
 
           {/* Right Action Button */}
           <div className="hidden md:flex items-center space-x-3">
-            <button 
-              onClick={() => handleNav('corporate')}
-              className="bg-neutral-900 hover:bg-neutral-800 border border-amber-500/40 text-amber-400 hover:text-amber-300 px-4 py-2.5 rounded text-xs font-semibold tracking-wider uppercase transition-all flex items-center"
-            >
-              <Building2 size={13} className="mr-1.5" />
-              Corporate
-            </button>
             <button 
               onClick={() => handleNav('book')}
               className="relative group overflow-hidden bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white px-5 py-2.5 rounded text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-lg shadow-amber-900/30 hover:shadow-amber-600/40 hover:-translate-y-0.5"
