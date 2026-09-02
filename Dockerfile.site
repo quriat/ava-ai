@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends nginx superviso
 
 WORKDIR /app
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir --no-install-recommends -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Flask backend (API + /deposit + /blog + legacy pages)
 COPY site_app.py index.html page_content.json blog_posts.json build.info /app/
