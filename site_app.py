@@ -499,8 +499,12 @@ def flight_track():
                 "access_key": AV_API_KEY, "flight_iata": q
             }, timeout=10)
             data = resp.json()
-            if data.get("data"):
-                f = data["data"][0]
+            candidates = data.get("data") or []
+            # Prefer a Houston-bound arrival (our chauffeur territory), else fall back to first match
+            best = next((f for f in candidates
+                         if (f.get("arrival") or {}).get("iata") in ("IAH", "HOU")), None) or (candidates[0] if candidates else None)
+            if best:
+                f = best
                 dep = f.get("departure", {})
                 arr = f.get("arrival", {})
                 status = f.get("flight_status", "unknown")
