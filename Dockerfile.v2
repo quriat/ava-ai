@@ -32,7 +32,10 @@ COPY static /app/static
 # nginx + supervisor config
 COPY deploy/nginx-v2.conf /etc/nginx/sites-available/default
 COPY deploy/supervisord-v2.conf /etc/supervisor/conf.d/supervisord-v2.conf
-RUN mkdir -p /var/log/supervisor /var/log/nginx /var/lib/nginx
+COPY deploy/start.sh /start.sh
+RUN chmod +x /start.sh && mkdir -p /var/log/supervisor /var/log/nginx /var/lib/nginx
 
 EXPOSE 5002
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+  CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5002/', timeout=4)" || exit 1
+CMD ["/bin/bash", "/start.sh"]
