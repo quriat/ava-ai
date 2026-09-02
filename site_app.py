@@ -742,7 +742,15 @@ print("Calendar reminder scheduler started", file=sys.stderr, flush=True)
 
 # ─── AI Chat Endpoint ───
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
-openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
+if OPENAI_API_KEY:
+    try:
+        openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
+    except Exception as _e:
+        print(f"OpenAI client init failed — chat disabled: {_e}", file=sys.stderr, flush=True)
+        openai_client = None
+else:
+    print("OPENAI_API_KEY not set — chat endpoint disabled", file=sys.stderr, flush=True)
+    openai_client = None
 
 CHAT_SYSTEM_PROMPT = """You are the AvaLimo AI Assistant for AvaLimo, Houston's premier luxury limousine service.
 
@@ -814,6 +822,8 @@ RULES:
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
+    if openai_client is None:
+        return jsonify({"status": "error", "message": "AI chat is temporarily unavailable. Please call dispatch at (832) 567-8050."}), 503
     data = request.json
     messages = data.get("messages", [])
     full_messages = [{"role": "system", "content": CHAT_SYSTEM_PROMPT}] + messages
