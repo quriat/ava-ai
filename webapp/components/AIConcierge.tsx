@@ -10,7 +10,7 @@ interface Message {
 const AIConcierge: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', text: "Hello! I'm Avali, your luxury concierge. How can I assist you with your travel plans today?" }
+    { role: 'assistant', text: "Hello! I'm Avali, your luxury concierge. How can I assist you with your travel plans today?\n\nPrefer to talk? Call my AI line 24/7: (832) 917-6331" }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -59,10 +59,18 @@ const AIConcierge: React.FC = () => {
           <div className="bg-neutral-800 p-4 flex justify-between items-center border-b border-neutral-700">
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-              <h3 className="text-white font-semibold flex items-center">
-                <Sparkles size={16} className="mr-2 text-amber-500" />
-                Avali Concierge
-              </h3>
+              <div>
+                <h3 className="text-white font-semibold flex items-center">
+                  <Sparkles size={16} className="mr-2 text-amber-500" />
+                  Avali Concierge
+                </h3>
+                <a
+                  href="tel:+18329176331"
+                  className="text-[11px] text-amber-400 hover:text-amber-300 font-semibold"
+                >
+                  AI Line 24/7: (832) 917-6331
+                </a>
+              </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">
               <X size={20} />

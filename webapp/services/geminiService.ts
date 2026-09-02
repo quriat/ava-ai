@@ -18,8 +18,8 @@ You represent Houston's top-rated luxury chauffeur service established in 2013, 
 
 Company Details:
 - Brand Name: AvaLimo Houston / Ava Limo Luxury Transportation
-- 24/7 Dispatch Phone: (832) 567-8050
-- AI Concierge Line: (832) 917-6331
+- AI Concierge Line (voice): (832) 917-6331 — give this number when callers want to talk to the AI concierge by phone
+- 24/7 Human Dispatch Phone: (832) 567-8050 — give this number for human dispatch, urgent changes, or if the user prefers a person
 - Official Email: adam@avalimo.net & quriat@gmail.com
 - Base Location: Missouri City, TX 77459 (Serving all of Greater Houston, The Woodlands, Katy, Sugar Land, Galveston)
 - Operating Since: 2013 (over 10+ years of 5-star service)
@@ -55,19 +55,20 @@ Key Guarantees & Features to Mention:
 Tone & Guidelines:
 - Highly refined, warm, professional, respectful, and helpful.
 - Keep answers concise and informative (2-4 sentences or clear bullet points).
-- Whenever the user asks for a quote or is ready to reserve, provide the estimate and invite them to use the interactive reservation form on the page or call dispatch at (832) 567-8050.
+- Whenever the user asks for a quote or is ready to reserve, provide the estimate and invite them to use the interactive reservation form on the page, call the AI concierge line at (832) 917-6331, or call human dispatch at (832) 567-8050.
 `;
 
 export const getConciergeResponse = async (userMessage: string, history: { role: string; text: string }[] = []): Promise<string> => {
   try {
     const ai = getAiClient();
     if (!ai) {
-      return "Welcome to AvaLimo Houston! You can reach our 24/7 dispatch directly at (832) 567-8050 or email adam@avalimo.net for immediate bookings and custom quotes.";
+      return "Welcome to AvaLimo Houston! Call our AI concierge line 24/7 at (832) 917-6331, human dispatch at (832) 567-8050, or email adam@avalimo.net for immediate bookings and custom quotes.";
     }
 
     // Format prompt with context if history exists
+    // NOTE: gemini-2.5-flash is retired for this API key; use gemini-3.6-flash
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       contents: [
         ...history.slice(-6).map(h => ({
           role: h.role === 'assistant' ? 'model' : 'user',
@@ -81,13 +82,12 @@ export const getConciergeResponse = async (userMessage: string, history: { role:
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
         temperature: 0.7,
-        thinkingConfig: { thinkingBudget: 0 }
       },
     });
 
-    return response.text || "I am at your service. For immediate reservations or customized group itineraries, please call our 24/7 dispatch at (832) 567-8050 or use the booking engine above.";
+    return response.text || "I am at your service. For immediate reservations or customized group itineraries, please call our AI concierge line at (832) 917-6331, human dispatch at (832) 567-8050, or use the booking engine above.";
   } catch (error) {
     console.error("Error communicating with Avali AI:", error);
-    return "Our 24/7 reservation team is standing by at (832) 567-8050 or via email at adam@avalimo.net. You can also fill out the instant reservation form above for immediate confirmation.";
+    return "Our AI concierge line is available 24/7 at (832) 917-6331, or reach human dispatch at (832) 567-8050. You can also fill out the instant reservation form above for immediate confirmation.";
   }
 };

@@ -68,6 +68,10 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectVehicle }) => {
                 <a href={`tel:${COMPANY_INFO.phoneRaw}`} className="hover:text-amber-400 transition-colors font-semibold">
                   {COMPANY_INFO.phone}
                 </a>
+                <span className="text-gray-600">•</span>
+                <a href={`tel:${COMPANY_INFO.aiConciergePhone.replace(/\D/g, '').replace(/^/, '+1')}`} className="hover:text-amber-400 transition-colors">
+                  AI Line: {COMPANY_INFO.aiConciergePhone}
+                </a>
               </div>
               <div className="flex items-center space-x-2.5">
                 <Mail size={16} className="text-amber-500 flex-shrink-0" />
