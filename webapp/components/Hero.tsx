@@ -33,11 +33,11 @@ const Hero: React.FC<HeroProps> = ({ onBookNow, onViewFleet, onOpenAirportGuide 
 
   return (
     <div className="relative min-h-[95vh] w-full overflow-hidden pt-36 sm:pt-40 lg:pt-36 pb-16 flex flex-col justify-center bg-neutral-950">
-      {/* Background with Dark Luxe Overlay — AvaLimo's own Cadillac Escalade ESV */}
+      {/* Background with Dark Luxe Overlay — Cadillac Escalade on the highway */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
         style={{ 
-          backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Cadillac_Escalade_ESV_GMTK2YL_Black_Raven_%281%29.jpg/1920px-Cadillac_Escalade_ESV_GMTK2YL_Black_Raven_%281%29.jpg")',
+          backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/CADILLAC_ESCALADE_ESV_THIRD_GENERATION_China.jpg/1920px-CADILLAC_ESCALADE_ESV_THIRD_GENERATION_China.jpg")',
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/85 to-black/70"></div>

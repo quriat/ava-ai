@@ -7,6 +7,7 @@ import smtplib
 import threading
 from email.mime.text import MIMEText
 import datetime as _dt
+import pytz
 import time
 import re
 import pickle
@@ -521,9 +522,14 @@ def flight_track():
             }, timeout=10)
             data = resp.json()
             candidates = data.get("data") or []
-            # Only trust flights that actually involve Houston — the feed often
-            # returns same flight numbers on unrelated routes.
-            houston_cands = [f for f in candidates
+            # Codeshare filtering: keep only records whose flight iata matches the query
+            # exactly (feeds return partner-operated duplicates like SN8919/LX3356 for UA2217).
+            def _matches_q(f):
+                return (f.get("flight") or {}).get("iata", "").upper() == q
+            exact = [f for f in candidates if _matches_q(f)]
+            pool = exact or candidates
+            # Only trust flights that actually involve Houston.
+            houston_cands = [f for f in pool
                              if (f.get("arrival") or {}).get("iata") in ("IAH", "HOU")
                              or (f.get("departure") or {}).get("iata") in ("IAH", "HOU")]
             best = next((f for f in houston_cands
@@ -537,19 +543,28 @@ def flight_track():
                 term = arr.get("terminal") or dep.get("terminal") or "—"
                 d_iata = dep.get("iata") or "?"
                 a_iata = arr.get("iata") or "?"
-                now = dep.get("estimated") or dep.get("scheduled") or ""
-                if now and "T" in now:
-                    now = now.split("T")[1][:5]
+                houston_tz = pytz.timezone("America/Chicago")
+                def _fmt_local(iso_str):
+                    """Convert ISO timestamp to Houston local HH:MM."""
+                    if not iso_str:
+                        return ""
+                    try:
+                        dt = _dt.datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
+                        if dt.tzinfo is None:
+                            dt = pytz.utc.localize(dt)
+                        return dt.astimezone(houston_tz).strftime("%H:%M")
+                    except (ValueError, TypeError):
+                        return iso_str.split("T")[1][:5] if "T" in iso_str else ""
                 est = arr.get("estimated") or arr.get("scheduled") or ""
-                if est and "T" in est:
-                    est = est.split("T")[1][:5]
-                sched = dep.get("scheduled") or ""
-                if sched and "T" in sched:
-                    sched = sched.split("T")[1][:5]
+                est = _fmt_local(est)
+                sched_arr = _fmt_local(arr.get("scheduled") or "")
+                sched = _fmt_local(dep.get("scheduled") or "")
+                delay = dep.get("delay") or 0
                 return jsonify({
                     "flight": q, "airline": f.get("airline", {}).get("name", "?"),
                     "route": f"{d_iata} → {a_iata}",
-                    "sched": sched, "est": est,
+                    "sched": sched, "est": est, "sched_arr": sched_arr,
+                    "delay_minutes": delay,
                     "status": status,
                     "gate": gate, "term": term
                 })

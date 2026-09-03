@@ -286,10 +286,10 @@ const fetchLiveFlightData = async (
     if (d?.status !== 'ok' || !d.route) return null;
 
     const [depIata, arrIata] = String(d.route).split('→').map((s: string) => s.trim());
-    // Only trust live data when the flight actually involves Houston — otherwise
-    // the feed matched a different leg/route and the info would be wrong.
+    // Only trust live data when the flight actually involves Houston AND has real times.
     const houston = ['IAH', 'HOU'];
     if (!houston.includes(arrIata) && !houston.includes(depIata)) return null;
+    if (!d.est && !d.sched_arr && !d.sched) return null;
     const destCode = arrIata;
     const isHobby = destCode === 'HOU';
     const isIntl = !/^(UA|WN|AA|DL|NK|F9|B6|AS|MQ|OO|YX|9E|G4)$/i.test(String(d.airline || ''));
@@ -301,8 +301,8 @@ const fetchLiveFlightData = async (
     const terminal = d.term || (isHobby ? 'Main Terminal' : 'Terminal C');
     const gate = d.gate && d.gate !== '—' ? `Gate ${d.gate}` : undefined;
 
-    const estArr = d.est || d.sched || '14:30';
-    const schedArr = d.sched || estArr;
+    const estArr = d.est || d.sched_arr || d.sched || '—';
+    const schedArr = d.sched_arr || d.sched || estArr;
     const bufferMinutes = customBuffer !== undefined
       ? customBuffer
       : isIntl ? 65 : 35;
@@ -318,11 +318,12 @@ const fetchLiveFlightData = async (
         if (s.includes('landed')) return 'Landed';
         if (s.includes('delay')) return 'Delayed';
         if (s.includes('en') && s.includes('route')) return 'En Route';
+        if (s.includes('active')) return 'En Route';
         if (s.includes('cancel')) return 'Delayed';
         if (s.includes('early')) return 'Early';
-        return 'On Time';
+        return 'Scheduled';
       })(),
-      delayMinutes: 0,
+      delayMinutes: Number(d.delay_minutes) || 0,
       aircraft: d.aircraft || undefined,
       origin: {
         city: depIata || 'Origin',
