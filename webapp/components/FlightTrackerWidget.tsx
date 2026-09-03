@@ -308,6 +308,18 @@ const FlightTrackerWidget: React.FC<FlightTrackerWidgetProps> = ({
                 {flightData.status}
                 {flightData.delayMinutes > 0 && ` (+${flightData.delayMinutes}m)`}
               </span>
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                  flightData.dataSource === 'live'
+                    ? 'bg-blue-950/60 text-blue-300 border-blue-500/40'
+                    : 'bg-neutral-950 text-gray-400 border-neutral-700'
+                }`}
+                title={flightData.dataSource === 'live'
+                  ? 'Confirmed from live aviation data feed'
+                  : 'Estimated schedule — AvaLimo dispatch will confirm exact times and monitor this flight automatically'}
+              >
+                {flightData.dataSource === 'live' ? '🔴 LIVE' : 'ESTIMATED'}
+              </span>
             </div>
           </div>
 

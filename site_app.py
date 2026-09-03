@@ -454,7 +454,8 @@ def _fire_n8n_review(data):
 
 @app.route("/api/blog")
 def api_blog():
-    """Latest blog posts for the React homepage (oldest-first storage)."""
+    """Blog posts for the React homepage & blog index page."""
+    limit = request.args.get("limit", "4")
     posts = [
         {
             "slug": p.get("slug", ""),
@@ -464,8 +465,28 @@ def api_blog():
         }
         for p in reversed(BLOG_POSTS)
         if p.get("slug")
-    ][:4]
+    ]
+    if limit != "all":
+        try:
+            posts = posts[: max(1, int(limit))]
+        except ValueError:
+            posts = posts[:4]
     return jsonify({"status": "ok", "posts": posts})
+
+
+@app.route("/api/blog/<slug>")
+def api_blog_post(slug):
+    """Full blog post content for the React blog reader."""
+    post = next((p for p in BLOG_POSTS if p.get("slug") == slug), None)
+    if not post:
+        return jsonify({"status": "error", "message": "Post not found"}), 404
+    return jsonify({"status": "ok", "post": {
+        "slug": post.get("slug", ""),
+        "title": post.get("title", ""),
+        "summary": post.get("summary", ""),
+        "content": post.get("content", ""),
+        "date": post.get("date", ""),
+    }})
 
 
 @app.route("/api/book", methods=["POST"])
@@ -500,9 +521,13 @@ def flight_track():
             }, timeout=10)
             data = resp.json()
             candidates = data.get("data") or []
-            # Prefer a Houston-bound arrival (our chauffeur territory), else fall back to first match
-            best = next((f for f in candidates
-                         if (f.get("arrival") or {}).get("iata") in ("IAH", "HOU")), None) or (candidates[0] if candidates else None)
+            # Only trust flights that actually involve Houston — the feed often
+            # returns same flight numbers on unrelated routes.
+            houston_cands = [f for f in candidates
+                             if (f.get("arrival") or {}).get("iata") in ("IAH", "HOU")
+                             or (f.get("departure") or {}).get("iata") in ("IAH", "HOU")]
+            best = next((f for f in houston_cands
+                         if (f.get("arrival") or {}).get("iata") in ("IAH", "HOU")), None) or (houston_cands[0] if houston_cands else None)
             if best:
                 f = best
                 dep = f.get("departure", {})

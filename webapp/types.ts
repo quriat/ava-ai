@@ -104,6 +104,7 @@ export interface FlightDetails {
   flightType: 'arrival' | 'departure';
   isInternational: boolean;
   status: 'On Time' | 'Delayed' | 'Landed' | 'En Route' | 'Scheduled' | 'Early';
+  dataSource?: 'live' | 'estimated'; // live = real Aviationstack data, estimated = AI projection
   origin: {
     city: string;
     code: string;

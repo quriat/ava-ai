@@ -6,6 +6,7 @@ import Fleet from './components/Fleet';
 import AirportAndCruiseGuide from './components/AirportAndCruiseGuide';
 import TestimonialsAndAreas from './components/TestimonialsAndAreas';
 import BlogSection from './components/BlogSection';
+import { BlogListPage, BlogPostPage } from './components/BlogPages';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
 import AIConcierge from './components/AIConcierge';
@@ -17,6 +18,7 @@ import { Phone, Calendar, MessageSquareText } from 'lucide-react';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [blogSlug, setBlogSlug] = useState<string | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [bookingPrefill, setBookingPrefill] = useState<{
     tripType?: TripType;
@@ -28,7 +30,15 @@ function App() {
   } | undefined>(undefined);
 
   // Auto-detect URL query params (e.g. avalimo.net?review=true or avalimo.net?dispatch=true)
+  // and blog routes (/blog, /blog/<slug>)
   useEffect(() => {
+    const path = window.location.pathname.replace(/\/$/, '');
+    const blogMatch = path.match(/^\/blog(?:\/([^/]+))?$/);
+    if (blogMatch) {
+      setBlogSlug(blogMatch[1] || null);
+      setCurrentPage('blog');
+      return;
+    }
     const query = window.location.search;
     if (query.includes('review=true')) {
       setIsReviewModalOpen(true);
@@ -36,6 +46,24 @@ function App() {
     if (query.includes('dispatch=true') || window.location.hash.includes('dispatch')) {
       setCurrentPage('review-dispatcher');
     }
+  }, []);
+
+  // Intercept in-app clicks on /blog links so they render inside the new design
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement).closest?.('a');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href') || '';
+      const m = href.match(/^\/blog(?:\/([^/]+))?$/);
+      if (m && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setBlogSlug(m[1] || null);
+        setCurrentPage('blog');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
   }, []);
 
   const handleNavigation = (page: string) => {
@@ -119,7 +147,17 @@ function App() {
       {/* NOTE: Corporate Portal + internal Review Dispatcher are intentionally NOT
           reachable from the public site. They are internal tools, re-enable only
           behind real authentication. */}
-      {currentPage === 'review-dispatcher' ? (
+      {currentPage === 'blog' ? (
+        blogSlug ? (
+          <main>
+            <BlogPostPage slug={blogSlug} />
+          </main>
+        ) : (
+          <main>
+            <BlogListPage />
+          </main>
+        )
+      ) : currentPage === 'review-dispatcher' ? (
         <main>
           <TripReviewDispatcher />
         </main>

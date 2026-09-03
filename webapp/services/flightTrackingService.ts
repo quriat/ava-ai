@@ -234,6 +234,7 @@ const generateRealisticFlightData = (
   const aircraft = aircraftList[numVal % aircraftList.length];
 
   return {
+    dataSource: 'estimated',
     flightNumber: `${airlineInfo.code} ${number}`,
     airline: airlineInfo.name,
     airlineCode: airlineInfo.code,
@@ -285,9 +286,11 @@ const fetchLiveFlightData = async (
     if (d?.status !== 'ok' || !d.route) return null;
 
     const [depIata, arrIata] = String(d.route).split('→').map((s: string) => s.trim());
-    // We only chauffeur arrivals into Houston; treat IAH/HOU as destination
-    const arrivingHouston = arrIata === 'IAH' || arrIata === 'HOU';
-    const destCode = arrivingHouston ? arrIata : (depIata === 'IAH' || depIata === 'HOU' ? depIata : arrIata);
+    // Only trust live data when the flight actually involves Houston — otherwise
+    // the feed matched a different leg/route and the info would be wrong.
+    const houston = ['IAH', 'HOU'];
+    if (!houston.includes(arrIata) && !houston.includes(depIata)) return null;
+    const destCode = arrIata;
     const isHobby = destCode === 'HOU';
     const isIntl = !/^(UA|WN|AA|DL|NK|F9|B6|AS|MQ|OO|YX|9E|G4)$/i.test(String(d.airline || ''));
 
@@ -340,13 +343,13 @@ const fetchLiveFlightData = async (
       recommendedBufferMinutes: bufferMinutes,
       suggestedPickupTime: addMinutesToTime(estArr, bufferMinutes),
       suggestedPickupDate: targetDate,
+      dataSource: 'live',
       trackingNote: `LIVE data: ${d.airline || airlineInfo.name} ${cleanInput} — status ${d.status || 'tracked'}, arrival ${estArr} at ${destCode} ${terminal}. Chauffeur monitors wheels-down automatically.`
     };
   } catch {
     return null;
   }
 };
-
 /**
  * Main Flight Tracker Function: live backend data first, Gemini second, local generator last
  */
@@ -431,6 +434,7 @@ Return a STRICT JSON object conforming to this exact schema (no markdown formatt
         const suggestedPickup = addMinutesToTime(estArrival, buffer);
 
         return {
+          dataSource: 'estimated',
           flightNumber: parsed.flightNumber || cleanInput,
           airline: parsed.airline || "Commercial Airline",
           airlineCode: parsed.airlineCode || cleanInput.slice(0, 2),
