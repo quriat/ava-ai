@@ -94,7 +94,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
                 AVALIMO<span className="text-amber-500">.</span>
               </div>
               <span className="text-[10px] tracking-[0.25em] text-gray-400 uppercase font-medium mt-1">
-                HOUSTON • SINCE 2013
+                HOUSTON • SINCE 2008
               </span>
             </div>
           </div>

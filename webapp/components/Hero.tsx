@@ -33,11 +33,11 @@ const Hero: React.FC<HeroProps> = ({ onBookNow, onViewFleet, onOpenAirportGuide 
 
   return (
     <div className="relative min-h-[95vh] w-full overflow-hidden pt-36 sm:pt-40 lg:pt-36 pb-16 flex flex-col justify-center bg-neutral-950">
-      {/* Background with Dark Luxe Overlay */}
+      {/* Background with Dark Luxe Overlay — AvaLimo's own Cadillac Escalade ESV */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
         style={{ 
-          backgroundImage: 'url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop")',
+          backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Cadillac_Escalade_ESV_GMTK2YL_Black_Raven_%281%29.jpg/1920px-Cadillac_Escalade_ESV_GMTK2YL_Black_Raven_%281%29.jpg")',
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/85 to-black/70"></div>
@@ -56,7 +56,7 @@ const Hero: React.FC<HeroProps> = ({ onBookNow, onViewFleet, onOpenAirportGuide 
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
               </span>
               <span className="text-xs font-semibold uppercase tracking-widest text-amber-400">
-                Serving Greater Houston & Galveston Since 2013
+                Serving Greater Houston & Galveston Since 2008
               </span>
             </div>
 
@@ -308,7 +308,7 @@ const Hero: React.FC<HeroProps> = ({ onBookNow, onViewFleet, onOpenAirportGuide 
             <div className="text-xs uppercase tracking-wider text-gray-400 font-medium">On-Time Guarantee</div>
           </div>
           <div className="space-y-1">
-            <div className="font-serif text-3xl sm:text-4xl font-bold text-white">2013</div>
+            <div className="font-serif text-3xl sm:text-4xl font-bold text-white">2008</div>
             <div className="text-xs uppercase tracking-wider text-gray-400 font-medium">Serving Houston Since</div>
           </div>
           <div className="space-y-1">

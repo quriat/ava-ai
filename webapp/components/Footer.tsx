@@ -61,7 +61,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectVehicle }) => {
             </div>
 
             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed max-w-sm">
-              {COMPANY_INFO.name} is Houston's premier chauffeured luxury limousine service, delivering punctual, discreet, and refined ground transportation across Houston, Galveston, and Texas since 2013.
+              {COMPANY_INFO.name} is Houston's premier chauffeured luxury limousine service, delivering punctual, discreet, and refined ground transportation across Houston, Galveston, and Texas since 2008.
             </p>
 
             <div className="space-y-2 pt-2 text-xs text-gray-300">

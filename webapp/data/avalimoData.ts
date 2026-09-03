@@ -3,7 +3,7 @@ import { FleetItem, VehicleType, Service, ServiceArea, FAQItem, Testimonial } fr
 export const COMPANY_INFO = {
   name: 'AvaLimo Houston',
   legalName: 'Ava Limo Luxury Transportation LLC',
-  establishedYear: 2013,
+  establishedYear: 2008,
   tagline: 'Houston’s Premier Chauffeur & Limousine Service',
   domains: ['avalimo.net', 'www.avalimohouston.com'],
   phone: '(832) 567-8050',
