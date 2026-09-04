@@ -30,6 +30,7 @@ export interface FleetItem {
   minHours: number;
   image: string;
   images: string[];
+  alt?: string;
   description: string;
   features: string[];
   idealFor: string[];

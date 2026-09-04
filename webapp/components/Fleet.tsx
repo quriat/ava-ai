@@ -96,7 +96,8 @@ const Fleet: React.FC<FleetProps> = ({ onSelect }) => {
               >
                 <img 
                   src={car.image} 
-                  alt={car.name} 
+                  alt={car.alt || `${car.name} — AvaLimo Houston luxury chauffeur service`} 
+                  loading="lazy"
                   className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                 />
                 
@@ -223,7 +224,7 @@ const Fleet: React.FC<FleetProps> = ({ onSelect }) => {
                   <div className="relative h-64 sm:h-80 lg:h-[380px] w-full">
                     <img 
                       src={selectedVehicle.images ? selectedVehicle.images[activeImageIndex] : selectedVehicle.image} 
-                      alt={selectedVehicle.name}
+                      alt={selectedVehicle.alt || `${selectedVehicle.name} — AvaLimo Houston luxury chauffeur service`}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded text-xs text-amber-400 border border-amber-500/30">
