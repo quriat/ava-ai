@@ -31,65 +31,30 @@
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "AvaLimo",
-      "image": "https://avalimo.net/static/cadillac_escalade.png",
+      "image": "https://avalimo.net/og-image.jpg",
+      "telephone": "+1-832-567-8050",
+      "email": "adam@avalimo.net",
       "url": "https://avalimo.net",
-      "telephone": "+18329176331",
-      "email": "dispatch@avalimo.net",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Houston",
+        "streetAddress": "",
         "addressLocality": "Houston",
         "addressRegion": "TX",
-        "postalCode": "77001",
+        "postalCode": "77000",
         "addressCountry": "US"
       },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 29.7604,
-        "longitude": -95.3698
-      },
+      "geo": {"@type": "GeoCoordinates", "latitude": 29.7604, "longitude": -95.3698},
+      "openingHoursSpecification": [{
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens": "00:00", "closes": "23:59"
+      }],
       "priceRange": "$$",
-      "openingHours": "Mo-Su 00:00-23:59",
-      "areaServed": [
-        {"@type": "City", "name": "Houston", "sameAs": "https://en.wikipedia.org/wiki/Houston"},
-        {"@type": "City", "name": "Galveston", "sameAs": "https://en.wikipedia.org/wiki/Galveston,_Texas"},
-        {"@type": "City", "name": "Sugar Land", "sameAs": "https://en.wikipedia.org/wiki/Sugar_Land,_Texas"},
-        {"@type": "City", "name": "The Woodlands", "sameAs": "https://en.wikipedia.org/wiki/The_Woodlands,_Texas"},
-        {"@type": "City", "name": "Katy", "sameAs": "https://en.wikipedia.org/wiki/Katy,_Texas"},
-        {"@type": "City", "name": "Pearland", "sameAs": "https://en.wikipedia.org/wiki/Pearland,_Texas"},
-        {"@type": "Airport", "name": "George Bush Intercontinental Airport", "iataCode": "IAH"},
-        {"@type": "Airport", "name": "William P. Hobby Airport", "iataCode": "HOU"}
-      ],
-      "serviceType": [
-        "Airport Transfer",
-        "Corporate Transportation",
-        "Wedding Limo Service",
-        "Event Transportation",
-        "Black Car Service",
-        "Party Bus Rental",
-        "Wine Tour Transportation"
-      ],
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "AvaLimo Fleet",
-        "itemListElement": [
-          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mercedes S-Class", "description": "Executive sedan for airport transfers and corporate travel"}},
-          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Cadillac Escalade", "description": "Luxury SUV for groups and special occasions"}},
-          {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Mercedes Sprinter", "description": "Premium van for group transportation and events"}}
-        ]
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "5.0",
-        "reviewCount": "127",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "sameAs": [
-        "https://www.facebook.com/AvaLimoHTX",
-        "https://www.instagram.com/AvaLimoHTX",
-        "https://x.com/AvaLimoHTX"
-      ]
+      "currenciesAccepted": "USD",
+      "paymentAccepted": "Cash, Credit Card, Invoice",
+      "areaServed": ["Houston", "IAH", "Hobby", "Sugar Land", "The Woodlands", "Katy", "Galveston", "Pearland", "League City"],
+      "sameAs": ["https://g.page/r/CVgUaFV7t4-8EBM/review", "https://www.facebook.com/avalimo", "https://www.instagram.com/avalimo"],
+      "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500"}
     }
     </script>
     {{ blog_schema | safe }}
@@ -483,15 +448,15 @@
 <section class="fleet-section" style="padding-top:0">
 <div class="fleet-grid">
 <div class="fleet-card reveal">
-<div class="fleet-img-wrapper"><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class" loading="lazy"></div>
+<div class="fleet-img-wrapper"><img src="/static/mercedes_sclass.png" alt="Mercedes S-Class luxury sedan interior — leather seats, ambient lighting, Houston chauffeur service" loading="lazy"></div>
 <div class="fleet-content"><div class="fleet-number">01</div><h3>Mercedes S-Class</h3><p class="fleet-type">Executive Sedan &bull; Up to 3 passengers</p><p>Whisper-quiet cabin, leather seating and ambient light. The pick for airport runs and corporate travel.</p><a href="/book" class="fleet-btn">Book</a></div>
 </div>
 <div class="fleet-card reveal">
-<div class="fleet-img-wrapper"><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade" loading="lazy"><div class="fleet-badge">Most Booked</div></div>
+<div class="fleet-img-wrapper"><img src="/static/cadillac_escalade.png" alt="Cadillac Escalade luxury SUV — premium black car service in Houston, up to 6 passengers" loading="lazy"><div class="fleet-badge">Most Booked</div></div>
 <div class="fleet-content"><div class="fleet-number">02</div><h3>Cadillac Escalade</h3><p class="fleet-type">Luxury SUV &bull; Up to 6 passengers</p><p>Spacious, powerful, loaded with amenities. Ideal for groups, families and VIP transfers.</p><a href="/book" class="fleet-btn">Book</a></div>
 </div>
 <div class="fleet-card reveal">
-<div class="fleet-img-wrapper"><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter" loading="lazy"></div>
+<div class="fleet-img-wrapper"><img src="/static/mercedes_sprinter.png" alt="Mercedes Sprinter luxury group van — spacious interior for weddings and events, Houston" loading="lazy"></div>
 <div class="fleet-content"><div class="fleet-number">03</div><h3>Mercedes Sprinter</h3><p class="fleet-type">Group Van &bull; Up to 14 passengers</p><p>High ceilings, reclining seats and a premium sound system. Weddings, tours and big group nights out.</p><a href="/book" class="fleet-btn">Book</a></div>
 </div>
 </div>

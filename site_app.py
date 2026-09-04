@@ -196,7 +196,7 @@ BASE_HTML = open(_INDEX_PATH, encoding="utf-8").read() if os.path.exists(_INDEX_
 
 
 PAGE_META = {
-    "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings & events — 24/7, zero surge pricing. Book online.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
+    "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings & events — 24/7, zero surge pricing. Book online.", "og_type": "website", "og_image": "https://avalimo.net/og-image.jpg" },
     "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
@@ -211,7 +211,7 @@ PAGE_META = {
     "prom-limo": { "title": "Prom Limo Houston — AvaLimo | Safe Prom Transportation 2026", "desc": "Prom limo service in Houston. Safe, stylish prom transportation for groups up to 14.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sprinter.png" },
     "quinceanera-limo": { "title": "Quinceañera Limo Houston — AvaLimo | Quince Transportation", "desc": "Quinceañera limo service in Houston. Luxury transportation for your quince celebration.", "og_type": "website", "og_image": "https://avalimo.net/static/cadillac_escalade.png" },
     "corporate-transportation": { "title": "Corporate Transportation Houston — AvaLimo | Executive Car Service", "desc": "Corporate transportation in Houston. Executive car service for business meetings, airport transfers & client entertainment.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
-    "airport-iah": { "title": "IAH Airport Limo Service — AvaLimo | George Bush Intercontinental Transfers", "desc": "Premium IAH airport limo service. Real-time flight tracking, meet & greet, and flat-rate pricing.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
+    "airport-iah": { "title": "IAH Airport Limo Service | Flat Rates, Flight Tracking, 24/7 | AvaLimo", "desc": "Premium IAH airport transfers from $95. Real-time flight tracking, meet & greet at all 5 terminals, no surge fees. Book online or call (832) 567-8050.", "og_type": "website", "og_image": "https://avalimo.net/og-image.jpg" },
     "airport-hobby": { "title": "Hobby Airport Limo Service — AvaLimo | HOU Airport Transfers", "desc": "Hobby airport limo service in Houston. Professional chauffeurs, flight tracking & flat rates.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
     "airport-24-7-service": { "title": "24/7 Airport Car Service Houston — AvaLimo | Anytime Transfers", "desc": "24-hour airport car service in Houston. Early morning, late night & anytime transfers from IAH & Hobby.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
     "black-car-service": { "title": "Black Car Service Houston — AvaLimo | Premium Chauffeur Service", "desc": "Professional black car service in Houston. Mercedes S-Class, Cadillac Escalade.", "og_type": "website", "og_image": "https://avalimo.net/static/mercedes_sclass.png" },
@@ -246,6 +246,14 @@ PAGE_H1 = {
 def robots_txt():
         return "User-agent: *\nAllow: /\nSitemap: https://avalimo.net/sitemap.xml", 200, {"Content-Type": "text/plain"}
 
+@app.route("/og-image.jpg")
+def og_image():
+        import flask as _flask
+        _path = os.path.join(os.path.dirname(__file__), "static", "og-image.jpg")
+        if os.path.exists(_path):
+                return _flask.send_file(_path, mimetype="image/jpeg", max_age=86400)
+        return ("not found", 404)
+
 @app.route("/sitemap.xml")
 def sitemap_xml():
         _today = _dt.date.today().isoformat()
@@ -277,7 +285,7 @@ def index(path):
     page_h1 = 'Houston\'s Finest <span class="gold">Limo Service</span>'
     canonical_path = ""
     og_type = "website"
-    og_image = "https://avalimo.net/static/cadillac_escalade.png"
+    og_image = "https://avalimo.net/og-image.jpg"
     content_key = path
 
     legacy_redirects = {
@@ -333,7 +341,7 @@ def index(path):
         meta = {"title": PAGE_CONTENT[path]["title"], "desc": PAGE_CONTENT[path]["desc"]}
         canonical_path = f"/{path}"
         og_type = "website"
-        og_image = "https://avalimo.net/static/cadillac_escalade.png"
+        og_image = "https://avalimo.net/og-image.jpg"
         content_key = "page"
     elif path in PAGE_META:
         meta = PAGE_META[path]
@@ -346,7 +354,7 @@ def index(path):
         meta = {"title": "Page Not Found — AvaLimo", "desc": "Sorry, the page you requested could not be found."}
         canonical_path = ""
         og_type = "website"
-        og_image = "https://avalimo.net/static/cadillac_escalade.png"
+        og_image = "https://avalimo.net/og-image.jpg"
         page_h1 = 'Page Not Found'
 
     canonical_url = f"https://avalimo.net{canonical_path}"
