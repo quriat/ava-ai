@@ -10,13 +10,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 LOG_FILE="${SCRIPT_DIR}/blog_cron.log"
-OLLAMA_URL="http://168.231.74.172:32792/api/chat"
+
+# Load BAI_API_KEY from .env
+if [ -f "${SCRIPT_DIR}/.env" ]; then
+  set -a; . "${SCRIPT_DIR}/.env"; set +a
+fi
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting blog cron..." >> "$LOG_FILE"
 
-# Check if Ollama is reachable
-if ! curl -sf --max-time 5 "$OLLAMA_URL" > /dev/null 2>&1; then
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Ollama server at $OLLAMA_URL is not reachable. Skipping." >> "$LOG_FILE"
+# Check if b.ai is reachable
+if ! curl -sf --max-time 10 -o /dev/null "https://api.b.ai/v1/models" -H "Authorization: Bearer ${BAI_API_KEY}"; then
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: b.ai API is not reachable or key invalid. Skipping." >> "$LOG_FILE"
   exit 1
 fi
 
