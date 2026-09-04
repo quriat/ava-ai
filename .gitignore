@@ -7,3 +7,6 @@ node_modules
 # Build trigger Mon Jun  8 22:19:22 CDT 2026
 # rebuild 1781017994
 # rebuild2 1781018268
+
+# Google reviews disk cache
+reviews_cache.json

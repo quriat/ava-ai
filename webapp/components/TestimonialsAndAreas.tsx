@@ -26,10 +26,26 @@ const TestimonialsAndAreas: React.FC<TestimonialsAndAreasProps> = ({ onBookNow, 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
   const [votedReviewIds, setVotedReviewIds] = useState<Set<string>>(new Set());
 
-  // Load reviews from local storage / initial data
+  // Load reviews from local storage / initial data, then overlay real Google reviews
   useEffect(() => {
     const loaded = getStoredGoogleReviews();
     setReviews(loaded);
+    fetch('/api/reviews')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const real = (d?.reviews || []).map((r: any) => ({
+          ...r,
+          tags: r.tags || [],
+        })) as GoogleReview[];
+        if (real.length) {
+          setReviews((prev) => {
+            const seen = new Set(prev.map((p) => `${p.author}|${p.comment}`));
+            const merged = real.filter((r) => !seen.has(`${r.author}|${r.comment}`));
+            return [...merged, ...prev];
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Handle helpful vote

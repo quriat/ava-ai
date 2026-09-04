@@ -512,6 +512,129 @@ def api_blog_post(slug):
     }})
 
 
+GOOGLE_PLACES_API_KEY = os.environ.get("GOOGLE_PLACES_API_KEY", "")
+GOOGLE_PLACE_ID = os.environ.get("GOOGLE_PLACE_ID", "ChIJSZpoR7TvQIYRWBRoVXu3j7w")
+_REVIEWS_CACHE = os.path.join(os.path.dirname(__file__), "reviews_cache.json")
+_REVIEWS_TTL = 6 * 3600  # refresh every 6h
+
+
+def _rel_time(iso_ts):
+    try:
+        dt = _dt.datetime.fromisoformat(iso_ts.replace("Z", "+00:00"))
+        days = max(0, (_dt.datetime.now(_dt.timezone.utc) - dt).days)
+    except Exception:
+        return ""
+    if days <= 0:
+        return "Today"
+    if days == 1:
+        return "1 day ago"
+    if days < 7:
+        return f"{days} days ago"
+    if days < 30:
+        return f"{days // 7} week{'s' if days // 7 > 1 else ''} ago"
+    if days < 365:
+        return f"{days // 30} month{'s' if days // 30 > 1 else ''} ago"
+    return f"{days // 365} year{'s' if days // 365 > 1 else ''} ago"
+
+
+def _normalize_google_reviews(data):
+    out = []
+    for i, r in enumerate(data.get("reviews") or []):
+        author = (r.get("authorAttribution") or {}).get("displayName") or "Google user"
+        text = ((r.get("text") or {}).get("text") or "").strip()
+        if not text:
+            continue
+        reply = r.get("reply") or {}
+        item = {
+            "id": f"g-{i}-{abs(hash(author + text)) % 100000}",
+            "author": author,
+            "rating": r.get("rating", 5),
+            "date": _rel_time(r.get("timeCreated", "")) or "Recent",
+            "comment": text,
+            "avatarUrl": (r.get("authorAttribution") or {}).get("photoUrl"),
+            "authorUrl": r.get("authorUrl"),
+            "tripType": "Google Review",
+            "verifiedTrip": False,
+            "helpfulCount": 0,
+            "hasLeftOnGoogle": True,
+            "source": "google",
+        }
+        if reply.get("reply"):
+            item["ownerResponse"] = {
+                "date": _rel_time(reply.get("timeCreated", "")),
+                "responder": "AvaLimo Houston",
+                "text": reply["reply"],
+            }
+        out.append(item)
+    return out
+
+
+def _fetch_google_reviews():
+    if not GOOGLE_PLACES_API_KEY:
+        return None
+    url = f"https://places.googleapis.com/v1/places/{GOOGLE_PLACE_ID}"
+    field_mask = ",".join([
+        "reviews.authorAttribution.displayName",
+        "reviews.authorAttribution.photoUrl",
+        "reviews.rating",
+        "reviews.text",
+        "reviews.timeCreated",
+        "reviews.authorUrl",
+        "reviews.reply",
+        "rating",
+        "userRatingCount",
+    ])
+    headers = {"X-Goog-Api-Key": GOOGLE_PLACES_API_KEY, "X-Goog-FieldMask": field_mask}
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        print(f"Google Places fetch failed: {e}")
+        return None
+
+
+@app.route("/api/reviews")
+def api_reviews():
+    """Latest real Google reviews (Places API), cached to disk."""
+    fresh = None
+    try:
+        if os.path.exists(_REVIEWS_CACHE):
+            cached = json.load(open(_REVIEWS_CACHE))
+            if time.time() - cached.get("_ts", 0) < _REVIEWS_TTL:
+                fresh = cached
+    except Exception:
+        fresh = None
+
+    if fresh is None:
+        data = _fetch_google_reviews()
+        if data is not None:
+            fresh = {
+                "_ts": time.time(),
+                "reviews": _normalize_google_reviews(data),
+                "rating": data.get("rating"),
+                "count": data.get("userRatingCount"),
+            }
+            try:
+                json.dump(fresh, open(_REVIEWS_CACHE, "w"))
+            except Exception:
+                pass
+        elif os.path.exists(_REVIEWS_CACHE):
+            try:
+                fresh = json.load(open(_REVIEWS_CACHE))
+            except Exception:
+                fresh = None
+
+    if not fresh:
+        return jsonify({"status": "unconfigured", "reviews": []})
+    return jsonify({
+        "status": "ok",
+        "reviews": fresh.get("reviews", []),
+        "rating": fresh.get("rating"),
+        "count": fresh.get("count"),
+    })
+
+
 @app.route("/api/book", methods=["POST"])
 def book_ride():
     data = request.get_json() or {}
