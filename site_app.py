@@ -540,31 +540,25 @@ def _rel_time(iso_ts):
 def _normalize_google_reviews(data):
     out = []
     for i, r in enumerate(data.get("reviews") or []):
-        author = (r.get("authorAttribution") or {}).get("displayName") or "Google user"
+        attr = r.get("authorAttribution") or {}
+        author = attr.get("displayName") or "Google user"
         text = ((r.get("text") or {}).get("text") or "").strip()
         if not text:
             continue
-        reply = r.get("reply") or {}
         item = {
             "id": f"g-{i}-{abs(hash(author + text)) % 100000}",
             "author": author,
             "rating": r.get("rating", 5),
-            "date": _rel_time(r.get("timeCreated", "")) or "Recent",
+            "date": r.get("relativePublishTimeDescription") or _rel_time(r.get("publishTime", "")) or "Recent",
             "comment": text,
-            "avatarUrl": (r.get("authorAttribution") or {}).get("photoUrl"),
-            "authorUrl": r.get("authorUrl"),
+            "avatarUrl": attr.get("photoUri"),
+            "authorUrl": attr.get("uri"),
             "tripType": "Google Review",
             "verifiedTrip": False,
             "helpfulCount": 0,
             "hasLeftOnGoogle": True,
             "source": "google",
         }
-        if reply.get("reply"):
-            item["ownerResponse"] = {
-                "date": _rel_time(reply.get("timeCreated", "")),
-                "responder": "AvaLimo Houston",
-                "text": reply["reply"],
-            }
         out.append(item)
     return out
 
@@ -574,15 +568,16 @@ def _fetch_google_reviews():
         return None
     url = f"https://places.googleapis.com/v1/places/{GOOGLE_PLACE_ID}"
     field_mask = ",".join([
-        "reviews.authorAttribution.displayName",
-        "reviews.authorAttribution.photoUrl",
-        "reviews.rating",
-        "reviews.text",
-        "reviews.timeCreated",
-        "reviews.authorUrl",
-        "reviews.reply",
+        "displayName",
         "rating",
         "userRatingCount",
+        "reviews.authorAttribution.displayName",
+        "reviews.authorAttribution.photoUri",
+        "reviews.authorAttribution.uri",
+        "reviews.rating",
+        "reviews.text",
+        "reviews.relativePublishTimeDescription",
+        "reviews.publishTime",
     ])
     headers = {"X-Goog-Api-Key": GOOGLE_PLACES_API_KEY, "X-Goog-FieldMask": field_mask}
     try:
