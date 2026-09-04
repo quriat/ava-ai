@@ -461,9 +461,23 @@ def _fire_n8n_review(data):
         print(f"n8n review webhook failed: {e}")
 
 
+def _post_date_key(p):
+    """Parse a blog post's mixed-format date into a sortable date (newest-first)."""
+    s = str(p.get("date", "")).strip()
+    for fmt in ("%Y-%m-%d", "%B %d, %Y", "%b %d, %Y", "%B %Y", "%b %Y"):
+        try:
+            return _dt.datetime.strptime(s, fmt).date()
+        except ValueError:
+            pass
+    try:
+        return _dt.date.fromisoformat(s[:10])
+    except Exception:
+        return _dt.date(1970, 1, 1)
+
+
 @app.route("/api/blog")
 def api_blog():
-    """Blog posts for the React homepage & blog index page."""
+    """Blog posts for the React homepage & blog index page (newest first)."""
     limit = request.args.get("limit", "4")
     posts = [
         {
@@ -472,7 +486,7 @@ def api_blog():
             "summary": p.get("summary", ""),
             "date": p.get("date", ""),
         }
-        for p in reversed(BLOG_POSTS)
+        for p in sorted(BLOG_POSTS, key=_post_date_key, reverse=True)
         if p.get("slug")
     ]
     if limit != "all":
