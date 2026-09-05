@@ -512,10 +512,16 @@ def api_blog_post(slug):
     }})
 
 
-GOOGLE_PLACES_API_KEY = os.environ.get("GOOGLE_PLACES_API_KEY", "")
+GOOGLE_PLACES_API_KEY = (
+    os.environ.get("GOOGLE_PLACES_API_KEY")
+    or os.environ.get("GOOGLE_MAPS_API_KEY")
+    or os.environ.get("GOOGLE_API_KEY")
+    or ""
+)
 GOOGLE_PLACE_ID = os.environ.get("GOOGLE_PLACE_ID", "ChIJSZpoR7TvQIYRWBRoVXu3j7w")
 _REVIEWS_CACHE = os.path.join(os.path.dirname(__file__), "reviews_cache.json")
 _REVIEWS_TTL = 6 * 3600  # refresh every 6h
+print(f"[reviews] GOOGLE_PLACES_API_KEY configured: {bool(GOOGLE_PLACES_API_KEY)} (place={GOOGLE_PLACE_ID})", file=sys.stderr, flush=True)
 
 
 def _rel_time(iso_ts):
@@ -621,7 +627,11 @@ def api_reviews():
                 fresh = None
 
     if not fresh:
-        return jsonify({"status": "unconfigured", "reviews": []})
+        return jsonify({
+            "status": "unconfigured",
+            "reviews": [],
+            "debug": {"key_present": bool(GOOGLE_PLACES_API_KEY), "place_id": GOOGLE_PLACE_ID},
+        })
     return jsonify({
         "status": "ok",
         "reviews": fresh.get("reviews", []),
