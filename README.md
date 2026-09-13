@@ -34,7 +34,22 @@ npm run preview
 
 ## Deploy to avalimo.net
 
-### Option 1: Coolify (existing setup)
+### Option 1: Coolify with Docker Image
+
+The GitHub Actions workflow automatically builds and pushes a Docker image to:
+```
+ghcr.io/quriat/avalimo-voice:latest
+```
+
+In Coolify:
+1. New Application → Source: Docker Image
+2. Image: `ghcr.io/quriat/avalimo-voice:latest`
+3. Port: `80`
+4. Domain: `avalimo.net`
+5. Add environment variable: `GEMINI_API_KEY`
+6. Deploy
+
+### Option 2: Coolify from GitHub repo (existing setup)
 
 1. Push this folder to a GitHub repo.
 2. In Coolify, create a new Application from the repo.
