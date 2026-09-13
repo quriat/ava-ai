@@ -3,7 +3,7 @@ import { FleetItem, VehicleType, Service, Testimonial, FAQItem } from '../types'
 export const COMPANY_INFO = {
   name: 'AvaLimo Houston',
   legalName: 'Ava Limo Luxury Transportation LLC',
-  establishedYear: 2013,
+    establishedYear: 2008,
   tagline: "Houston's Premier Chauffeur & Limousine Service",
   domains: ['avalimo.net', 'www.avalimohouston.com'],
   phone: '(832) 567-8050',
@@ -38,7 +38,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 110,
     flatRateGalveston: 220,
     minHours: 3,
-    image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=800',
+    image: '/mercedes_sclass.png',
     description: 'The pinnacle of German luxury. Ultra-smooth, whisper-quiet cabin for executives, airport arrivals, and distinguished couples.',
     features: [
       'Hand-stitched Nappa leather reclining rear seats',
@@ -66,7 +66,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 145,
     flatRateGalveston: 260,
     minHours: 3,
-    image: 'https://images.unsplash.com/photo-1570303667526-52979c868659?auto=format&fit=crop&q=80&w=800',
+    image: '/cadillac_escalade.png',
     description: 'Imposing, spacious, and prestigious. Extended wheelbase guarantees abundant legroom and cargo capacity for airport or cruise departures.',
     features: [
       'Extended wheelbase (ESV) maximum cargo capacity',
@@ -94,7 +94,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 135,
     flatRateGalveston: 245,
     minHours: 3,
-    image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800',
+    image: '/chauffeur_service.png',
     description: 'The definitive standard for corporate livery and comfortable group travel across Texas highways.',
     features: [
       'Black leather 7-passenger executive seating',
@@ -122,7 +122,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 240,
     flatRateGalveston: 390,
     minHours: 4,
-    image: 'https://images.unsplash.com/photo-1566008885218-404547d1a940?auto=format&fit=crop&q=80&w=800',
+    image: '/mercedes_sprinter.png',
     description: 'The ultimate mobile boardroom and luxury group transporter. Full stand-up headroom, custom leather chairs, smart TV, and ambient lighting.',
     features: [
       'High-roof walk-in design with 6\'4" standing clearance',
@@ -150,7 +150,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 220,
     flatRateGalveston: 360,
     minHours: 4,
-    image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=800',
+    image: '/cadillac_escalade.png',
     description: 'The iconic symbol of celebratory glamour. Wrap-around J-lounge sofa, mirrored bar, starlight ceiling, and surround sound.',
     features: [
       'Wrap-around two-tone leather J-seating for 10 guests',
@@ -178,7 +178,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 320,
     flatRateGalveston: 550,
     minHours: 5,
-    image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=800',
+    image: '/mercedes_sprinter.png',
     description: 'Engineered for large parties, corporate delegations, and major Houston galas.',
     features: [
       '24 high-back ergonomic leather passenger seats',

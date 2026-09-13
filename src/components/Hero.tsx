@@ -21,11 +21,17 @@ const Hero: React.FC = () => {
   return (
     <section id="hero" className="relative min-h-screen flex flex-col justify-center items-center pt-20 overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&q=80&w=2400"
-          alt="Houston Limo Fleet"
-          className="w-full h-full object-cover grayscale opacity-40 scale-105"
-        />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover opacity-50 scale-105"
+          aria-label="AvaLimo luxury vehicles"
+        >
+          <source src="/videos/hero_bg.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
         <div className="absolute inset-0 bg-black/60"></div>
       </div>
