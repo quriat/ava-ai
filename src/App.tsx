@@ -3,12 +3,17 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
 import Fleet from './components/Fleet';
+import AirportGalveston from './components/AirportGalveston';
+import Rates from './components/Rates';
 import Testimonials from './components/Testimonials';
+import Blog from './components/Blog';
+import FAQ from './components/FAQ';
+import EndTripReview from './components/EndTripReview';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
 import { TripType } from './types';
 import { COMPANY_INFO } from './data/avalimoData';
-import { Phone, Calendar, MessageSquare } from 'lucide-react';
+import { Phone, Calendar } from 'lucide-react';
 
 function App() {
   const [bookingPrefill, setBookingPrefill] = useState<{
@@ -34,7 +39,12 @@ function App() {
         <Hero />
         <Services />
         <Fleet onSelectVehicle={handleSelectVehicle} />
+        <AirportGalveston />
+        <Rates />
         <Testimonials />
+        <Blog />
+        <FAQ />
+        <EndTripReview />
         <BookingForm initialData={bookingPrefill} />
       </main>
       <Footer />

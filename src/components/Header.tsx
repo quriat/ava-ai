@@ -3,10 +3,15 @@ import { Menu, X, Phone } from 'lucide-react';
 import { COMPANY_INFO } from '../data/avalimoData';
 
 const navItems = [
+  { label: 'Home', id: 'hero' },
   { label: 'Fleet', id: 'fleet' },
   { label: 'Services', id: 'services' },
+  { label: 'Airport & Galveston', id: 'airport-galveston' },
+  { label: 'Rates', id: 'rates' },
+  { label: 'End of Trip Review', id: 'review' },
   { label: 'Reviews', id: 'testimonials' },
-  { label: 'Book', id: 'booking' },
+  { label: 'Blog', id: 'blog' },
+  { label: 'FAQ', id: 'faq' },
 ];
 
 export default function Header() {
@@ -35,8 +40,9 @@ export default function Header() {
       }}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 h-[70px] flex items-center justify-between">
-        <button onClick={() => scrollTo('hero')} className="font-serif text-lg tracking-[0.15em] text-white font-semibold">
-          AVALIMO
+        <button onClick={() => scrollTo('hero')} className="font-serif text-lg tracking-[0.15em] text-white font-semibold flex flex-col items-start leading-none">
+          <span>AVALIMO</span>
+          <span className="text-[8px] tracking-[0.4em] text-[var(--gold)] font-normal mt-0.5">HOUSTON • SINCE 2008</span>
         </button>
 
         <nav className="hidden md:flex items-center gap-8">
