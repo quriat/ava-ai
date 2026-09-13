@@ -1,6 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import Vapi from '@vapi-ai/web';
+import VapiImport from '@vapi-ai/web';
 import { AgentType } from '../types';
+
+// Guard against CJS/ESM default-interop differences across bundlers/CDNs.
+// @vapi-ai/web ships CommonJS (exports.default = Vapi); depending on interop
+// the imported binding may be the class or an { default } wrapper.
+const Vapi: any = (VapiImport as any)?.default ?? VapiImport;
 
 interface VoiceAgentProps {
   type: AgentType;
@@ -40,6 +45,9 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // Create Vapi instance
+      if (typeof Vapi !== 'function') {
+        throw new Error('Voice SDK failed to load. Please refresh and try again.');
+      }
       const vapi = new Vapi(publicKey);
       vapiRef.current = vapi;
 
