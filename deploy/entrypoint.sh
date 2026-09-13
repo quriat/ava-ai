@@ -5,6 +5,8 @@ set -e
 CONFIG_VERSION=$(date +%s)
 cat > /usr/share/nginx/html/__config.js <<EOF
 window.GEMINI_API_KEY = "${GEMINI_API_KEY}";
+window.OPENROUTER_API_KEY = "${OPENROUTER_API_KEY}";
+window.TELEGRAM_BOT_TOKEN = "${TELEGRAM_BOT_TOKEN}";
 window.__CONFIG_VERSION = "${CONFIG_VERSION}";
 EOF
 

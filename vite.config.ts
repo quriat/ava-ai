@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '.', '');
+  const env = loadEnv(mode, '.', 'VITE_');
   return {
     server: {
       port: 3000,
@@ -14,13 +14,13 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env.API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY || env.API_KEY || ''),
       'process.env.GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY || env.API_KEY || ''),
+      'process.env.OPENROUTER_API_KEY': JSON.stringify(env.VITE_OPENROUTER_API_KEY || env.OPENROUTER_API_KEY || ''),
       'process.env.BOOKING_WEBHOOK_URL': JSON.stringify(env.BOOKING_WEBHOOK_URL || ''),
       'process.env.BOOKING_EMAIL': JSON.stringify(env.BOOKING_EMAIL || 'adam@avalimo.net')
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
-        '@google/genai': '@google/genai/web'
+        '@': path.resolve(__dirname, '.')
       }
     }
   };

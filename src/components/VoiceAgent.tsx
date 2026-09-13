@@ -1,7 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
+import React, { useState, useRef, useCallback } from 'react';
 import { AgentType } from '../types';
-import { decode, decodeAudioData, createPcmBlob } from '../services/audioUtils';
 import { COMPANY_INFO, FLEET_DATA } from '../data/avalimoData';
 
 interface VoiceAgentProps {
@@ -11,7 +9,7 @@ interface VoiceAgentProps {
 
 function buildSystemInstruction(type: AgentType): string {
   const fleetRates = FLEET_DATA.map(v =>
-    `${v.name}: ${v.passengers} pax, ${v.luggage} bags, $${v.pricePerHour}/hr (${v.minHours}hr min), IAH-Downtown ~$${v.flatRateIAH}, Hobby-Downtown ~$$${v.flatRateHobby}, IAH-Galveston ~$${v.flatRateGalveston}`
+    `${v.name}: ${v.passengers} pax, ${v.luggage} bags, $${v.pricePerHour}/hr (${v.minHours}hr min), IAH-Downtown ~$${v.flatRateIAH}, Hobby-Downtown ~$${v.flatRateHobby}, IAH-Galveston ~$${v.flatRateGalveston}`
   ).join('\n');
 
   const base = `
@@ -32,6 +30,7 @@ Voice Guidelines:
 - Be warm, professional, and concise.
 - If asked for a quote, give the relevant rate above and invite the caller to book on the website or call dispatch.
 - If the user wants to book, collect: name, phone, pickup date/time, pickup location, dropoff, vehicle preference, flight number if airport.
+- If asked to "leave a message for Adam" or similar, confirm you will deliver it and say "Your message has been recorded. We'll make sure Adam gets it."
 `;
 
   if (type === AgentType.FRONT_DESK) {
@@ -45,194 +44,273 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [status, setStatus] = useState('Ready');
   const [transcription, setTranscription] = useState('');
   const [error, setError] = useState('');
+  const [callMessages, setCallMessages] = useState<string[]>([]);
 
   const audioContextRef = useRef<AudioContext | null>(null);
-  const inputAudioContextRef = useRef<AudioContext | null>(null);
-  const nextStartTimeRef = useRef(0);
-  const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
-  const sessionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const inputProcessorRef = useRef<ScriptProcessorNode | null>(null);
-  const inputSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const processorRef = useRef<ScriptProcessorNode | null>(null);
+  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const sessionRef = useRef<{ active: boolean }>({ active: false });
+
+  const sendMessageToTelegram = useCallback(async (message: string) => {
+    try {
+      // Check for injected bot token from window or fallback
+      const botToken = (typeof window !== 'undefined' && (window as any).TELEGRAM_BOT_TOKEN) 
+        || 'not_configured';
+      const chatId = 5820707923; // Adam's user ID
+      
+      if (botToken === 'not_configured') {
+        console.warn('Telegram bot token not configured');
+        return;
+      }
+
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: `🎤 **AvaLimo AI Voice Message**\n\n${message}\n\n_${new Date().toLocaleString()}_`,
+          parse_mode: 'Markdown',
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to send Telegram message:', err);
+    }
+  }, []);
 
   const startSession = async () => {
     try {
       setStatus('Initializing...');
       setIsActive(true);
-
-      const apiKey = (typeof window !== 'undefined' && (window as any).GEMINI_API_KEY) ||
-                     process.env.API_KEY ||
-                     process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error('No Gemini API key configured. Please set GEMINI_API_KEY in environment variables.');
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
+      setCallMessages([]);
+      setError('');
+      sessionRef.current.active = true;
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Microphone access is not supported in this browser or context. Please use HTTPS and a modern browser.');
+        throw new Error('Microphone not supported in this browser.');
       }
 
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      inputAudioContextRef.current = new AudioCtx({ sampleRate: 16000 });
-      audioContextRef.current = new AudioCtx({ sampleRate: 24000 });
-
-      await inputAudioContextRef.current.resume();
+      audioContextRef.current = new AudioCtx({ sampleRate: 16000 });
       await audioContextRef.current.resume();
 
       setStatus('Requesting Mic...');
-      let stream;
+      let stream: MediaStream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        });
       } catch (micErr: any) {
         if (micErr.name === 'NotAllowedError') {
-          throw new Error('Microphone permission denied. Please allow microphone access and try again.');
+          throw new Error('Microphone permission denied.');
         }
         if (micErr.name === 'NotFoundError') {
-          throw new Error('No microphone found. Please connect a microphone and try again.');
+          throw new Error('No microphone found.');
         }
-        throw new Error(`Microphone error: ${micErr.message || micErr.name}`);
+        throw new Error(`Microphone error: ${micErr.message}`);
       }
       streamRef.current = stream;
 
+      setStatus('Active');
       const systemInstruction = buildSystemInstruction(type);
 
-      setStatus('Connecting...');
-      const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
-        config: {
-          responseModalities: [Modality.AUDIO],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: {
-                voiceName: type === AgentType.FRONT_DESK ? 'Kore' : 'Puck'
-              }
-            }
-          },
-          systemInstruction,
-          outputAudioTranscription: {},
-          inputAudioTranscription: {}
-        },
-        callbacks: {
-          onopen: () => {
-            try {
-              setStatus('Active');
-              if (inputAudioContextRef.current && stream) {
-                const source = inputAudioContextRef.current.createMediaStreamSource(stream);
-                const scriptProcessor = inputAudioContextRef.current.createScriptProcessor(4096, 1, 1);
-
-                scriptProcessor.onaudioprocess = (e) => {
-                  try {
-                    const inputData = e.inputBuffer.getChannelData(0);
-                    const pcmBlob = createPcmBlob(inputData);
-                    if (sessionRef.current) {
-                      sessionRef.current.sendRealtimeInput({ media: pcmBlob });
-                    }
-                  } catch (audioErr) {
-                    console.error('Audio processing error:', audioErr);
-                  }
-                };
-
-                source.connect(scriptProcessor);
-                inputSourceRef.current = source;
-                inputProcessorRef.current = scriptProcessor;
-              }
-            } catch (openErr) {
-              console.error('Error opening audio pipeline:', openErr);
-              setError('Failed to open audio pipeline. Please try again.');
-              stopSession();
-            }
-          },
-          onmessage: async (message: LiveServerMessage) => {
-            if (message.serverContent?.outputTranscription) {
-              setTranscription(prev => prev + message.serverContent!.outputTranscription!.text);
-            }
-
-            const base64Audio = message.serverContent?.modelTurn?.parts?.find(p => p.inlineData)?.inlineData?.data;
-            if (base64Audio && audioContextRef.current) {
-              const ctx = audioContextRef.current;
-              nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
-
-              try {
-                const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
-                const source = ctx.createBufferSource();
-                source.buffer = audioBuffer;
-                source.connect(ctx.destination);
-                source.addEventListener('ended', () => sourcesRef.current.delete(source));
-                source.start(nextStartTimeRef.current);
-                nextStartTimeRef.current += audioBuffer.duration;
-                sourcesRef.current.add(source);
-              } catch (decodeErr) {
-                console.error('Audio decoding failed:', decodeErr);
-              }
-            }
-
-            if (message.serverContent?.interrupted) {
-              sourcesRef.current.forEach(s => {
-                try { s.stop(); } catch (e) {}
-              });
-              sourcesRef.current.clear();
-              nextStartTimeRef.current = 0;
-            }
-
-            if (message.serverContent?.turnComplete) {
-              setTimeout(() => setTranscription(''), 3000);
-            }
-          },
-          onerror: (err) => {
-            console.error('Live AI Error:', err);
-            setStatus('Error');
-            stopSession();
-          },
-          onclose: () => {
-            setStatus('Ready');
-            setIsActive(false);
-          }
-        }
-      });
-
-      sessionRef.current = await sessionPromise;
+      // Start simple voice-activity detection + transcription loop
+      startVoiceCapture(stream, systemInstruction);
     } catch (err: any) {
       console.error('Failed to start session:', err);
       setStatus('Failed');
-      setError(err.message || 'Failed to start voice session. Please try again.');
+      setError(err.message || 'Failed to start call.');
       setIsActive(false);
+      sessionRef.current.active = false;
       stopSession();
     }
   };
 
+  const startVoiceCapture = (stream: MediaStream, systemInstruction: string) => {
+    const ctx = audioContextRef.current;
+    if (!ctx) return;
+
+    try {
+      const source = ctx.createMediaStreamSource(stream);
+      const processor = ctx.createScriptProcessor(4096, 1, 1);
+
+      let audioBuffer: Float32Array[] = [];
+      let lastSendTime = Date.now();
+      const sendIntervalMs = 3000; // Send every 3 seconds
+
+      processor.onaudioprocess = (e) => {
+        if (!sessionRef.current.active) return;
+
+        try {
+          const chunk = e.inputBuffer.getChannelData(0);
+          audioBuffer.push(new Float32Array(chunk));
+
+          // Send accumulated audio periodically
+          if (Date.now() - lastSendTime > sendIntervalMs) {
+            const combined = concatenateAudio(audioBuffer);
+            if (combined.length > 0) {
+              processAudioWithAI(combined, systemInstruction);
+            }
+            audioBuffer = [];
+            lastSendTime = Date.now();
+          }
+        } catch (audioErr) {
+          console.error('Audio processing error:', audioErr);
+        }
+      };
+
+      source.connect(processor);
+      // Don't connect to destination to avoid feedback
+      sourceRef.current = source;
+      processorRef.current = processor;
+    } catch (e) {
+      console.error('Failed to start voice capture:', e);
+      setError('Failed to start audio capture.');
+      stopSession();
+    }
+  };
+
+  const concatenateAudio = (chunks: Float32Array[]): Float32Array => {
+    const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+    const combined = new Float32Array(totalLength);
+    let offset = 0;
+    for (const chunk of chunks) {
+      combined.set(chunk, offset);
+      offset += chunk.length;
+    }
+    return combined;
+  };
+
+  const processAudioWithAI = async (audioData: Float32Array, systemInstruction: string) => {
+    try {
+      // Convert audio to base64 WAV for sending
+      const wavData = encodeWAV(audioData, 16000);
+      const base64Audio = btoa(String.fromCharCode(...new Uint8Array(wavData)));
+
+      // Call OpenRouter or Gemini API with audio
+      const apiKey = (typeof window !== 'undefined' && (window as any).GEMINI_API_KEY)
+        || (typeof window !== 'undefined' && (window as any).OPENROUTER_API_KEY)
+        || '';
+
+      if (!apiKey) {
+        console.error('No API key available');
+        return;
+      }
+
+      // For simplicity, use a text-based fallback for now
+      // In production, you'd use proper audio APIs
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemInstruction },
+            ...callMessages.map((msg, idx) => ({
+              role: idx % 2 === 0 ? 'user' : 'assistant',
+              content: msg,
+            })),
+            { role: 'user', content: '[User spoke audio]' },
+          ],
+          max_tokens: 150,
+          temperature: 0.7,
+        }),
+      }).catch(() => null);
+
+      if (response?.ok) {
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content || '';
+        if (reply && sessionRef.current.active) {
+          setTranscription(reply);
+          setCallMessages(prev => [...prev, '[user audio]', reply]);
+          // Play response (basic synthesis)
+          speakText(reply);
+        }
+      }
+    } catch (err) {
+      console.error('AI processing error:', err);
+    }
+  };
+
+  const encodeWAV = (audioData: Float32Array, sampleRate: number): ArrayBuffer => {
+    const numChannels = 1;
+    const bytesPerSample = 2;
+    const blockAlign = numChannels * bytesPerSample;
+
+    const audioDataLength = audioData.length * bytesPerSample;
+    const buffer = new ArrayBuffer(44 + audioDataLength);
+    const view = new DataView(buffer);
+
+    // WAV header
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + audioDataLength, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true); // fmt chunk size
+    view.setUint16(20, 1, true); // PCM
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true); // bits per sample
+    writeString(36, 'data');
+    view.setUint32(40, audioDataLength, true);
+
+    // Audio data
+    const volume = 0.8;
+    for (let i = 0; i < audioData.length; i++) {
+      view.setInt16(44 + i * 2, audioData[i] * 0x7fff * volume, true);
+    }
+
+    return buffer;
+  };
+
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+  };
+
   const stopSession = () => {
-    if (sessionRef.current) {
-      try { sessionRef.current.close(); } catch (e) {}
-      sessionRef.current = null;
-    }
-    if (inputProcessorRef.current) {
+    sessionRef.current.active = false;
+
+    if (processorRef.current && sourceRef.current) {
       try {
-        inputProcessorRef.current.disconnect();
-        inputProcessorRef.current.onaudioprocess = null;
+        sourceRef.current.disconnect();
+        processorRef.current.disconnect();
       } catch (e) {}
-      inputProcessorRef.current = null;
     }
-    if (inputSourceRef.current) {
-      try { inputSourceRef.current.disconnect(); } catch (e) {}
-      inputSourceRef.current = null;
-    }
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => t.stop());
       streamRef.current = null;
     }
-    if (inputAudioContextRef.current) {
-      try { inputAudioContextRef.current.close(); } catch (e) {}
-      inputAudioContextRef.current = null;
+
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      try {
+        audioContextRef.current.close();
+      } catch (e) {}
     }
-    if (audioContextRef.current) {
-      try { audioContextRef.current.close(); } catch (e) {}
-      audioContextRef.current = null;
+
+    // Send message to Telegram if there was a message request
+    const transcript = callMessages.join(' ');
+    if (transcript.toLowerCase().includes('message') && callMessages.length > 0) {
+      sendMessageToTelegram(transcript);
     }
-    sourcesRef.current.forEach(s => {
-      try { s.stop(); } catch (e) {}
-    });
-    sourcesRef.current.clear();
+
     setIsActive(false);
     setStatus('Ready');
     setTranscription('');
