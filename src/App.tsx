@@ -8,6 +8,7 @@ import Rates from './components/Rates';
 import Testimonials from './components/Testimonials';
 import Blog from './components/Blog';
 import BlogArticle from './components/BlogArticle';
+import ServiceLanding, { landingSlugs } from './components/ServiceLanding';
 import FAQ from './components/FAQ';
 import EndTripReview from './components/EndTripReview';
 import BookingForm from './components/BookingForm';
@@ -65,6 +66,14 @@ function App() {
     return (
       <GlobalErrorCatcher>
         <BlogArticle />
+      </GlobalErrorCatcher>
+    );
+  }
+  const cleanPath = path.replace(/^\//, '').replace(/\/+$/, '');
+  if (landingSlugs().includes(cleanPath)) {
+    return (
+      <GlobalErrorCatcher>
+        <ServiceLanding />
       </GlobalErrorCatcher>
     );
   }

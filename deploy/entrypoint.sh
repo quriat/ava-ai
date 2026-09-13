@@ -12,8 +12,10 @@ window.TELEGRAM_BOT_TOKEN = "${TELEGRAM_BOT_TOKEN}";
 window.__CONFIG_VERSION = "${CONFIG_VERSION}";
 EOF
 
-# Replace placeholder in index.html with actual script tag (cache-busted)
-sed -i "s|<!-- RUNTIME_CONFIG -->|<script src=\"/__config.js?v=${CONFIG_VERSION}\"></script>|g" /usr/share/nginx/html/index.html
+# Replace placeholder in ALL html pages (root + prerendered blog pages) with
+# the cache-busted runtime config script tag.
+find /usr/share/nginx/html -name '*.html' -exec \
+  sed -i "s|<!-- RUNTIME_CONFIG -->|<script src=\"/__config.js?v=${CONFIG_VERSION}\"></script>|g" {} +
 
 # Ensure all static assets are readable by nginx worker
 chmod -R 644 /usr/share/nginx/html/* 2>/dev/null || true

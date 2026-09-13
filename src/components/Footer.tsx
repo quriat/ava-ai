@@ -32,12 +32,12 @@ const Footer: React.FC = () => {
               Services
             </h4>
             <ul className="space-y-3 text-sm text-white/60">
-              <li>Airport Transfers (IAH / HOU)</li>
-              <li>Galveston Cruise Transfers</li>
-              <li>Corporate & Executive Travel</li>
-              <li>Weddings & Special Events</li>
-              <li>Hourly As-Directed Charters</li>
-              <li>City-to-City Texas Travel</li>
+              <li><a href="/houston-airport-transfers" className="hover:text-[var(--gold)] transition-colors">Airport Transfers (IAH / HOU)</a></li>
+              <li><a href="/galveston-cruise-transportation" className="hover:text-[var(--gold)] transition-colors">Galveston Cruise Transfers</a></li>
+              <li><a href="/corporate-chauffeur-houston" className="hover:text-[var(--gold)] transition-colors">Corporate & Executive Travel</a></li>
+              <li><a href="/houston-wedding-limo" className="hover:text-[var(--gold)] transition-colors">Weddings & Special Events</a></li>
+              <li><a href="/city-to-city-texas" className="hover:text-[var(--gold)] transition-colors">City-to-City Texas Travel</a></li>
+              <li><a href="/blog" className="hover:text-[var(--gold)] transition-colors">Houston Travel Blog</a></li>
             </ul>
           </div>
 
