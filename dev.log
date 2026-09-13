@@ -1,0 +1,17 @@
+
+> avalimo-voice@0.0.0 dev
+> vite
+
+
+  VITE v6.4.3  ready in 168 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.4.24:3000/
+9:08:38 PM [vite] (client) hmr update /src/components/VoiceAgent.tsx, /src/index.css?direct
+9:08:43 PM [vite] (client) hmr update /src/components/VoiceAgent.tsx, /src/index.css?direct
+9:08:46 PM [vite] (client) hmr update /src/components/VoiceAgent.tsx, /src/index.css?direct
+9:08:49 PM [vite] (client) hmr update /src/components/VoiceAgent.tsx, /src/index.css?direct
+9:08:55 PM [vite] (client) hmr update /src/components/VoiceAgent.tsx, /src/index.css?direct
+9:08:59 PM [vite] (client) hmr update /src/components/VoiceAgent.tsx, /src/index.css?direct
+9:09:36 PM [vite] vite.config.ts changed, restarting server...
+9:09:36 PM [vite] server restarted.

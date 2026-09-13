@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@config "../tailwind.config.js";
+
+:root {
+  --gold: #C5A059;
+  --gold-light: #D4AF37;
+  --gold-dark: #A68035;
+  --luxury: #0a0a0a;
+  --cream: #f5f5f0;
+  --cream-muted: rgba(245, 245, 240, 0.65);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #C5A059 0%, #F1D592 50%, #C5A059 100%);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #C5A059 0%, #F1D592 50%, #C5A059 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: #C5A059;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.selection\:bg-gold\/30::selection {
+  background-color: rgba(197, 160, 89, 0.3);
+}
+
+@layer utilities {
+  .text-gold { color: var(--gold); }
+  .bg-gold { background-color: var(--gold); }
+  .border-gold { border-color: var(--gold); }
+  .bg-luxury { background-color: var(--luxury); }
+}
