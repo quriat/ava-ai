@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Vapi from '@vapi-ai/web';
 import { AgentType } from '../types';
 
 interface VoiceAgentProps {
@@ -8,7 +9,6 @@ interface VoiceAgentProps {
 
 declare global {
   interface Window {
-    VapiClass?: any;
     VAPI_PUBLIC_KEY?: string;
     VAPI_ASSISTANT_ID?: string;
   }
@@ -19,37 +19,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [status, setStatus] = useState('Ready');
   const [transcription, setTranscription] = useState('');
   const [error, setError] = useState('');
-  const [sdkReady, setSdkReady] = useState(false);
 
-  const vapiRef = useRef<any>(null);
-
-  // Check if SDK is loaded
-  useEffect(() => {
-    const checkSDK = () => {
-      if (window.VapiClass) {
-        setSdkReady(true);
-        return true;
-      }
-      return false;
-    };
-
-    if (checkSDK()) return;
-
-    // Poll for SDK load (module loads async)
-    const interval = setInterval(() => {
-      if (checkSDK()) {
-        clearInterval(interval);
-      }
-    }, 100);
-
-    // Cleanup after 10 seconds
-    const timeout = setTimeout(() => clearInterval(interval), 10000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, []);
+  const vapiRef = useRef<Vapi | null>(null);
 
   const startSession = useCallback(async () => {
     try {
@@ -57,11 +28,6 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       setTranscription('');
       setIsActive(true);
       setStatus('Connecting...');
-
-      const VapiClass = window.VapiClass;
-      if (!VapiClass) {
-        throw new Error('Vapi SDK not loaded. Please refresh and try again.');
-      }
 
       const publicKey = window.VAPI_PUBLIC_KEY;
       const assistantId = window.VAPI_ASSISTANT_ID;
@@ -74,7 +40,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // Create Vapi instance
-      const vapi = new VapiClass(publicKey);
+      const vapi = new Vapi(publicKey);
       vapiRef.current = vapi;
 
       // Attach event listeners
@@ -164,10 +130,9 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       {!isActive ? (
         <button
           onClick={startSession}
-          disabled={!sdkReady}
-          className={`border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase transition-all w-full ${sdkReady ? 'hover:bg-gold hover:text-black' : 'opacity-50 cursor-not-allowed'}`}
+          className="border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold hover:text-black transition-all w-full"
         >
-          {sdkReady ? `Call ${type === 'Front Desk' ? 'Desk' : 'Dispatch'}` : 'Loading...'}
+          Call {type === 'Front Desk' ? 'Desk' : 'Dispatch'}
         </button>
       ) : (
         <button
