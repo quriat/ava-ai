@@ -52,6 +52,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
   const sessionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const inputProcessorRef = useRef<ScriptProcessorNode | null>(null);
+  const inputSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
   const startSession = async () => {
     try {
@@ -113,21 +115,32 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         },
         callbacks: {
           onopen: () => {
-            setStatus('Active');
-            if (inputAudioContextRef.current && stream) {
-              const source = inputAudioContextRef.current.createMediaStreamSource(stream);
-              const scriptProcessor = inputAudioContextRef.current.createScriptProcessor(4096, 1, 1);
+            try {
+              setStatus('Active');
+              if (inputAudioContextRef.current && stream) {
+                const source = inputAudioContextRef.current.createMediaStreamSource(stream);
+                const scriptProcessor = inputAudioContextRef.current.createScriptProcessor(4096, 1, 1);
 
-              scriptProcessor.onaudioprocess = (e) => {
-                const inputData = e.inputBuffer.getChannelData(0);
-                const pcmBlob = createPcmBlob(inputData);
-                sessionPromise.then(session => {
-                  if (session) session.sendRealtimeInput({ media: pcmBlob });
-                }).catch(err => console.error('Error sending audio:', err));
-              };
+                scriptProcessor.onaudioprocess = (e) => {
+                  try {
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    const pcmBlob = createPcmBlob(inputData);
+                    if (sessionRef.current) {
+                      sessionRef.current.sendRealtimeInput({ media: pcmBlob });
+                    }
+                  } catch (audioErr) {
+                    console.error('Audio processing error:', audioErr);
+                  }
+                };
 
-              source.connect(scriptProcessor);
-              scriptProcessor.connect(inputAudioContextRef.current.destination);
+                source.connect(scriptProcessor);
+                inputSourceRef.current = source;
+                inputProcessorRef.current = scriptProcessor;
+              }
+            } catch (openErr) {
+              console.error('Error opening audio pipeline:', openErr);
+              setError('Failed to open audio pipeline. Please try again.');
+              stopSession();
             }
           },
           onmessage: async (message: LiveServerMessage) => {
@@ -192,6 +205,17 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     if (sessionRef.current) {
       try { sessionRef.current.close(); } catch (e) {}
       sessionRef.current = null;
+    }
+    if (inputProcessorRef.current) {
+      try {
+        inputProcessorRef.current.disconnect();
+        inputProcessorRef.current.onaudioprocess = null;
+      } catch (e) {}
+      inputProcessorRef.current = null;
+    }
+    if (inputSourceRef.current) {
+      try { inputSourceRef.current.disconnect(); } catch (e) {}
+      inputSourceRef.current = null;
     }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => t.stop());
