@@ -122,6 +122,58 @@
       transform: translateY(-1px);
       box-shadow: 0 8px 24px rgba(201,162,39,0.35);
     }
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      margin-bottom: 28px;
+    }
+    .card-actions .save-contact { margin-top: 0; }
+    .send-card {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--gold-light);
+      border: 1px solid rgba(201,162,39,0.4);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .send-card:hover {
+      transform: translateY(-1px);
+      background: rgba(201,162,39,0.12);
+    }
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--navy-light);
+      color: var(--white);
+      border: 1px solid rgba(201,162,39,0.3);
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      z-index: 50;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
     .info-grid {
       display: grid;
       gap: 12px;
@@ -191,14 +243,23 @@
       <img src="adam-card-qr.png" alt="QR code for Adam J's digital business card">
     </div>
     <div class="scan-hint">Scan to save contact</div>
-    <a class="save-contact" href="adam.vcf" download="Adam-J-AvaLimo.vcf">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-        <polyline points="17 21 17 13 7 13 7 21"/>
-        <polyline points="7 3 7 8 15 8"/>
-      </svg>
-      Save Contact
-    </a>
+    <div class="card-actions">
+      <a class="save-contact" href="adam.vcf" download="Adam-J-AvaLimo.vcf">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Save Contact
+      </a>
+      <button class="send-card" id="sendCard" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+        Send Card
+      </button>
+    </div>
 
     <div class="info-grid">
       <a class="info-item" href="https://avalimo.net" target="_blank" rel="noopener noreferrer">
@@ -252,5 +313,41 @@
 
     <div class="footer">24/7 Dispatch · Houston, TX</div>
   </div>
+
+  <div class="toast" id="toast">Link copied to clipboard</div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('sendCard');
+      var toast = document.getElementById('toast');
+      var cardUrl = window.location.href.split('#')[0];
+      var shareData = {
+        title: "Adam J · AvaLimo Houston",
+        text: "Adam J — Owner, AvaLimo Houston. Luxury chauffeur service. Save my contact:",
+        url: cardUrl
+      };
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function () { toast.classList.remove('show'); }, 2200);
+      }
+      btn.addEventListener('click', async function () {
+        if (navigator.share) {
+          try {
+            await navigator.share(shareData);
+          } catch (e) { /* user cancelled */ }
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          try {
+            await navigator.clipboard.writeText(cardUrl);
+            showToast('Card link copied — paste to send');
+          } catch (e) {
+            window.prompt('Copy this card link to send:', cardUrl);
+          }
+        } else {
+          window.prompt('Copy this card link to send:', cardUrl);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
