@@ -53,7 +53,7 @@ const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href={`tel:${COMPANY_INFO.secondaryPhone.replace(/\D/g, '')}`} className="flex items-center gap-2 hover:text-[var(--gold)] transition-colors">
+                <a href={`tel:${COMPANY_INFO.secondaryPhoneRaw}`} className="flex items-center gap-2 hover:text-[var(--gold)] transition-colors">
                   <Phone size={16} />
                   {COMPANY_INFO.secondaryPhone}
                 </a>

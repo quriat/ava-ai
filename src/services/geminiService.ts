@@ -31,7 +31,7 @@ Company Details:
 - Operating Since: 2013
 
 Fleet & Sample Flat Rates:
-1. Mercedes-Benz S-Class (3 pax, 3 bags): $85/hr, IAH-Downtown ~$125, Hobby-Downtown ~$110, IAH-Galveston ~$220
+1. Mercedes-Benz S-Class (3 pax, 3 bags): $100/hr, IAH-Downtown ~$125, Hobby-Downtown ~$110, IAH-Galveston ~$220
 2. Cadillac Escalade ESV (6 pax, 6 bags): $115/hr, IAH-Downtown ~$165, Hobby-Downtown ~$145, IAH-Galveston ~$260
 3. GMC Yukon XL / Chevy Suburban (7 pax, 6 bags): $105/hr, IAH-Downtown ~$155, Hobby-Downtown ~$135
 4. Mercedes-Benz Sprinter Executive (14 pax): $165/hr, IAH-Downtown ~$260, IAH-Galveston ~$390

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Star, Send, CheckCircle2 } from 'lucide-react';
+import { Star, Send, CheckCircle2, MessageSquare } from 'lucide-react';
+import { COMPANY_INFO } from '../data/avalimoData';
 
 const EndTripReview: React.FC = () => {
   const [rating, setRating] = useState(0);
@@ -10,6 +11,8 @@ const EndTripReview: React.FC = () => {
     e.preventDefault();
     setSubmitted(true);
   };
+
+  const smsLink = `sms:${COMPANY_INFO.aiConciergePhoneRaw}?body=${encodeURIComponent('AvaLimo End-of-Trip Review\n\nRating: /5\nConfirmation Code: \nComments: ')}`;
 
   return (
     <section id="review" className="w-full py-24 md:py-32 px-6 md:px-12">
@@ -80,6 +83,17 @@ const EndTripReview: React.FC = () => {
             >
               <Send size={16} /> Submit Review
             </button>
+
+            <div className="mt-6 pt-6 border-t border-white/10 text-center">
+              <p className="text-[11px] text-white/50 uppercase tracking-widest mb-3">Or send your review by text</p>
+              <a
+                href={smsLink}
+                className="inline-flex items-center gap-2 text-black bg-[var(--gold)] hover:bg-white px-5 py-2.5 rounded-lg text-[11px] font-extrabold tracking-[0.15em] uppercase transition-colors"
+              >
+                <MessageSquare size={14} />
+                Text Review to {COMPANY_INFO.aiConciergePhone}
+              </a>
+            </div>
           </form>
         ) : (
           <div className="bg-luxury border border-gold/10 rounded-2xl p-10 text-center">
