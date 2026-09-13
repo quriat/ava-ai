@@ -15,7 +15,8 @@ const EndTripReview: React.FC = () => {
 
   const normalizedPhone = reviewPhone.replace(/\D/g, '');
   const smsNumber = normalizedPhone.startsWith('1') ? `+${normalizedPhone}` : `+1${normalizedPhone}`;
-  const smsLink = `sms:${smsNumber}?body=${encodeURIComponent('AvaLimo End-of-Trip Review\n\nRating: /5\nConfirmation Code: \nComments: ')}`;
+  const smsBody = encodeURIComponent(`Hi from AvaLimo Houston!\n\nThank you for riding with us. If you enjoyed your trip, we would really appreciate a quick Google review — it helps other travelers find us and keeps our team motivated to deliver the best service.\n\nTap here to leave your review:\n${COMPANY_INFO.googleReviewUrl}\n\nThank you for supporting a local Houston business!\n\nAdam J | AvaLimo Houston\n${COMPANY_INFO.phone}`);
+  const smsLink = `sms:${smsNumber}?body=${smsBody}`;
 
   const hasGoogleReview = COMPANY_INFO.googleReviewUrl && !COMPANY_INFO.googleReviewUrl.includes('PLACEHOLDER');
 
