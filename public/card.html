@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adam J · AvaLimo Houston</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a0f1c;
+      --navy-light: #121a2b;
+      --gold: #c9a227;
+      --gold-light: #e3c259;
+      --white: #f8f9fa;
+      --muted: #9aa4b2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--navy) 0%, #070a12 100%);
+      font-family: 'Inter', sans-serif;
+      color: var(--white);
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(180deg, var(--navy-light) 0%, rgba(10,15,28,0.98) 100%);
+      border: 1px solid rgba(201,162,39,0.25);
+      border-radius: 24px;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .tagline {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      font-weight: 500;
+    }
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--navy);
+      box-shadow: 0 8px 30px rgba(201,162,39,0.25);
+    }
+    .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .role {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 28px;
+    }
+    .qr {
+      width: 190px;
+      height: 190px;
+      margin: 0 auto 24px;
+      padding: 12px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
+    .qr img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .scan-hint {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .info-grid {
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--white);
+      transition: all 0.2s ease;
+    }
+    .info-item:hover {
+      background: rgba(201,162,39,0.08);
+      border-color: rgba(201,162,39,0.25);
+    }
+    .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(201,162,39,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+      color: var(--gold-light);
+    }
+    .info-text {
+      min-width: 0;
+    }
+    .info-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+    .info-value {
+      font-size: 14px;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    .footer {
+      margin-top: 28px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">AvaLimo</div>
+    <div class="tagline">Houston Luxury Chauffeur Service</div>
+
+    <div class="avatar">AJ</div>
+    <div class="name">Adam J</div>
+    <div class="role">Owner · AvaLimo Houston</div>
+
+    <div class="qr">
+      <img src="adam-card-qr.png" alt="QR code for Adam J's digital business card">
+    </div>
+    <div class="scan-hint">Scan to save contact</div>
+
+    <div class="info-grid">
+      <a class="info-item" href="https://avalimo.net" target="_blank" rel="noopener noreferrer">
+        <div class="icon">🌐</div>
+        <div class="info-text">
+          <div class="info-label">Website</div>
+          <div class="info-value">avalimo.net</div>
+        </div>
+      </a>
+
+      <a class="info-item" href="tel:+18325678050">
+        <div class="icon">📞</div>
+        <div class="info-text">
+          <div class="info-label">Phone</div>
+          <div class="info-value">(832) 567-8050</div>
+        </div>
+      </a>
+
+      <a class="info-item" href="tel:+18329176331">
+        <div class="icon">🤖</div>
+        <div class="info-text">
+          <div class="info-label">AI Concierge</div>
+          <div class="info-value">(832) 917-6331</div>
+        </div>
+      </a>
+
+      <a class="info-item" href="mailto:adam@avalimo.net">
+        <div class="icon">✉️</div>
+        <div class="info-text">
+          <div class="info-label">Email</div>
+          <div class="info-value">adam@avalimo.net</div>
+        </div>
+      </a>
+
+      <a class="info-item" href="https://enroll.zellepay.com/qr-codes?data=8325678050" target="_blank" rel="noopener noreferrer">
+        <div class="icon">💸</div>
+        <div class="info-text">
+          <div class="info-label">Zelle</div>
+          <div class="info-value">8325678050</div>
+        </div>
+      </a>
+
+      <a class="info-item" href="https://venmo.com/u/adam-aljahdhami" target="_blank" rel="noopener noreferrer">
+        <div class="icon">💰</div>
+        <div class="info-text">
+          <div class="info-label">Venmo</div>
+          <div class="info-value">@adam-aljahdhami</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="footer">24/7 Dispatch · Houston, TX</div>
+  </div>
+</body>
+</html>
