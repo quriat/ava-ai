@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Block runtime config from indexing
+Disallow: /__config.js
+
+Sitemap: https://avalimo.net/sitemap.xml

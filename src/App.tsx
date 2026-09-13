@@ -7,6 +7,7 @@ import AirportGalveston from './components/AirportGalveston';
 import Rates from './components/Rates';
 import Testimonials from './components/Testimonials';
 import Blog from './components/Blog';
+import BlogArticle from './components/BlogArticle';
 import FAQ from './components/FAQ';
 import EndTripReview from './components/EndTripReview';
 import BookingForm from './components/BookingForm';
@@ -58,6 +59,16 @@ function GlobalErrorCatcher({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  // Lightweight path-based routing for blog pages (SPA served via nginx fallback).
+  const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+  if (path === '/blog' || path === '/blog/' || path.startsWith('/blog/')) {
+    return (
+      <GlobalErrorCatcher>
+        <BlogArticle />
+      </GlobalErrorCatcher>
+    );
+  }
+
   const [bookingPrefill, setBookingPrefill] = useState<{
     tripType?: TripType;
     pickupLocation?: string;

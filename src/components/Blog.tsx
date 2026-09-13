@@ -74,6 +74,12 @@ const Blog: React.FC = () => {
             ))
           )}
         </div>
+
+        <div className="text-center mt-14">
+          <a href="/blog" className="inline-flex items-center gap-2 border-2 border-gold/40 text-[var(--gold)] px-8 py-3 rounded-full text-[11px] font-extrabold tracking-[0.2em] uppercase hover:bg-[var(--gold)] hover:text-black transition-all">
+            View All Articles <ArrowRight size={14} />
+          </a>
+        </div>
       </div>
     </section>
   );
