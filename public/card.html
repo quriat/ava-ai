@@ -100,12 +100,27 @@
       height: 100%;
       display: block;
     }
-    .scan-hint {
-      font-size: 11px;
-      color: var(--muted);
+    .save-contact {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      color: var(--navy);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 28px;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(201,162,39,0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .save-contact:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(201,162,39,0.35);
     }
     .info-grid {
       display: grid;
@@ -176,6 +191,14 @@
       <img src="adam-card-qr.png" alt="QR code for Adam J's digital business card">
     </div>
     <div class="scan-hint">Scan to save contact</div>
+    <a class="save-contact" href="adam.vcf" download="Adam-J-AvaLimo.vcf">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+      Save Contact
+    </a>
 
     <div class="info-grid">
       <a class="info-item" href="https://avalimo.net" target="_blank" rel="noopener noreferrer">
