@@ -12,6 +12,7 @@ export const COMPANY_INFO = {
   aiConciergePhoneRaw: '+18329176331',
   secondaryPhone: '(832) 917-6331',
   secondaryPhoneRaw: '+18329176331',
+  googleReviewUrl: 'https://search.google.com/local/writereview?placeid=PLACEHOLDER',
   email: 'adam@avalimo.net',
   secondaryEmail: 'quriat@gmail.com',
   address: 'Missouri City, TX 77459',

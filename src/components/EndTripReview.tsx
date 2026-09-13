@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import { Star, Send, CheckCircle2, MessageSquare } from 'lucide-react';
+import { Star, Send, CheckCircle2, MessageSquare, ExternalLink } from 'lucide-react';
 import { COMPANY_INFO } from '../data/avalimoData';
 
 const EndTripReview: React.FC = () => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [reviewPhone, setReviewPhone] = useState(COMPANY_INFO.phoneRaw);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
   };
 
-  const smsLink = `sms:${COMPANY_INFO.phoneRaw}?body=${encodeURIComponent('AvaLimo End-of-Trip Review\n\nRating: /5\nConfirmation Code: \nComments: ')}`;
+  const normalizedPhone = reviewPhone.replace(/\D/g, '');
+  const smsNumber = normalizedPhone.startsWith('1') ? `+${normalizedPhone}` : `+1${normalizedPhone}`;
+  const smsLink = `sms:${smsNumber}?body=${encodeURIComponent('AvaLimo End-of-Trip Review\n\nRating: /5\nConfirmation Code: \nComments: ')}`;
+
+  const hasGoogleReview = COMPANY_INFO.googleReviewUrl && !COMPANY_INFO.googleReviewUrl.includes('PLACEHOLDER');
 
   return (
     <section id="review" className="w-full py-24 md:py-32 px-6 md:px-12">
@@ -84,15 +89,38 @@ const EndTripReview: React.FC = () => {
               <Send size={16} /> Submit Review
             </button>
 
-            <div className="mt-6 pt-6 border-t border-white/10 text-center">
-              <p className="text-[11px] text-white/50 uppercase tracking-widest mb-3">Or send your review by text</p>
-              <a
-                href={smsLink}
-                className="inline-flex items-center gap-2 text-black bg-[var(--gold)] hover:bg-white px-5 py-2.5 rounded-lg text-[11px] font-extrabold tracking-[0.15em] uppercase transition-colors"
-              >
-                <MessageSquare size={14} />
-                Text Review to {COMPANY_INFO.phone}
-              </a>
+            <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-5">
+              {hasGoogleReview && (
+                <a
+                  href={COMPANY_INFO.googleReviewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 text-black bg-white hover:bg-[var(--gold)] px-5 py-2.5 rounded-lg text-[11px] font-extrabold tracking-[0.15em] uppercase transition-colors"
+                >
+                  <ExternalLink size={14} />
+                  Google Review
+                </a>
+              )}
+
+              <div className="flex flex-col gap-2">
+                <p className="text-[11px] text-white/50 uppercase tracking-widest text-center md:text-left">Or text your review</p>
+                <div className="flex gap-2">
+                  <input
+                    type="tel"
+                    value={reviewPhone}
+                    onChange={(e) => setReviewPhone(e.target.value)}
+                    placeholder="Phone number"
+                    className="flex-1 bg-black border border-white/20 rounded-lg p-2.5 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                  />
+                  <a
+                    href={smsLink}
+                    className="inline-flex items-center gap-2 text-black bg-[var(--gold)] hover:bg-white px-4 py-2.5 rounded-lg text-[11px] font-extrabold tracking-[0.12em] uppercase transition-colors whitespace-nowrap"
+                  >
+                    <MessageSquare size={14} />
+                    Send
+                  </a>
+                </div>
+              </div>
             </div>
           </form>
         ) : (
