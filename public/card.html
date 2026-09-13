@@ -65,19 +65,14 @@
       font-weight: 500;
     }
     .avatar {
-      width: 96px;
-      height: 96px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      object-fit: cover;
       margin: 0 auto 20px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 42px;
-      font-weight: 700;
-      color: var(--navy);
+      border: 3px solid var(--gold);
       box-shadow: 0 8px 30px rgba(201,162,39,0.25);
+      background: var(--navy-light);
     }
     .name {
       font-family: 'Cormorant Garamond', serif;
@@ -173,7 +168,7 @@
     <div class="logo">AvaLimo</div>
     <div class="tagline">Houston Luxury Chauffeur Service</div>
 
-    <div class="avatar">AJ</div>
+    <img class="avatar" src="adam-photo.jpg" alt="Adam J">
     <div class="name">Adam J</div>
     <div class="role">Owner · AvaLimo Houston</div>
 
