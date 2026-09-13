@@ -99,9 +99,19 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const speakText = useCallback((text: string) => {
     if (!('speechSynthesis' in window)) return;
     speechSynthesis.cancel();
+
+    const voices = speechSynthesis.getVoices();
+    const preferred = voices.find(v =>
+      (v.lang.startsWith('en-US') || v.lang.startsWith('en-GB')) &&
+      (/Samantha|Karen|Daniel|Google US English|Microsoft Aria|Microsoft Jenny|Microsoft David|Zira|Alex|Fred|Natural|Premium|Enhanced/.test(v.name))
+    ) || voices.find(v => v.lang.startsWith('en'));
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.05;
-    utterance.pitch = 1;
+    utterance.rate = 0.94;
+    utterance.pitch = 1.03;
+    utterance.volume = 1;
+    if (preferred) utterance.voice = preferred;
+
     speechSynthesis.speak(utterance);
   }, []);
 
