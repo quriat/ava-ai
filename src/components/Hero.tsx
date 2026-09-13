@@ -82,16 +82,22 @@ const Hero: React.FC = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <a
+              href={`tel:${COMPANY_INFO.aiConciergePhoneRaw}`}
+              className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/10 text-center hover:border-gold/40 hover:bg-gold/5 transition-colors"
+            >
               <div className="w-12 h-12 rounded-full bg-luxury text-gold border border-gold/20 flex items-center justify-center"><UserIcon /></div>
               <h4 className="text-xs font-bold tracking-[0.2em] uppercase">Front Desk AI</h4>
-              <p className="text-[10px] text-white/50">Temporarily offline — rebuilding</p>
-            </div>
-            <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <p className="text-[10px] text-white/50">{COMPANY_INFO.aiConciergePhone}</p>
+            </a>
+            <a
+              href={`tel:${COMPANY_INFO.aiConciergePhoneRaw}`}
+              className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/10 text-center hover:border-gold/40 hover:bg-gold/5 transition-colors"
+            >
               <div className="w-12 h-12 rounded-full bg-luxury text-gold border border-gold/20 flex items-center justify-center"><TruckIcon /></div>
               <h4 className="text-xs font-bold tracking-[0.2em] uppercase">Dispatch AI</h4>
-              <p className="text-[10px] text-white/50">Temporarily offline — rebuilding</p>
-            </div>
+              <p className="text-[10px] text-white/50">{COMPANY_INFO.aiConciergePhone}</p>
+            </a>
           </div>
           <p className="text-[10px] text-white/40 text-center tracking-widest uppercase">
             Microphone required • Powered by Gemini
