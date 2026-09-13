@@ -4,6 +4,8 @@ set -e
 # Generate runtime config.js with environment variables
 CONFIG_VERSION=$(date +%s)
 cat > /usr/share/nginx/html/__config.js <<EOF
+window.VAPI_PUBLIC_KEY = "${VAPI_PUBLIC_KEY}";
+window.VAPI_ASSISTANT_ID = "${VAPI_ASSISTANT_ID}";
 window.GEMINI_API_KEY = "${GEMINI_API_KEY}";
 window.OPENROUTER_API_KEY = "${OPENROUTER_API_KEY}";
 window.TELEGRAM_BOT_TOKEN = "${TELEGRAM_BOT_TOKEN}";

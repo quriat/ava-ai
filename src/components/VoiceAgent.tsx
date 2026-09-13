@@ -1,79 +1,28 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { AgentType } from '../types';
-import { COMPANY_INFO, FLEET_DATA } from '../data/avalimoData';
 
 interface VoiceAgentProps {
   type: AgentType;
   icon: React.ReactNode;
 }
 
-// Browser speech types
-interface SpeechRecognitionCtor {
-  new (): SpeechRecognitionInstance;
-}
-interface SpeechRecognitionInstance extends EventTarget {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  maxAlternatives: number;
-  start(): void;
-  stop(): void;
-  abort(): void;
-  onresult: ((event: any) => void) | null;
-  onerror: ((event: any) => void) | null;
-  onend: (() => void) | null;
-  onstart: (() => void) | null;
-}
-
 declare global {
   interface Window {
-    SpeechRecognition?: SpeechRecognitionCtor;
-    webkitSpeechRecognition?: SpeechRecognitionCtor;
-    GEMINI_API_KEY?: string;
-    OPENROUTER_API_KEY?: string;
+    Vapi?: any;
+    VAPI_PUBLIC_KEY?: string;
+    VAPI_ASSISTANT_ID?: string;
     TELEGRAM_BOT_TOKEN?: string;
-    __AI_ENDPOINT__?: string;
   }
-}
-
-function buildSystemInstruction(type: AgentType): string {
-  const fleetRates = FLEET_DATA.map(v =>
-    `${v.name}: ${v.passengers} pax, ${v.luggage} bags, $${v.pricePerHour}/hr (${v.minHours}hr min), IAH-Downtown ~$${v.flatRateIAH}, Hobby-Downtown ~$${v.flatRateHobby}, IAH-Galveston ~$${v.flatRateGalveston}`
-  ).join('\n');
-
-  const base = `You are "Avali", the AI voice concierge for AvaLimo Houston (avalimo.net). You represent Houston's premier luxury chauffeur service since 2013.
-
-Company Info:
-- 24/7 Dispatch: ${COMPANY_INFO.phone}
-- Email: ${COMPANY_INFO.email}
-- Service area: Greater Houston, IAH, Hobby, Galveston, The Woodlands, Katy, Sugar Land
-- Guarantees: flat-rate pricing (zero surge), real-time flight tracking, 45/60 min free airport wait, complimentary meet & greet, Wi-Fi, bottled water
-
-Fleet & Rates:
-${fleetRates}
-
-Voice Guidelines:
-- Keep responses SHORT (1-3 sentences). This is a voice call.
-- Be warm, professional, and concise.
-- If asked for a quote, give the relevant rate above and invite the caller to book on the website or call dispatch.
-- If the user wants to book, collect: name, phone, pickup date/time, pickup location, dropoff, vehicle preference, flight number if airport.
-- If asked to "leave a message for Adam" or similar, say you will deliver it and end the reply with: [MESSAGE_FOR_ADAM: <their message>].`;
-
-  if (type === AgentType.FRONT_DESK) {
-    return base + "\nYou are the Front Desk AI. Focus on service information, pricing, and new reservations.";
-  }
-  return base + "\nYou are the Dispatch AI. Focus on ride status, logistics, coordination, and reassuring existing customers. If the caller has an active ride, ask for confirmation code or phone number.";
 }
 
 const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState('Ready');
   const [transcription, setTranscription] = useState('');
-  const [lastReply, setLastReply] = useState('');
   const [error, setError] = useState('');
 
-  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
-  const sessionActiveRef = useRef(false);
+  const vapiRef = useRef<any>(null);
+  const callRef = useRef<any>(null);
 
   const sendMessageToAdam = useCallback(async (message: string) => {
     const botToken = window.TELEGRAM_BOT_TOKEN;
@@ -96,208 +45,97 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     }
   }, []);
 
-  const speakText = useCallback((text: string) => {
-    if (!('speechSynthesis' in window)) return;
-    speechSynthesis.cancel();
-
-    const voices = speechSynthesis.getVoices();
-    const preferred = voices.find(v =>
-      (v.lang.startsWith('en-US') || v.lang.startsWith('en-GB')) &&
-      (/Samantha|Karen|Daniel|Google US English|Microsoft Aria|Microsoft Jenny|Microsoft David|Zira|Alex|Fred|Natural|Premium|Enhanced/.test(v.name))
-    ) || voices.find(v => v.lang.startsWith('en'));
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.94;
-    utterance.pitch = 1.03;
-    utterance.volume = 1;
-    if (preferred) utterance.voice = preferred;
-
-    speechSynthesis.speak(utterance);
+  // Load Vapi SDK on mount
+  useEffect(() => {
+    if (window.Vapi) return; // Already loaded
+    const script = document.createElement('script');
+    script.src = 'https://cdn.vapi.ai/web.js';
+    script.async = true;
+    script.onload = () => {
+      console.log('Vapi SDK loaded');
+    };
+    document.head.appendChild(script);
   }, []);
-
-  const callAI = useCallback(async (userText: string): Promise<string> => {
-    // Prefer OpenRouter; fall back to Gemini if no OpenRouter key.
-    const openRouterKey = window.OPENROUTER_API_KEY || '';
-    const geminiKey = window.GEMINI_API_KEY || '';
-
-    if (openRouterKey) {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openRouterKey}`,
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'AvaLimo Voice Concierge',
-        },
-        body: JSON.stringify({
-          model: 'openai/gpt-4o-mini',
-          messages: [
-            { role: 'system', content: buildSystemInstruction(type) },
-            { role: 'user', content: userText },
-          ],
-          max_tokens: 200,
-          temperature: 0.7,
-        }),
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`OpenRouter ${response.status}: ${text}`);
-      }
-
-      const data = await response.json();
-      const reply = data.choices?.[0]?.message?.content?.trim() || '';
-      if (reply) return reply;
-    }
-
-    if (geminiKey) {
-      const endpoint = window.__AI_ENDPOINT__ || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
-      const response = await fetch(`${endpoint}?key=${geminiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: buildSystemInstruction(type) }] },
-          contents: [{ role: 'user', parts: [{ text: userText }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 200 },
-        }),
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`Gemini ${response.status}: ${text}`);
-      }
-
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    }
-
-    throw new Error('No AI provider configured.');
-  }, [type]);
-
-  const processUserText = useCallback(async (text: string) => {
-    if (!sessionActiveRef.current) return;
-    if (!text.trim()) return;
-
-    setTranscription(text);
-    setStatus('Thinking...');
-
-    try {
-      const reply = await callAI(text);
-      if (!reply || !sessionActiveRef.current) return;
-
-      setLastReply(reply);
-
-      // Extract and forward message for Adam
-      const match = reply.match(/\[MESSAGE_FOR_ADAM:\s*(.+?)\]/is);
-      if (match) {
-        await sendMessageToAdam(match[1].trim());
-        const cleaned = reply.replace(/\[MESSAGE_FOR_ADAM:\s*.+?\]/is, '').trim();
-        speakText(cleaned || 'Your message has been recorded. We will make sure Adam gets it.');
-        setLastReply(cleaned || 'Your message has been recorded. We will make sure Adam gets it.');
-      } else {
-        speakText(reply);
-      }
-    } catch (err: any) {
-      console.error('AI processing error:', err);
-      setStatus('Error');
-      setError(err.message || 'Failed to get response.');
-    }
-  }, [callAI, sendMessageToAdam, speakText]);
-
-  const startRecognition = useCallback(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      throw new Error('Speech recognition is not supported in this browser.');
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-      setStatus('Listening...');
-    };
-
-    recognition.onresult = (event: any) => {
-      let final = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
-        }
-      }
-      if (final.trim()) {
-        processUserText(final.trim());
-      }
-    };
-
-    recognition.onerror = (event: any) => {
-      if (event.error === 'aborted' || event.error === 'no-speech') return;
-      console.error('Speech recognition error:', event.error);
-      setStatus('Mic Error');
-      setError(`Mic error: ${event.error}`);
-    };
-
-    recognition.onend = () => {
-      // Restart if session still active
-      if (sessionActiveRef.current && recognitionRef.current === recognition) {
-        try {
-          recognition.start();
-        } catch (e) {
-          console.warn('Could not restart recognition:', e);
-        }
-      }
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-  }, [processUserText]);
 
   const startSession = useCallback(async () => {
     try {
       setError('');
       setTranscription('');
-      setLastReply('');
       setIsActive(true);
-      setStatus('Initializing...');
-      sessionActiveRef.current = true;
+      setStatus('Connecting...');
 
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        throw new Error('Speech recognition not supported in this browser. Try Chrome or Edge.');
+      if (!window.Vapi) {
+        throw new Error('Vapi SDK not loaded. Please refresh and try again.');
       }
 
-      if (!window.GEMINI_API_KEY && !window.OPENROUTER_API_KEY) {
-        throw new Error('AI key not configured. The voice concierge is unavailable.');
+      const publicKey = window.VAPI_PUBLIC_KEY;
+      const assistantId = window.VAPI_ASSISTANT_ID;
+
+      if (!publicKey || !assistantId) {
+        throw new Error('Vapi credentials not configured.');
       }
 
-      // Request mic permission early
+      // Initialize Vapi
+      vapiRef.current = new window.Vapi({
+        apiKey: publicKey,
+      });
+
+      // Attach event listeners
+      vapiRef.current.on('speech-start', () => {
+        setStatus('Listening...');
+      });
+
+      vapiRef.current.on('speech-end', () => {
+        setStatus('Processing...');
+      });
+
+      vapiRef.current.on('message', (message: any) => {
+        if (message.type === 'user-transcription') {
+          setTranscription(message.transcription || '');
+        } else if (message.type === 'assistant-message') {
+          console.log('Assistant message:', message);
+        }
+      });
+
+      vapiRef.current.on('call-start', () => {
+        setStatus('Connected');
+      });
+
+      vapiRef.current.on('call-end', () => {
+        setIsActive(false);
+        setStatus('Ready');
+        setTranscription('');
+      });
+
+      vapiRef.current.on('error', (error: any) => {
+        console.error('Vapi error:', error);
+        setStatus('Error');
+        setError(error.message || 'Call failed.');
+        setIsActive(false);
+      });
+
+      // Request mic permission
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      startRecognition();
+      // Start call with assistant
+      await vapiRef.current.start(assistantId);
+      callRef.current = vapiRef.current;
     } catch (err: any) {
       console.error('Failed to start session:', err);
       setStatus('Failed');
       setError(err.message || 'Failed to start call.');
       setIsActive(false);
-      sessionActiveRef.current = false;
     }
-  }, [startRecognition]);
+  }, []);
 
   const stopSession = useCallback(() => {
-    sessionActiveRef.current = false;
-    speechSynthesis.cancel();
-
-    if (recognitionRef.current) {
+    if (callRef.current) {
       try {
-        recognitionRef.current.abort();
+        callRef.current.stop();
       } catch (e) {
-        // ignore
+        console.warn('Error stopping call:', e);
       }
-      recognitionRef.current = null;
     }
-
     setIsActive(false);
     setStatus('Ready');
     setTranscription('');
@@ -324,7 +162,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
           onClick={startSession}
           className="border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold hover:text-black transition-all w-full"
         >
-          Call {type === AgentType.FRONT_DESK ? 'Desk' : 'Dispatch'}
+          Call {type === 'Front Desk' ? 'Desk' : 'Dispatch'}
         </button>
       ) : (
         <button
@@ -338,12 +176,6 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       {isActive && transcription && (
         <div className="text-[11px] text-white/70 italic max-w-[180px] text-center min-h-[32px] leading-relaxed">
           You: "{transcription}"
-        </div>
-      )}
-
-      {isActive && lastReply && (
-        <div className="text-[11px] text-gold/90 max-w-[180px] text-center leading-relaxed">
-          Ava: {lastReply}
         </div>
       )}
 
