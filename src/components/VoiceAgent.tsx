@@ -8,11 +8,9 @@ interface VoiceAgentProps {
 
 declare global {
   interface Window {
-    vapiSDK?: any;
-    vapiInstance?: any;
+    VapiClass?: any;
     VAPI_PUBLIC_KEY?: string;
     VAPI_ASSISTANT_ID?: string;
-    TELEGRAM_BOT_TOKEN?: string;
   }
 }
 
@@ -23,12 +21,12 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [error, setError] = useState('');
   const [sdkReady, setSdkReady] = useState(false);
 
-  const vapiInstanceRef = useRef<any>(null);
+  const vapiRef = useRef<any>(null);
 
   // Check if SDK is loaded
   useEffect(() => {
     const checkSDK = () => {
-      if (window.vapiSDK) {
+      if (window.VapiClass) {
         setSdkReady(true);
         return true;
       }
@@ -37,7 +35,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
 
     if (checkSDK()) return;
 
-    // Poll for SDK load (script has defer)
+    // Poll for SDK load (module loads async)
     const interval = setInterval(() => {
       if (checkSDK()) {
         clearInterval(interval);
@@ -45,9 +43,12 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     }, 100);
 
     // Cleanup after 10 seconds
-    setTimeout(() => clearInterval(interval), 10000);
+    const timeout = setTimeout(() => clearInterval(interval), 10000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
   }, []);
 
   const startSession = useCallback(async () => {
@@ -57,7 +58,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       setIsActive(true);
       setStatus('Connecting...');
 
-      if (!window.vapiSDK) {
+      const VapiClass = window.VapiClass;
+      if (!VapiClass) {
         throw new Error('Vapi SDK not loaded. Please refresh and try again.');
       }
 
@@ -71,40 +73,49 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       // Request mic permission first
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Initialize Vapi instance using the SDK
-      vapiInstanceRef.current = window.vapiSDK.run({
-        apiKey: publicKey,
-        assistant: assistantId,
-        config: {
-          hideButton: true, // We use our own button
-          position: 'bottom-right',
+      // Create Vapi instance
+      const vapi = new VapiClass(publicKey);
+      vapiRef.current = vapi;
+
+      // Attach event listeners
+      vapi.on('call-start', () => {
+        console.log('Call started');
+        setStatus('Connected');
+      });
+
+      vapi.on('call-end', () => {
+        console.log('Call ended');
+        setIsActive(false);
+        setStatus('Ready');
+        setTranscription('');
+        vapiRef.current = null;
+      });
+
+      vapi.on('speech-start', () => {
+        setStatus('Listening...');
+      });
+
+      vapi.on('speech-end', () => {
+        setStatus('Processing...');
+      });
+
+      vapi.on('message', (message: any) => {
+        console.log('Vapi message:', message);
+        if (message.type === 'transcript' && message.role === 'user') {
+          setTranscription(message.transcript || '');
         }
       });
 
-      // The SDK auto-starts the call when run() is called
-      setStatus('Connected');
+      vapi.on('error', (err: any) => {
+        console.error('Vapi error:', err);
+        setError(err.message || 'Call failed.');
+        setIsActive(false);
+        setStatus('Ready');
+      });
 
-      // Listen for call end via the instance
-      if (vapiInstanceRef.current && vapiInstanceRef.current.on) {
-        vapiInstanceRef.current.on('call-end', () => {
-          setIsActive(false);
-          setStatus('Ready');
-          setTranscription('');
-        });
-
-        vapiInstanceRef.current.on('error', (err: any) => {
-          console.error('Vapi error:', err);
-          setError(err.message || 'Call failed.');
-          setIsActive(false);
-          setStatus('Ready');
-        });
-
-        vapiInstanceRef.current.on('message', (msg: any) => {
-          if (msg.type === 'transcript' && msg.role === 'user') {
-            setTranscription(msg.transcript || '');
-          }
-        });
-      }
+      // Start the call with assistant ID
+      console.log('Starting call with assistant:', assistantId);
+      await vapi.start(assistantId);
 
     } catch (err: any) {
       console.error('Failed to start session:', err);
@@ -115,17 +126,13 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   }, []);
 
   const stopSession = useCallback(() => {
-    if (vapiInstanceRef.current) {
+    if (vapiRef.current) {
       try {
-        if (vapiInstanceRef.current.stop) {
-          vapiInstanceRef.current.stop();
-        } else if (vapiInstanceRef.current.destroy) {
-          vapiInstanceRef.current.destroy();
-        }
+        vapiRef.current.stop();
       } catch (e) {
         console.warn('Error stopping call:', e);
       }
-      vapiInstanceRef.current = null;
+      vapiRef.current = null;
     }
     setIsActive(false);
     setStatus('Ready');
@@ -134,9 +141,15 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
 
   useEffect(() => {
     return () => {
-      stopSession();
+      if (vapiRef.current) {
+        try {
+          vapiRef.current.stop();
+        } catch (e) {
+          // ignore
+        }
+      }
     };
-  }, [stopSession]);
+  }, []);
 
   return (
     <div className={`flex flex-col items-center gap-5 p-8 rounded-3xl transition-all border ${isActive ? 'bg-gold/10 border-gold/40 shadow-xl shadow-gold/10' : 'bg-white/5 border-white/5 hover:border-gold/20'}`}>
