@@ -94,7 +94,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 135,
     flatRateGalveston: 245,
     minHours: 3,
-    image: '/chauffeur_service.png',
+    image: '/gmc_yukon_suburban.png',
     description: 'The definitive standard for corporate livery and comfortable group travel across Texas highways.',
     features: [
       'Black leather 7-passenger executive seating',
