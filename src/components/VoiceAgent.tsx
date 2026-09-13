@@ -74,7 +74,6 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const sessionActiveRef = useRef(false);
-  const pendingTranscriptRef = useRef('');
 
   const sendMessageToAdam = useCallback(async (message: string) => {
     const botToken = window.TELEGRAM_BOT_TOKEN;
@@ -106,39 +105,63 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     speechSynthesis.speak(utterance);
   }, []);
 
-  const callGemini = useCallback(async (userText: string): Promise<string> => {
-    const apiKey = window.GEMINI_API_KEY || '';
-    const endpoint = window.__AI_ENDPOINT__ || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
-    const url = `${endpoint}?key=${apiKey}`;
+  const callAI = useCallback(async (userText: string): Promise<string> => {
+    // Prefer OpenRouter; fall back to Gemini if no OpenRouter key.
+    const openRouterKey = window.OPENROUTER_API_KEY || '';
+    const geminiKey = window.GEMINI_API_KEY || '';
 
-    const body = {
-      system_instruction: { parts: [{ text: buildSystemInstruction(type) }] },
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: userText }],
+    if (openRouterKey) {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openRouterKey}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'AvaLimo Voice Concierge',
         },
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 200,
-      },
-    };
+        body: JSON.stringify({
+          model: 'openai/gpt-4o-mini',
+          messages: [
+            { role: 'system', content: buildSystemInstruction(type) },
+            { role: 'user', content: userText },
+          ],
+          max_tokens: 200,
+          temperature: 0.7,
+        }),
+      });
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`OpenRouter ${response.status}: ${text}`);
+      }
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Gemini ${response.status}: ${text}`);
+      const data = await response.json();
+      const reply = data.choices?.[0]?.message?.content?.trim() || '';
+      if (reply) return reply;
     }
 
-    const data = await response.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    return reply;
+    if (geminiKey) {
+      const endpoint = window.__AI_ENDPOINT__ || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+      const response = await fetch(`${endpoint}?key=${geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: buildSystemInstruction(type) }] },
+          contents: [{ role: 'user', parts: [{ text: userText }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 200 },
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Gemini ${response.status}: ${text}`);
+      }
+
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    }
+
+    throw new Error('No AI provider configured.');
   }, [type]);
 
   const processUserText = useCallback(async (text: string) => {
@@ -149,7 +172,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     setStatus('Thinking...');
 
     try {
-      const reply = await callGemini(text);
+      const reply = await callAI(text);
       if (!reply || !sessionActiveRef.current) return;
 
       setLastReply(reply);
@@ -169,7 +192,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       setStatus('Error');
       setError(err.message || 'Failed to get response.');
     }
-  }, [callGemini, sendMessageToAdam, speakText]);
+  }, [callAI, sendMessageToAdam, speakText]);
 
   const startRecognition = useCallback(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -195,7 +218,6 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         }
       }
       if (final.trim()) {
-        pendingTranscriptRef.current = final.trim();
         processUserText(final.trim());
       }
     };
@@ -236,7 +258,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         throw new Error('Speech recognition not supported in this browser. Try Chrome or Edge.');
       }
 
-      if (!window.GEMINI_API_KEY) {
+      if (!window.GEMINI_API_KEY && !window.OPENROUTER_API_KEY) {
         throw new Error('AI key not configured. The voice concierge is unavailable.');
       }
 
