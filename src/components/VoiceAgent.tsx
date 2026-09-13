@@ -58,7 +58,9 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       setStatus('Initializing...');
       setIsActive(true);
 
-      const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+      const apiKey = (typeof window !== 'undefined' && (window as any).GEMINI_API_KEY) ||
+                     process.env.API_KEY ||
+                     process.env.GEMINI_API_KEY;
       if (!apiKey) {
         throw new Error('No Gemini API key configured. Please set GEMINI_API_KEY in environment variables.');
       }

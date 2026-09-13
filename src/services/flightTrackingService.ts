@@ -1,9 +1,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { FlightDetails } from "../types";
 
+function getRuntimeApiKey(): string | undefined {
+  if (typeof window !== 'undefined' && (window as any).GEMINI_API_KEY) {
+    return (window as any).GEMINI_API_KEY;
+  }
+  return process.env.GEMINI_API_KEY || process.env.API_KEY;
+}
+
 let aiClient: GoogleGenAI | null = null;
 function getAiClient(): GoogleGenAI | null {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+  const apiKey = getRuntimeApiKey();
   if (!apiKey) return null;
   if (!aiClient) {
     aiClient = new GoogleGenAI({ apiKey });
