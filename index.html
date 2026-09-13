@@ -11,8 +11,15 @@
   <link rel="stylesheet" href="/src/index.css">
   <!-- RUNTIME_CONFIG -->
   <script type="module">
-    import Vapi from 'https://cdn.jsdelivr.net/npm/@vapi-ai/web@2.7.0/+esm';
-    window.VapiClass = Vapi;
+    (async () => {
+      try {
+        const module = await import('https://cdn.jsdelivr.net/npm/@vapi-ai/web@2.7.0/+esm');
+        window.VapiClass = module.default || module.Vapi || module;
+        console.log('Vapi SDK loaded:', window.VapiClass);
+      } catch (e) {
+        console.error('Failed to load Vapi SDK:', e);
+      }
+    })();
   </script>
 </head>
 <body>
