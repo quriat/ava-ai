@@ -8,7 +8,8 @@ interface VoiceAgentProps {
 
 declare global {
   interface Window {
-    Vapi?: any;
+    vapiSDK?: any;
+    vapiInstance?: any;
     VAPI_PUBLIC_KEY?: string;
     VAPI_ASSISTANT_ID?: string;
     TELEGRAM_BOT_TOKEN?: string;
@@ -20,41 +21,33 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [status, setStatus] = useState('Ready');
   const [transcription, setTranscription] = useState('');
   const [error, setError] = useState('');
+  const [sdkReady, setSdkReady] = useState(false);
 
-  const vapiRef = useRef<any>(null);
-  const callRef = useRef<any>(null);
+  const vapiInstanceRef = useRef<any>(null);
 
-  const sendMessageToAdam = useCallback(async (message: string) => {
-    const botToken = window.TELEGRAM_BOT_TOKEN;
-    if (!botToken || botToken === 'not_configured') {
-      console.warn('Telegram bot token not configured; cannot forward message to Adam.');
-      return;
-    }
-    try {
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: 5820707923,
-          text: `🎤 **AvaLimo AI Voice Message**\n\n${message}\n\n_${new Date().toLocaleString()}_`,
-          parse_mode: 'Markdown',
-        }),
-      });
-    } catch (err) {
-      console.error('Failed to send Telegram message:', err);
-    }
-  }, []);
-
-  // Load Vapi SDK on mount
+  // Check if SDK is loaded
   useEffect(() => {
-    if (window.Vapi) return; // Already loaded
-    const script = document.createElement('script');
-    script.src = 'https://cdn.vapi.ai/web.js';
-    script.async = true;
-    script.onload = () => {
-      console.log('Vapi SDK loaded');
+    const checkSDK = () => {
+      if (window.vapiSDK) {
+        setSdkReady(true);
+        return true;
+      }
+      return false;
     };
-    document.head.appendChild(script);
+
+    if (checkSDK()) return;
+
+    // Poll for SDK load (script has defer)
+    const interval = setInterval(() => {
+      if (checkSDK()) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Cleanup after 10 seconds
+    setTimeout(() => clearInterval(interval), 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const startSession = useCallback(async () => {
@@ -64,7 +57,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       setIsActive(true);
       setStatus('Connecting...');
 
-      if (!window.Vapi) {
+      if (!window.vapiSDK) {
         throw new Error('Vapi SDK not loaded. Please refresh and try again.');
       }
 
@@ -75,51 +68,44 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         throw new Error('Vapi credentials not configured.');
       }
 
-      // Initialize Vapi
-      vapiRef.current = new window.Vapi({
+      // Request mic permission first
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Initialize Vapi instance using the SDK
+      vapiInstanceRef.current = window.vapiSDK.run({
         apiKey: publicKey,
-      });
-
-      // Attach event listeners
-      vapiRef.current.on('speech-start', () => {
-        setStatus('Listening...');
-      });
-
-      vapiRef.current.on('speech-end', () => {
-        setStatus('Processing...');
-      });
-
-      vapiRef.current.on('message', (message: any) => {
-        if (message.type === 'user-transcription') {
-          setTranscription(message.transcription || '');
-        } else if (message.type === 'assistant-message') {
-          console.log('Assistant message:', message);
+        assistant: assistantId,
+        config: {
+          hideButton: true, // We use our own button
+          position: 'bottom-right',
         }
       });
 
-      vapiRef.current.on('call-start', () => {
-        setStatus('Connected');
-      });
+      // The SDK auto-starts the call when run() is called
+      setStatus('Connected');
 
-      vapiRef.current.on('call-end', () => {
-        setIsActive(false);
-        setStatus('Ready');
-        setTranscription('');
-      });
+      // Listen for call end via the instance
+      if (vapiInstanceRef.current && vapiInstanceRef.current.on) {
+        vapiInstanceRef.current.on('call-end', () => {
+          setIsActive(false);
+          setStatus('Ready');
+          setTranscription('');
+        });
 
-      vapiRef.current.on('error', (error: any) => {
-        console.error('Vapi error:', error);
-        setStatus('Error');
-        setError(error.message || 'Call failed.');
-        setIsActive(false);
-      });
+        vapiInstanceRef.current.on('error', (err: any) => {
+          console.error('Vapi error:', err);
+          setError(err.message || 'Call failed.');
+          setIsActive(false);
+          setStatus('Ready');
+        });
 
-      // Request mic permission
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+        vapiInstanceRef.current.on('message', (msg: any) => {
+          if (msg.type === 'transcript' && msg.role === 'user') {
+            setTranscription(msg.transcript || '');
+          }
+        });
+      }
 
-      // Start call with assistant
-      await vapiRef.current.start(assistantId);
-      callRef.current = vapiRef.current;
     } catch (err: any) {
       console.error('Failed to start session:', err);
       setStatus('Failed');
@@ -129,12 +115,17 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   }, []);
 
   const stopSession = useCallback(() => {
-    if (callRef.current) {
+    if (vapiInstanceRef.current) {
       try {
-        callRef.current.stop();
+        if (vapiInstanceRef.current.stop) {
+          vapiInstanceRef.current.stop();
+        } else if (vapiInstanceRef.current.destroy) {
+          vapiInstanceRef.current.destroy();
+        }
       } catch (e) {
         console.warn('Error stopping call:', e);
       }
+      vapiInstanceRef.current = null;
     }
     setIsActive(false);
     setStatus('Ready');
@@ -160,9 +151,10 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       {!isActive ? (
         <button
           onClick={startSession}
-          className="border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold hover:text-black transition-all w-full"
+          disabled={!sdkReady}
+          className={`border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase transition-all w-full ${sdkReady ? 'hover:bg-gold hover:text-black' : 'opacity-50 cursor-not-allowed'}`}
         >
-          Call {type === 'Front Desk' ? 'Desk' : 'Dispatch'}
+          {sdkReady ? `Call ${type === 'Front Desk' ? 'Desk' : 'Dispatch'}` : 'Loading...'}
         </button>
       ) : (
         <button
