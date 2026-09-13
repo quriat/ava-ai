@@ -108,7 +108,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
 
   const callGemini = useCallback(async (userText: string): Promise<string> => {
     const apiKey = window.GEMINI_API_KEY || '';
-    const endpoint = window.__AI_ENDPOINT__ || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+    const endpoint = window.__AI_ENDPOINT__ || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
     const url = `${endpoint}?key=${apiKey}`;
 
     const body = {
