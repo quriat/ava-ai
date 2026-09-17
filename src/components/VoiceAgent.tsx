@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AgentType } from '../types';
-import { startVapiCall, stopVapiCall, getVapi, isVapiConfigured } from '../services/vapiVoiceService';
+import { startVapiCall, stopVapiCall, getVapi, isVapiConfigured, getTransferPhone } from '../services/vapiVoiceService';
+import { Phone } from 'lucide-react';
 
 interface VoiceAgentProps {
   type: AgentType;
@@ -12,11 +13,14 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [status, setStatus] = useState('Ready');
   const [transcription, setTranscription] = useState('');
   const [error, setError] = useState('');
+  const [transferRequested, setTransferRequested] = useState(false);
   const configured = isVapiConfigured();
+  const transferPhone = getTransferPhone();
 
   const handleStart = useCallback(() => {
     try {
       setError('');
+      setTransferRequested(false);
       setStatus('Initializing...');
       startVapiCall(type);
       setIsActive(true);
@@ -34,6 +38,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     setIsActive(false);
     setStatus('Ready');
     setTranscription('');
+    setTransferRequested(false);
   }, []);
 
   useEffect(() => {
@@ -50,12 +55,14 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       setIsActive(true);
       setStatus('Active');
       setError('');
+      setTransferRequested(false);
     };
 
     const onCallEnd = () => {
       setIsActive(false);
       setStatus('Ready');
       setTranscription('');
+      setTransferRequested(false);
     };
 
     const onSpeechStart = () => {
@@ -70,12 +77,28 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       if (message?.type === 'transcript' && message.transcript) {
         setTranscription(message.transcript);
       }
+
+      // Detect transfer-related failures or explicit transfer requests from assistant
+      const msgStr = typeof message === 'string' ? message : JSON.stringify(message);
+      const transferKeywords = /transfer|transferring|connect you|human|agent|dispatch|representative|operator/i;
+      if (transferKeywords.test(msgStr)) {
+        setTransferRequested(true);
+      }
     };
 
     const onError = (err: any) => {
       console.error('Vapi error:', err);
+      const errMsg = err?.message || err?.errorMsg || JSON.stringify(err) || 'Call disconnected.';
       setStatus('Error');
-      setError('Call disconnected. Please try again.');
+
+      // If the error mentions transfer, show the direct-call fallback.
+      if (/transfer|dial|destination|phone number|invalid number|unreachable/i.test(errMsg)) {
+        setTransferRequested(true);
+        setError('Transfer to live agent failed. Tap below to call dispatch directly.');
+      } else {
+        setError('Call disconnected. Please try again.');
+      }
+
       setIsActive(false);
     };
 
@@ -123,6 +146,17 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         </button>
       )}
 
+      {isActive && transferRequested && (
+        <a
+          href={`tel:${transferPhone}`}
+          onClick={handleStop}
+          className="w-full bg-[var(--gold)] hover:bg-[var(--gold-light)] text-black px-4 py-3 rounded-full text-[10px] font-extrabold tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-2"
+        >
+          <Phone size={14} />
+          Transfer to Live Agent
+        </a>
+      )}
+
       {isActive && transcription && (
         <div className="text-[11px] text-white/70 italic max-w-[180px] text-center min-h-[32px] leading-relaxed">
           "{transcription}"
@@ -133,6 +167,16 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         <div className="text-[10px] text-red-400 text-center max-w-[180px] leading-relaxed">
           {error}
         </div>
+      )}
+
+      {transferRequested && !isActive && (
+        <a
+          href={`tel:${transferPhone}`}
+          className="w-full bg-white/10 hover:bg-white/20 text-white border border-gold/40 px-4 py-3 rounded-full text-[10px] font-extrabold tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-2"
+        >
+          <Phone size={14} />
+          Call Dispatch Directly
+        </a>
       )}
 
       {!configured && !error && !isActive && (

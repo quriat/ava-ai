@@ -39,6 +39,7 @@ jobs:
             VITE_VAPI_FRONT_DESK_ASSISTANT_ID=${{ secrets.VAPI_FRONT_DESK_ASSISTANT_ID }}
             VITE_VAPI_DISPATCH_ASSISTANT_ID=${{ secrets.VAPI_DISPATCH_ASSISTANT_ID }}
             VITE_BOOKING_API_ENDPOINT=${{ secrets.BOOKING_API_ENDPOINT }}
+            VITE_VOICE_TRANSFER_PHONE=${{ secrets.VOICE_TRANSFER_PHONE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

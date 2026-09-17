@@ -6,6 +6,7 @@ export interface PublicRuntimeConfig {
   VAPI_FRONT_DESK_ASSISTANT_ID?: string;
   VAPI_DISPATCH_ASSISTANT_ID?: string;
   BOOKING_API_ENDPOINT?: string;
+  VOICE_TRANSFER_PHONE?: string;
 }
 
 function getWindowConfig(): PublicRuntimeConfig {
@@ -17,6 +18,7 @@ declare const __VITE_VAPI_PUBLIC_KEY__: string | undefined;
 declare const __VITE_VAPI_FRONT_DESK_ASSISTANT_ID__: string | undefined;
 declare const __VITE_VAPI_DISPATCH_ASSISTANT_ID__: string | undefined;
 declare const __VITE_BOOKING_API_ENDPOINT__: string | undefined;
+declare const __VITE_VOICE_TRANSFER_PHONE__: string | undefined;
 
 function getGlobal(key: string): string | undefined {
   if (typeof window === 'undefined') return undefined;
@@ -45,10 +47,20 @@ export function getPublicConfig(): PublicRuntimeConfig {
       (typeof __VITE_BOOKING_API_ENDPOINT__ !== 'undefined' ? __VITE_BOOKING_API_ENDPOINT__ : undefined) ||
       process.env?.VITE_BOOKING_API_ENDPOINT ||
       '/api/book',
+    VOICE_TRANSFER_PHONE:
+      getWindowConfig().VOICE_TRANSFER_PHONE ||
+      (typeof __VITE_VOICE_TRANSFER_PHONE__ !== 'undefined' ? __VITE_VOICE_TRANSFER_PHONE__ : undefined) ||
+      process.env?.VITE_VOICE_TRANSFER_PHONE ||
+      '+18325678050',
   };
 }
 
-export function assertVapiConfigured(): { apiKey: string; frontDeskAssistantId: string; dispatchAssistantId: string } {
+export function assertVapiConfigured(): {
+  apiKey: string;
+  frontDeskAssistantId: string;
+  dispatchAssistantId: string;
+  transferPhone: string;
+} {
   const cfg = getPublicConfig();
   if (!cfg.VAPI_PUBLIC_KEY) {
     throw new Error('Vapi public key is not configured.');
@@ -60,5 +72,6 @@ export function assertVapiConfigured(): { apiKey: string; frontDeskAssistantId: 
     apiKey: cfg.VAPI_PUBLIC_KEY,
     frontDeskAssistantId: cfg.VAPI_FRONT_DESK_ASSISTANT_ID,
     dispatchAssistantId: cfg.VAPI_DISPATCH_ASSISTANT_ID,
+    transferPhone: cfg.VOICE_TRANSFER_PHONE || '+18325678050',
   };
 }

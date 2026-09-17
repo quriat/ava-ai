@@ -31,3 +31,7 @@ export function isVapiConfigured(): boolean {
   const cfg = getPublicConfig();
   return Boolean(cfg.VAPI_PUBLIC_KEY && cfg.VAPI_FRONT_DESK_ASSISTANT_ID && cfg.VAPI_DISPATCH_ASSISTANT_ID);
 }
+
+export function getTransferPhone(): string {
+  return getPublicConfig().VOICE_TRANSFER_PHONE || '+18325678050';
+}
