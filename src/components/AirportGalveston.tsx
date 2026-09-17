@@ -14,7 +14,7 @@ const AirportGalveston: React.FC = () => {
             IAH • Hobby • Galveston Cruise Terminal
           </h2>
           <p className="text-white/60 max-w-2xl mx-auto">
-            Real-time flight tracking, 45/60 min complimentary wait time, and direct pier-to-ship service for every Houston airport and cruise terminal.
+            Flight monitoring by dispatch, 45/60 min complimentary wait time, and direct pier-to-ship service for every Houston airport and cruise terminal.
           </p>
         </div>
 

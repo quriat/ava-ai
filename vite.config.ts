@@ -12,10 +12,11 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [react(), tailwindcss()],
     define: {
-      'process.env.API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY || env.API_KEY || ''),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY || env.API_KEY || ''),
-      'process.env.BOOKING_WEBHOOK_URL': JSON.stringify(env.BOOKING_WEBHOOK_URL || ''),
-      'process.env.BOOKING_EMAIL': JSON.stringify(env.BOOKING_EMAIL || 'adam@avalimo.net')
+      // Only public config is embedded. No AI / Gemini API keys in browser bundle.
+      __VITE_VAPI_PUBLIC_KEY__: JSON.stringify(env.VITE_VAPI_PUBLIC_KEY || env.VAPI_PUBLIC_KEY || ''),
+      __VITE_VAPI_FRONT_DESK_ASSISTANT_ID__: JSON.stringify(env.VITE_VAPI_FRONT_DESK_ASSISTANT_ID || env.VAPI_FRONT_DESK_ASSISTANT_ID || ''),
+      __VITE_VAPI_DISPATCH_ASSISTANT_ID__: JSON.stringify(env.VITE_VAPI_DISPATCH_ASSISTANT_ID || env.VAPI_DISPATCH_ASSISTANT_ID || ''),
+      __VITE_BOOKING_API_ENDPOINT__: JSON.stringify(env.VITE_BOOKING_API_ENDPOINT || env.BOOKING_API_ENDPOINT || '/api/book')
     },
     resolve: {
       alias: {

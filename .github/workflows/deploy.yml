@@ -35,9 +35,10 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/avalimo-voice:latest
             ghcr.io/${{ github.repository_owner }}/avalimo-voice:${{ github.sha }}
           build-args: |
-            VITE_GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-          secrets: |
-            VITE_GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            VITE_VAPI_PUBLIC_KEY=${{ secrets.VAPI_PUBLIC_KEY }}
+            VITE_VAPI_FRONT_DESK_ASSISTANT_ID=${{ secrets.VAPI_FRONT_DESK_ASSISTANT_ID }}
+            VITE_VAPI_DISPATCH_ASSISTANT_ID=${{ secrets.VAPI_DISPATCH_ASSISTANT_ID }}
+            VITE_BOOKING_API_ENDPOINT=${{ secrets.BOOKING_API_ENDPOINT }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
