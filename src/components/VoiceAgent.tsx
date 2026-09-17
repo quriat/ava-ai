@@ -1,22 +1,11 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import VapiImport from '@vapi-ai/web';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AgentType } from '../types';
-
-// Guard against CJS/ESM default-interop differences across bundlers/CDNs.
-// @vapi-ai/web ships CommonJS (exports.default = Vapi); depending on interop
-// the imported binding may be the class or an { default } wrapper.
-const Vapi: any = (VapiImport as any)?.default ?? VapiImport;
+import { startVapiCall, stopVapiCall, getVapi, isVapiConfigured, getTransferPhone } from '../services/vapiVoiceService';
+import { Phone } from 'lucide-react';
 
 interface VoiceAgentProps {
   type: AgentType;
   icon: React.ReactNode;
-}
-
-declare global {
-  interface Window {
-    VAPI_PUBLIC_KEY?: string;
-    VAPI_ASSISTANT_ID?: string;
-  }
 }
 
 const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
@@ -24,106 +13,111 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [status, setStatus] = useState('Ready');
   const [transcription, setTranscription] = useState('');
   const [error, setError] = useState('');
+  const [transferRequested, setTransferRequested] = useState(false);
+  const configured = isVapiConfigured();
+  const transferPhone = getTransferPhone();
 
-  const vapiRef = useRef<Vapi | null>(null);
-
-  const startSession = useCallback(async () => {
+  const handleStart = useCallback(() => {
     try {
       setError('');
-      setTranscription('');
+      setTransferRequested(false);
+      setStatus('Initializing...');
+      startVapiCall(type);
       setIsActive(true);
-      setStatus('Connecting...');
-
-      const publicKey = window.VAPI_PUBLIC_KEY;
-      const assistantId = window.VAPI_ASSISTANT_ID;
-
-      if (!publicKey || !assistantId) {
-        throw new Error('Vapi credentials not configured.');
-      }
-
-      // Request mic permission first
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // Create Vapi instance
-      if (typeof Vapi !== 'function') {
-        throw new Error('Voice SDK failed to load. Please refresh and try again.');
-      }
-      const vapi = new Vapi(publicKey);
-      vapiRef.current = vapi;
-
-      // Attach event listeners
-      vapi.on('call-start', () => {
-        console.log('Call started');
-        setStatus('Connected');
-      });
-
-      vapi.on('call-end', () => {
-        console.log('Call ended');
-        setIsActive(false);
-        setStatus('Ready');
-        setTranscription('');
-        vapiRef.current = null;
-      });
-
-      vapi.on('speech-start', () => {
-        setStatus('Listening...');
-      });
-
-      vapi.on('speech-end', () => {
-        setStatus('Processing...');
-      });
-
-      vapi.on('message', (message: any) => {
-        console.log('Vapi message:', message);
-        if (message.type === 'transcript' && message.role === 'user') {
-          setTranscription(message.transcript || '');
-        }
-      });
-
-      vapi.on('error', (err: any) => {
-        console.error('Vapi error:', err);
-        setError(err.message || 'Call failed.');
-        setIsActive(false);
-        setStatus('Ready');
-      });
-
-      // Start the call with assistant ID
-      console.log('Starting call with assistant:', assistantId);
-      await vapi.start(assistantId);
-
+      setStatus('Active');
     } catch (err: any) {
-      console.error('Failed to start session:', err);
+      console.error('Voice start error:', err);
       setStatus('Failed');
-      setError(err.message || 'Failed to start call.');
+      setError(err?.message || 'Could not start voice session.');
       setIsActive(false);
     }
-  }, []);
+  }, [type]);
 
-  const stopSession = useCallback(() => {
-    if (vapiRef.current) {
-      try {
-        vapiRef.current.stop();
-      } catch (e) {
-        console.warn('Error stopping call:', e);
-      }
-      vapiRef.current = null;
-    }
+  const handleStop = useCallback(() => {
+    stopVapiCall();
     setIsActive(false);
     setStatus('Ready');
     setTranscription('');
+    setTransferRequested(false);
   }, []);
 
   useEffect(() => {
-    return () => {
-      if (vapiRef.current) {
-        try {
-          vapiRef.current.stop();
-        } catch (e) {
-          // ignore
-        }
+    if (!configured) return;
+
+    let vapi: ReturnType<typeof getVapi>;
+    try {
+      vapi = getVapi();
+    } catch {
+      return;
+    }
+
+    const onCallStart = () => {
+      setIsActive(true);
+      setStatus('Active');
+      setError('');
+      setTransferRequested(false);
+    };
+
+    const onCallEnd = () => {
+      setIsActive(false);
+      setStatus('Ready');
+      setTranscription('');
+      setTransferRequested(false);
+    };
+
+    const onSpeechStart = () => {
+      setStatus('Speaking');
+    };
+
+    const onSpeechEnd = () => {
+      setStatus('Listening');
+    };
+
+    const onMessage = (message: any) => {
+      if (message?.type === 'transcript' && message.transcript) {
+        setTranscription(message.transcript);
+      }
+
+      // Detect transfer-related failures or explicit transfer requests from assistant
+      const msgStr = typeof message === 'string' ? message : JSON.stringify(message);
+      const transferKeywords = /transfer|transferring|connect you|human|agent|dispatch|representative|operator/i;
+      if (transferKeywords.test(msgStr)) {
+        setTransferRequested(true);
       }
     };
-  }, []);
+
+    const onError = (err: any) => {
+      console.error('Vapi error:', err);
+      const errMsg = err?.message || err?.errorMsg || JSON.stringify(err) || 'Call disconnected.';
+      setStatus('Error');
+
+      // If the error mentions transfer, show the direct-call fallback.
+      if (/transfer|dial|destination|phone number|invalid number|unreachable/i.test(errMsg)) {
+        setTransferRequested(true);
+        setError('Transfer to live agent failed. Tap below to call dispatch directly.');
+      } else {
+        setError('Call disconnected. Please try again.');
+      }
+
+      setIsActive(false);
+    };
+
+    vapi.on('call-start', onCallStart);
+    vapi.on('call-end', onCallEnd);
+    vapi.on('speech-start', onSpeechStart);
+    vapi.on('speech-end', onSpeechEnd);
+    vapi.on('message', onMessage);
+    vapi.on('error', onError);
+
+    return () => {
+      vapi.off('call-start', onCallStart);
+      vapi.off('call-end', onCallEnd);
+      vapi.off('speech-start', onSpeechStart);
+      vapi.off('speech-end', onSpeechEnd);
+      vapi.off('message', onMessage);
+      vapi.off('error', onError);
+    };
+  }, [configured]);
 
   return (
     <div className={`flex flex-col items-center gap-5 p-8 rounded-3xl transition-all border ${isActive ? 'bg-gold/10 border-gold/40 shadow-xl shadow-gold/10' : 'bg-white/5 border-white/5 hover:border-gold/20'}`}>
@@ -137,29 +131,57 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
 
       {!isActive ? (
         <button
-          onClick={startSession}
-          className="border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold hover:text-black transition-all w-full"
+          onClick={handleStart}
+          disabled={!configured}
+          className="border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold hover:text-black transition-all w-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Call {type === 'Front Desk' ? 'Desk' : 'Dispatch'}
+          {configured ? `Call ${type === AgentType.FRONT_DESK ? 'Desk' : 'Dispatch'}` : 'Configure Voice'}
         </button>
       ) : (
         <button
-          onClick={stopSession}
+          onClick={handleStop}
           className="bg-red-600/20 border border-red-600/40 text-red-500 px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-red-600 hover:text-white transition-all w-full"
         >
           End Call
         </button>
       )}
 
+      {isActive && transferRequested && (
+        <a
+          href={`tel:${transferPhone}`}
+          onClick={handleStop}
+          className="w-full bg-[var(--gold)] hover:bg-[var(--gold-light)] text-black px-4 py-3 rounded-full text-[10px] font-extrabold tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-2"
+        >
+          <Phone size={14} />
+          Transfer to Live Agent
+        </a>
+      )}
+
       {isActive && transcription && (
         <div className="text-[11px] text-white/70 italic max-w-[180px] text-center min-h-[32px] leading-relaxed">
-          You: "{transcription}"
+          "{transcription}"
         </div>
       )}
 
       {error && !isActive && (
         <div className="text-[10px] text-red-400 text-center max-w-[180px] leading-relaxed">
           {error}
+        </div>
+      )}
+
+      {transferRequested && !isActive && (
+        <a
+          href={`tel:${transferPhone}`}
+          className="w-full bg-white/10 hover:bg-white/20 text-white border border-gold/40 px-4 py-3 rounded-full text-[10px] font-extrabold tracking-[0.15em] uppercase transition-all flex items-center justify-center gap-2"
+        >
+          <Phone size={14} />
+          Call Dispatch Directly
+        </a>
+      )}
+
+      {!configured && !error && !isActive && (
+        <div className="text-[10px] text-amber-400 text-center max-w-[180px] leading-relaxed">
+          Voice agents require Vapi public key and assistant IDs.
         </div>
       )}
     </div>

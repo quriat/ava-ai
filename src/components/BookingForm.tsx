@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, Clock, MapPin, User, Mail, Phone, Plane, Users, Briefcase, Check, Sparkles, AlertCircle, RefreshCw, Navigation, ShieldCheck } from 'lucide-react';
-import { VehicleType, TripType, FlightDetails, RouteEstimate } from '../types';
+import { Calendar, Clock, MapPin, User, Mail, Phone, Plane, Users, Briefcase, Check, Sparkles, AlertCircle, Navigation, ShieldCheck } from 'lucide-react';
+import { VehicleType, TripType, RouteEstimate } from '../types';
 import { FLEET_DATA, COMPANY_INFO } from '../data/avalimoData';
-import { trackFlightNumber, format12Hour } from '../services/flightTrackingService';
 import { calculateRouteEstimate } from '../services/routeCalculationService';
+import { submitBookingRequest } from '../services/bookingService';
 
 interface BookingFormProps {
   initialData?: {
@@ -21,19 +21,19 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
   const [tripType, setTripType] = useState<TripType>(TripType.AIRPORT);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>('cadillac-escalade-esv');
   const [hourlyHours, setHourlyHours] = useState<number>(3);
-  const [showFlightTracker, setShowFlightTracker] = useState<boolean>(true);
-  const [trackedFlight, setTrackedFlight] = useState<FlightDetails | null>(null);
-  const [trackingLoading, setTrackingLoading] = useState(false);
+  const [showFlightTracker] = useState<boolean>(true);
+  const [trackedFlight, setTrackedFlight] = useState<{ flightNumber: string; airline?: string } | null>(null);
+  const [trackingNote, setTrackingNote] = useState<string>('');
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    date: () => {
+    date: (() => {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       return tomorrow.toISOString().split('T')[0];
-    },
+    })(),
     time: '14:30',
     pickup: 'George Bush Intercontinental Airport (IAH)',
     dropoff: 'Downtown Houston / Galleria',
@@ -47,7 +47,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
   });
 
   const [submittedBooking, setSubmittedBooking] = useState<any | null>(null);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error' | 'fallback'>('idle');
+  const [submitResult, setSubmitResult] = useState<{ status: 'success' | 'error' | 'fallback'; message: string; reference?: string } | null>(null);
 
   const routeEstimate: RouteEstimate = useMemo(() => {
     return calculateRouteEstimate(formData.pickup, formData.dropoff, formData.time);
@@ -77,26 +78,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
 
   const selectedVehicle = FLEET_DATA.find(v => v.id === selectedVehicleId) || FLEET_DATA[1];
 
-  const trackFlight = async () => {
+  const captureFlight = () => {
     if (!formData.flightNumber.trim()) return;
-    setTrackingLoading(true);
-    try {
-      const date = typeof formData.date === 'string' ? formData.date : formData.date();
-      const details = await trackFlightNumber(formData.flightNumber, date, 'arrival');
-      setTrackedFlight(details);
-      setFormData(prev => ({
-        ...prev,
-        airline: details.airline,
-        time: details.suggestedPickupTime,
-        date: details.suggestedPickupDate || prev.date,
-        pickup: details.destination.airportName,
-        specialInstructions: `${prev.specialInstructions ? prev.specialInstructions + '\n' : ''}Flight: ${details.flightNumber} | Status: ${details.status} | Estimated arrival: ${format12Hour(details.destination.estimatedArrival)}`.trim()
-      }));
-    } catch (err) {
-      alert('Could not track flight. Please check the flight number and try again.');
-    } finally {
-      setTrackingLoading(false);
-    }
+    setTrackedFlight({ flightNumber: formData.flightNumber, airline: formData.airline });
+    setTrackingNote('Flight number recorded. Our dispatch team will monitor your flight and adjust pickup as needed.');
+    setFormData(prev => ({
+      ...prev,
+      specialInstructions: `${prev.specialInstructions ? prev.specialInstructions + '\n' : ''}Flight: ${formData.flightNumber}${prev.airline ? ` | Airline: ${prev.airline}` : ''}`.trim()
+    }));
   };
 
   const calculateEstimatedTotal = () => {
@@ -160,57 +149,44 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     };
 
     try {
-      const emailBody = formatBookingEmail(submission);
-      const webhookUrl = process.env.BOOKING_WEBHOOK_URL;
+      const result = await submitBookingRequest({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        pickup: formData.pickup,
+        dropoff: formData.dropoff,
+        date: formData.date,
+        time: formData.time,
+        passengers: Number(formData.passengers) || 1,
+        luggage: Number(formData.luggage) || 0,
+        vehicle: selectedVehicle.name,
+        tripType,
+        hours: tripType === TripType.HOURLY ? hourlyHours : undefined,
+        flightNumber: formData.flightNumber || undefined,
+        airline: formData.airline || undefined,
+        childSeat: formData.needChildSeat,
+        specialInstructions: formData.specialInstructions,
+        estimatedTotal: costEstimate.total,
+      });
 
-      let response;
-      if (webhookUrl) {
-        response = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-          body: JSON.stringify({
-            confirmationId,
-            ...formData,
-            tripType,
-            vehicle: selectedVehicle,
-            hours: tripType === TripType.HOURLY ? hourlyHours : undefined,
-            flightDetails: trackedFlight,
-            routeEstimate,
-            totalCost: costEstimate.total,
-            emailBody,
-            _subject: `New AvaLimo Reservation Request - ${confirmationId}`
-          })
-        });
-      } else {
-        response = await fetch(`https://formsubmit.co/ajax/${process.env.BOOKING_EMAIL || COMPANY_INFO.email}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            message: emailBody,
-            _subject: `New AvaLimo Reservation Request - ${confirmationId}`,
-            _template: 'table'
-          })
-        });
-      }
+      setSubmitResult({
+        status: result.status,
+        message: result.message,
+        reference: result.reference,
+      });
 
-      if (response.ok) {
+      if (result.ok) {
         setSubmittedBooking(submission);
         setSubmitStatus('success');
       } else {
-        throw new Error('Failed to send');
+        // Even on error/fallback we show the modal with the reference the user should cite.
+        setSubmittedBooking(submission);
+        setSubmitStatus(result.status);
       }
     } catch (err) {
       console.error('Booking submission error:', err);
       setSubmitStatus('error');
+      setSubmitResult({ status: 'error', message: 'Booking request could not be sent. Please call dispatch.' });
       setSubmittedBooking(submission);
     }
   };
@@ -219,7 +195,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     return `
 NEW AVALIMO RESERVATION REQUEST
 
-Confirmation: ${data.confirmationId}
+Request Reference: ${data.confirmationId}
 Customer: ${data.name}
 Email: ${data.email}
 Phone: ${data.phone}
@@ -239,8 +215,10 @@ Flight Number: ${data.flightNumber || 'N/A'}
 Airline: ${data.airline || 'N/A'}
 Special Requests: ${data.specialInstructions || 'None'}
 
-Route Estimate: ${data.routeEstimate?.durationFormatted || 'N/A'} via ${data.routeEstimate?.primaryHighway || 'N/A'}
+Route / Timing: ${data.routeEstimate?.durationFormatted || 'To be confirmed'}
 Submitted at: ${data.submittedAt}
+
+NOTE: This is a reservation request. Dispatch must confirm availability and chauffeur assignment before it is a confirmed booking.
     `.trim();
   };
 
@@ -293,16 +271,12 @@ Submitted at: ${data.submittedAt}
                   Pickup & Dropoff Details
                 </h3>
 
-                {(tripType === TripType.AIRPORT || tripType === TripType.GALVESTON || tripType === TripType.POINT_TO_POINT) && (
-                  <button
-                    type="button"
-                    onClick={() => setShowFlightTracker(!showFlightTracker)}
-                    className="text-xs text-[var(--gold)] hover:text-white font-semibold flex items-center gap-1 bg-white/5 border border-white/10 hover:border-gold/40 px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    <Plane size={13} />
-                    <span>{showFlightTracker ? 'Hide Flight Tracker' : 'Track Flight'}</span>
-                  </button>
-                )}
+        {(tripType === TripType.AIRPORT || tripType === TripType.GALVESTON || tripType === TripType.POINT_TO_POINT) && (
+          <div className="text-[10px] text-white/40 flex items-center gap-1">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            Flight number capture
+          </div>
+        )}
               </div>
 
               {showFlightTracker && (tripType === TripType.AIRPORT || tripType === TripType.GALVESTON || tripType === TripType.POINT_TO_POINT) && (
@@ -319,25 +293,25 @@ Submitted at: ${data.submittedAt}
                     <Plane className="absolute left-4 mt-3.5 text-[var(--gold)]" size={16} />
                     <button
                       type="button"
-                      onClick={trackFlight}
-                      disabled={trackingLoading || !formData.flightNumber.trim()}
+                      onClick={captureFlight}
+                      disabled={!formData.flightNumber.trim()}
                       className="bg-[var(--gold)] text-black px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider disabled:opacity-50"
                     >
-                      {trackingLoading ? 'Tracking...' : 'Track'}
+                      Save
                     </button>
                   </div>
                   {trackedFlight && (
                     <div className="text-xs text-white/70 bg-emerald-900/20 border border-emerald-500/30 p-3 rounded-lg">
                       <div className="flex items-center gap-2 mb-1">
                         <Check size={14} className="text-emerald-400" />
-                        <span className="font-semibold text-white">Flight synced: {trackedFlight.airline} {trackedFlight.flightNumber}</span>
-                        <span className="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">{trackedFlight.status}</span>
+                        <span className="font-semibold text-white">Flight recorded: {trackedFlight.airline || ''} {trackedFlight.flightNumber}</span>
                       </div>
-                      <div className="text-white/60">
-                        Touchdown: {format12Hour(trackedFlight.destination.estimatedArrival)} → Pickup adjusted to <strong className="text-white">{format12Hour(formData.time)}</strong>
-                      </div>
+                      <div className="text-white/60">{trackingNote}</div>
                     </div>
                   )}
+                  <p className="text-[10px] text-white/40 mt-2">
+                    Live flight status is not shown on the website. Dispatch monitors flights directly.
+                  </p>
                 </div>
               )}
 
@@ -372,12 +346,11 @@ Submitted at: ${data.submittedAt}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2 text-[var(--gold)]">
                     <Navigation size={16} />
-                    <span className="text-xs font-bold uppercase tracking-wider">Route Estimate</span>
+                    <span className="text-xs font-bold uppercase tracking-wider">Route / Timing</span>
                   </div>
-                  <span className="text-[11px] text-white/50">{routeEstimate.trafficLevel}</span>
                 </div>
                 <div className="text-white text-sm font-semibold mb-1">
-                  {routeEstimate.durationFormatted} • {routeEstimate.distanceMiles} miles via {routeEstimate.primaryHighway}
+                  {routeEstimate.durationFormatted}
                 </div>
                 <p className="text-[11px] text-white/40">{routeEstimate.routeSummary}</p>
               </div>
@@ -388,7 +361,7 @@ Submitted at: ${data.submittedAt}
                   <input
                     type="date"
                     name="date"
-                    value={typeof formData.date === 'string' ? formData.date : formData.date()}
+                    value={formData.date}
                     onChange={handleChange}
                     required
                     className="w-full bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
@@ -577,25 +550,25 @@ Submitted at: ${data.submittedAt}
                 <p className="text-[11px] text-white/40">Includes taxes, tolls, airport parking, and 60-min wait time.</p>
               </div>
 
-              <button
-                type="submit"
-                disabled={submitStatus === 'sending'}
-                className="w-full md:w-auto gold-gradient text-black font-bold py-4 px-10 rounded-lg text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-xl shadow-gold/20 disabled:opacity-50"
-              >
-                {submitStatus === 'sending' ? 'Sending...' : 'Confirm & Request Reservation'}
-              </button>
-            </div>
+          <button
+            type="submit"
+            disabled={submitStatus === 'sending'}
+            className="w-full md:w-auto gold-gradient text-black font-bold py-4 px-10 rounded-lg text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-xl shadow-gold/20 disabled:opacity-50"
+          >
+            {submitStatus === 'sending' ? 'Sending Request...' : 'Request Reservation'}
+          </button>
+        </div>
           </form>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs text-white/50">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs text-white/50">
           <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2">
             <ShieldCheck size={18} className="text-[var(--gold)]" />
             <span>100% On-Time Guarantee or Refund</span>
           </div>
           <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2">
             <Plane size={18} className="text-[var(--gold)]" />
-            <span>Automatic Flight Delay Adjustments</span>
+            <span>Manual Flight Monitoring by Dispatch</span>
           </div>
           <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2">
             <Phone size={18} className="text-[var(--gold)]" />
@@ -609,24 +582,24 @@ Submitted at: ${data.submittedAt}
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setSubmittedBooking(null)}></div>
           <div className="relative bg-luxury w-full max-w-lg rounded-2xl shadow-2xl border border-gold/40 p-6 sm:p-8 text-center">
             <div className="w-16 h-16 rounded-full bg-gold/20 border border-[var(--gold)] text-[var(--gold)] flex items-center justify-center mx-auto mb-4">
-              {submitStatus === 'success' || submitStatus === 'idle' ? <Check size={36} /> : <AlertCircle size={36} />}
+              {submitStatus === 'success' ? <Check size={36} /> : <AlertCircle size={36} />}
             </div>
 
             <span className="text-xs uppercase tracking-widest text-[var(--gold)] font-bold">
-              {submitStatus === 'success' ? 'Reservation Request Received' : 'Request Saved'}
+              {submitStatus === 'success' ? 'Reservation Request Received' : 'Request Received — Needs Confirmation'}
             </span>
             <h3 className="text-2xl font-serif font-bold text-white mt-1 mb-2">
               Thank You, {submittedBooking.name}!
             </h3>
             <p className="text-white/60 text-xs mb-6">
               {submitStatus === 'success'
-                ? 'Your reservation has been emailed to our 24/7 concierge desk. A confirmation SMS & email will arrive momentarily.'
-                : 'Your request was prepared but could not be emailed automatically. Please call dispatch to confirm.'}
+                ? 'Your request has been forwarded to dispatch. A dispatcher will confirm availability, final quote, and chauffeur assignment.'
+                : (submitResult && submitResult.message) || 'Your request was recorded. Please call dispatch to confirm.'}
             </p>
 
             <div className="bg-black p-4 rounded-xl border border-white/10 text-left text-xs space-y-2 mb-6">
               <div className="flex justify-between border-b border-white/10 pb-2">
-                <span className="text-white/40">Confirmation Code:</span>
+                <span className="text-white/40">Request Reference:</span>
                 <span className="text-[var(--gold)] font-mono font-bold">{submittedBooking.confirmationId}</span>
               </div>
               <div className="flex justify-between">
@@ -635,7 +608,7 @@ Submitted at: ${data.submittedAt}
               </div>
               <div className="flex justify-between">
                 <span className="text-white/40">Date & Time:</span>
-                <span className="text-white">{typeof submittedBooking.date === 'string' ? submittedBooking.date : submittedBooking.date()} at {submittedBooking.time}</span>
+                <span className="text-white">{submittedBooking.date} at {submittedBooking.time}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/40">Pickup:</span>
@@ -648,6 +621,9 @@ Submitted at: ${data.submittedAt}
               <div className="flex justify-between border-t border-white/10 pt-2 text-sm font-bold">
                 <span className="text-white/70">Estimated Total:</span>
                 <span className="text-[var(--gold)]">${submittedBooking.totalCost}</span>
+              </div>
+              <div className="text-white/40 text-[10px] pt-1">
+                This is a reservation request, not a confirmed booking, until dispatch approves.
               </div>
             </div>
 

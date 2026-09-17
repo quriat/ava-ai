@@ -86,7 +86,7 @@ const Hero: React.FC = () => {
             <VoiceAgent type={AgentType.DISPATCH} icon={<TruckIcon />} />
           </div>
           <p className="text-[10px] text-white/40 text-center tracking-widest uppercase">
-            Microphone required • Powered by Gemini
+            Microphone required • Powered by Vapi
           </p>
         </div>
       </div>
