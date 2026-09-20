@@ -1,0 +1,75 @@
+name: Daily Blog Post
+
+# Publishes one blog post per day straight into the file the live site
+# reads (public/blog_posts.json). The generator is idempotent per date and
+# backfills the last 7 days, so missed runs heal themselves.
+#
+# IMPORTANT: pushes made with GITHUB_TOKEN do NOT trigger other workflows,
+# so the Docker build + Coolify redeploy only fires when BLOG_GITHUB_TOKEN
+# (a classic PAT with `repo` + `workflow` scope) is set as a repo secret.
+# Without it, posts still commit but the site won't rebuild until the next
+# manual deploy.
+
+on:
+  schedule:
+    # 13:00 UTC = 8:00 AM America/Chicago
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-blog-post
+  cancel-in-progress: false
+
+jobs:
+  blog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Generate and push blog post
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BLOG_PAT: ${{ secrets.BLOG_GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          PUSH_TOKEN="${BLOG_PAT:-$GH_TOKEN}"
+          if [ -z "$BLOG_PAT" ]; then
+            echo "::warning::BLOG_GITHUB_TOKEN not set — pushing with GITHUB_TOKEN, which will NOT trigger the Docker build/Coolify redeploy."
+          fi
+          git config user.name "AvaLimo Blog Bot"
+          git config user.email "bot@avalimo.net"
+          git remote set-url origin "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          FAILED=0
+          for offset in 7 6 5 4 3 2 1 0; do
+            D=$(date -u -d "$offset days ago" +%F)
+            echo "=== Ensuring post for $D ==="
+            ok=0
+            for attempt in 1 2 3; do
+              if python3 scripts/generate_blog_post.py --date "$D"; then
+                ok=1
+                break
+              fi
+              echo "Attempt ${attempt}/3 failed for $D; retrying in 60s..."
+              sleep 60
+            done
+            [ "$ok" = "1" ] || FAILED=1
+          done
+          if [ -z "$(git status --porcelain -- public/blog_posts.json)" ]; then
+            echo "Nothing new to publish."
+            [ "$FAILED" = "0" ]
+            exit $?
+          fi
+          git add public/blog_posts.json
+          git commit -m "auto blog: $(python3 -c 'import json; print(json.load(open("public/blog_posts.json"))[0]["title"])')"
+          git pull --rebase
+          git push
+          echo "Blog post(s) published."
+          [ "$FAILED" = "0" ]
