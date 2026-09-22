@@ -217,12 +217,39 @@ for (const pg of landing) {
   lcount++;
 }
 
+// ---- Core SPA routes (unique meta per route so crawlers/social see real pages) ----
+const CORE_ROUTES = [
+  { slug: 'fleet', title: 'Luxury Fleet | Mercedes S-Class, Escalade | AvaLimo', desc: 'Houston luxury sedan & SUV fleet: Mercedes S-Class, Cadillac Escalade, Mercedes Sprinter. Black car service for airport transfers & events.', h1: 'Our Luxury Fleet' },
+  { slug: 'services', title: 'Limo Services Houston | Airport & Corporate | AvaLimo', desc: 'Houston limo services: IAH & Hobby airport transfers, corporate car service, wedding limousine, prom, events. Luxury sedans, SUVs, Sprinters.', h1: 'Limo Services in Houston' },
+  { slug: 'airport-galveston', title: 'Airport to Galveston Cruise Transfer | AvaLimo', desc: 'Reliable IAH & Hobby airport transfers to Galveston cruise port. Flight tracking, meet-and-greet, flat rates. Call (832) 567-8050.', h1: 'Airport to Galveston Cruise Transfers' },
+  { slug: 'rates', title: 'Limo Rates & Flat Pricing Houston | AvaLimo', desc: 'Transparent flat-rate pricing for Houston airport transfers, hourly charters, weddings and Galveston cruise ports. No surge, no surprises.', h1: 'Rates & Flat Pricing' },
+  { slug: 'reviews', title: 'Customer Reviews | AvaLimo Houston', desc: 'Read verified reviews from Houston travelers who rode with AvaLimo for airport transfers, weddings and corporate travel.', h1: 'Customer Reviews' },
+  { slug: 'faq', title: 'FAQ | AvaLimo Houston Limo Service', desc: 'Answers on booking, pricing, flight tracking, car seats, cancellations and service area for AvaLimo Houston luxury transportation.', h1: 'Frequently Asked Questions' },
+  { slug: 'end-of-trip-review', title: 'Review Your Trip | AvaLimo', desc: 'Rate your recent AvaLimo ride. Your feedback keeps our Houston chauffeur service five-star.', h1: 'Review Your Trip' },
+];
+let ccount = 0;
+for (const r of CORE_ROUTES) {
+  const body = `
+<main style="max-width:896px;margin:0 auto;padding:96px 24px;">
+  <nav><a href="/">Home</a></nav>
+  <h1 style="font-size:2.5rem;">${esc(r.h1)}</h1>
+  <p>${esc(r.desc)}</p>
+  <p><a href="tel:+18325678050">Call (832) 567-8050</a> · <a href="/#booking-section">Book Online</a></p>
+</main>`;
+  writeFile(`${r.slug}/index.html`, buildPage({
+    title: r.title, description: r.desc, canonical: `${SITE}/${r.slug}`,
+    ogType: 'website', bodyHtml: body,
+  }));
+  ccount++;
+}
+
 // ---- Sitemap (kept in sync with generated pages) ----
 const today = new Date().toISOString().slice(0, 10);
 const u = (loc, priority, changefreq, lastmod = today) =>
   `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
 const pdate = (d) => { try { return new Date(d).toISOString().slice(0, 10); } catch { return today; } };
 const urls = [u(`${SITE}/`, '1.0', 'daily')];
+for (const r of CORE_ROUTES) urls.push(u(`${SITE}/${r.slug}`, '0.8', 'weekly'));
 for (const pg of landing) urls.push(u(`${SITE}/${pg.slug}`, '0.9', 'monthly'));
 urls.push(u(`${SITE}/blog`, '0.8', 'weekly'));
 for (const p of posts) if (p.slug) urls.push(u(`${SITE}/blog/${p.slug}`, '0.6', 'monthly', pdate(p.date)));
