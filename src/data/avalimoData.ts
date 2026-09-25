@@ -5,7 +5,7 @@ export const COMPANY_INFO = {
   legalName: 'Ava Limo Luxury Transportation LLC',
     establishedYear: 2008,
   tagline: "Houston's Premier Chauffeur & Limousine Service",
-  domains: ['avalimo.net', 'www.avalimohouston.com'],
+  domains: ['avalimo.net'],
   phone: '(832) 567-8050',
   phoneRaw: '+18325678050',
   aiConciergePhone: '(832) 917-6331',
