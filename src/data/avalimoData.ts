@@ -1,4 +1,5 @@
 import { FleetItem, VehicleType, Service, Testimonial, FAQItem } from '../types';
+import faqsJson from './faqs.json';
 
 export const COMPANY_INFO = {
   name: 'AvaLimo Houston',
@@ -343,38 +344,7 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
   }
 ];
 
-export const FAQS_DATA: FAQItem[] = [
-  {
-    question: 'How do airport pickups work at IAH and Hobby Airport?',
-    answer: 'We offer two pickup options: 1) Inside Meet & Greet where your chauffeur waits at baggage claim holding a personalized digital iPad nameboard; or 2) Curbside VIP where you contact your chauffeur when you collect your bags for immediate curbside arrival.',
-    category: 'airport'
-  },
-  {
-    question: 'What happens if my flight is delayed or arrives early?',
-    answer: 'We track all commercial flights in real time. We automatically adjust your chauffeur dispatch time to your actual landing time at no extra charge. We also include 45 minutes complimentary wait time for domestic flights and 60 minutes for international arrivals.',
-    category: 'airport'
-  },
-  {
-    question: 'Are your rates flat rates or do they include surge pricing?',
-    answer: 'All quoted rates are fixed flat rates with zero surge pricing. Unlike rideshare apps that double rates during rush hour or events, your AvaLimo price remains strictly guaranteed as quoted.',
-    category: 'booking'
-  },
-  {
-    question: 'How far in advance should I book?',
-    answer: 'We accommodate last-minute 24/7 requests based on fleet availability. We recommend reserving at least 12-24 hours in advance for airport transfers, and 1-4 weeks in advance for weddings, Sprinter vans, and major event dates.',
-    category: 'booking'
-  },
-  {
-    question: 'Do you provide child safety car seats?',
-    answer: 'Yes! We provide rear-facing infant seats, forward-facing toddler seats, and booster seats upon request for a small sanitization fee. Just select the child seat option during booking.',
-    category: 'fleet'
-  },
-  {
-    question: 'What is your cancellation and modification policy?',
-    answer: 'For sedans and SUVs, cancellations made 12+ hours prior to pickup receive a 100% refund. For Sprinters, Limousines, and Mini Coaches, we require a 48-hour notice for full refund. Modifications to pickup times can be made anytime subject to vehicle availability.',
-    category: 'policies'
-  }
-];
+export const FAQS_DATA: FAQItem[] = faqsJson as FAQItem[];
 
 export const POPULAR_ROUTES = [
   { from: 'IAH Airport', to: 'Downtown Houston / Toyota Center', duration: '30-40 min', startingPrice: '$125 Sedan / $165 SUV' },

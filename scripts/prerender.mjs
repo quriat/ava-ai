@@ -13,6 +13,7 @@ const SITE = 'https://avalimo.net';
 const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 const posts = JSON.parse(fs.readFileSync(path.join(root, 'public', 'blog_posts.json'), 'utf8'));
 const landing = JSON.parse(fs.readFileSync(path.join(root, 'src', 'data', 'landingPages.json'), 'utf8'));
+const faqs = JSON.parse(fs.readFileSync(path.join(root, 'src', 'data', 'faqs.json'), 'utf8'));
 
 const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -75,6 +76,35 @@ function writeFile(rel, html) {
   fs.mkdirSync(path.dirname(full), { recursive: true });
   fs.writeFileSync(full, html);
 }
+
+// ---- Homepage: inject crawlable content into the SPA shell ----
+// Meta + LimousineService JSON-LD already live in index.html; here we only fill
+// #root so no-JS crawlers/social scrapers see real content. React replaces it on mount.
+const homeBody = `
+<main style="max-width:1200px;margin:0 auto;padding:96px 24px;">
+  <h1 style="font-size:2.5rem;">AvaLimo Houston — Luxury Chauffeur &amp; Limo Service</h1>
+  <p>AvaLimo is a Houston luxury transportation company offering 24/7 chauffeured airport transfers at George Bush Intercontinental (IAH) and William P. Hobby (HOU), Galveston cruise port shuttles, corporate travel, weddings and events across Greater Houston — with flat-rate pricing, real-time flight tracking, and an AI voice concierge for instant reservations.</p>
+  <p><a href="tel:+18325678050">Call (832) 567-8050</a> · <a href="/#booking-section">Book Online</a></p>
+  <nav aria-label="Site">
+    <ul>
+      <li><a href="/services">Limo Services</a></li>
+      <li><a href="/fleet">Luxury Fleet</a></li>
+      <li><a href="/airport-galveston">Airport &amp; Galveston Cruise Transfers</a></li>
+      <li><a href="/rates">Rates &amp; Flat Pricing</a></li>
+      <li><a href="/reviews">Customer Reviews</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="/blog">Travel Blog</a></li>
+    </ul>
+  </nav>
+</main>`;
+writeFile('index.html', buildPage({
+  title: 'AvaLimo Houston | AI Voice Concierge & Luxury Chauffeur Service',
+  description:
+    'AvaLimo Houston — luxury airport transfers, corporate travel, Galveston cruises. AI voice concierge, real-time flight tracking, and instant reservations. Call (832) 567-8050.',
+  canonical: `${SITE}/`,
+  ogType: 'website',
+  bodyHtml: homeBody,
+}));
 
 // ---- Blog index ----
 const sorted = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -236,10 +266,33 @@ for (const r of CORE_ROUTES) {
   <p>${esc(r.desc)}</p>
   <p><a href="tel:+18325678050">Call (832) 567-8050</a> · <a href="/#booking-section">Book Online</a></p>
 </main>`;
-  writeFile(`${r.slug}/index.html`, buildPage({
+  const html = buildPage({
     title: r.title, description: r.desc, canonical: `${SITE}/${r.slug}`,
     ogType: 'website', bodyHtml: body,
-  }));
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: r.h1,
+        description: r.desc,
+        url: `${SITE}/${r.slug}`,
+        inLanguage: 'en-US',
+        isPartOf: { '@type': 'WebSite', name: 'AvaLimo Houston', url: SITE },
+      },
+      ...(r.slug === 'faq'
+        ? [{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((f) => ({
+              '@type': 'Question',
+              name: f.question,
+              acceptedAnswer: { '@type': 'Answer', text: f.answer },
+            })),
+          }]
+        : []),
+    ],
+  });
+  writeFile(`${r.slug}/index.html`, html);
   ccount++;
 }
 
