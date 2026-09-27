@@ -13,7 +13,7 @@ const iconMap: Record<string, React.ReactNode> = {
 
 const Services: React.FC = () => {
   const scrollToBooking = () => {
-    const el = document.getElementById('booking');
+    const el = document.getElementById('booking-section');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -50,9 +50,10 @@ const Services: React.FC = () => {
               </ul>
               <button
                 onClick={scrollToBooking}
-                className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-[var(--gold)] hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 w-full sm:w-auto justify-center gold-gradient text-black px-8 py-3.5 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:scale-[1.02] hover:shadow-lg shadow-gold/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               >
-                Book This Service →
+                Book This Service
+                <span aria-hidden="true">→</span>
               </button>
             </div>
           ))}

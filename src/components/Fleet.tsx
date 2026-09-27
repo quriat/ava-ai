@@ -17,7 +17,7 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
 
   const scrollToBooking = () => {
     onSelectVehicle?.(selectedId);
-    const el = document.getElementById('booking');
+    const el = document.getElementById('booking-section');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -49,7 +49,7 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
                 <div className="aspect-[4/3] overflow-hidden">
                   <img
                     src={vehicle.image}
-                    alt={vehicle.name}
+                    alt={`${vehicle.name} — ${vehicle.category} available from AvaLimo Houston`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />

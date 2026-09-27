@@ -63,7 +63,7 @@ export default function Header() {
             {COMPANY_INFO.phone}
           </a>
           <button
-            onClick={() => scrollTo('booking')}
+            onClick={() => scrollTo('booking-section')}
             className="gold-gradient text-black px-5 py-2 rounded-full text-[10px] font-extrabold tracking-[0.15em] uppercase hover:scale-105 transition-transform"
           >
             Book Now

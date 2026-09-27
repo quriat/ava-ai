@@ -28,7 +28,7 @@ const Hero: React.FC = () => {
           playsInline
           preload="auto"
           className="w-full h-full object-cover opacity-50 scale-105"
-          aria-label="AvaLimo luxury vehicles"
+          aria-label="AvaLimo Houston luxury fleet in motion"
         >
           <source src="/videos/hero_bg.mp4" type="video/mp4" />
         </video>
@@ -51,7 +51,7 @@ const Hero: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row gap-5 mb-12">
             <button
-              onClick={() => scrollTo('booking')}
+              onClick={() => scrollTo('booking-section')}
               className="gold-gradient text-black px-12 py-5 font-extrabold tracking-[0.2em] uppercase text-[12px] shadow-2xl shadow-gold/20 hover:scale-[1.02] transition-transform"
             >
               Get A Quote
