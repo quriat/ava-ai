@@ -80,6 +80,7 @@ export default function Header() {
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
+        </div>
 
         {menuOpen && (
           <div className="lg:hidden fixed inset-0 top-[80px] bg-black/98 z-40 flex flex-col items-center justify-center gap-8">
