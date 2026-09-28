@@ -1,67 +1,65 @@
 import React from 'react';
-import { FLEET_DATA, POPULAR_ROUTES } from '../data/avalimoData';
-import { Check } from 'lucide-react';
+import { FLEET_DATA } from '../data/avalimoData';
+import { FleetItem } from '../types';
+
+const ROW_ORDER = ['mercedes-s-class', 'gmc-yukon-suburban', 'cadillac-escalade-esv', 'lincoln-stretch-limo', 'mercedes-sprinter-van', 'executive-mini-coach'];
 
 const Rates: React.FC = () => {
+  const rows: FleetItem[] = ROW_ORDER
+    .map((id) => FLEET_DATA.find((v) => v.id === id))
+    .filter((v): v is FleetItem => Boolean(v));
+
   return (
-    <section id="rates" className="w-full py-24 md:py-32 px-6 md:px-12 bg-black">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
-            Transparent Pricing
+    <section id="rates" className="py-24 bg-dark-900 border-t border-gold-500/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="text-xs uppercase font-bold text-gold-400 tracking-widest block mb-2">
+            Guaranteed Pricing
           </span>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">
-            Flat Rates — Zero Surge
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
+            Houston Flat Rates Matrix
           </h2>
-          <p className="text-white/60 max-w-2xl mx-auto">
-            All-inclusive pricing with taxes, tolls, airport parking, and gratuity clearly shown. The price you see is the price you pay.
+          <p className="text-slate-400 text-sm">
+            All quoted prices are strictly fixed with zero surge pricing, zero hidden toll fees, and complimentary wait times included.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          <div className="bg-luxury border border-white/5 rounded-2xl p-8">
-            <h3 className="text-xl font-serif font-bold text-white mb-6">Popular Routes</h3>
-            <div className="space-y-3">
-              {POPULAR_ROUTES.map((route, i) => (
-                <div key={i} className="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
-                  <div>
-                    <div className="text-sm font-semibold text-white">{route.from} → {route.to}</div>
-                    <div className="text-[11px] text-white/40">{route.duration}</div>
-                  </div>
-                  <div className="text-[var(--gold)] font-bold text-sm">{route.startingPrice}</div>
-                </div>
-              ))}
-            </div>
+        <div className="glass-panel rounded-3xl overflow-hidden border border-gold-500/30">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-dark-950 text-gold-400 uppercase font-bold text-[11px] tracking-wider border-b border-gold-500/20">
+                <tr>
+                  <th className="py-4 px-6">Vehicle Type</th>
+                  <th className="py-4 px-6">Capacity</th>
+                  <th className="py-4 px-6">Hourly Rate</th>
+                  <th className="py-4 px-6">IAH Airport</th>
+                  <th className="py-4 px-6">Hobby (HOU)</th>
+                  <th className="py-4 px-6">Port of Galveston</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800 text-slate-300">
+                {rows.map((vehicle, i) => {
+                  const isFeatured = vehicle.id === 'cadillac-escalade-esv';
+                  return (
+                    <tr
+                      key={vehicle.id}
+                      className={`hover:bg-gold-500/5 transition-colors ${isFeatured ? 'bg-gold-500/5' : ''}`}
+                    >
+                      <td className={`py-4 px-6 font-bold ${isFeatured ? 'text-gold-400' : 'text-white'}`}>
+                        {vehicle.name}
+                        {isFeatured && ' ★'}
+                      </td>
+                      <td className="py-4 px-6">{vehicle.passengers} Pax / {vehicle.luggage} Luggage</td>
+                      <td className="py-4 px-6 font-semibold text-gold-400">${vehicle.pricePerHour} / hr</td>
+                      <td className={`py-4 px-6 font-bold ${isFeatured ? 'text-gold-400' : 'text-white'}`}>${vehicle.flatRateIAH}</td>
+                      <td className={`py-4 px-6 font-bold ${isFeatured ? 'text-gold-400' : 'text-white'}`}>${vehicle.flatRateHobby}</td>
+                      <td className={`py-4 px-6 font-bold ${isFeatured ? 'text-gold-400' : 'text-white'}`}>${vehicle.flatRateGalveston}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-
-          <div className="bg-luxury border border-white/5 rounded-2xl p-8">
-            <h3 className="text-xl font-serif font-bold text-white mb-6">Fleet Hourly Rates</h3>
-            <div className="space-y-3">
-              {FLEET_DATA.map((vehicle) => (
-                <div key={vehicle.id} className="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
-                  <div>
-                    <div className="text-sm font-semibold text-white">{vehicle.name}</div>
-                    <div className="text-[11px] text-white/40">{vehicle.passengers} pax • {vehicle.luggage} bags • {vehicle.minHours} hr min</div>
-                  </div>
-                  <div className="text-[var(--gold)] font-bold text-sm">${vehicle.pricePerHour}/hr</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-          {[
-            'No surge pricing ever',
-            'All tolls included',
-            'Airport parking included',
-            '60 min free wait time'
-          ].map((item, i) => (
-            <div key={i} className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-white/10 rounded-xl text-sm text-white/70">
-              <Check size={16} className="text-[var(--gold)]" />
-              {item}
-            </div>
-          ))}
         </div>
       </div>
     </section>
