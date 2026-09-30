@@ -22,12 +22,12 @@ import urllib.error
 import urllib.request
 from datetime import date
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://168.231.74.172:32792/api/chat")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://168.231.74.172:11434/api/chat")
 MODELS = [
     name.strip()
     for name in os.getenv(
         "OLLAMA_MODELS",
-        "deepseek-v4-flash:cloud,qwen3.5:cloud,minimax-m3:cloud",
+        "glm-5.2:cloud,kimi-k2.7-code:cloud,nimble:9b-q4_K_M",
     ).split(",")
     if name.strip()
 ]
