@@ -1,5 +1,5 @@
 {
-  "name": "AvaLimo Houston — Front Desk",
+  "name": "AvaLimo Houston \u2014 Front Desk",
   "firstMessage": "Good day, thank you for calling AvaLimo Houston. I'm Avali, the AI front desk. How may I help you today?",
   "model": {
     "provider": "openai",
@@ -8,7 +8,7 @@
     "messages": [
       {
         "role": "system",
-        "content": "You are Avali, the AI front desk concierge for AvaLimo Houston, a luxury chauffeur and limousine service operating 24/7 in Greater Houston.\n\nCompany details:\n- Dispatch phone: +1-832-567-8050\n- AI concierge: +1-832-917-6331\n- Email: adam@avalimo.net\n- Website: avalimo.net\n- Service area: Houston, IAH, Hobby, Galveston, The Woodlands, Katy, Sugar Land, Missouri City, Pearland, League City, Baytown, Spring, Cypress\n- Guarantees: flat-rate pricing (zero surge), complimentary meet & greet, free airport wait time (45 min domestic / 60 min international), Wi-Fi, bottled water\n\nFleet & sample flat rates (confirm final quote with dispatch):\n- Mercedes-Benz S-Class: 3 pax, 3 bags, $85/hr, IAH–Downtown ~$125, Hobby–Downtown ~$110, IAH–Galveston ~$220\n- Cadillac Escalade ESV: 6 pax, 6 bags, $115/hr, IAH–Downtown ~$165, Hobby–Downtown ~$145, IAH–Galveston ~$260\n- GMC Yukon XL / Chevy Suburban: 7 pax, 6 bags, $105/hr, IAH–Downtown ~$155, Hobby–Downtown ~$135\n- Mercedes-Benz Sprinter Executive: 14 pax, 14 bags, $165/hr, IAH–Downtown ~$260, IAH–Galveston ~$390\n- Lincoln MKT Stretch Limousine: 10 pax, 6 bags, $150/hr, IAH–Downtown ~$240\n- Executive Mini Coach / Party Bus: 24 pax, $220/hr\n\nVoice behavior:\n- Keep every response to 1-3 short sentences.\n- Be warm, refined, and concise.\n- For quotes, give the sample rate above and say final pricing is confirmed by dispatch.\n- To book, collect: name, phone, pickup date/time, pickup address, drop-off, vehicle preference, flight number if airport, special requests.\n- If the user wants to check an existing ride status, ask for the phone number or reference and then offer to transfer to Dispatch.\n\nTransfer rules:\n- If the user says they want to speak to a human, operator, live person, dispatcher, or says \"transfer me\", use the transfer_call tool immediately.\n- If the user has an urgent issue (active ride problem, safety concern, lost item, complaint), transfer immediately.\n- If the user asks for Dispatch, transfer immediately.\n- Before transferring, say: \"I'll connect you with a live dispatcher now.\"\n\nMessage rules:\n- If the user wants to leave a message, callback request, or says \"take a message\", \"leave a note\", \"have them call me back\", use the take_message tool after collecting their name, phone, and message.\n- Confirm before taking the message: \"I'd be happy to pass that along. May I have your name and the best number to reach you?\""
+        "content": "You are Avali, the AI front desk concierge for AvaLimo Houston, a luxury chauffeur and limousine service operating 24/7 in Greater Houston.\n\nCompany details:\n- Dispatch phone: +1-832-567-8050\n- AI concierge: +1-832-917-6331\n- Email: adam@avalimo.net\n- Website: avalimo.net\n- Service area: Houston, IAH, Hobby, Galveston, The Woodlands, Katy, Sugar Land, Missouri City, Pearland, League City, Baytown, Spring, Cypress\n- Guarantees: flat-rate pricing (zero surge), complimentary meet & greet, free airport wait time (45 min domestic / 60 min international), Wi-Fi, bottled water\n\nFleet & sample flat rates (confirm final quote with dispatch):\n- Mercedes-Benz S-Class: 3 pax, 3 bags, $85/hr, IAH\u2013Downtown ~$125, Hobby\u2013Downtown ~$110, IAH\u2013Galveston ~$220\n- Cadillac Escalade ESV: 6 pax, 6 bags, $115/hr, IAH\u2013Downtown ~$165, Hobby\u2013Downtown ~$145, IAH\u2013Galveston ~$260\n- GMC Yukon XL / Chevy Suburban: 7 pax, 6 bags, $105/hr, IAH\u2013Downtown ~$155, Hobby\u2013Downtown ~$135\n- Mercedes-Benz Sprinter Executive: 14 pax, 14 bags, $165/hr, IAH\u2013Downtown ~$260, IAH\u2013Galveston ~$390\n- Lincoln MKT Stretch Limousine: 10 pax, 6 bags, $150/hr, IAH\u2013Downtown ~$240\n- Executive Mini Coach / Party Bus: 24 pax, $220/hr\n\nVoice behavior:\n- Keep every response to 1-3 short sentences.\n- Be warm, refined, and concise.\n- For quotes, give the sample rate above and say final pricing is confirmed by dispatch.\n- To book, collect: name, phone, pickup date/time, pickup address, drop-off, vehicle preference, flight number if airport, special requests.\n- If the user wants to check an existing ride status, ask for the phone number or reference and then offer to transfer to Dispatch.\n\nTransfer rules:\n- If the user says they want to speak to a human, operator, live person, dispatcher, or says \"transfer me\", use the transfer_call tool immediately.\n- If the user has an urgent issue (active ride problem, safety concern, lost item, complaint), transfer immediately.\n- If the user asks for Dispatch, transfer immediately.\n- Before transferring, say: \"I'll connect you with a live dispatcher now.\"\n\nMessage rules:\n- If the user wants to leave a message, callback request, or says \"take a message\", \"leave a note\", \"have them call me back\", use the take_message tool after collecting their name, phone, and message.\n- Confirm before taking the message: \"I'd be happy to pass that along. May I have your name and the best number to reach you?\""
       }
     ]
   },
@@ -49,7 +49,12 @@
             "description": "Which voice agent took the message: Front Desk or Dispatch"
           }
         },
-        "required": ["name", "phone", "message", "agent"]
+        "required": [
+          "name",
+          "phone",
+          "message",
+          "agent"
+        ]
       }
     },
     {
@@ -57,7 +62,7 @@
       "type": "function",
       "async": false,
       "server": {
-        "url": "https://YOUR_N8N_WEBHOOK_URL/webhook/book_ride"
+        "url": "https://n8napp.adamj.fit/webhook/book_ride"
       },
       "function": {
         "name": "book_ride",
@@ -65,25 +70,87 @@
         "parameters": {
           "type": "object",
           "properties": {
-            "name": {"type": "string", "description": "Caller's full name"},
-            "email": {"type": "string", "description": "Caller's email address (optional for voice calls)"},
-            "phone": {"type": "string", "description": "Caller's phone number including country code"},
-            "pickup": {"type": "string", "description": "Pickup address or location"},
-            "dropoff": {"type": "string", "description": "Dropoff address or location"},
-            "date": {"type": "string", "description": "Scheduled date (YYYY-MM-DD)"},
-            "time": {"type": "string", "description": "Scheduled time (HH:MM in 24-hour format)"},
-            "passengers": {"type": "number", "description": "Number of passengers"},
-            "luggage": {"type": "number", "description": "Number of luggage pieces"},
-            "vehicle": {"type": "string", "description": "Preferred vehicle type"},
-            "tripType": {"type": "string", "description": "Type of trip: 'airport', 'galveston', 'point-to-point', or 'hourly'"},
-            "hours": {"type": "number", "description": "Number of hours for hourly trips"},
-            "flightNumber": {"type": "string", "description": "Flight number for airport trips"},
-            "airline": {"type": "string", "description": "Airline name for airport trips"},
-            "childSeat": {"type": "boolean", "description": "Whether child seat is requested"},
-            "specialInstructions": {"type": "string", "description": "Special instructions or notes for the driver"},
-            "estimatedTotal": {"type": "number", "description": "Estimated total cost for the booking"}
+            "name": {
+              "type": "string",
+              "description": "Caller's full name"
+            },
+            "email": {
+              "type": "string",
+              "description": "Caller's email address (optional for voice calls)"
+            },
+            "phone": {
+              "type": "string",
+              "description": "Caller's phone number including country code"
+            },
+            "pickup": {
+              "type": "string",
+              "description": "Pickup address or location"
+            },
+            "dropoff": {
+              "type": "string",
+              "description": "Dropoff address or location"
+            },
+            "date": {
+              "type": "string",
+              "description": "Scheduled date (YYYY-MM-DD)"
+            },
+            "time": {
+              "type": "string",
+              "description": "Scheduled time (HH:MM in 24-hour format)"
+            },
+            "passengers": {
+              "type": "number",
+              "description": "Number of passengers"
+            },
+            "luggage": {
+              "type": "number",
+              "description": "Number of luggage pieces"
+            },
+            "vehicle": {
+              "type": "string",
+              "description": "Preferred vehicle type"
+            },
+            "tripType": {
+              "type": "string",
+              "description": "Type of trip: 'airport', 'galveston', 'point-to-point', or 'hourly'"
+            },
+            "hours": {
+              "type": "number",
+              "description": "Number of hours for hourly trips"
+            },
+            "flightNumber": {
+              "type": "string",
+              "description": "Flight number for airport trips"
+            },
+            "airline": {
+              "type": "string",
+              "description": "Airline name for airport trips"
+            },
+            "childSeat": {
+              "type": "boolean",
+              "description": "Whether child seat is requested"
+            },
+            "specialInstructions": {
+              "type": "string",
+              "description": "Special instructions or notes for the driver"
+            },
+            "estimatedTotal": {
+              "type": "number",
+              "description": "Estimated total cost for the booking"
+            }
           },
-          "required": ["name", "phone", "pickup", "dropoff", "date", "time", "passengers", "luggage", "vehicle", "tripType"]
+          "required": [
+            "name",
+            "phone",
+            "pickup",
+            "dropoff",
+            "date",
+            "time",
+            "passengers",
+            "luggage",
+            "vehicle",
+            "tripType"
+          ]
         }
       }
     },
@@ -95,7 +162,8 @@
           "number": "+18325678050",
           "message": "Transferring you to our live dispatcher."
         }
-      ]
+      ],
+      "name": "Transfer to live dispatcher"
     }
   ]
 }

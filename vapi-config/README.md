@@ -27,15 +27,15 @@ The `book_ride` function requires a server endpoint that:
 
 ### n8n setup (recommended)
 
-1. Import `n8n-workflows/book-ride-handler.json` if it exists, or create a new workflow with:
-   - **Webhook** node → receives the booking data
-   - **HTTP Request** or **Function** node → creates booking via your backend API
-   - **Email/SMS** node → send confirmation
-   - **Return** node → return the result JSON
-2. Copy the webhook URL
-3. In Vapi dashboard, open each assistant → **Tools** → `book_ride`
-4. Set the **Server URL** to your webhook URL
-5. Set **Async** to `false` so the assistant waits for confirmation
+1. Import `n8n-workflows/vapi-voice-handler.json` into your n8n instance
+2. The workflow has a `book_ride` webhook node that:
+   - Generates a booking reference
+   - Emails you a confirmation with all booking details
+   - Returns `{status, reference, message}` to the assistant
+3. Copy the webhook URL: `https://n8napp.adamj.fit/webhook/book_ride`
+4. In Vapi dashboard, open each assistant → **Tools** → `book_ride`
+5. Set the **Server URL** to `https://n8napp.adamj.fit/webhook/book_ride`
+6. Set **Async** to `false` so the assistant waits for confirmation
 
 ### Direct endpoint setup
 
