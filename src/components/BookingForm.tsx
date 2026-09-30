@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Calendar, Clock, MapPin, User, Mail, Phone, Plane, Users, Briefcase, Check, ShieldCheck, Navigation, AlertCircle } from 'lucide-react';
 import { VehicleType, TripType, RouteEstimate } from '../types';
 import { FLEET_DATA, COMPANY_INFO } from '../data/avalimoData';
 import { calculateRouteEstimate } from '../services/routeCalculationService';
 import { submitBookingRequest } from '../services/bookingService';
+import { trackEvent } from '../lib/analytics';
 
 interface BookingFormProps {
   initialData?: {
@@ -131,9 +132,29 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     }
   };
 
+  // Fires once per mount on the first interaction with the trip tabs or any
+  // field, so booking_start means "reached the form", not "focused a box".
+  const engagedRef = useRef(false);
+  const handleBookingEngage = () => {
+    if (engagedRef.current) return;
+    engagedRef.current = true;
+    trackEvent('booking_start', { trip_type: tripType });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus('sending');
+
+    // No PII here on purpose: trip shape and money, never who or where.
+    trackEvent('booking_submit', {
+      trip_type: tripType,
+      vehicle: selectedVehicle?.name,
+      hours: tripType === TripType.HOURLY ? hourlyHours : undefined,
+      has_flight: Boolean(trackedFlight),
+      estimate: costEstimate.total,
+      child_seat: formData.needChildSeat,
+      meet_and_greet: formData.needMeetAndGreet,
+    });
 
     const confirmationId = `AVA-${Math.floor(100000 + Math.random() * 900000)}`;
     const submission = {
@@ -178,16 +199,19 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       if (result.ok) {
         setSubmittedBooking(submission);
         setSubmitStatus('success');
+        trackEvent('booking_result', { status: 'success', reference: result.reference });
       } else {
         // Even on error/fallback we show the modal with the reference the user should cite.
         setSubmittedBooking(submission);
         setSubmitStatus(result.status);
+        trackEvent('booking_result', { status: result.status });
       }
     } catch (err) {
       console.error('Booking submission error:', err);
       setSubmitStatus('error');
       setSubmitResult({ status: 'error', message: 'Booking request could not be sent. Please call dispatch.' });
       setSubmittedBooking(submission);
+      trackEvent('booking_result', { status: 'error' });
     }
   };
 
@@ -243,7 +267,10 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
           </p>
         </div>
 
-        <div className="glass-panel rounded-3xl border border-gold-500/40 gold-glow overflow-hidden backdrop-blur-xl">
+        <div
+          className="glass-panel rounded-3xl border border-gold-500/40 gold-glow overflow-hidden backdrop-blur-xl"
+          onFocusCapture={handleBookingEngage}
+        >
           <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-white/10 bg-black/40 p-2 gap-1">
             {[
               { type: TripType.AIRPORT, label: '✈️ Airport' },

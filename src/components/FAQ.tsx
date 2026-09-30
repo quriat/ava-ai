@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FAQS_DATA } from '../data/avalimoData';
 import { ChevronDown } from 'lucide-react';
+import { trackEvent } from '../lib/analytics';
 
 const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -23,7 +24,10 @@ const FAQ: React.FC = () => {
             return (
               <div key={index} className="glass-panel rounded-2xl overflow-hidden border border-slate-800">
                 <button
-                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  onClick={() => {
+                    if (!isOpen) trackEvent('faq_open', { question: faq.question, position: index + 1 });
+                    setOpenIndex(isOpen ? null : index);
+                  }}
                   className="w-full p-6 text-left font-serif font-bold text-white text-base sm:text-lg flex justify-between items-center gap-4"
                 >
                   <span>{faq.question}</span>

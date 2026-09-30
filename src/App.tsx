@@ -13,6 +13,8 @@ import FAQ from './components/FAQ';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
 import { TripType } from './types';
+import { getPublicConfig } from './config/runtimeConfig';
+import { initAnalytics, trackEvent, trackOutboundClicks, trackPageView } from './lib/analytics';
 
 function GlobalErrorCatcher({ children }: { children: React.ReactNode }) {
   const [err, setErr] = useState<string | null>(null);
@@ -70,6 +72,30 @@ function App() {
     specialInstructions?: string;
   } | undefined>(undefined);
 
+  // SPA navigations do not reload the page, so GA4 never sees them on its own.
+  // CoreRoute and ServiceLanding set document.title in their own effects, so
+  // read it on the next frame to pick up the route-specific title.
+  useEffect(() => {
+    const cfg = getPublicConfig();
+    initAnalytics(cfg.GA_MEASUREMENT_ID, cfg.CLARITY_PROJECT_ID);
+    const detach = trackOutboundClicks();
+    const frame = requestAnimationFrame(() => {
+      const resolved = window.location.pathname.replace(/^\/|\/$/g, '') || 'home';
+      trackPageView(window.location.pathname, document.title);
+      const existing = document.querySelector('link[rel="canonical"]')?.getAttribute('href');
+      if (!existing) {
+        const el = document.createElement('link');
+        el.rel = 'canonical';
+        el.href = `https://avalimo.net/${resolved === 'home' ? '' : resolved}`;
+        document.head.appendChild(el);
+      }
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      detach();
+    };
+  }, [path]);
+
   // In-page anchors such as /#booking-section are resolved by the browser before
   // React mounts, so the target does not exist yet. Re-run the scroll once it does.
   useEffect(() => {
@@ -110,6 +136,7 @@ function App() {
       ...prev,
       vehicleId,
     }));
+    trackEvent('vehicle_select', { vehicle: vehicleId, placement: 'homepage' });
   };
 
   const handleSelectRoute = (route: 'iah' | 'galveston') => {
@@ -118,6 +145,7 @@ function App() {
       tripType: route === 'galveston' ? TripType.GALVESTON : TripType.AIRPORT,
       dropoffLocation: route === 'galveston' ? 'Port of Galveston Cruise Terminal' : undefined,
     }));
+    trackEvent('route_select', { route, placement: 'homepage' });
     const el = document.getElementById('booking-section');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
