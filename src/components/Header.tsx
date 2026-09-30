@@ -18,7 +18,12 @@ export default function Header() {
   const scrollTo = (id: string) => {
     setMenuOpen(false);
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    // Section does not exist on this route, so fall back to the homepage anchor.
+    window.location.href = `/#${id}`;
   };
 
   return (

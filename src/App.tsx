@@ -8,6 +8,7 @@ import Testimonials from './components/Testimonials';
 import Blog from './components/Blog';
 import BlogArticle from './components/BlogArticle';
 import ServiceLanding, { landingSlugs } from './components/ServiceLanding';
+import CoreRoute, { coreSlugs } from './components/CoreRoute';
 import FAQ from './components/FAQ';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
@@ -58,21 +59,7 @@ function GlobalErrorCatcher({ children }: { children: React.ReactNode }) {
 function App() {
   // Lightweight path-based routing for blog pages (SPA served via nginx fallback).
   const path = typeof window !== 'undefined' ? window.location.pathname : '/';
-  if (path === '/blog' || path === '/blog/' || path.startsWith('/blog/')) {
-    return (
-      <GlobalErrorCatcher>
-        <BlogArticle />
-      </GlobalErrorCatcher>
-    );
-  }
   const cleanPath = path.replace(/^\//, '').replace(/\/+$/, '');
-  if (landingSlugs().includes(cleanPath)) {
-    return (
-      <GlobalErrorCatcher>
-        <ServiceLanding />
-      </GlobalErrorCatcher>
-    );
-  }
 
   const [bookingPrefill, setBookingPrefill] = useState<{
     tripType?: TripType;
@@ -82,6 +69,41 @@ function App() {
     vehicleId?: string;
     specialInstructions?: string;
   } | undefined>(undefined);
+
+  // In-page anchors such as /#booking-section are resolved by the browser before
+  // React mounts, so the target does not exist yet. Re-run the scroll once it does.
+  useEffect(() => {
+    if (path !== '/' && path !== '') return;
+    const id = window.location.hash.replace(/^#/, '');
+    if (!id) return;
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [path]);
+
+  if (path === '/blog' || path === '/blog/' || path.startsWith('/blog/')) {
+    return (
+      <GlobalErrorCatcher>
+        <BlogArticle />
+      </GlobalErrorCatcher>
+    );
+  }
+  if (landingSlugs().includes(cleanPath)) {
+    return (
+      <GlobalErrorCatcher>
+        <ServiceLanding />
+      </GlobalErrorCatcher>
+    );
+  }
+  if (coreSlugs().includes(cleanPath)) {
+    return (
+      <GlobalErrorCatcher>
+        <CoreRoute />
+      </GlobalErrorCatcher>
+    );
+  }
 
   const handleSelectVehicle = (vehicleId: string) => {
     setBookingPrefill(prev => ({
