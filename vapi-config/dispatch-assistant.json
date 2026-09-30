@@ -51,6 +51,51 @@
         },
         "required": ["name", "phone", "message", "agent"]
       }
+    },
+    {
+      "name": "book_ride",
+      "type": "function",
+      "async": false,
+      "server": {
+        "url": "https://YOUR_N8N_WEBHOOK_URL/webhook/book_ride"
+      },
+      "function": {
+        "name": "book_ride",
+        "description": "Create a new urgent booking. Requires all booking details including name, phone, pickup/dropoff, trip details, and passenger info. Returns a booking reference and confirmation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {"type": "string", "description": "Caller's full name"},
+            "email": {"type": "string", "description": "Caller's email address (optional for voice calls)"},
+            "phone": {"type": "string", "description": "Caller's phone number including country code"},
+            "pickup": {"type": "string", "description": "Pickup address or location"},
+            "dropoff": {"type": "string", "description": "Dropoff address or location"},
+            "date": {"type": "string", "description": "Scheduled date (YYYY-MM-DD)"},
+            "time": {"type": "string", "description": "Scheduled time (HH:MM in 24-hour format)"},
+            "passengers": {"type": "number", "description": "Number of passengers"},
+            "luggage": {"type": "number", "description": "Number of luggage pieces"},
+            "vehicle": {"type": "string", "description": "Preferred vehicle type"},
+            "tripType": {"type": "string", "description": "Type of trip: 'airport', 'galveston', 'point-to-point', or 'hourly'"},
+            "hours": {"type": "number", "description": "Number of hours for hourly trips"},
+            "flightNumber": {"type": "string", "description": "Flight number for airport trips"},
+            "airline": {"type": "string", "description": "Airline name for airport trips"},
+            "childSeat": {"type": "boolean", "description": "Whether child seat is requested"},
+            "specialInstructions": {"type": "string", "description": "Special instructions or notes for the driver"},
+            "estimatedTotal": {"type": "number", "description": "Estimated total cost for the booking"}
+          },
+          "required": ["name", "phone", "pickup", "dropoff", "date", "time", "passengers", "luggage", "vehicle", "tripType"]
+        }
+      }
+    },
+    {
+      "type": "transferCall",
+      "destinations": [
+        {
+          "type": "number",
+          "number": "+18325678050",
+          "message": "Transferring you to our live dispatcher."
+        }
+      ]
     }
   ]
 }
