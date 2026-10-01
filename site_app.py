@@ -205,12 +205,24 @@ HTML = r"""<!DOCTYPE html>
   "areaServed": ["Houston","IAH","Hobby Airport","Sugar Land","The Woodlands","Katy","Pearland","Missouri City","Galveston","League City","Baytown","Spring","Cypress"],
   "openingHours": "Mo-Su 00:00-24:00",
   "priceRange": "$$$",
-  "address": { "@type": "PostalAddress", "addressLocality": "Houston", "addressRegion": "TX", "addressCountry": "US" },
+  "address": { "@type": "PostalAddress", "streetAddress": "Ava Limo Luxury Transportation LLC", "addressLocality": "Missouri City", "addressRegion": "TX", "postalCode": "77459", "addressCountry": "US" },
   "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
-  "sameAs": [],
-  "geo": { "@type": "GeoCoordinates", "latitude": 29.7604, "longitude": -95.3698 },
-  "hasMap": "https://maps.google.com/?q=Houston+TX",
-  "paymentAccepted": ["Cash", "Credit Card", "Debit Card"]
+  "sameAs": ["https://g.page/r/CVgUaFV7t4-8EBM/review", "https://www.facebook.com/avalimo", "https://www.instagram.com/avalimo"],
+  "geo": { "@type": "GeoCoordinates", "latitude": 29.6186, "longitude": -95.5377 },
+  "hasMap": "https://maps.google.com/?q=Missouri+City+TX+77459",
+  "paymentAccepted": ["Cash", "Credit Card", "Debit Card"],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Houston Chauffeur Services",
+    "itemListElement": [
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "IAH Airport Car Service"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Hobby Airport Car Service"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Galveston Cruise Shuttle"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Corporate Chauffeur Service"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Wedding Limo Service"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "City-to-City Texas Car Service"}}
+    ]
+  }
 }
 </script>
 <script type="application/ld+json">
@@ -274,7 +286,10 @@ HTML = r"""<!DOCTYPE html>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
 <script>
@@ -318,8 +333,8 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
   <div class="container">
     <div class="hero-text">
       <div class="badge"><span class="dot"></span> Houston's Premier Chauffeur Service</div>
-      <h1><span class="line">Arrive in</span> <span class="line">Absolute Luxury</span></h1>
-      <p>Houston's most trusted chauffeur service. Airport transfers, corporate travel, weddings and events — 24/7 with zero surge pricing.</p>
+      <h1><span class="line">Houston Luxury</span> <span class="line">Chauffeur & Limo Service</span></h1>
+      <p>Flat-rate airport transfers to IAH & Hobby, corporate roadshows, wedding transportation, and Galveston cruise shuttles — 24/7 with real-time flight tracking and zero surge pricing.</p>
       <div class="hero-btns">
         <a href="/book" class="btn btn-gold">Book Your Ride</a>
         <a href="/fleet" class="btn btn-outline">View Fleet</a>
@@ -394,12 +409,12 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
       <p>From airport pickups to weddings, we provide premium transportation for every occasion across Houston.</p>
     </div>
     <div class="services-grid">
-      <div class="service-card fade-up"><div class="icon">&#9992;</div><h3>Airport Transfers</h3><p>IAH &amp; Hobby Airport. Flight tracking included, meet &amp; greet available.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">&#128188;</div><h3>Corporate Travel</h3><p>Impress clients with punctual, professional chauffeur service across Houston.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">&#128141;</div><h3>Wedding Limo</h3><p>Make your biggest day unforgettable with a grand, elegant arrival.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.3s"><div class="icon">&#127916;</div><h3>Events &amp; Nights Out</h3><p>Concerts, sports, prom, galas — all your special event transportation needs.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.4s"><div class="icon">&#127925;</div><h3>Bachelorette &amp; Parties</h3><p>BYOB party buses and Sprinter vans for the bride tribe and group nights out.</p></div>
-      <div class="service-card fade-up" style="transition-delay:.5s"><div class="icon">&#127963;</div><h3>Wine &amp; Brewery Tours</h3><p>Texas Hill Country wineries and Houston craft breweries — safe and stylish.</p></div>
+      <div class="service-card fade-up"><div class="icon">&#9992;</div><h3><a href="/services">Airport Transfers</a></h3><p>IAH &amp; Hobby Airport. Flight tracking included, meet &amp; greet available.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.1s"><div class="icon">&#128188;</div><h3><a href="/services">Corporate Travel</a></h3><p>Impress clients with punctual, professional chauffeur service across Houston.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.2s"><div class="icon">&#128141;</div><h3><a href="/services">Wedding Limo</a></h3><p>Make your biggest day unforgettable with a grand, elegant arrival.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.3s"><div class="icon">&#127916;</div><h3><a href="/services">Events &amp; Nights Out</a></h3><p>Concerts, sports, prom, galas — all your special event transportation needs.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.4s"><div class="icon">&#127925;</div><h3><a href="/services">Bachelorette &amp; Parties</a></h3><p>BYOB party buses and Sprinter vans for the bride tribe and group nights out.</p></div>
+      <div class="service-card fade-up" style="transition-delay:.5s"><div class="icon">&#127863;</div><h3><a href="/services">Wine &amp; Brewery Tours</a></h3><p>Texas Hill Country wineries and Houston craft breweries — safe and stylish.</p></div>
     </div>
   </div>
 </section>
@@ -1866,11 +1881,12 @@ def robots_txt():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit", "sugar-land-limo", "the-woodlands-limo", "katy-limo", "missouri-city-limo", "pearland-limo", "galveston-limo", "league-city-limo", "baytown-limo", "spring-limo", "cypress-limo"]
-    blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc></url>' for p in BLOG_POSTS if p.get("slug"))
-    urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc></url>' for p in pages)
+    today = __import__('datetime').date.today().isoformat()
+    static_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>{"1.0" if not p else "0.8"}</priority></url>' for p in pages)
+    blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' for p in BLOG_POSTS if p.get("slug"))
     xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{urls}
+{static_urls}
 {blog_urls}
 </urlset>'''
     return xml, 200, {"Content-Type": "application/xml"}
@@ -1879,7 +1895,7 @@ def sitemap_xml():
 @app.route("/<path:path>")
 def index(path):
     page_meta = {
-        "": { "title": "AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers", "desc": "Houston's most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing. Book online in 30 seconds." },
+        "": { "title": "AvaLimo Houston | Luxury Chauffeur & Limo Service | IAH & Hobby", "desc": "Houston's trusted luxury chauffeur service. Flat-rate airport transfers for IAH & Hobby, corporate travel, weddings, events & Galveston cruises — 24/7, zero surge pricing." },
         "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7." },
         "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion." },
         "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7." },
