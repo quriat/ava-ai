@@ -28,27 +28,27 @@ export default function Header() {
 
   return (
     <>
-      <div className="bg-gradient-to-r from-gold-600 via-gold-500 to-gold-600 text-black font-extrabold text-xs py-2 px-4 text-center tracking-wider uppercase flex items-center justify-center gap-3 flex-wrap">
-        <span>AI Voice Concierge Active 24/7</span>
-        <span className="hidden md:inline">•</span>
-        <span>Instant Checkout via Square Payments</span>
-        <span className="hidden md:inline">•</span>
+      <div className="bg-gradient-to-r from-gold-600 via-gold-500 to-gold-600 text-black font-extrabold text-[10px] sm:text-xs py-2 px-3 sm:px-4 text-center tracking-wider uppercase flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3">
+        <span><i className="fa-solid fa-microphone-lines mr-1"></i> AI Voice Concierge Active 24/7</span>
+        <span className="hidden sm:inline">•</span>
+        <span>Instant Checkout via Square</span>
+        <span className="hidden sm:inline">•</span>
         <a href={`tel:${COMPANY_INFO.phoneRaw}`} className="underline hover:text-white transition-colors font-black">
           {COMPANY_INFO.phone}
         </a>
       </div>
 
       <header className="sticky top-0 z-50 bg-dark-950/95 backdrop-blur-md border-b border-gold-500/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <button onClick={() => scrollTo('hero')} className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-full border-2 border-gold-500 flex items-center justify-center bg-dark-900 text-gold-400 font-serif font-bold text-2xl gold-glow transition-transform group-hover:scale-105">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+          <button onClick={() => scrollTo('hero')} className="flex items-center gap-2 sm:gap-3 group">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-2 border-gold-500 flex items-center justify-center bg-dark-900 text-gold-400 font-serif font-bold text-xl sm:text-2xl gold-glow transition-transform group-hover:scale-105">
               A
             </div>
             <div className="text-left">
-              <span className="font-serif text-2xl font-extrabold tracking-wider text-white group-hover:text-gold-400 transition-colors block leading-none">
+              <span className="font-serif text-xl sm:text-2xl font-extrabold tracking-wider text-white group-hover:text-gold-400 transition-colors block leading-none">
                 AVALIMO
               </span>
-              <span className="block text-[9px] tracking-widest text-gold-400 uppercase font-bold mt-1">
+              <span className="block text-[8px] sm:text-[9px] tracking-widest text-gold-400 uppercase font-bold mt-1">
                 Houston Luxury Chauffeur
               </span>
             </div>
@@ -66,7 +66,7 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <a
               href={`tel:${COMPANY_INFO.phoneRaw}`}
               className="hidden sm:flex items-center gap-2 text-xs font-bold text-gold-400 hover:text-white transition-colors px-3 py-2 rounded-lg border border-gold-500/30 bg-gold-500/10"
@@ -76,7 +76,7 @@ export default function Header() {
             </a>
             <button
               onClick={() => scrollTo('booking-section')}
-              className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-extrabold text-xs uppercase tracking-wider px-5 py-3 rounded-full transition-all duration-300 shadow-lg shadow-gold-500/20 transform hover:scale-105 flex items-center gap-2"
+              className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-5 py-2.5 sm:py-3 rounded-full transition-all duration-300 shadow-lg shadow-gold-500/20 transform hover:scale-105 flex items-center gap-1.5 sm:gap-2"
             >
               <CreditCard size={14} />
               <span>Book &amp; Pay</span>

@@ -11,8 +11,8 @@ const TruckIcon = () => (
   <Truck size={28} strokeWidth={1.5} />
 );
 
-const MODE_A_CLASS = 'px-6 py-2.5 rounded-full text-xs sm:text-sm font-extrabold tracking-wider uppercase transition-all bg-gold-500 text-black shadow-lg';
-const MODE_B_CLASS = 'px-6 py-2.5 rounded-full text-xs sm:text-sm font-extrabold tracking-wider uppercase transition-all text-slate-300 hover:text-white';
+const MODE_A_CLASS = 'px-4 sm:px-6 py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm font-extrabold tracking-wider uppercase transition-all bg-gold-500 text-black shadow-lg';
+const MODE_B_CLASS = 'px-4 sm:px-6 py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm font-extrabold tracking-wider uppercase transition-all text-slate-300 hover:text-white';
 
 const Hero: React.FC = () => {
   const [mode, setMode] = useState<'A' | 'B'>('A');
@@ -23,7 +23,7 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <section id="hero" className="relative min-h-[92vh] flex items-center justify-center overflow-hidden py-24 px-4">
+    <section id="hero" className="relative min-h-[88vh] sm:min-h-[92vh] flex items-center justify-center overflow-hidden py-20 sm:py-24 px-4">
       <div className="absolute inset-0 z-0">
         <img
           src="/og-image.jpg"
@@ -39,19 +39,19 @@ const Hero: React.FC = () => {
           <span>AI Voice Concierge & Square Secure Checkout Active</span>
         </div>
 
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex p-1.5 rounded-full bg-dark-900/90 border border-gold-500/30 backdrop-blur-md">
+        <div className="flex justify-center mb-8 px-4">
+          <div className="inline-flex flex-col sm:flex-row p-1.5 rounded-2xl sm:rounded-full bg-dark-900/90 border border-gold-500/30 backdrop-blur-md w-full max-w-xs sm:max-w-none sm:w-auto">
             <button
               onClick={() => setMode('A')}
-              className={mode === 'A' ? MODE_A_CLASS : MODE_B_CLASS}
+              className={mode === 'A' ? MODE_A_CLASS + ' whitespace-nowrap' : MODE_B_CLASS + ' whitespace-nowrap'}
             >
-              Option A: Business &amp; Airport
+              Business &amp; Airport
             </button>
             <button
               onClick={() => setMode('B')}
-              className={mode === 'B' ? MODE_A_CLASS : MODE_B_CLASS}
+              className={mode === 'B' ? MODE_A_CLASS + ' whitespace-nowrap' : MODE_B_CLASS + ' whitespace-nowrap'}
             >
-              Option B: VIP Nightlife &amp; Cruise
+              VIP Nightlife &amp; Cruise
             </button>
           </div>
         </div>
@@ -59,11 +59,10 @@ const Hero: React.FC = () => {
         {mode === 'A' ? (
           <div className="transition-all duration-500">
             <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-none mb-6">
-              Your Flight is On Time.
-              <br className="hidden sm:inline" /> <span className="gold-gradient-text">You Should Be Too.</span>
+              Houston Luxury Chauffeur &amp; Limo Service
             </h1>
             <p className="max-w-3xl mx-auto text-slate-300 text-base sm:text-lg md:text-xl leading-relaxed mb-8">
-              Eliminate the stress of Houston traffic and airport logistics. Whether you are heading to IAH George Bush or Hobby (HOU), we provide a seamless, punctual, and luxury transition from your front door to the boarding gate.
+              Flat-rate airport transfers to IAH and Hobby, corporate roadshows, wedding transportation, and Galveston cruise shuttles — 24/7 with real-time flight tracking and zero surge pricing.
             </p>
             <div className="p-4 rounded-xl bg-dark-900/90 border border-gold-500/30 inline-block mb-10 max-w-xl text-gold-300 font-semibold text-sm">
               The Avalimo Standard: Reliability isn't an option; it's our standard.
@@ -71,12 +70,11 @@ const Hero: React.FC = () => {
           </div>
         ) : (
           <div className="transition-all duration-500">
-            <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-none mb-6">
-              Don't Just Go to the Party.
-              <br className="hidden sm:inline" /> <span className="gold-gradient-text">Arrive at It.</span>
-            </h1>
+            <h2 className="font-serif text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-none mb-6">
+              VIP Events, Cruises &amp; Houston Nights Out
+            </h2>
             <p className="max-w-3xl mx-auto text-slate-300 text-base sm:text-lg md:text-xl leading-relaxed mb-8">
-              Elevate your night out with Houston's premier luxury fleet. From NRG Stadium to Galveston Cruise Terminals, ride in a high-end Sprinter, Cadillac Escalade, or Lincoln Limousine. Be the center of attention before you even leave the driveway.
+              Make an entrance at NRG Stadium, Toyota Center, or the Port of Galveston. Group-ready Sprinters, Escalades, and stretch limousines with professional chauffeurs and flat-rate pricing.
             </p>
             <div className="p-4 rounded-xl bg-dark-900/90 border border-gold-500/30 inline-block mb-10 max-w-xl text-gold-300 font-semibold text-sm">
               The Avalimo Promise: Be VIPs from start to finish.
