@@ -213,7 +213,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     setSubmitError('');
     setSubmittedBooking(null);
 
-    // Call n8n webhook - it handles all notifications (email, iMessage, etc.)
+    // Call /book endpoint (bypasses Coolify /api/* blocking, uses nginx /book rule)
+    fetch('/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submission),
+    }).catch(err => console.warn('/book failed:', err));
+
+    // Also call n8n webhook for email
     fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
