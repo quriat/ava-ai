@@ -208,7 +208,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       submittedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    // Dispatch to iMessage bridge directly (bypasses Coolify proxy + n8n issues)
+    // Dispatch to both iMessage bridge and n8n workflow (for email)
     setSubmitStatus('sending');
     setSubmitError('');
 
@@ -221,21 +221,32 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
         phone = '+' + phone;
       }
 
-      // Send iMessage confirmation
-      const imessageResponse = await fetch('https://frosted-cleft-stoplight.ngrok-free.dev/send-imessage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs'
-        },
-        body: JSON.stringify({
-          phone: phone,
-          body: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
-        }),
-      });
+      // Send iMessage confirmation (fire and forget if it fails)
+      try {
+        await fetch('https://frosted-cleft-stoplight.ngrok-free.dev/send-imessage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs'
+          },
+          body: JSON.stringify({
+            phone: phone,
+            body: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
+          }),
+        });
+      } catch (imessageError) {
+        console.warn('iMessage failed:', imessageError);
+      }
 
-      if (!imessageResponse.ok) {
-        console.warn('iMessage bridge returned non-200 status');
+      // Trigger n8n workflow for email confirmation
+      try {
+        await fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submission),
+        });
+      } catch (n8nError) {
+        console.warn('n8n webhook failed:', n8nError);
       }
 
       setSubmitStatus('success');
