@@ -1,6 +1,7 @@
 import { getPublicConfig } from '../config/runtimeConfig';
 
 export interface BookingPayload {
+  booking_id: string;
   name: string;
   email: string;
   phone: string;
@@ -29,7 +30,11 @@ export interface BookingResult {
 }
 
 export async function submitBookingRequest(payload: BookingPayload): Promise<BookingResult> {
-  const endpoint = getPublicConfig().BOOKING_API_ENDPOINT || '/api/book';
+  // n8n webhook is public and CORS-enabled for avalimo.net, so we call it directly.
+  // The BOOKING_API_ENDPOINT env var can still override this in runtimeConfig.
+  const endpoint =
+    getPublicConfig().BOOKING_API_ENDPOINT ||
+    'https://n8napp.adamj.fit/webhook/avalimo-booking';
 
   try {
     const response = await fetch(endpoint, {
@@ -43,12 +48,14 @@ export async function submitBookingRequest(payload: BookingPayload): Promise<Boo
 
     const data = (await response.json().catch(() => ({}))) as any;
 
-    if (response.ok && data.status === 'ok') {
+    // n8n router returns 200 with {"message":"Workflow was started"}.
+    // Any successful HTTP response means the booking was accepted.
+    if (response.ok) {
       return {
         ok: true,
         status: 'success',
         message: data.message || 'Booking request received. Dispatch will confirm shortly.',
-        reference: data.reference || data.confirmationId,
+        reference: data.reference || payload.booking_id,
       };
     }
 

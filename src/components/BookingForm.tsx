@@ -150,6 +150,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
 
     try {
       const result = await submitBookingRequest({
+        booking_id: confirmationId,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
