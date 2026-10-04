@@ -6,7 +6,7 @@ set -e
 : "${VAPI_PUBLIC_KEY:=}"
 : "${VAPI_FRONT_DESK_ASSISTANT_ID:=}"
 : "${VAPI_DISPATCH_ASSISTANT_ID:=}"
-: "${BOOKING_API_ENDPOINT:=/api/book}"
+: "${BOOKING_API_ENDPOINT:=https://n8napp.adamj.fit/webhook/avalimo-booking}"
 : "${VOICE_TRANSFER_PHONE:=+18325678050}"
 : "${GA_MEASUREMENT_ID:=}"
 : "${CLARITY_PROJECT_ID:=}"
