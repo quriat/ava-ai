@@ -212,43 +212,37 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     setSubmitStatus('sending');
     setSubmitError('');
 
-    try {
-      // Format phone number for iMessage bridge (+1 followed by 10 digits)
-      let phone = submission.phone.replace(/\D/g, ''); // Remove non-digits
-      if (phone.length === 10) {
-        phone = '+1' + phone;
-      } else if (phone.length === 11 && phone.startsWith('1')) {
-        phone = '+' + phone;
-      }
-
-      // Send iMessage confirmation (fire and forget if it fails)
-      fetch('https://frosted-cleft-stoplight.ngrok-free.dev/send-imessage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs'
-        },
-        body: JSON.stringify({
-          phone: phone,
-          body: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
-        }),
-      }).catch(err => console.warn('iMessage failed:', err));
-
-      // Trigger n8n workflow for email confirmation (fire and forget)
-      fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submission),
-      }).catch(err => console.warn('n8n webhook failed:', err));
-
-      setSubmitStatus('success');
-      setSubmittedBooking(submission);
-    } catch (err) {
-      console.error('Booking submission error:', err);
-      setSubmitStatus('error');
-      setSubmitError(err instanceof Error ? err.message : 'Failed to submit booking. Please call dispatch directly.');
-      setSubmittedBooking(submission);
+    // Format phone number for iMessage bridge (+1 followed by 10 digits)
+    let phone = submission.phone.replace(/\D/g, ''); // Remove non-digits
+    if (phone.length === 10) {
+      phone = '+1' + phone;
+    } else if (phone.length === 11 && phone.startsWith('1')) {
+      phone = '+' + phone;
     }
+
+    // Send iMessage confirmation (fire and forget)
+    fetch('https://frosted-cleft-stoplight.ngrok-free.dev/send-imessage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs'
+      },
+      body: JSON.stringify({
+        phone: phone,
+        body: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
+      }),
+    }).catch(err => console.warn('iMessage failed:', err));
+
+    // Trigger n8n workflow for email confirmation (fire and forget)
+    fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submission),
+    }).catch(err => console.warn('n8n webhook failed:', err));
+
+    // Always show success - notifications are sent in background
+    setSubmitStatus('success');
+    setSubmittedBooking(submission);
   };
 
   return (
