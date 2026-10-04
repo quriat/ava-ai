@@ -213,23 +213,33 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     setSubmitError('');
     setSubmittedBooking(null);
 
-    // Call /book endpoint (bypasses Coolify /api/* blocking, uses nginx /book rule)
-    fetch('/book', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(submission),
-    }).catch(err => console.warn('/book failed:', err));
+    try {
+      // Call /book endpoint (bypasses Coolify /api/* blocking, uses nginx /book rule)
+      const response = await fetch('/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submission),
+      });
 
-    // Also call n8n webhook for email
-    fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(submission),
-    }).catch(err => console.warn('n8n webhook failed:', err));
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
 
-    // Always show success - notifications are sent in background
-    setSubmitStatus('success');
-    setSubmittedBooking(submission);
+      // Also call n8n webhook for email
+      fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submission),
+      }).catch(err => console.warn('n8n webhook failed:', err));
+
+      setSubmitStatus('success');
+      setSubmittedBooking(submission);
+    } catch (err) {
+      console.error('Booking submission error:', err);
+      setSubmitStatus('error');
+      setSubmitError(err instanceof Error ? err.message : 'Failed to submit booking. Please call dispatch directly.');
+      setSubmittedBooking(submission);
+    }
   };
 
   return (
