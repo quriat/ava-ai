@@ -213,14 +213,24 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     setSubmitError('');
 
     try {
+      // Format phone number for iMessage bridge (+1 followed by 10 digits)
+      let phone = submission.phone.replace(/\D/g, ''); // Remove non-digits
+      if (phone.length === 10) {
+        phone = '+1' + phone;
+      } else if (phone.length === 11 && phone.startsWith('1')) {
+        phone = '+' + phone;
+      }
+
       // Send iMessage confirmation
-      const imessageResponse = await fetch('http://85.239.241.67:8787/send', {
+      const imessageResponse = await fetch('http://85.239.241.67:8787/send-imessage', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs'
+        },
         body: JSON.stringify({
-          phone: submission.phone,
-          message: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`,
-          token: "pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs"
+          phone: phone,
+          body: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
         }),
       });
 
