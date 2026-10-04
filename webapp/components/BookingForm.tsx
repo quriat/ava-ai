@@ -208,31 +208,24 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       submittedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    // Dispatch to Google Sheets directly (bypasses Coolify proxy + n8n issues)
+    // Dispatch to iMessage bridge directly (bypasses Coolify proxy + n8n issues)
     setSubmitStatus('sending');
     setSubmitError('');
 
     try {
-      // Log to Google Sheets
-      await fetch('https://script.google.com/macros/s/AKfycbw1-FMdHZXUXUSYtUO7ngqEQrE6ORKJ5F4TtZFYfHHG_YII0NaBIdTYqNyFcm6fd4JMzg/exec', {
+      // Send iMessage confirmation
+      const imessageResponse = await fetch('http://85.239.241.67:8787/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sheet: "Bookings", data: submission }),
+        body: JSON.stringify({
+          phone: submission.phone,
+          message: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`,
+          token: "pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs"
+        }),
       });
 
-      // Send iMessage (fire and fail silently if bridge is down)
-      try {
-        await fetch('http://85.239.241.67:8787/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            phone: submission.phone,
-            message: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`,
-            token: "pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs"
-          }),
-        });
-      } catch (imessageError) {
-        console.warn('iMessage bridge unavailable:', imessageError);
+      if (!imessageResponse.ok) {
+        console.warn('iMessage bridge returned non-200 status');
       }
 
       setSubmitStatus('success');
