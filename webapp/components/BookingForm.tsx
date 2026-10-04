@@ -208,12 +208,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       submittedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    // Dispatch to the production backend (email + Google Sheets + n8n follow-ups)
+    // Dispatch to the production backend via n8n webhook (bypasses Coolify proxy issues)
     setSubmitStatus('sending');
     setSubmitError('');
 
     try {
-      const response = await fetch('/api/book', {
+      const response = await fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submission),
