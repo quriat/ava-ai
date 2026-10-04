@@ -208,31 +208,39 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       submittedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    // Dispatch to the production backend via n8n webhook (bypasses Coolify proxy issues)
+    // Dispatch to Google Sheets directly (bypasses Coolify proxy + n8n issues)
     setSubmitStatus('sending');
     setSubmitError('');
 
     try {
-      const response = await fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
+      // Log to Google Sheets
+      await fetch('https://script.google.com/macros/s/AKfycbw1-FMdHZXUXUSYtUO7ngqEQrE6ORKJ5F4TtZFYfHHG_YII0NaBIdTYqNyFcm6fd4JMzg/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submission),
+        body: JSON.stringify({ sheet: "Bookings", data: submission }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      // Send iMessage (fire and fail silently if bridge is down)
+      try {
+        await fetch('http://85.239.241.67:8787/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: submission.phone,
+            message: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`,
+            token: "pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs"
+          }),
+        });
+      } catch (imessageError) {
+        console.warn('iMessage bridge unavailable:', imessageError);
       }
-
-      const data = await response.json();
-      console.log('Booking response:', data);
 
       setSubmitStatus('success');
       setSubmittedBooking(submission);
     } catch (err) {
-      console.error('Booking dispatch failed:', err);
+      console.error('Booking submission error:', err);
       setSubmitStatus('error');
       setSubmitError(err instanceof Error ? err.message : 'Failed to submit booking. Please call dispatch directly.');
-      // Still show the modal with booking details even on error
       setSubmittedBooking(submission);
     }
   };
