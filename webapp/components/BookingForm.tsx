@@ -208,31 +208,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       submittedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    // Dispatch to both iMessage bridge and n8n workflow (for email)
     // Reset states before new submission
     setSubmitStatus('sending');
     setSubmitError('');
     setSubmittedBooking(null);
 
-    // Format phone number for iMessage bridge (+1 followed by 10 digits)
-    let phone = submission.phone.replace(/\D/g, ''); // Remove non-digits
-    if (phone.length === 10) {
-      phone = '+1' + phone;
-    } else if (phone.length === 11 && phone.startsWith('1')) {
-      phone = '+' + phone;
-    }
-
-    // Send iMessage via Flask backend (avoids CORS and 405 error)
-    fetch('/send-imessage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        phone: phone,
-        message: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
-      }),
-    }).catch(err => console.warn('iMessage failed:', err));
-
-    // Trigger n8n workflow for email confirmation (fire and forget)
+    // Call n8n webhook - it handles all notifications (email, iMessage, etc.)
     fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
