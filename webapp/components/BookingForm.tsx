@@ -209,8 +209,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     };
 
     // Dispatch to both iMessage bridge and n8n workflow (for email)
+    // Reset states before new submission
     setSubmitStatus('sending');
     setSubmitError('');
+    setSubmittedBooking(null);
 
     // Format phone number for iMessage bridge (+1 followed by 10 digits)
     let phone = submission.phone.replace(/\D/g, ''); // Remove non-digits
