@@ -222,7 +222,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       }
 
       // Send iMessage confirmation
-      const imessageResponse = await fetch('http://85.239.241.67:8787/send-imessage', {
+      const imessageResponse = await fetch('https://frosted-cleft-stoplight.ngrok-free.dev/send-imessage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
