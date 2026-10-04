@@ -222,8 +222,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       phone = '+' + phone;
     }
 
-    // Send iMessage via Flask backend (avoids CORS)
-    fetch('/api/send-imessage', {
+    // Send iMessage via Flask backend (avoids CORS and 405 error)
+    fetch('/send-imessage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

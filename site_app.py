@@ -752,7 +752,7 @@ Our dispatch team will confirm availability and chauffeur assignment shortly. Ca
     return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})
 
 
-@app.route("/api/send-imessage", methods=["POST"])
+@app.route("/send-imessage", methods=["POST"])
 def send_imessage_endpoint():
     """Simple endpoint to send iMessage (bypasses booking logic)"""
     data = request.get_json() or {}
