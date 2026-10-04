@@ -222,32 +222,24 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       }
 
       // Send iMessage confirmation (fire and forget if it fails)
-      try {
-        await fetch('https://frosted-cleft-stoplight.ngrok-free.dev/send-imessage', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs'
-          },
-          body: JSON.stringify({
-            phone: phone,
-            body: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
-          }),
-        });
-      } catch (imessageError) {
-        console.warn('iMessage failed:', imessageError);
-      }
+      fetch('https://frosted-cleft-stoplight.ngrok-free.dev/send-imessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs'
+        },
+        body: JSON.stringify({
+          phone: phone,
+          body: `Hi ${submission.name}! Your AvaLimo reservation request has been received.\n\nRef: ${submission.confirmationId}\nPickup: ${submission.pickup}\nDropoff: ${submission.dropoff}\nDate: ${submission.date} at ${submission.time}\n\nOur dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance.`
+        }),
+      }).catch(err => console.warn('iMessage failed:', err));
 
-      // Trigger n8n workflow for email confirmation
-      try {
-        await fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submission),
-        });
-      } catch (n8nError) {
-        console.warn('n8n webhook failed:', n8nError);
-      }
+      // Trigger n8n workflow for email confirmation (fire and forget)
+      fetch('https://n8napp.adamj.fit/webhook/avalimo-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submission),
+      }).catch(err => console.warn('n8n webhook failed:', err));
 
       setSubmitStatus('success');
       setSubmittedBooking(submission);
