@@ -82,14 +82,18 @@ function writeFile(rel, html) {
 // #root so no-JS crawlers/social scrapers see real content. React replaces it on mount.
 const homeBody = `
 <main style="max-width:1200px;margin:0 auto;padding:96px 24px;">
-  <h1 style="font-size:2.5rem;">AvaLimo Houston — Luxury Chauffeur &amp; Limo Service</h1>
-  <p>AvaLimo is a Houston luxury transportation company offering 24/7 chauffeured airport transfers at George Bush Intercontinental (IAH) and William P. Hobby (HOU), Galveston cruise port shuttles, corporate travel, weddings and events across Greater Houston — with flat-rate pricing, real-time flight tracking, and an AI voice concierge for instant reservations.</p>
+  <h1 style="font-size:2.5rem;">AvaLimo Houston | Luxury Chauffeur &amp; Limo Service | IAH &amp; Hobby Airport</h1>
+  <p>AvaLimo is Houston's trusted luxury chauffeur service, offering 24/7 flat-rate airport transfers at George Bush Intercontinental (<a href="/houston-airport-transfers">IAH</a>) and William P. Hobby (<a href="/houston-airport-transfers">HOU</a>), <a href="/galveston-cruise-transportation">Galveston cruise port shuttles</a>, <a href="/corporate-chauffeur-houston">corporate travel</a>, <a href="/houston-wedding-limo">weddings and events</a> across Greater Houston — with real-time flight tracking and zero surge pricing.</p>
   <p><a href="tel:+18325678050">Call (832) 567-8050</a> · <a href="/#booking-section">Book Online</a></p>
   <nav aria-label="Site">
     <ul>
       <li><a href="/services">Limo Services</a></li>
       <li><a href="/fleet">Luxury Fleet</a></li>
-      <li><a href="/airport-galveston">Airport &amp; Galveston Cruise Transfers</a></li>
+      <li><a href="/houston-airport-transfers">IAH &amp; Hobby Airport Transfers</a></li>
+      <li><a href="/galveston-cruise-transportation">Galveston Cruise Transfers</a></li>
+      <li><a href="/corporate-chauffeur-houston">Corporate Chauffeur</a></li>
+      <li><a href="/houston-wedding-limo">Wedding Limo</a></li>
+      <li><a href="/city-to-city-texas">City-to-City Texas</a></li>
       <li><a href="/rates">Rates &amp; Flat Pricing</a></li>
       <li><a href="/reviews">Customer Reviews</a></li>
       <li><a href="/faq">FAQ</a></li>
@@ -98,9 +102,9 @@ const homeBody = `
   </nav>
 </main>`;
 writeFile('index.html', buildPage({
-  title: 'AvaLimo Houston | AI Voice Concierge & Luxury Chauffeur Service',
+  title: 'AvaLimo Houston | Luxury Chauffeur & Limo Service | IAH & Hobby Airport',
   description:
-    'AvaLimo Houston — luxury airport transfers, corporate travel, Galveston cruises. AI voice concierge, real-time flight tracking, and instant reservations. Call (832) 567-8050.',
+    "Houston's trusted luxury chauffeur service. Flat-rate airport transfers for IAH & Hobby, corporate travel, weddings, Galveston cruises & events — 24/7, zero surge pricing. Call (832) 567-8050.",
   canonical: `${SITE}/`,
   ogType: 'website',
   bodyHtml: homeBody,

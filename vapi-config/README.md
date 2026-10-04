@@ -1,61 +1,82 @@
 # Vapi Assistant Configuration
 
-These JSON files are the recommended assistant definitions for the two AvaLimo voice agents.
+These JSON files are the assistant definitions for the two AvaLimo voice agents.  
+After importing, set the assistant IDs in Coolify: `VAPI_FRONT_DESK_ASSISTANT_ID` and `VAPI_DISPATCH_ASSISTANT_ID`.
 
-## How to use
+## How to import
 
 1. Go to https://dashboard.vapi.ai/assistants
 2. Create a new assistant (or duplicate an existing one)
-3. Switch to the **JSON** editor / import view
-4. Paste in `front-desk-assistant.json` for the Front Desk agent
-5. Copy the assistant ID and set it as `VAPI_FRONT_DESK_ASSISTANT_ID`
-6. Repeat with `dispatch-assistant.json` for the Dispatch agent
-7. Copy that assistant ID and set it as `VAPI_DISPATCH_ASSISTANT_ID`
+3. In the assistant editor, go to **JSON / Import** tab
+4. Paste the contents of `front-desk-assistant.json` or `dispatch-assistant.json`
+5. Save and copy the new assistant ID
+6. Set the ID in Coolify environment variables
 
-## Transfer behavior
+**Both assistants are now defined with three tools:**
+- `take_message` – callback request (needs webhook)
+- `book_ride` – create a booking (needs webhook)  
+- `transferCall` – transfer to live dispatcher (destination is set in JSON)
 
-Each assistant has a `transfer_call` tool. You must configure the destination in the Vapi dashboard:
+## Booking webhook setup
 
-1. Open the assistant → **Functions / Tools**
-2. Find `transfer_call` (or add a **Transfer** tool)
-3. Set destination to `+18325678050` (AvaLimo live dispatch)
-4. Save
+The `book_ride` function requires a server endpoint that:
+1. Receives the booking parameters via POST
+2. Creates the booking in your database
+3. Sends a confirmation email/SMS
+4. Returns: `{"status": "success", "reference": "BA-12345", "message": "Confirmed"}` or `{"status": "error", "message": "Failed"}`
 
-## Leave a message / callback
+### n8n setup (recommended)
 
-Both assistants have a `take_message` function tool. When a caller asks to leave a message or get a callback, the assistant collects name, phone, and message and POSTs to the n8n webhook.
+1. Import `n8n-workflows/vapi-voice-handler.json` into your n8n instance
+2. The workflow has a `book_ride` webhook node that:
+   - Generates a booking reference
+   - Emails you a confirmation with all booking details
+   - Returns `{status, reference, message}` to the assistant
+3. Copy the webhook URL: `https://n8napp.adamj.fit/webhook/book_ride`
+4. In Vapi dashboard, open each assistant → **Tools** → `book_ride`
+5. Set the **Server URL** to `https://n8napp.adamj.fit/webhook/book_ride`
+6. Set **Async** to `false` so the assistant waits for confirmation
 
-### n8n webhook setup
+### Direct endpoint setup
 
-1. Import `../n8n-workflows/vapi-voice-handler.json` into your n8n instance
-2. Open the **Vapi Voice Webhook** node and copy the webhook URL (it will look like `https://n8napp.adamj.fit/webhook/vapi-voice`)
-3. In the Vapi dashboard, open each assistant → **Functions**
-4. Add a function called `take_message`
-5. Set the function's webhook URL to the n8n URL from step 2
-6. Configure the Telegram node:
-   - Replace `YOUR_TELEGRAM_CHAT_ID` with your Telegram chat ID (ask @userinfobot)
-   - Add your Telegram bot token in n8n credentials
-7. Configure the Email node with SMTP credentials (Gmail, SendGrid, etc.)
-8. Activate the workflow
+If you have an existing `/api/book` endpoint, point `book_ride.server.url` to it.  
+The endpoint must accept the full booking payload and return `{status, reference, message}`.
 
-The webhook expects this JSON body:
+## Transfer tool (already configured in JSON)
 
+Each assistant JSON includes a `transferCall` tool with:
+```json
+{
+  "type": "transferCall",
+  "destinations": [{
+    "type": "number",
+    "number": "+18325678050",
+    "message": "Transferring you to our live dispatcher."
+  }]
+}
+```
+
+The assistant can now call this directly. No additional dashboard setup needed unless you want a different number.
+
+## Callback / leave a message
+
+Both assistants have a `take_message` function. Configure its webhook similarly to `book_ride`:
+
+1. Import `n8n-workflows/vapi-voice-handler.json` (if it exists)
+2. Or create a webhook that POSTs to your n8n workflow
+3. Configure Telegram/Email notifications as described above
+
+The webhook receives:
 ```json
 {
   "name": "Caller Name",
   "phone": "+15551234567",
-  "message": "Please call me back about a Galveston cruise transfer.",
+  "message": "Please call me back",
   "urgent": false,
   "agent": "Front Desk"
 }
 ```
 
-It will instantly notify you by Telegram and email.
-
-## Recommended destination
-
-Use `+18325678050` (AvaLimo live dispatch) for both assistants unless you want Front Desk to transfer to a different number.
-
 ## Website fallback
 
-If the Vapi transfer fails or the user is on a device that can't complete the handoff, the website shows a "Call Dispatch Directly" button that dials `VOICE_TRANSFER_PHONE` (default `+18325678050`).
+If Vapi transfer fails or the user can't use the voice channel, the website shows a "Call Dispatch Directly" button that dials `VOICE_TRANSFER_PHONE` (default `+18325678050`).

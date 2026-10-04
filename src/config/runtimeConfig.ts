@@ -7,6 +7,8 @@ export interface PublicRuntimeConfig {
   VAPI_DISPATCH_ASSISTANT_ID?: string;
   BOOKING_API_ENDPOINT?: string;
   VOICE_TRANSFER_PHONE?: string;
+  GA_MEASUREMENT_ID?: string;
+  CLARITY_PROJECT_ID?: string;
 }
 
 function getWindowConfig(): PublicRuntimeConfig {
@@ -19,6 +21,8 @@ declare const __VITE_VAPI_FRONT_DESK_ASSISTANT_ID__: string | undefined;
 declare const __VITE_VAPI_DISPATCH_ASSISTANT_ID__: string | undefined;
 declare const __VITE_BOOKING_API_ENDPOINT__: string | undefined;
 declare const __VITE_VOICE_TRANSFER_PHONE__: string | undefined;
+declare const __VITE_GA_MEASUREMENT_ID__: string | undefined;
+declare const __VITE_CLARITY_PROJECT_ID__: string | undefined;
 
 function getGlobal(key: string): string | undefined {
   if (typeof window === 'undefined') return undefined;
@@ -52,6 +56,16 @@ export function getPublicConfig(): PublicRuntimeConfig {
       (typeof __VITE_VOICE_TRANSFER_PHONE__ !== 'undefined' ? __VITE_VOICE_TRANSFER_PHONE__ : undefined) ||
       process.env?.VITE_VOICE_TRANSFER_PHONE ||
       '+18325678050',
+    GA_MEASUREMENT_ID:
+      getWindowConfig().GA_MEASUREMENT_ID ||
+      (typeof __VITE_GA_MEASUREMENT_ID__ !== 'undefined' ? __VITE_GA_MEASUREMENT_ID__ : undefined) ||
+      process.env?.VITE_GA_MEASUREMENT_ID ||
+      '',
+    CLARITY_PROJECT_ID:
+      getWindowConfig().CLARITY_PROJECT_ID ||
+      (typeof __VITE_CLARITY_PROJECT_ID__ !== 'undefined' ? __VITE_CLARITY_PROJECT_ID__ : undefined) ||
+      process.env?.VITE_CLARITY_PROJECT_ID ||
+      '',
   };
 }
 

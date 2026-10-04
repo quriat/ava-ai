@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { AgentType } from '../types';
 import { startVapiCall, stopVapiCall, getVapi, isVapiConfigured, getTransferPhone } from '../services/vapiVoiceService';
 import { Phone } from 'lucide-react';
+import { trackEvent } from '../lib/analytics';
 
 interface VoiceAgentProps {
   type: AgentType;
@@ -25,21 +26,25 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       startVapiCall(type);
       setIsActive(true);
       setStatus('Active');
+      trackEvent('voice_start', { agent: type });
     } catch (err: any) {
       console.error('Voice start error:', err);
       setStatus('Failed');
       setError(err?.message || 'Could not start voice session.');
       setIsActive(false);
+      trackEvent('voice_error', { agent: type });
     }
   }, [type]);
 
   const handleStop = useCallback(() => {
+    const wasActive = isActive;
     stopVapiCall();
     setIsActive(false);
     setStatus('Ready');
     setTranscription('');
     setTransferRequested(false);
-  }, []);
+    if (wasActive) trackEvent('voice_end', { agent: type });
+  }, [isActive, type]);
 
   useEffect(() => {
     if (!configured) return;

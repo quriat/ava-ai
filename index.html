@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AvaLimo Houston | AI Voice Concierge & Luxury Chauffeur Service</title>
-  <meta name="description" content="AvaLimo Houston — luxury airport transfers, corporate travel, Galveston cruises. AI voice concierge, real-time flight tracking, and instant reservations. Call (832) 567-8050." />
+  <title>AvaLimo Houston | Luxury Chauffeur &amp; Limo Service | IAH &amp; Hobby Airport</title>
+  <meta name="description" content="AvaLimo provides luxury limo service in Houston with flat rates: IAH &amp; Hobby airport transportation, corporate travel, weddings, and Galveston cruise transfers. Professional chauffeurs, Escalades &amp; Mercedes Sprinters, 24/7 dispatch. Book online or call (832) 567-8050." />
   <link rel="canonical" href="https://avalimo.net/" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <meta name="keywords" content="Houston limo service, Houston airport transfer, IAH limo, Hobby airport car service, Galveston cruise transfer, corporate chauffeur Houston, luxury car service Houston, Missouri City limo" />
   <meta name="author" content="AvaLimo Houston" />
   <meta name="theme-color" content="#000000" />
   <link rel="apple-touch-icon" href="/og-image.jpg" />
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
   <!-- Geo targeting -->
   <meta name="geo.region" content="US-TX" />
@@ -21,8 +23,8 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="AvaLimo Houston" />
-  <meta property="og:title" content="AvaLimo Houston | AI Voice Concierge & Luxury Chauffeur Service" />
-  <meta property="og:description" content="Luxury airport transfers, corporate travel, and Galveston cruise shuttles across Greater Houston. AI voice concierge & instant reservations. Call (832) 567-8050." />
+  <meta property="og:title" content="AvaLimo Houston | Luxury Chauffeur &amp; Limousine Service | Official Site" />
+  <meta property="og:description" content="AvaLimo Houston — luxury airport transfers (IAH &amp; HOU), Galveston cruise shuttles, corporate chauffeur, city-to-city Texas travel. AI voice concierge, Google reviews, Square payments &amp; flat rates. Call (832) 567-8050." />
   <meta property="og:url" content="https://avalimo.net/" />
   <meta property="og:image" content="https://avalimo.net/og-image.jpg" />
   <meta property="og:image:alt" content="AvaLimo Houston luxury chauffeur fleet" />
@@ -30,8 +32,8 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="AvaLimo Houston | AI Voice Concierge & Luxury Chauffeur Service" />
-  <meta name="twitter:description" content="Luxury airport transfers, corporate travel, and Galveston cruise shuttles across Greater Houston. AI voice concierge & instant reservations." />
+  <meta name="twitter:title" content="AvaLimo Houston | Luxury Chauffeur &amp; Limousine Service | Official Site" />
+  <meta name="twitter:description" content="AvaLimo Houston — luxury airport transfers (IAH &amp; HOU), Galveston cruise shuttles, corporate chauffeur, city-to-city Texas travel. AI voice concierge, Google reviews, Square payments &amp; flat rates. Call (832) 567-8050." />
   <meta name="twitter:image" content="https://avalimo.net/og-image.jpg" />
 
   <!-- Structured data: LimousineService (LocalBusiness) -->
@@ -83,19 +85,151 @@
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "City-to-City Texas Long Distance" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Weddings & Special Events" } }
       ]
-    }
+    },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
+    "sameAs": ["https://g.page/r/CVgUaFV7t4-8EBM/review", "https://www.facebook.com/avalimo", "https://www.instagram.com/avalimo"]
   }
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/index.css">
-  <!-- RUNTIME_CONFIG -->
-  
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            DEFAULT: '#D4AF37',
+                            300: '#F5E096',
+                            400: '#E6C363',
+                            500: '#D4AF37',
+                            600: '#AA8C2C',
+                            700: '#7D651E'
+                        },
+                        dark: {
+                            DEFAULT: '#0B0D13',
+                            950: '#060709',
+                            900: '#0B0D13',
+                            800: '#12151F',
+                            700: '#1D2230',
+                            600: '#2A3144'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Montserrat"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF6D1 0%, #D4AF37 50%, #997A15 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-glow {
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.22);
+        }
+        .glass-panel {
+            background: rgba(18, 21, 31, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .glass-panel-hover:hover {
+            border-color: rgba(212, 175, 55, 0.65);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.65), 0 0 30px rgba(212, 175, 55, 0.3);
+            transform: translateY(-4px);
+        }
+        .badge-pulse {
+            animation: pulse-glow 2.5s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 12px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 24px rgba(212, 175, 55, 0.7); }
+        }
+        .vehicle-img-container {
+            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, rgba(11, 13, 19, 0.95) 70%);
+        }
+
+        /* ===== Backward-compat styles for injected content ===== */
+        .post-content { max-width: 720px; margin: 0 auto; }
+        .post-content h2 { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: #fff; margin: 34px 0 14px; line-height: 1.2; }
+        .post-content h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: #fff; margin: 24px 0 10px; }
+        .post-content p { color: rgba(226,232,240,.85); font-size: .95rem; line-height: 1.9; margin-bottom: 18px; }
+        .post-content ul, .post-content ol { padding-left: 22px; margin-bottom: 18px; }
+        .post-content li { color: rgba(226,232,240,.85); font-size: .9rem; line-height: 1.8; margin-bottom: 6px; }
+        .post-content a { color: #E6C363; text-decoration: underline; }
+        .page-content { color: rgba(226,232,240,.85); font-size: .95rem; line-height: 1.8; }
+        .page-content .gold, .page-content .gradient-text { color: #D4AF37; }
+        .page-content a { color: #E6C363; text-decoration: underline; }
+        .text-gold { color: #D4AF37; }
+        .text-dark { color: #0B0D13; }
+
+        .blog-card {
+            background: rgba(18,21,31,.88);
+            border: 1px solid rgba(212,175,55,.2);
+            border-radius: 24px;
+            padding: 26px;
+            display: flex;
+            gap: 18px;
+            transition: all .3s ease;
+        }
+        .blog-card:hover {
+            border-color: rgba(212,175,55,.65);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0,0,0,.65);
+        }
+        .blog-card .thumb { font-size: 2.4rem; line-height: 1; flex-shrink: 0; }
+        .blog-card .cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #E6C363; font-weight: 700; }
+        .blog-card h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: #fff; font-weight: 700; margin: 4px 0 8px; line-height: 1.35; }
+        .blog-card p { color: #94a3b8; font-size: 12px; line-height: 1.7; }
+        .blog-card .meta { color: #64748b; font-size: 11px; letter-spacing: 1px; margin-top: 8px; }
+        .blog-card .article-content { display: none; }
+        .blog-card .btn { display: inline-block; background: linear-gradient(90deg, #D4AF37, #AA8C2C); color: #000; font-weight: 800; text-transform: uppercase; font-size: 10px; letter-spacing: 1.5px; padding: 9px 18px; border-radius: 9999px; margin-top: 12px; text-decoration: none; }
+        .blog-card .btn:hover { opacity: .9; }
+        .fade-up { animation: fadeUp .6s ease both; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+<body class="bg-dark-950 text-slate-100 font-sans antialiased selection:bg-gold-500 selection:text-black min-h-screen flex flex-col">
+
+    <h1 class="seo-static">Houston Limo Service | AvaLimo Luxury Chauffeur & Airport Transportation</h1>
+    <div class="seo-static">
+      <h2>Luxury Limo Service in Houston, TX</h2>
+      <p>AvaLimo is Houston's premier limousine company, serving Greater Houston and Galveston since 2008. Our professional chauffeurs provide a comfortable, reliable ride for every occasion: airport transportation to IAH and Hobby, corporate travel for executives and business clients, wedding limousines, prom and party events, night on the town, and cruise ship transfers to the Port of Galveston.</p>
+      <h2>Airport Transportation — IAH &amp; Hobby, Flat Rates</h2>
+      <p>We specialize in Houston airport transportation with flat rates and zero surge pricing. Our chauffeurs track your flight and meet you on time, every time. Service to George Bush Intercontinental Airport (IAH), William P. Hobby Airport (HOU), and Galveston cruise terminals.</p>
+      <h2>Corporate &amp; Executive Transportation</h2>
+      <p>Impress your business clients with our executive black car service. We provide corporate accounts, priority dispatch, and professional chauffeurs for meetings, conferences, and hourly as-directed travel across Houston.</p>
+      <h2>Our Fleet: Escalades, Mercedes Sprinters &amp; Luxury Sedans</h2>
+      <p>Choose from Cadillac Escalades, Mercedes Sprinter vans, luxury sedans, and SUVs — seating individuals, families, and groups. Every vehicle is detailed, insured, and chauffeur-driven for your comfort and safety.</p>
+      <h2>Group &amp; Party Transportation</h2>
+      <p>Planning a wedding, prom, quinceañera, concert, or group event? Our party buses and Sprinter vans keep your group together and on schedule. Galveston cruise transfer packages available for families and groups of any size.</p>
+      <p>Book online in minutes or call (832) 567-8050 — flat rates, no surge, always on time. AvaLimo: The Premier Houston Limo Service.</p>
+    </div>
+    <style>
+      .seo-static {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    </style>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
