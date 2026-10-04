@@ -190,6 +190,36 @@ def log_to_google_sheets(sheet_name: str, data: dict):
         print(f"Google Sheets log failed ({sheet_name}): {e}")
 
 
+def send_imessage(phone: str, message: str):
+    """Send iMessage via the iMessage bridge service"""
+    bridge_url = os.environ.get("IMESSAGE_BRIDGE_URL", "")
+    bridge_token = os.environ.get("IMESSAGE_BRIDGE_TOKEN", "")
+    
+    if not bridge_url or not bridge_token:
+        print("iMessage bridge not configured — skipping iMessage")
+        return False
+    
+    try:
+        payload = json.dumps({
+            "phone": phone,
+            "message": message,
+            "token": bridge_token
+        })
+        req = urllib.request.Request(
+            f"{bridge_url}/send",
+            data=payload.encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read())
+            print(f"iMessage sent to {phone}: {result.get('status', 'unknown')}")
+            return True
+    except Exception as e:
+        print(f"Failed to send iMessage to {phone}: {e}")
+        return False
+
+
 # ── Read old index.html as Jinja2 template ──────────────────────────────
 _INDEX_PATH = os.path.join(os.path.dirname(__file__), "index.html")
 BASE_HTML = open(_INDEX_PATH, encoding="utf-8").read() if os.path.exists(_INDEX_PATH) else "<h1>Site under construction</h1>"
@@ -699,6 +729,28 @@ def book_ride():
     data = request.get_json() or {}
     send_booking_email(data)
     log_to_google_sheets("Bookings", data)
+    
+    # Send iMessage confirmation if phone number provided
+    phone = data.get("phone", "")
+    if phone:
+        name = data.get("name", "Customer")
+        confirmation_id = data.get("confirmationId", "N/A")
+        pickup = data.get("pickup", "")
+        dropoff = data.get("dropoff", "")
+        date = data.get("date", "")
+        time = data.get("time", "")
+        
+        imessage = f"""Hi {name}! Your AvaLimo reservation request has been received.
+
+Ref: {confirmation_id}
+Pickup: {pickup}
+Dropoff: {dropoff}
+Date: {date} at {time}
+
+Our dispatch team will confirm availability and chauffeur assignment shortly. Call (832) 567-8050 for immediate assistance."""
+        
+        send_imessage(phone, imessage)
+    
     threading.Thread(target=_fire_n8n_reminder, args=(data,), daemon=True).start()
     threading.Thread(target=_fire_n8n_review, args=(data,), daemon=True).start()
     return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})

@@ -31,11 +31,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     name: '',
     email: '',
     phone: '',
-    date: () => {
+    date: (() => {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       return tomorrow.toISOString().split('T')[0];
-    },
+    })(),
     time: '14:30',
     pickup: 'George Bush Intercontinental Airport (IAH)',
     dropoff: 'Downtown Houston (Galleria / Medical Center)',
@@ -51,6 +51,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
 
   const [submittedBooking, setSubmittedBooking] = useState<any | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState<string>('');
 
   // Calculate dynamic travel time and route estimate
   const routeEstimate: RouteEstimate = useMemo(() => {
@@ -191,7 +193,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const confirmationId = `AVA-${Math.floor(100000 + Math.random() * 900000)}`;
     const submission = {
@@ -207,13 +209,32 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     };
 
     // Dispatch to the production backend (email + Google Sheets + n8n follow-ups)
-    fetch('/api/book', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(submission),
-    }).catch((err) => console.error('Booking dispatch failed:', err));
+    setSubmitStatus('sending');
+    setSubmitError('');
 
-    setSubmittedBooking(submission);
+    try {
+      const response = await fetch('/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submission),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Booking response:', data);
+
+      setSubmitStatus('success');
+      setSubmittedBooking(submission);
+    } catch (err) {
+      console.error('Booking dispatch failed:', err);
+      setSubmitStatus('error');
+      setSubmitError(err instanceof Error ? err.message : 'Failed to submit booking. Please call dispatch directly.');
+      // Still show the modal with booking details even on error
+      setSubmittedBooking(submission);
+    }
   };
 
   return (
@@ -668,9 +689,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
               <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
-                  className="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold py-4 px-10 rounded-lg text-xs tracking-widest uppercase transition-all shadow-xl shadow-amber-900/30 hover:scale-105"
+                  disabled={submitStatus === 'sending'}
+                  className="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold py-4 px-10 rounded-lg text-xs tracking-widest uppercase transition-all shadow-xl shadow-amber-900/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  Confirm & Request Reservation
+                  {submitStatus === 'sending' ? 'Submitting...' : 'Confirm & Request Reservation'}
                 </button>
               </div>
             </div>
@@ -699,21 +721,27 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       {/* Booking Confirmation Modal */}
       {submittedBooking && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setSubmittedBooking(null)}></div>
-          
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => {
+            setSubmittedBooking(null);
+            setSubmitStatus('idle');
+            setSubmitError('');
+          }}></div>
+
           <div className="relative bg-neutral-900 w-full max-w-lg rounded-2xl shadow-2xl border border-amber-500/40 p-6 sm:p-8 text-center animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500 text-amber-400 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 size={36} />
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${submitStatus === 'success' ? 'bg-amber-500/20 border border-amber-500 text-amber-400' : 'bg-red-500/20 border border-red-500 text-red-400'}`}>
+              {submitStatus === 'success' ? <CheckCircle2 size={36} /> : <AlertCircle size={36} />}
             </div>
 
             <span className="text-xs uppercase tracking-widest text-amber-400 font-bold">
-              Reservation Request Received
+              {submitStatus === 'success' ? 'Reservation Request Received' : 'Submission Error'}
             </span>
             <h3 className="text-2xl font-serif font-bold text-white mt-1 mb-2">
-              Thank You, {submittedBooking.name}!
+              {submitStatus === 'success' ? `Thank You, ${submittedBooking.name}!` : 'Request Recorded'}
             </h3>
             <p className="text-gray-300 text-xs mb-6">
-              Your reservation has been dispatched to our 24/7 concierge desk. A confirmation SMS & email will arrive momentarily.
+              {submitStatus === 'success'
+                ? 'Your reservation has been dispatched to our 24/7 concierge desk. A confirmation SMS & email will arrive momentarily.'
+                : `We encountered an issue: ${submitError}. Your request details are saved below - please call dispatch to confirm.`}
             </p>
 
             <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 text-left text-xs space-y-2 mb-6">
