@@ -192,23 +192,19 @@ def log_to_google_sheets(sheet_name: str, data: dict):
 
 def send_imessage(phone: str, message: str):
     """Send iMessage via the iMessage bridge service"""
-    bridge_url = os.environ.get("IMESSAGE_BRIDGE_URL", "")
-    bridge_token = os.environ.get("IMESSAGE_BRIDGE_TOKEN", "")
-    
-    if not bridge_url or not bridge_token:
-        print("iMessage bridge not configured — skipping iMessage")
-        return False
+    bridge_url = os.environ.get("IMESSAGE_BRIDGE_URL", "https://frosted-cleft-stoplight.ngrok-free.dev")
+    bridge_token = os.environ.get("IMESSAGE_BRIDGE_TOKEN", "pbmewDTsthwFbfGXkCcjr4hWEqazNHZ9qN_MdhHT_Fs")
     
     try:
         payload = json.dumps({
             "phone": phone,
-            "message": message,
+            "body": message,
             "token": bridge_token
         })
         req = urllib.request.Request(
-            f"{bridge_url}/send",
+            f"{bridge_url}/send-imessage",
             data=payload.encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {bridge_token}"},
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -754,6 +750,23 @@ Our dispatch team will confirm availability and chauffeur assignment shortly. Ca
     threading.Thread(target=_fire_n8n_reminder, args=(data,), daemon=True).start()
     threading.Thread(target=_fire_n8n_review, args=(data,), daemon=True).start()
     return jsonify({"status": "ok", "message": "Booking received! We'll confirm your ride shortly."})
+
+
+@app.route("/api/send-imessage", methods=["POST"])
+def send_imessage_endpoint():
+    """Simple endpoint to send iMessage (bypasses booking logic)"""
+    data = request.get_json() or {}
+    phone = data.get("phone", "")
+    message = data.get("message", "")
+    
+    if not phone or not message:
+        return jsonify({"status": "error", "message": "phone and message required"}), 400
+    
+    result = send_imessage(phone, message)
+    if result:
+        return jsonify({"status": "ok", "message": "iMessage sent"})
+    else:
+        return jsonify({"status": "error", "message": "Failed to send iMessage"}), 500
 
 
 @app.route("/api/contact", methods=["POST"])
