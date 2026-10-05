@@ -26,6 +26,22 @@ except ImportError:
 
 app = Flask(__name__)
 
+
+@app.before_request
+def redirect_to_canonical_url():
+    if request.method not in ("GET", "HEAD"):
+        return None
+
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", request.scheme)
+    scheme = forwarded_proto.split(",", 1)[0].strip().lower()
+    canonical_path = request.path.rstrip("/") or "/"
+    if request.host.lower() == "avalimo.net" and scheme == "https" and request.path == canonical_path:
+        return None
+
+    query = f"?{request.query_string.decode('latin-1')}" if request.query_string else ""
+    return redirect(f"https://avalimo.net{canonical_path}{query}", code=301)
+
+
 # load .env for all configs
 _env_path = os.path.join(os.path.dirname(__file__), ".env")
 if os.path.exists(_env_path):
@@ -1313,7 +1329,7 @@ gtag('js',new Date());gtag('config','{{ ga_id }}');
 // ─── Router ───
 var pages = document.querySelectorAll('.page');
 var pageMeta = {
-  '/': { title:'AvaLimo — Houston Premier Limo Service | IAH & Hobby Airport Transfers', desc:'Houston\'s most trusted chauffeur service. Airport transfers for IAH & Hobby, corporate travel, weddings, events — 24/7 with zero surge pricing.' },
+  '/': { title:'Houston Limo & Chauffeur Service | AvaLimo', desc:'Book Houston limo and chauffeur service for IAH and Hobby airport transfers, corporate travel, weddings and events. Flat rates and 24/7 service.' },
   '/services': { title:'Services — AvaLimo | Houston Limo & Chauffeur Service', desc:'Airport transfers, corporate travel, wedding limo, event transportation & more. Houston\'s premium chauffeur service — 24/7.' },
   '/fleet': { title:'Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans', desc:'Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston\'s finest luxury fleet for any occasion.' },
   '/book': { title:'Book a Ride — AvaLimo | Online Reservation', desc:'Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7.' },
@@ -1410,6 +1426,10 @@ function showPage(path,noFade){
   if(ogTitle) ogTitle.setAttribute('content',meta.title);
   var ogDesc=document.querySelector('meta[property="og:description"]');
   if(ogDesc) ogDesc.setAttribute('content',meta.desc);
+  var twitterTitle=document.querySelector('meta[name="twitter:title"]');
+  if(twitterTitle) twitterTitle.setAttribute('content',meta.title);
+  var twitterDesc=document.querySelector('meta[name="twitter:description"]');
+  if(twitterDesc) twitterDesc.setAttribute('content',meta.desc);
   // init Square card on deposit page
   if(path==='/deposit') setTimeout(initSquareCard,300);
 }
@@ -1881,9 +1901,8 @@ def robots_txt():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     pages = ["", "services", "fleet", "book", "blog", "flight-status", "contact", "faq", "policy", "deposit", "sugar-land-limo", "the-woodlands-limo", "katy-limo", "missouri-city-limo", "pearland-limo", "galveston-limo", "league-city-limo", "baytown-limo", "spring-limo", "cypress-limo"]
-    today = __import__('datetime').date.today().isoformat()
-    static_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>{"1.0" if not p else "0.8"}</priority></url>' for p in pages)
-    blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' for p in BLOG_POSTS if p.get("slug"))
+    static_urls = "\n".join(f'<url><loc>https://avalimo.net/{p}</loc><changefreq>weekly</changefreq><priority>{"1.0" if not p else "0.8"}</priority></url>' for p in pages)
+    blog_urls = "\n".join(f'<url><loc>https://avalimo.net/blog/{p["slug"]}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>' for p in BLOG_POSTS if p.get("slug"))
     xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {static_urls}
@@ -1895,7 +1914,7 @@ def sitemap_xml():
 @app.route("/<path:path>")
 def index(path):
     page_meta = {
-        "": { "title": "AvaLimo Houston | Luxury Chauffeur & Limo Service | IAH & Hobby", "desc": "Houston's trusted luxury chauffeur service. Flat-rate airport transfers for IAH & Hobby, corporate travel, weddings, events & Galveston cruises — 24/7, zero surge pricing." },
+        "": { "title": "Houston Limo & Chauffeur Service | AvaLimo", "desc": "Book Houston limo and chauffeur service for IAH and Hobby airport transfers, corporate travel, weddings and events. Flat rates and 24/7 service." },
         "services": { "title": "Services — AvaLimo | Houston Limo & Chauffeur Service", "desc": "Airport transfers, corporate travel, wedding limo, event transportation & more. Houston's premium chauffeur service — 24/7." },
         "fleet": { "title": "Our Fleet — AvaLimo | Luxury Sedans, SUVs & Sprinter Vans", "desc": "Mercedes S-Class, Cadillac Escalade & Mercedes Sprinter. Houston's finest luxury fleet for any occasion." },
         "book": { "title": "Book a Ride — AvaLimo | Online Reservation", "desc": "Reserve your Houston luxury chauffeur service online in 30 seconds. Airport transfers, corporate & events — 24/7." },
@@ -1931,7 +1950,7 @@ def index(path):
     if path in city_aliases:
         return redirect(f"/{city_aliases[path]}", 301)
     meta = page_meta.get(path, page_meta[""])
-    canonical_path = f"/{path}" if path else ""
+    canonical_path = f"/{path}" if path else "/"
     if path.startswith("blog/") and len(path) > 5:
         slug = path[5:]
         for p in BLOG_POSTS:
