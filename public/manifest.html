@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#102a43" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Trip Manifest" />
+  <link rel="icon" href="data:," />
+  <title>Trip Manifest Share</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #edf2f6;
+      --surface: #ffffff;
+      --surface-soft: #f6f8fa;
+      --ink: #122333;
+      --muted: #5d6d7b;
+      --line: #d6dee5;
+      --line-strong: #b8c5cf;
+      --navy: #102a43;
+      --navy-hover: #173b5c;
+      --gold: #c7963b;
+      --gold-soft: #f8edda;
+      --danger: #a43b36;
+      --success: #246b4b;
+      --shadow: 0 18px 48px rgba(16, 42, 67, .10);
+      --radius-lg: 22px;
+      --radius-md: 13px;
+      --radius-sm: 9px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #0b141c;
+        --surface: #13212c;
+        --surface-soft: #182936;
+        --ink: #f1f5f7;
+        --muted: #b6c2cc;
+        --line: #314654;
+        --line-strong: #526777;
+        --navy: #e6edf3;
+        --navy-hover: #ffffff;
+        --gold: #e0b25f;
+        --gold-soft: #3a311f;
+        --danger: #ff9b94;
+        --success: #84d5af;
+        --shadow: 0 20px 58px rgba(0, 0, 0, .28);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 0; background: var(--page); }
+    body {
+      margin: 0;
+      min-width: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--navy) 5%, var(--page)) 0, var(--page) 340px);
+      color: var(--ink);
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: max(22px, env(safe-area-inset-top)) 22px max(34px, env(safe-area-inset-bottom));
+    }
+    .company-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin: 4px 0 24px;
+      padding: 0 2px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .company-name {
+      margin: 0;
+      color: var(--navy);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 4vw, 46px);
+      font-weight: 700;
+      letter-spacing: -.035em;
+      line-height: 1;
+    }
+    .company-name span { color: var(--gold); }
+    .company-contact {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .company-contact a { color: inherit; text-decoration: none; }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(340px, .94fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .panel {
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .form-panel { border-radius: var(--radius-lg); overflow: hidden; }
+    .panel-heading {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-heading h1,
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -.02em;
+    }
+    .panel-heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .voice-box {
+      margin: 20px 24px 0;
+      padding: 15px;
+      background: var(--gold-soft);
+      border-radius: var(--radius-md);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+    .mic-button {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--navy);
+      color: var(--surface);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .18s ease, box-shadow .18s ease;
+    }
+    .mic-button:hover { background: var(--navy-hover); }
+    .mic-button:focus-visible { outline: 3px solid color-mix(in srgb, var(--gold) 65%, transparent); outline-offset: 3px; }
+    .mic-button.listening {
+      background: var(--danger);
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--danger) 16%, transparent);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 11px color-mix(in srgb, var(--danger) 5%, transparent); } }
+    .mic-button svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .voice-title { display: block; font-size: 14px; font-weight: 800; color: var(--ink); }
+    .voice-help { display: block; margin-top: 2px; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+    .transcript {
+      display: none;
+      grid-column: 1 / -1;
+      margin: 2px 0 0;
+      padding: 10px 11px;
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--surface) 78%, transparent);
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .transcript.visible { display: block; }
+    form { padding: 20px 24px 24px; }
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    label { display: block; margin: 0 0 7px; font-size: 12.5px; font-weight: 800; color: var(--ink); }
+    .optional { color: var(--muted); font-weight: 500; }
+    input, textarea, select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+    textarea { min-height: 82px; resize: vertical; line-height: 1.45; }
+    input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 72%, transparent); }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 18%, transparent);
+    }
+    .actions { display: flex; gap: 10px; margin-top: 20px; }
+    .button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 17px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .16s ease, color .16s ease, border-color .16s ease;
+    }
+    .button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; flex: 0 0 auto; }
+    .button-primary { flex: 1; background: var(--navy); color: var(--surface); }
+    .button-primary:hover { background: var(--navy-hover); }
+    .button-secondary { background: var(--surface-soft); color: var(--ink); border: 1px solid var(--line); }
+    .button-secondary:hover { border-color: var(--line-strong); }
+    .preview-panel { border-radius: 4px; overflow: hidden; position: sticky; top: 20px; }
+    .manifest-paper { padding: 30px; min-height: 500px; }
+    .manifest-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      padding-bottom: 18px;
+      border-bottom: 3px solid var(--navy);
+    }
+    .manifest-brand {
+      color: var(--navy);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -.025em;
+    }
+    .manifest-brand span { color: var(--gold); }
+    .manifest-contact { text-align: right; color: var(--muted); font-size: 11.5px; line-height: 1.55; }
+    .manifest-title-row { display: flex; justify-content: space-between; gap: 18px; align-items: baseline; margin: 20px 0 15px; }
+    .manifest-title-row h2 { margin: 0; font-size: 17px; letter-spacing: .05em; text-transform: uppercase; }
+    .manifest-ref { color: var(--muted); font-size: 11px; }
+    .route {
+      background: var(--surface-soft);
+      border-radius: var(--radius-md);
+      padding: 17px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 13px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .route small { display: block; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    .route strong { display: block; margin-top: 5px; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+    .route-arrow { color: var(--gold); font-size: 22px; }
+    .manifest-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .manifest-item { min-width: 0; padding: 12px 13px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .manifest-item.wide { grid-column: 1 / -1; }
+    .manifest-item dt { margin: 0 0 4px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+    .manifest-item dd { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+    .empty { color: var(--muted); font-weight: 500; }
+    .share-strip { display: grid; grid-template-columns: 1fr 1.2fr; gap: 10px; padding: 16px; background: var(--surface-soft); border-top: 1px solid var(--line); }
+    .share-strip .button { width: 100%; }
+    .sms { background: var(--success); color: #fff; }
+    .pdf { background: var(--gold); color: #17212a; }
+    .status { min-height: 21px; margin: 10px 2px 0; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+    .status.error { color: var(--danger); }
+    .install-note {
+      margin: 22px 2px 0;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .install-note svg { width: 20px; height: 20px; flex: 0 0 auto; color: var(--gold); fill: none; stroke: currentColor; stroke-width: 1.8; }
+    .install-note strong { color: var(--ink); }
+    .screen-reader { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @media (max-width: 820px) {
+      .app { padding-left: 14px; padding-right: 14px; }
+      .company-head { align-items: flex-start; }
+      .workspace { grid-template-columns: 1fr; }
+      .preview-panel { position: static; }
+    }
+    @media (max-width: 560px) {
+      .app { padding-top: max(16px, env(safe-area-inset-top)); }
+      .company-head { display: block; margin-bottom: 16px; padding: 4px 4px 15px; }
+      .company-name { font-size: 32px; }
+      .company-contact { justify-content: flex-start; margin-top: 10px; font-size: 12.5px; }
+      .panel-heading { padding: 18px 18px 15px; }
+      .voice-box { margin: 16px 18px 0; }
+      form { padding: 17px 18px 20px; }
+      .field-grid { grid-template-columns: 1fr; gap: 13px; }
+      .field.full { grid-column: auto; }
+      .actions { flex-direction: column; }
+      .actions .button { width: 100%; }
+      .manifest-paper { padding: 22px 19px; min-height: 0; }
+      .manifest-top { display: block; }
+      .manifest-contact { margin-top: 8px; text-align: left; }
+      .route { grid-template-columns: 1fr; }
+      .route-arrow { transform: rotate(90deg); line-height: 1; }
+      .manifest-grid { grid-template-columns: 1fr; }
+      .manifest-item.wide { grid-column: auto; }
+      .share-strip { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+    @media print {
+      body { background: #fff; }
+      .company-head, .form-panel, .share-strip, .install-note { display: none !important; }
+      .app { width: 100%; padding: 0; }
+      .workspace { display: block; }
+      .preview-panel { border: 0; box-shadow: none; }
+      .manifest-paper { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="company-head">
+      <p class="company-name">Ava<span>Limo</span></p>
+      <div class="company-contact">
+        <a href="tel:+18325678050">(832) 567-8050</a>
+        <a href="mailto:adam@avalimo.net">adam@avalimo.net</a>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <section class="panel form-panel" aria-labelledby="entry-title">
+        <div class="panel-heading">
+          <h1 id="entry-title">New trip manifest</h1>
+          <p>Enter the trip details, or dictate them in one sentence.</p>
+        </div>
+
+        <div class="voice-box">
+          <button class="mic-button" id="micButton" type="button" aria-label="Start voice dictation" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="12" rx="4"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"></path></svg>
+          </button>
+          <div>
+            <span class="voice-title" id="voiceTitle">Dictate trip details</span>
+            <span class="voice-help">Try: “Client John, pickup IAH, drop-off Downtown, United flight 123, charge 145, driver Mike, Escalade.”</span>
+          </div>
+          <p class="transcript" id="transcript" aria-live="polite"></p>
+        </div>
+
+        <form id="manifestForm" novalidate>
+          <div class="field-grid">
+            <div class="field">
+              <label for="tripDate">Date</label>
+              <input id="tripDate" name="tripDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="pickupTime">Pickup time</label>
+              <input id="pickupTime" name="pickupTime" type="time" />
+            </div>
+            <div class="field full">
+              <label for="clientName">Client name</label>
+              <input id="clientName" name="clientName" autocomplete="name" placeholder="Client or passenger" />
+            </div>
+            <div class="field full">
+              <label for="pickup">Pickup location</label>
+              <input id="pickup" name="pickup" autocomplete="street-address" placeholder="Pickup address or terminal" />
+            </div>
+            <div class="field full">
+              <label for="dropoff">Drop-off location</label>
+              <input id="dropoff" name="dropoff" placeholder="Drop-off address or terminal" />
+            </div>
+            <div class="field">
+              <label for="airline">Airline</label>
+              <input id="airline" name="airline" placeholder="United" />
+            </div>
+            <div class="field">
+              <label for="flight">Flight number</label>
+              <input id="flight" name="flight" autocapitalize="characters" placeholder="UA 123" />
+            </div>
+            <div class="field">
+              <label for="charges">Charges ($)</label>
+              <input id="charges" name="charges" type="number" min="0" step="0.01" inputmode="decimal" placeholder="145.00" />
+            </div>
+            <div class="field">
+              <label for="driver">Driver name</label>
+              <input id="driver" name="driver" placeholder="Driver" />
+            </div>
+            <div class="field full">
+              <label for="vehicle">Vehicle type</label>
+              <select id="vehicle" name="vehicle">
+                <option value="">Select a vehicle</option>
+                <option>Mercedes S-Class</option>
+                <option>Cadillac Escalade</option>
+                <option>GMC Yukon XL</option>
+                <option>Mercedes Sprinter</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="notes">Notes <span class="optional">(optional)</span></label>
+              <textarea id="notes" name="notes" placeholder="Meet-and-greet, terminal, luggage, or other details"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="button button-primary" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4 4L19 6.5"></path></svg>
+              Generate manifest
+            </button>
+            <button class="button button-secondary" id="clearButton" type="button">Clear</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel preview-panel" id="preview" aria-labelledby="manifest-heading">
+        <div class="manifest-paper">
+          <div class="manifest-top">
+            <div class="manifest-brand">Ava<span>Limo</span></div>
+            <div class="manifest-contact">(832) 567-8050<br />adam@avalimo.net<br />Houston, Texas</div>
+          </div>
+          <div class="manifest-title-row">
+            <h2 id="manifest-heading">Trip Manifest</h2>
+            <span class="manifest-ref" id="manifestRef">Ready to generate</span>
+          </div>
+          <div class="route">
+            <div><small>Pickup</small><strong id="viewPickup" class="empty">Not entered</strong></div>
+            <div class="route-arrow" aria-hidden="true">→</div>
+            <div><small>Drop-off</small><strong id="viewDropoff" class="empty">Not entered</strong></div>
+          </div>
+          <dl class="manifest-grid">
+            <div class="manifest-item"><dt>Date</dt><dd id="viewDate" class="empty">Not entered</dd></div>
+            <div class="manifest-item"><dt>Pickup time</dt><dd id="viewTime" class="empty">Not entered</dd></div>
+            <div class="manifest-item wide"><dt>Client</dt><dd id="viewClient" class="empty">Not entered</dd></div>
+            <div class="manifest-item"><dt>Airline</dt><dd id="viewAirline" class="empty">Not entered</dd></div>
+            <div class="manifest-item"><dt>Flight</dt><dd id="viewFlight" class="empty">Not entered</dd></div>
+            <div class="manifest-item"><dt>Charges</dt><dd id="viewCharges" class="empty">Not entered</dd></div>
+            <div class="manifest-item"><dt>Driver</dt><dd id="viewDriver" class="empty">Not entered</dd></div>
+            <div class="manifest-item wide"><dt>Vehicle</dt><dd id="viewVehicle" class="empty">Not entered</dd></div>
+            <div class="manifest-item wide"><dt>Notes</dt><dd id="viewNotes" class="empty">None</dd></div>
+          </dl>
+        </div>
+        <div class="share-strip">
+          <a class="button sms" id="smsButton" href="sms:&body=" aria-label="Open Messages with manifest text">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H6l-4 2 1.4-4.2A9 9 0 1 1 21 12Z"></path></svg>
+            SMS / iMessage
+          </a>
+          <button class="button pdf" id="pdfButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path><path d="M14 2v6h6M8 15h8M8 18h6"></path></svg>
+            Email / Share PDF
+          </button>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <aside class="install-note">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M5 13v7h14v-7"></path></svg>
+      <div><strong>Add it to your iPhone:</strong> open this page in Safari, tap the Share button, then choose <strong>Add to Home Screen</strong>.</div>
+    </aside>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var form = document.getElementById('manifestForm');
+      var status = document.getElementById('status');
+      var smsButton = document.getElementById('smsButton');
+      var pdfButton = document.getElementById('pdfButton');
+      var micButton = document.getElementById('micButton');
+      var voiceTitle = document.getElementById('voiceTitle');
+      var transcriptEl = document.getElementById('transcript');
+      var fields = ['tripDate','pickupTime','clientName','pickup','dropoff','airline','flight','charges','driver','vehicle','notes'];
+      var generated = false;
+      var recognition = null;
+      var listening = false;
+
+      function byId(id) { return document.getElementById(id); }
+      function value(id) { return byId(id).value.trim(); }
+      function cleanText(input) { return String(input || '').replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+      function setStatus(message, error) {
+        status.textContent = message || '';
+        status.classList.toggle('error', !!error);
+      }
+      function formatDate(raw) {
+        if (!raw) return '';
+        var parts = raw.split('-');
+        if (parts.length !== 3) return raw;
+        return parts[1] + '/' + parts[2] + '/' + parts[0];
+      }
+      function formatTime(raw) {
+        if (!raw) return '';
+        var p = raw.split(':');
+        var h = parseInt(p[0], 10);
+        var suffix = h >= 12 ? 'PM' : 'AM';
+        var hour = h % 12 || 12;
+        return hour + ':' + p[1] + ' ' + suffix;
+      }
+      function money(raw) {
+        if (!raw) return '';
+        var n = Number(raw);
+        return Number.isFinite(n) ? '$' + n.toFixed(2) : '$' + raw;
+      }
+      function collect() {
+        return {
+          date: formatDate(value('tripDate')),
+          time: formatTime(value('pickupTime')),
+          client: value('clientName'),
+          pickup: value('pickup'),
+          dropoff: value('dropoff'),
+          airline: value('airline'),
+          flight: value('flight').toUpperCase(),
+          charges: money(value('charges')),
+          driver: value('driver'),
+          vehicle: value('vehicle'),
+          notes: value('notes')
+        };
+      }
+      function show(id, text, fallback) {
+        var el = byId(id);
+        el.textContent = text || fallback;
+        el.classList.toggle('empty', !text);
+      }
+      function manifestText(d) {
+        var lines = [
+          'AVALIMO — TRIP MANIFEST',
+          '(832) 567-8050 | adam@avalimo.net',
+          '',
+          'Date: ' + (d.date || '—'),
+          'Pickup Time: ' + (d.time || '—'),
+          'Client: ' + (d.client || '—'),
+          'Pickup: ' + (d.pickup || '—'),
+          'Drop-off: ' + (d.dropoff || '—'),
+          'Airline: ' + (d.airline || '—'),
+          'Flight: ' + (d.flight || '—'),
+          'Charges: ' + (d.charges || '—'),
+          'Driver: ' + (d.driver || '—'),
+          'Vehicle: ' + (d.vehicle || '—')
+        ];
+        if (d.notes) lines.push('Notes: ' + d.notes);
+        return lines.join('\n');
+      }
+      function updatePreview(scrollToIt) {
+        var d = collect();
+        show('viewDate', d.date, 'Not entered');
+        show('viewTime', d.time, 'Not entered');
+        show('viewClient', d.client, 'Not entered');
+        show('viewPickup', d.pickup, 'Not entered');
+        show('viewDropoff', d.dropoff, 'Not entered');
+        show('viewAirline', d.airline, 'Not entered');
+        show('viewFlight', d.flight, 'Not entered');
+        show('viewCharges', d.charges, 'Not entered');
+        show('viewDriver', d.driver, 'Not entered');
+        show('viewVehicle', d.vehicle, 'Not entered');
+        show('viewNotes', d.notes, 'None');
+        var refBits = [d.date, d.client].filter(Boolean);
+        byId('manifestRef').textContent = refBits.length ? refBits.join(' · ') : 'Ready to share';
+        smsButton.setAttribute('href', 'sms:&body=' + encodeURIComponent(manifestText(d)));
+        generated = true;
+        setStatus('Manifest generated. Choose Messages or share the PDF.', false);
+        if (scrollToIt && window.matchMedia('(max-width: 820px)').matches) {
+          byId('preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+      function ensureGenerated() {
+        if (!generated) updatePreview(false);
+        return collect();
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        updatePreview(true);
+      });
+      form.addEventListener('input', function () { generated = false; setStatus('', false); });
+      form.addEventListener('change', function () { generated = false; setStatus('', false); });
+      smsButton.addEventListener('click', function () {
+        var d = ensureGenerated();
+        smsButton.setAttribute('href', 'sms:&body=' + encodeURIComponent(manifestText(d)));
+        setStatus('Opening Messages with the manifest filled in…', false);
+      });
+      byId('clearButton').addEventListener('click', function () {
+        form.reset();
+        setDefaultDate();
+        generated = false;
+        updatePreview(false);
+        generated = false;
+        byId('manifestRef').textContent = 'Ready to generate';
+        setStatus('', false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      function parseVoice(text) {
+        var normalized = cleanText(text).replace(/\bdrop off\b/gi, 'drop-off').replace(/\bpick up\b/gi, 'pickup');
+        var specs = [
+          { id: 'clientName', keys: ['client name', 'client', 'passenger'] },
+          { id: 'pickup', keys: ['pickup location', 'pickup', 'from'] },
+          { id: 'dropoff', keys: ['drop-off location', 'drop-off', 'destination', 'to'] },
+          { id: 'airline', keys: ['airline'] },
+          { id: 'flight', keys: ['flight number', 'flight'] },
+          { id: 'charges', keys: ['charges', 'charge', 'fare', 'price'] },
+          { id: 'driver', keys: ['driver name', 'driver'] },
+          { id: 'vehicle', keys: ['vehicle type', 'vehicle', 'car type', 'car'] },
+          { id: 'notes', keys: ['notes', 'note'] }
+        ];
+        var keyParts = [];
+        specs.forEach(function (s) { s.keys.forEach(function (k) { keyParts.push(k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')); }); });
+        keyParts.sort(function (a,b) { return b.length - a.length; });
+        var boundary = '(?=\\s*(?:,|;|\\.|\\band\\b)?\\s*(?:' + keyParts.join('|') + ')\\b|$)';
+        specs.forEach(function (spec) {
+          var keyRegex = spec.keys.slice().sort(function(a,b){return b.length-a.length;}).map(function(k){return k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('|');
+          var re = new RegExp('(?:^|[,;.\\s])(?:' + keyRegex + ')\\s*(?:is|of|at|:)?\\s+(.+?)' + boundary, 'i');
+          var match = normalized.match(re);
+          if (match && cleanText(match[1])) byId(spec.id).value = cleanText(match[1]).replace(/^(?:is|of|at)\s+/i, '');
+        });
+
+        var knownVehicles = [
+          ['Mercedes S-Class', /(?:mercedes\s+)?s[ -]?class/i],
+          ['Cadillac Escalade', /(?:cadillac\s+)?escalade/i],
+          ['GMC Yukon XL', /(?:gmc\s+)?yukon(?:\s+xl)?/i],
+          ['Mercedes Sprinter', /(?:mercedes\s+)?sprinter/i]
+        ];
+        knownVehicles.forEach(function (pair) { if (pair[1].test(normalized)) byId('vehicle').value = pair[0]; });
+
+        if (!value('airline')) {
+          var airlines = ['United','Delta','American','Southwest','JetBlue','Spirit','Frontier','Emirates','Qatar','Lufthansa','British Airways','Air Canada','Alaska'];
+          airlines.some(function (name) { if (new RegExp('\\b' + name.replace(' ', '\\s+') + '\\b', 'i').test(normalized)) { byId('airline').value = name; return true; } return false; });
+        }
+        if (!value('flight')) {
+          var fm = normalized.match(/\bflight(?: number)?\s*(?:is|:)?\s*([A-Z]{0,3}\s*\d{1,4}[A-Z]?)\b/i);
+          if (fm) byId('flight').value = fm[1].replace(/\s+/g, ' ').toUpperCase();
+        }
+        if (value('charges')) {
+          var chargeMatch = value('charges').match(/\d+(?:\.\d{1,2})?/);
+          if (chargeMatch) byId('charges').value = chargeMatch[0];
+        }
+        generated = false;
+        updatePreview(false);
+        setStatus('Voice details added. Review the fields, then generate or share.', false);
+      }
+
+      function setupRecognition() {
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          micButton.addEventListener('click', function () {
+            setStatus('Voice dictation is not available in this browser. In Safari, tap a field and use the microphone on the iPhone keyboard.', true);
+          });
+          return;
+        }
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+        recognition.maxAlternatives = 1;
+        recognition.onstart = function () {
+          listening = true;
+          micButton.classList.add('listening');
+          micButton.setAttribute('aria-pressed', 'true');
+          micButton.setAttribute('aria-label', 'Stop voice dictation');
+          voiceTitle.textContent = 'Listening… tap to stop';
+          transcriptEl.textContent = 'Speak the trip details now.';
+          transcriptEl.classList.add('visible');
+          setStatus('', false);
+        };
+        recognition.onresult = function (event) {
+          var full = '';
+          var finalText = '';
+          for (var i = event.resultIndex; i < event.results.length; i++) {
+            full += event.results[i][0].transcript;
+            if (event.results[i].isFinal) finalText += event.results[i][0].transcript;
+          }
+          transcriptEl.textContent = full;
+          if (finalText) parseVoice(finalText);
+        };
+        recognition.onerror = function (event) {
+          var message = 'Voice dictation could not start. Tap a field and use the iPhone keyboard microphone instead.';
+          if (event.error === 'not-allowed' || event.error === 'service-not-allowed') message = 'Microphone access was blocked. Allow microphone access in Safari settings, or use the iPhone keyboard microphone.';
+          setStatus(message, true);
+        };
+        recognition.onend = function () {
+          listening = false;
+          micButton.classList.remove('listening');
+          micButton.setAttribute('aria-pressed', 'false');
+          micButton.setAttribute('aria-label', 'Start voice dictation');
+          voiceTitle.textContent = 'Dictate trip details';
+        };
+        micButton.addEventListener('click', function () {
+          if (listening) { recognition.stop(); return; }
+          try { recognition.start(); } catch (e) { setStatus('Voice dictation is already starting. Please wait a moment.', true); }
+        });
+      }
+
+      function ascii(text) {
+        return String(text || '').normalize('NFKD').replace(/[^\x20-\x7E]/g, '-');
+      }
+      function pdfEscape(text) { return ascii(text).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)'); }
+      function wrap(text, max) {
+        var words = ascii(text || '-').split(/\s+/);
+        var lines = [], line = '';
+        words.forEach(function (word) {
+          var test = line ? line + ' ' + word : word;
+          if (test.length > max && line) { lines.push(line); line = word; } else { line = test; }
+        });
+        if (line) lines.push(line);
+        return lines.length ? lines : ['-'];
+      }
+      function createPdf(d) {
+        var commands = [];
+        function text(x, y, size, valueText, bold, color) {
+          color = color || '0.08 0.17 0.25';
+          commands.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + size + ' Tf ' + color + ' rg ' + x + ' ' + y + ' Td (' + pdfEscape(valueText) + ') Tj ET');
+        }
+        function line(x1,y1,x2,y2,width,color) { commands.push((color || '0.08 0.17 0.25') + ' RG ' + (width || 1) + ' w ' + x1 + ' ' + y1 + ' m ' + x2 + ' ' + y2 + ' l S'); }
+        function rect(x,y,w,h,fill) { commands.push(fill + ' rg ' + x + ' ' + y + ' ' + w + ' ' + h + ' re f'); }
+        function labelValue(label, val, x, y, maxChars) {
+          text(x, y, 8, label.toUpperCase(), true, '0.36 0.43 0.48');
+          var rows = wrap(val || '-', maxChars || 31).slice(0, 2);
+          rows.forEach(function (row, idx) { text(x, y - 17 - idx * 12, 11, row, true); });
+        }
+
+        rect(0,0,612,792,'1 1 1');
+        text(44, 738, 27, 'Ava', true, '0.06 0.16 0.26');
+        text(88, 738, 27, 'Limo', true, '0.78 0.55 0.20');
+        text(568, 742, 9, '(832) 567-8050', false, '0.36 0.43 0.48');
+        text(500, 728, 9, 'adam@avalimo.net', false, '0.36 0.43 0.48');
+        text(513, 714, 9, 'Houston, Texas', false, '0.36 0.43 0.48');
+        line(44,694,568,694,3,'0.06 0.16 0.26');
+        text(44, 664, 15, 'TRIP MANIFEST', true);
+        text(431, 665, 9, [d.date,d.client].filter(Boolean).join(' | ') || 'AvaLimo', false, '0.36 0.43 0.48');
+
+        rect(44,574,524,64,'0.96 0.97 0.98');
+        labelValue('Pickup', d.pickup, 58, 617, 32);
+        text(297, 595, 17, '>', true, '0.78 0.55 0.20');
+        labelValue('Drop-off', d.dropoff, 330, 617, 32);
+
+        var left = 44, right = 306, rowH = 63, y = 548;
+        var rows = [
+          [['Date',d.date],['Pickup time',d.time]],
+          [['Client',d.client],['Charges',d.charges]],
+          [['Airline',d.airline],['Flight',d.flight]],
+          [['Driver',d.driver],['Vehicle',d.vehicle]]
+        ];
+        rows.forEach(function (row) {
+          line(44,y,568,y,0.7,'0.83 0.87 0.90');
+          line(306,y,306,y-rowH,0.7,'0.83 0.87 0.90');
+          labelValue(row[0][0], row[0][1], left+12, y-17, 34);
+          labelValue(row[1][0], row[1][1], right+12, y-17, 34);
+          y -= rowH;
+        });
+        line(44,y,568,y,0.7,'0.83 0.87 0.90');
+        labelValue('Notes', d.notes || 'None', 56, y-20, 82);
+        line(44,y-68,568,y-68,0.7,'0.83 0.87 0.90');
+        text(44, 54, 8, 'Professional ground transportation', false, '0.36 0.43 0.48');
+        text(416, 54, 8, 'AvaLimo | Houston, Texas', false, '0.36 0.43 0.48');
+
+        var stream = commands.join('\n');
+        var objects = [
+          '<< /Type /Catalog /Pages 2 0 R >>',
+          '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+          '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>',
+          '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+          '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
+          '<< /Length ' + stream.length + ' >>\nstream\n' + stream + '\nendstream'
+        ];
+        var pdf = '%PDF-1.4\n';
+        var offsets = [0];
+        objects.forEach(function (obj, idx) { offsets.push(pdf.length); pdf += (idx + 1) + ' 0 obj\n' + obj + '\nendobj\n'; });
+        var xref = pdf.length;
+        pdf += 'xref\n0 ' + (objects.length + 1) + '\n0000000000 65535 f \n';
+        for (var i = 1; i < offsets.length; i++) pdf += String(offsets[i]).padStart(10, '0') + ' 00000 n \n';
+        pdf += 'trailer\n<< /Size ' + (objects.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF';
+        return new Blob([pdf], { type: 'application/pdf' });
+      }
+      function fileName(d) {
+        var who = ascii(d.client || 'Trip').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        var when = value('tripDate') || 'Manifest';
+        return 'AvaLimo-' + who + '-' + when + '.pdf';
+      }
+      function downloadBlob(blob, name) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      }
+      pdfButton.addEventListener('click', function () {
+        var d = ensureGenerated();
+        var blob = createPdf(d);
+        var name = fileName(d);
+        var file = null;
+        try { file = new File([blob], name, { type: 'application/pdf' }); } catch (e) {}
+        if (file && navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+          navigator.share({ files: [file], title: 'AvaLimo Trip Manifest' })
+            .then(function () { setStatus('PDF shared successfully.', false); })
+            .catch(function (error) {
+              if (error && error.name === 'AbortError') { setStatus('Share canceled. The manifest was not sent.', false); return; }
+              downloadBlob(blob, name);
+              setStatus('PDF downloaded. Open it from Safari Downloads, tap Share, then choose Mail.', false);
+            });
+        } else {
+          downloadBlob(blob, name);
+          setStatus('PDF downloaded. Open it from Safari Downloads, tap Share, then choose Mail.', false);
+        }
+      });
+
+      function setDefaultDate() {
+        var now = new Date();
+        var local = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        byId('tripDate').value = local;
+      }
+      setDefaultDate();
+      setupRecognition();
+    }());
+  </script>
+</body>
+</html>
