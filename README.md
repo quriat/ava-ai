@@ -57,6 +57,9 @@ In Coolify:
    - `BOOKING_API_ENDPOINT` (optional, default `/api/book`)
 6. Deploy
 
+The Nginx container relies on Coolify's TLS proxy forwarding `X-Forwarded-Proto`
+to distinguish HTTPS requests from the proxy's internal HTTP connection.
+
 ### Option 2: Coolify from GitHub repo
 
 1. Push this folder to a GitHub repo.

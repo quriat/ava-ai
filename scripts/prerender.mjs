@@ -22,13 +22,19 @@ const fmtDate = (d) =>
   new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 // Replace SEO-relevant head fields + inject content into #root.
-function buildPage({ title, description, canonical, ogType, jsonLd, bodyHtml }) {
+function buildPage({ title, description, canonical, ogType, jsonLd, bodyHtml, noindex = false }) {
   let html = template;
   html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(title)}</title>`);
   html = html.replace(
     /<meta name="description" content="[\s\S]*?" \/>/,
     `<meta name="description" content="${esc(description)}" />`
   );
+  if (noindex) {
+    html = html.replace(
+      /<meta name="robots" content="[\s\S]*?" \/>/,
+      '<meta name="robots" content="noindex, follow" />'
+    );
+  }
   html = html.replace(
     /<link rel="canonical" href="[\s\S]*?" \/>/,
     `<link rel="canonical" href="${canonical}" />`
@@ -102,9 +108,9 @@ const homeBody = `
   </nav>
 </main>`;
 writeFile('index.html', buildPage({
-  title: 'AvaLimo Houston | Luxury Chauffeur & Limo Service | IAH & Hobby Airport',
+  title: 'Houston Limo & Chauffeur Service | AvaLimo',
   description:
-    "Houston's trusted luxury chauffeur service. Flat-rate airport transfers for IAH & Hobby, corporate travel, weddings, Galveston cruises & events — 24/7, zero surge pricing. Call (832) 567-8050.",
+    'Luxury Houston limo and chauffeur service for IAH and Hobby airport rides, corporate travel, weddings, and Galveston cruises. Book AvaLimo 24/7.',
   canonical: `${SITE}/`,
   ogType: 'website',
   bodyHtml: homeBody,
@@ -259,7 +265,7 @@ const CORE_ROUTES = [
   { slug: 'rates', title: 'Limo Rates & Flat Pricing Houston | AvaLimo', desc: 'Transparent flat-rate pricing for Houston airport transfers, hourly charters, weddings and Galveston cruise ports. No surge, no surprises.', h1: 'Rates & Flat Pricing' },
   { slug: 'reviews', title: 'Customer Reviews | AvaLimo Houston', desc: 'Read verified reviews from Houston travelers who rode with AvaLimo for airport transfers, weddings and corporate travel.', h1: 'Customer Reviews' },
   { slug: 'faq', title: 'FAQ | AvaLimo Houston Limo Service', desc: 'Answers on booking, pricing, flight tracking, car seats, cancellations and service area for AvaLimo Houston luxury transportation.', h1: 'Frequently Asked Questions' },
-  { slug: 'end-of-trip-review', title: 'Review Your Trip | AvaLimo', desc: 'Rate your recent AvaLimo ride. Your feedback keeps our Houston chauffeur service five-star.', h1: 'Review Your Trip' },
+  { slug: 'end-of-trip-review', title: 'Review Your Trip | AvaLimo', desc: 'Rate your recent AvaLimo ride. Your feedback keeps our Houston chauffeur service five-star.', h1: 'Review Your Trip', noindex: true },
 ];
 let ccount = 0;
 for (const r of CORE_ROUTES) {
@@ -271,7 +277,7 @@ for (const r of CORE_ROUTES) {
   <p><a href="tel:+18325678050">Call (832) 567-8050</a> · <a href="/#booking-section">Book Online</a></p>
 </main>`;
   const html = buildPage({
-    title: r.title, description: r.desc, canonical: `${SITE}/${r.slug}`,
+    title: r.title, description: r.desc, canonical: `${SITE}/${r.slug}`, noindex: r.noindex,
     ogType: 'website', bodyHtml: body,
     jsonLd: [
       {
@@ -301,15 +307,13 @@ for (const r of CORE_ROUTES) {
 }
 
 // ---- Sitemap (kept in sync with generated pages) ----
-const today = new Date().toISOString().slice(0, 10);
-const u = (loc, priority, changefreq, lastmod = today) =>
-  `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
-const pdate = (d) => { try { return new Date(d).toISOString().slice(0, 10); } catch { return today; } };
+const u = (loc, priority, changefreq) =>
+  `  <url>\n    <loc>${loc}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
 const urls = [u(`${SITE}/`, '1.0', 'daily')];
-for (const r of CORE_ROUTES) urls.push(u(`${SITE}/${r.slug}`, '0.8', 'weekly'));
+for (const r of CORE_ROUTES) if (!r.noindex) urls.push(u(`${SITE}/${r.slug}`, '0.8', 'weekly'));
 for (const pg of landing) urls.push(u(`${SITE}/${pg.slug}`, '0.9', 'monthly'));
 urls.push(u(`${SITE}/blog`, '0.8', 'weekly'));
-for (const p of posts) if (p.slug) urls.push(u(`${SITE}/blog/${p.slug}`, '0.6', 'monthly', pdate(p.date)));
+for (const p of posts) if (p.slug) urls.push(u(`${SITE}/blog/${p.slug}`, '0.6', 'monthly'));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 fs.writeFileSync(path.join(dist, 'sitemap.xml'), sitemap);
 
