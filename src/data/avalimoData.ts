@@ -341,6 +341,16 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
     stars: 5,
     date: 'January 2026',
     serviceType: 'Galveston Cruise Transfer'
+  },
+  {
+    id: 5,
+    name: 'Joey Logreco',
+    role: 'Loyal Client',
+    location: 'Houston, TX',
+    text: 'For over five years, Adam has transported us with extreme reliability, dependability, and professionalism. He arrives 15 minutes prior to the scheduled departure time and greets us with an infectious smile. He handles all of the baggage for us, offers refreshments, and then we are driven professionally, comfortably, and cheerfully. Always a pleasurable and relaxed experience to which we are grateful.',
+    stars: 5,
+    date: 'October 2026',
+    serviceType: 'Airport & Personal Chauffeur'
   }
 ];
 
