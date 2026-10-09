@@ -251,31 +251,28 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
   };
 
   return (
-    <section className="py-24 bg-black text-white relative" id="booking-section">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gold/5 rounded-full blur-3xl pointer-events-none"></div>
+    <section className="py-24 md:py-32 bg-ink text-white relative" id="booking-section">
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-gold/[0.04] rounded-full blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-bold uppercase mb-3">
-            <ShieldCheck size={12} className="text-gold-400" />
-            <span>Encrypted 256-Bit SSL • Square Payments Gateway</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
-            Reserve &amp; Secure Your Chauffeur
+          <p className="eyebrow mb-4">Book Your Ride</p>
+          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-white mb-5">
+            Get Your <span className="text-gold-gradient">Instant Quote</span>
           </h2>
-          <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
-            Questions? Call or text our 24/7 AI Concierge at{' '}
-            <a href={`tel:${COMPANY_INFO.aiConciergePhone.replace(/\D/g, '')}`} className="text-gold-400 font-bold">
+          <p className="text-white/50 text-sm sm:text-base font-light leading-relaxed">
+            Fill this out — we'll confirm within minutes, 24/7. Questions? Call our AI Concierge at{' '}
+            <a href={`tel:${COMPANY_INFO.aiConciergePhone.replace(/\D/g, '')}`} className="text-gold font-semibold">
               {COMPANY_INFO.aiConciergePhone}
             </a>
           </p>
         </div>
 
         <div
-          className="glass-panel rounded-3xl border border-gold-500/40 gold-glow overflow-hidden backdrop-blur-xl"
+          className="luxe-card rounded-3xl overflow-hidden"
           onFocusCapture={handleBookingEngage}
         >
-          <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-white/10 bg-black/40 p-2 gap-1">
+          <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-white/10 bg-ink/60 p-2 gap-1">
             {[
               { type: TripType.AIRPORT, label: '✈️ Airport' },
               { type: TripType.GALVESTON, label: '⚓ Galveston' },
@@ -286,9 +283,9 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                 key={tab.type}
                 type="button"
                 onClick={() => handleTripTypeChange(tab.type)}
-                className={`py-3 px-2 text-[10px] font-bold rounded-lg transition-all ${
+                className={`py-3 px-2 text-[10px] font-bold uppercase tracking-[0.15em] rounded-full transition-all ${
                   tripType === tab.type
-                    ? 'bg-[var(--gold)] text-black shadow-lg'
+                    ? 'btn-gold shadow-lg'
                     : 'text-white/50 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -300,8 +297,8 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
           <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-8">
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--gold)] flex items-center">
-                  <span className="w-5 h-5 rounded-full bg-gold/20 text-[var(--gold)] text-xs flex items-center justify-center mr-2 border border-gold/40">1</span>
+                <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-gold flex items-center">
+                  <span className="w-6 h-6 rounded-full bg-gold/15 text-gold text-[11px] font-bold flex items-center justify-center mr-3 border border-gold/30">1</span>
                   Pickup & Dropoff Details
                 </h3>
 
@@ -314,7 +311,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
               </div>
 
               {showFlightTracker && (tripType === TripType.AIRPORT || tripType === TripType.GALVESTON || tripType === TripType.POINT_TO_POINT) && (
-                <div className="mb-6 p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="mb-6 p-4 rounded-xl bg-smoke border border-white/10">
                   <div className="flex gap-2 mb-3">
                     <input
                       type="text"
@@ -322,7 +319,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                       value={formData.flightNumber}
                       onChange={handleChange}
                       placeholder="e.g. UA 1428"
-                      className="flex-1 bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none relative"
+                      className="flex-1 bg-ink border border-white/10 rounded-xl p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none relative"
                     />
                     <Plane className="absolute left-4 mt-3.5 text-[var(--gold)]" size={16} />
                     <button
@@ -359,7 +356,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     onChange={handleChange}
                     required
                     placeholder="Pickup location"
-                    className="w-full bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none transition-colors"
+                    className="w-full bg-ink border border-white/10 rounded-xl p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none transition-colors"
                   />
                 </div>
                 <div className="relative">
@@ -371,12 +368,12 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     onChange={handleChange}
                     required
                     placeholder="Dropoff destination"
-                    className="w-full bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none transition-colors"
+                    className="w-full bg-ink border border-white/10 rounded-xl p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
+              <div className="bg-smoke border border-white/10 rounded-xl p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2 text-[var(--gold)]">
                     <Navigation size={16} />
@@ -398,7 +395,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     value={formData.date}
                     onChange={handleChange}
                     required
-                    className="w-full bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                    className="w-full bg-ink border border-white/10 rounded-xl p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                   />
                 </div>
                 <div className="relative">
@@ -420,7 +417,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                       value={formData.airline}
                       onChange={handleChange}
                       placeholder="Airline"
-                      className="bg-black border border-white/20 rounded-lg p-3 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                      className="bg-ink border border-white/10 rounded-xl p-3 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                     />
                     <input
                       type="text"
@@ -428,7 +425,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                       value={formData.flightNumber}
                       onChange={handleChange}
                       placeholder="Flight #"
-                      className="bg-black border border-white/20 rounded-lg p-3 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                      className="bg-ink border border-white/10 rounded-xl p-3 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                     />
                   </>
                 )}
@@ -437,7 +434,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     <select
                       value={hourlyHours}
                       onChange={(e) => setHourlyHours(Number(e.target.value))}
-                      className="w-full bg-black border border-white/20 rounded-lg p-3 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                      className="w-full bg-ink border border-white/10 rounded-xl p-3 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                     >
                       {[2, 3, 4, 5, 6, 7, 8, 10, 12, 24].map((hr) => (
                         <option key={hr} value={hr}>
@@ -451,8 +448,8 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--gold)] mb-4 flex items-center">
-                <span className="w-5 h-5 rounded-full bg-gold/20 text-[var(--gold)] text-xs flex items-center justify-center mr-2 border border-gold/40">2</span>
+              <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-gold mb-4 flex items-center">
+                <span className="w-6 h-6 rounded-full bg-gold/15 text-gold text-[11px] font-bold flex items-center justify-center mr-3 border border-gold/30">2</span>
                 Select Your Executive Vehicle
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -470,10 +467,10 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     <div
                       key={car.id}
                       onClick={() => setSelectedVehicleId(car.id)}
-                      className={`cursor-pointer rounded-xl border p-4 transition-all flex flex-col justify-between ${
+                      className={`cursor-pointer rounded-2xl border p-4 transition-all flex flex-col justify-between ${
                         isSelected
-                          ? 'border-[var(--gold)] bg-gold/10 ring-1 ring-[var(--gold)]'
-                          : 'border-white/10 bg-white/5 hover:border-white/20'
+                          ? 'border-gold bg-gold/10 ring-1 ring-gold'
+                          : 'border-white/10 bg-white/[0.03] hover:border-gold/30'
                       }`}
                     >
                       <div>
@@ -502,8 +499,8 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--gold)] mb-4 flex items-center">
-                <span className="w-5 h-5 rounded-full bg-gold/20 text-[var(--gold)] text-xs flex items-center justify-center mr-2 border border-gold/40">3</span>
+              <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-gold mb-4 flex items-center">
+                <span className="w-6 h-6 rounded-full bg-gold/15 text-gold text-[11px] font-bold flex items-center justify-center mr-3 border border-gold/30">3</span>
                 Passenger & Contact Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -516,7 +513,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     onChange={handleChange}
                     required
                     placeholder="Full Name"
-                    className="w-full bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                    className="w-full bg-ink border border-white/10 rounded-xl p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                   />
                 </div>
                 <div className="relative">
@@ -528,7 +525,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     onChange={handleChange}
                     required
                     placeholder="Phone Number"
-                    className="w-full bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                    className="w-full bg-ink border border-white/10 rounded-xl p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                   />
                 </div>
                 <div className="relative">
@@ -540,12 +537,12 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     onChange={handleChange}
                     required
                     placeholder="Email Address"
-                    className="w-full bg-black border border-white/20 rounded-lg p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                    className="w-full bg-ink border border-white/10 rounded-xl p-3 pl-10 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="mt-5 p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+              <div className="mt-5 p-4 rounded-xl bg-smoke border border-white/10 space-y-3">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -566,7 +563,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     onChange={handleChange}
                     rows={2}
                     placeholder="Gate code, luggage handling, beverage preference..."
-                    className="w-full bg-black border border-white/20 rounded-lg p-2.5 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
+                    className="w-full bg-ink border border-white/10 rounded-xl p-2.5 text-xs text-white focus:border-[var(--gold)] focus:outline-none"
                   ></textarea>
                 </div>
               </div>
@@ -587,7 +584,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
           <button
             type="submit"
             disabled={submitStatus === 'sending'}
-            className="w-full md:w-auto gold-gradient text-black font-bold py-4 px-10 rounded-lg text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-xl shadow-gold/20 disabled:opacity-50"
+            className="w-full md:w-auto btn-gold font-bold py-4 px-10 rounded-full text-[11px] tracking-[0.2em] uppercase shadow-xl disabled:opacity-50"
           >
             {submitStatus === 'sending' ? 'Sending Request...' : quoteMode ? 'Get My Quote' : 'Request Reservation'}
           </button>
@@ -596,7 +593,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
               type="checkbox"
               checked={quoteMode}
               onChange={(e) => setQuoteMode(e.target.checked)}
-              className="w-4 h-4 accent-[var(--gold)]"
+              className="w-4 h-4 accent-[#C9A96A]"
             />
             Just want a price? Check for a free quote — no commitment.
           </label>
@@ -605,15 +602,15 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
         </div>
 
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs text-white/50">
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2">
+          <div className="luxe-card p-5 rounded-2xl flex items-center justify-center gap-2">
             <ShieldCheck size={18} className="text-[var(--gold)]" />
             <span>100% On-Time Guarantee or Refund</span>
           </div>
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2">
+          <div className="luxe-card p-5 rounded-2xl flex items-center justify-center gap-2">
             <Plane size={18} className="text-[var(--gold)]" />
             <span>Manual Flight Monitoring by Dispatch</span>
           </div>
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2">
+          <div className="luxe-card p-5 rounded-2xl flex items-center justify-center gap-2">
             <Phone size={18} className="text-[var(--gold)]" />
             <span>24/7 Live Houston Dispatch</span>
           </div>
@@ -623,7 +620,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
       {submittedBooking && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setSubmittedBooking(null)}></div>
-          <div className="relative bg-luxury w-full max-w-lg rounded-2xl shadow-2xl border border-gold/40 p-6 sm:p-8 text-center">
+          <div className="relative bg-smoke w-full max-w-lg rounded-3xl shadow-2xl border border-gold/30 p-6 sm:p-8 text-center">
             <div className="w-16 h-16 rounded-full bg-gold/20 border border-[var(--gold)] text-[var(--gold)] flex items-center justify-center mx-auto mb-4">
               {submitStatus === 'success' ? <Check size={36} /> : <AlertCircle size={36} />}
             </div>
@@ -640,7 +637,7 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                 : (submitResult && submitResult.message) || 'Your request was recorded. Please call dispatch to confirm.'}
             </p>
 
-            <div className="bg-black p-4 rounded-xl border border-white/10 text-left text-xs space-y-2 mb-6">
+            <div className="bg-ink p-4 rounded-2xl border border-white/10 text-left text-xs space-y-2 mb-6">
               <div className="flex justify-between border-b border-white/10 pb-2">
                 <span className="text-white/40">Request Reference:</span>
                 <span className="text-[var(--gold)] font-mono font-bold">{submittedBooking.confirmationId}</span>
@@ -673,13 +670,13 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
             <div className="flex flex-col sm:flex-row gap-3">
               <a
                 href={`tel:${COMPANY_INFO.phoneRaw}`}
-                className="w-full bg-[var(--gold)] hover:bg-[var(--gold-light)] text-black py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center"
+                className="w-full btn-gold py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] flex items-center justify-center"
               >
                 Call Dispatch: {COMPANY_INFO.phone}
               </a>
               <button
                 onClick={() => setSubmittedBooking(null)}
-                className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors"
+                className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-full text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors"
               >
                 Close
               </button>

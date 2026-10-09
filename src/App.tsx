@@ -10,6 +10,7 @@ import BlogArticle from './components/BlogArticle';
 import ServiceLanding, { landingSlugs } from './components/ServiceLanding';
 import CoreRoute, { coreSlugs } from './components/CoreRoute';
 import FAQ from './components/FAQ';
+import SiennaBanner from './components/SiennaBanner';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
 import StickyCallBar from './components/StickyCallBar';
@@ -153,7 +154,7 @@ function App() {
 
   return (
     <GlobalErrorCatcher>
-      <div className="min-h-screen bg-dark-950 text-slate-100 antialiased">
+      <div className="min-h-screen bg-ink text-[#EDEDEA] antialiased">
         <Header />
         <main>
           <Hero />
@@ -161,6 +162,7 @@ function App() {
           <Fleet onSelectVehicle={handleSelectVehicle} />
           <Rates />
           <Testimonials />
+          <SiennaBanner />
           <Blog />
           <FAQ />
           <BookingForm initialData={bookingPrefill} />

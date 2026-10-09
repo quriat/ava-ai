@@ -4,43 +4,43 @@ import { Star } from 'lucide-react';
 
 const Testimonials: React.FC = () => {
   return (
-    <section id="reviews" className="py-24 bg-dark-950 border-t border-gold-500/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-xs font-bold uppercase mb-4">
-            <Star size={14} /> Verified 5.0 Google Reviews
+    <section id="reviews" className="py-24 md:py-32 bg-ink border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-gold text-[11px] font-bold uppercase tracking-[0.2em] mb-6">
+            <Star size={13} className="fill-gold text-gold" /> Verified Google Reviews
           </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
-            What Our Clients Say
+          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-white mb-5">
+            4.9 Stars. <span className="text-gold-gradient">500+ Happy Riders.</span>
           </h2>
-          <p className="text-slate-400 text-sm">
-            Trusted by Fortune 500 executives, law firms, brides, and family travelers across Greater Houston.
+          <p className="text-white/50 font-light">
+            Trusted by executives, law firms, brides, and families across Greater Houston.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {TESTIMONIALS_DATA.map((review) => (
-            <div key={review.id} className="glass-panel p-8 rounded-3xl glass-panel-hover flex flex-col justify-between">
+            <div key={review.id} className="luxe-card p-8 rounded-3xl flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-1 text-gold-400 mb-4 text-sm">
+                <div className="flex items-center gap-1 text-gold mb-5">
                   {Array.from({ length: review.stars }).map((_, i) => (
-                    <Star key={i} size={14} className="fill-gold-400 text-gold-400" />
+                    <Star key={i} size={14} className="fill-gold text-gold" />
                   ))}
-                  <span className="text-xs text-slate-400 ml-2">{review.date}</span>
+                  <span className="text-[11px] text-white/30 ml-2 tracking-wide">{review.date}</span>
                 </div>
-                <p className="text-slate-200 text-sm leading-relaxed mb-6 italic">
+                <p className="text-white/70 font-light leading-relaxed mb-8 italic font-serif text-lg">
                   "{review.text}"
                 </p>
               </div>
-              <div className="border-t border-slate-800 pt-4 flex justify-between items-center gap-4">
+              <div className="border-t border-white/10 pt-5 flex justify-between items-center gap-4">
                 <div>
-                  <h4 className="font-serif font-bold text-white text-base">{review.name}</h4>
-                  <p className="text-xs text-gold-400">
+                  <h4 className="font-serif font-semibold text-white text-lg">{review.name}</h4>
+                  <p className="text-xs text-gold/80">
                     {review.role}
-                    {review.company ? ` • ${review.company.replace(' Sector', '')}` : ''}
+                    {review.company ? ` · ${review.company.replace(' Sector', '')}` : ''}
                   </p>
                 </div>
-                <span className="text-[10px] text-slate-500 uppercase font-bold text-right">{review.serviceType}</span>
+                <span className="text-[10px] text-white/30 uppercase tracking-[0.2em] text-right">{review.serviceType}</span>
               </div>
             </div>
           ))}
@@ -51,10 +51,10 @@ const Testimonials: React.FC = () => {
             href="https://g.page/r/CVgUaFV7t4-8EBM/review"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-dark-900 border border-gold-500/40 hover:border-gold-400 text-white font-bold text-xs uppercase tracking-wider transition-all transform hover:scale-105 shadow-xl"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gold/40 hover:border-gold text-white hover:text-gold font-bold text-[11px] uppercase tracking-[0.2em] transition-all"
           >
-            <Star size={16} className="text-gold-400" />
-            <span>Leave a Google Review / Read More Ratings</span>
+            <Star size={15} className="text-gold" />
+            <span>Leave a Google Review</span>
           </a>
         </div>
       </div>

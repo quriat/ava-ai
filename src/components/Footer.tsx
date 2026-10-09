@@ -13,43 +13,59 @@ const SERVICE_LINKS = [
 
 const Footer: React.FC = () => {
   return (
-    <footer id="contact" className="py-16 bg-black text-center border-t border-gold-500/20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h3 className="font-serif text-2xl font-bold text-white mb-2">{COMPANY_INFO.name}</h3>
-        <p className="text-slate-400 text-xs mb-6">
-          {COMPANY_INFO.legalName} • {COMPANY_INFO.address}
-        </p>
-        <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-xs text-gold-400 font-bold mb-6">
-          <a href={`tel:${COMPANY_INFO.phoneRaw}`} className="hover:text-white transition-colors flex items-center gap-1.5">
-            <Phone size={12} /> {COMPANY_INFO.phone}
-            <span className="text-slate-500 font-semibold">(Human Dispatch)</span>
-          </a>
-          <a href={`tel:${COMPANY_INFO.aiConciergePhoneRaw}`} className="hover:text-white transition-colors flex items-center gap-1.5">
-            <Phone size={12} /> {COMPANY_INFO.aiConciergePhone}
-            <span className="text-slate-500 font-semibold">(AI Concierge)</span>
-          </a>
-          <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-white transition-colors flex items-center gap-1.5">
-            <Mail size={12} /> {COMPANY_INFO.email}
-          </a>
-          <a
-            href="https://g.page/r/CVgUaFV7t4-8EBM/review"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-white transition-colors flex items-center gap-1.5"
-          >
-            <Star size={12} /> Google Review Link
-          </a>
+    <footer id="contact" className="border-t border-white/10 bg-ink">
+      <div className="max-w-7xl mx-auto px-6 py-16 grid gap-12 md:grid-cols-3">
+        <div>
+          <div className="font-serif text-2xl mb-4">
+            AVA<span className="text-gold">LIMO</span>
+          </div>
+          <p className="text-white/40 text-sm max-w-xs font-light leading-relaxed">
+            Houston's luxury chauffeur service. Airport, corporate, weddings — done right.
+          </p>
+          <p className="text-white/30 text-xs mt-4">
+            {COMPANY_INFO.legalName} · {COMPANY_INFO.address}
+          </p>
         </div>
-        <nav className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 text-[11px] text-slate-500 font-semibold mb-8">
-          {SERVICE_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-gold-400 transition-colors">
-              {link.label}
+        <div>
+          <p className="eyebrow mb-5">Contact</p>
+          <div className="space-y-3 text-sm text-white/60">
+            <a href={`tel:${COMPANY_INFO.phoneRaw}`} className="flex items-center gap-2 hover:text-gold transition-colors">
+              <Phone size={14} className="text-gold" /> {COMPANY_INFO.phone}
+              <span className="text-white/30 text-xs">(Human Dispatch)</span>
             </a>
-          ))}
-        </nav>
-        <p className="text-[11px] text-slate-600">
-          &copy; {new Date().getFullYear()} AvaLimo Houston. All Rights Reserved.
-        </p>
+            <a href={`tel:${COMPANY_INFO.aiConciergePhoneRaw}`} className="flex items-center gap-2 hover:text-gold transition-colors">
+              <Phone size={14} className="text-gold" /> {COMPANY_INFO.aiConciergePhone}
+              <span className="text-white/30 text-xs">(AI Concierge)</span>
+            </a>
+            <a href={`mailto:${COMPANY_INFO.email}`} className="flex items-center gap-2 hover:text-gold transition-colors">
+              <Mail size={14} className="text-gold" /> {COMPANY_INFO.email}
+            </a>
+            <a
+              href="https://g.page/r/CVgUaFV7t4-8EBM/review"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 hover:text-gold transition-colors"
+            >
+              <Star size={14} className="text-gold" /> Google Review Link
+            </a>
+          </div>
+        </div>
+        <div>
+          <p className="eyebrow mb-5">Explore</p>
+          <nav className="grid gap-3 text-sm text-white/50">
+            {SERVICE_LINKS.map((link) => (
+              <a key={link.href} href={link.href} className="hover:text-gold transition-colors">
+                {link.label}
+              </a>
+            ))}
+            <a href="/sienna" className="hover:text-gold transition-colors text-gold/80">
+              Sienna Plantation →
+            </a>
+          </nav>
+        </div>
+      </div>
+      <div className="border-t border-white/5 py-6 text-center text-white/25 text-[11px] tracking-[0.25em] uppercase">
+        © {new Date().getFullYear()} AvaLimo · Houston, TX
       </div>
     </footer>
   );

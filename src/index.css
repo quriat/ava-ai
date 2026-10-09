@@ -3,10 +3,11 @@
 @config "../tailwind.config.js";
 
 :root {
-  --gold: #C5A059;
-  --gold-light: #D4AF37;
+  --gold: #C9A96A;
+  --gold-light: #E8D5A3;
   --gold-dark: #A68035;
-  --luxury: #0a0a0a;
+  --luxury: #0a0a0b;
+  --ink: #0A0A0B;
   --cream: #f5f5f0;
   --cream-muted: rgba(245, 245, 240, 0.65);
 }
@@ -14,46 +15,81 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background-color: #060709;
-  color: #f1f5f9;
-  font-family: 'Montserrat', sans-serif;
+  background-color: #0A0A0B;
+  color: #EDEDEA;
+  font-family: 'Inter', 'Montserrat', sans-serif;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6, .font-serif {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
 }
 
+/* ---- Premium gold utilities ---- */
 .gold-gradient {
-  background: linear-gradient(135deg, #C5A059 0%, #F1D592 50%, #C5A059 100%);
+  background: linear-gradient(135deg, #C9A96A 0%, #E8D5A3 50%, #C9A96A 100%);
 }
+
+.btn-gold {
+  background: linear-gradient(135deg, #C9A96A, #E8D5A3);
+  color: #0A0A0B;
+  transition: filter .25s ease, transform .25s ease;
+}
+.btn-gold:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
 .text-gold-gradient {
-  background: linear-gradient(135deg, #C5A059 0%, #F1D592 50%, #C5A059 100%);
+  background: linear-gradient(135deg, #C9A96A 0%, #E8D5A3 50%, #C9A96A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gold-gradient-text {
-  background: linear-gradient(135deg, #FFF6D1 0%, #D4AF37 50%, #997A15 100%);
+  background: linear-gradient(135deg, #FFF6D1 0%, #C9A96A 50%, #997A15 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gold-glow {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.22);
+  box-shadow: 0 0 30px rgba(201, 169, 106, 0.22);
+}
+
+.gold-line {
+  background: linear-gradient(90deg, transparent, #C9A96A, transparent);
+  height: 1px;
+}
+
+/* Refined card: subtle gold border, lift on hover */
+.luxe-card {
+  background: #141416;
+  border: 1px solid rgba(201, 169, 106, 0.16);
+  transition: border-color .35s ease, transform .35s ease, box-shadow .35s ease;
+}
+.luxe-card:hover {
+  border-color: rgba(201, 169, 106, 0.45);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(0,0,0,.55), 0 0 25px rgba(201,169,106,.08);
+}
+
+/* Section eyebrow label */
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #C9A96A;
+  font-weight: 600;
 }
 
 .glass-panel {
-  background: rgba(18, 21, 31, 0.88);
+  background: rgba(20, 20, 22, 0.88);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(201, 169, 106, 0.2);
 }
 
 .glass-panel-hover:hover {
-  border-color: rgba(212, 175, 55, 0.65);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.65), 0 0 30px rgba(212, 175, 55, 0.3);
+  border-color: rgba(201, 169, 106, 0.65);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.65), 0 0 30px rgba(201, 169, 106, 0.3);
   transform: translateY(-4px);
 }
 
