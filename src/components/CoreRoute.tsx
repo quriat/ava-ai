@@ -9,6 +9,7 @@ import Testimonials from './Testimonials';
 import FAQ from './FAQ';
 import EndTripReview from './EndTripReview';
 import BookingForm from './BookingForm';
+import Corporate from './Corporate';
 import { COMPANY_INFO } from '../data/avalimoData';
 import landingPages from '../data/landingPages.json';
 
@@ -31,7 +32,7 @@ interface CoreRouteDef {
   crumb: string;
   // Landing-page slugs surfaced as a hub when there is no dedicated section.
   hubs?: string[];
-  section?: 'fleet' | 'rates' | 'reviews' | 'faq' | 'review';
+  section?: 'fleet' | 'rates' | 'reviews' | 'faq' | 'review' | 'corporate';
 }
 
 // Mirrors CORE_ROUTES in scripts/prerender.mjs. Both must stay in sync or the
@@ -92,6 +93,14 @@ export const CORE_ROUTES: Record<string, CoreRouteDef> = {
       'Rate your recent AvaLimo ride. Your feedback keeps our Houston chauffeur service five-star.',
     crumb: 'Review',
     section: 'review',
+  },
+  corporate: {
+    h1: 'Corporate Accounts & Business Travel',
+    title: 'Corporate Car Service Houston | Business Accounts | AvaLimo',
+    description:
+      'AvaLimo corporate accounts: executive airport transfers, client pickups, and roadshows with a dedicated dispatch line, monthly billing, flat rates, and zero surge. Call (832) 567-8050 to set up your account.',
+    crumb: 'Corporate',
+    section: 'corporate',
   },
 };
 
@@ -218,6 +227,7 @@ const CoreRoute: React.FC = () => {
         {route.section === 'reviews' && <Testimonials />}
         {route.section === 'faq' && <FAQ />}
         {route.section === 'review' && <EndTripReview />}
+        {route.section === 'corporate' && <Corporate />}
 
         {hubs.length > 0 && (
           <section className="py-20 bg-dark-950 border-t border-gold-500/10">

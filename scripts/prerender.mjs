@@ -266,6 +266,7 @@ const CORE_ROUTES = [
   { slug: 'reviews', title: 'Customer Reviews | AvaLimo Houston', desc: 'Read verified reviews from Houston travelers who rode with AvaLimo for airport transfers, weddings and corporate travel.', h1: 'Customer Reviews' },
   { slug: 'faq', title: 'FAQ | AvaLimo Houston Limo Service', desc: 'Answers on booking, pricing, flight tracking, car seats, cancellations and service area for AvaLimo Houston luxury transportation.', h1: 'Frequently Asked Questions' },
   { slug: 'end-of-trip-review', title: 'Review Your Trip | AvaLimo', desc: 'Rate your recent AvaLimo ride. Your feedback keeps our Houston chauffeur service five-star.', h1: 'Review Your Trip', noindex: true },
+  { slug: 'corporate', title: 'Corporate Car Service Houston | Business Accounts | AvaLimo', desc: 'AvaLimo corporate accounts: executive airport transfers, client pickups, and roadshows with a dedicated dispatch line, monthly billing, flat rates, and zero surge. Call (832) 567-8050.', h1: 'Corporate Accounts & Business Travel' },
 ];
 let ccount = 0;
 for (const r of CORE_ROUTES) {
