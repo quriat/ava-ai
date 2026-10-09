@@ -12,6 +12,7 @@ import CoreRoute, { coreSlugs } from './components/CoreRoute';
 import FAQ from './components/FAQ';
 import BookingForm from './components/BookingForm';
 import Footer from './components/Footer';
+import StickyCallBar from './components/StickyCallBar';
 import { TripType } from './types';
 import { getPublicConfig } from './config/runtimeConfig';
 import { initAnalytics, trackEvent, trackOutboundClicks, trackPageView } from './lib/analytics';
@@ -165,6 +166,7 @@ function App() {
           <BookingForm initialData={bookingPrefill} />
         </main>
         <Footer />
+        <StickyCallBar />
       </div>
     </GlobalErrorCatcher>
   );

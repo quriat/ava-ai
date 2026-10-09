@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { ArrowRight, ChevronRight, Phone } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
+import StickyCallBar from './StickyCallBar';
 import Fleet from './Fleet';
 import Rates from './Rates';
 import Testimonials from './Testimonials';
@@ -243,6 +244,7 @@ const CoreRoute: React.FC = () => {
         {route.section !== 'review' && <BookingForm />}
       </main>
       <Footer />
+      <StickyCallBar />
     </div>
   );
 };

@@ -69,6 +69,13 @@ export default function Header() {
           <div className="flex items-center gap-2 sm:gap-4">
             <a
               href={`tel:${COMPANY_INFO.phoneRaw}`}
+              aria-label={`Call AvaLimo now at ${COMPANY_INFO.phone}`}
+              className="sm:hidden flex items-center justify-center w-10 h-10 rounded-full border border-gold-500/40 bg-gold-500/10 text-gold-400"
+            >
+              <Phone size={18} />
+            </a>
+            <a
+              href={`tel:${COMPANY_INFO.phoneRaw}`}
               className="hidden sm:flex items-center gap-2 text-xs font-bold text-gold-400 hover:text-white transition-colors px-3 py-2 rounded-lg border border-gold-500/30 bg-gold-500/10"
             >
               <Phone size={14} />

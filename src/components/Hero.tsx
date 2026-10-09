@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import VoiceAgent from './VoiceAgent';
 import { AgentType } from '../types';
-import { CreditCard, Star, User, Truck } from 'lucide-react';
+import { CreditCard, Phone, Star, User, Truck } from 'lucide-react';
+import { COMPANY_INFO } from '../data/avalimoData';
+import { trackEvent } from '../lib/analytics';
 
 const UserIcon = () => (
   <User size={28} strokeWidth={1.5} />
@@ -83,9 +85,17 @@ const Hero: React.FC = () => {
         )}
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href={`tel:${COMPANY_INFO.phoneRaw}`}
+            onClick={() => trackEvent('call_click', { placement: 'hero' })}
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/25 flex items-center justify-center gap-2"
+          >
+            <Phone size={16} />
+            <span>Call {COMPANY_INFO.phone}</span>
+          </a>
           <button
             onClick={scrollToBooking}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gold-500/25 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-dark-800/90 hover:bg-dark-700 text-white border border-gold-500/40 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2"
           >
             <CreditCard size={16} />
             <span>Book &amp; Pay via Square</span>

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { ArrowRight, Phone, ChevronRight } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
+import StickyCallBar from './StickyCallBar';
 import { COMPANY_INFO } from '../data/avalimoData';
 import landingPages from '../data/landingPages.json';
 
@@ -149,6 +150,7 @@ const ServiceLanding: React.FC = () => {
         </div>
       </main>
       <Footer />
+      <StickyCallBar />
     </div>
   );
 };
