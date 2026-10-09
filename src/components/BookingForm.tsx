@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin, User, Mail, Phone, Plane, Users, Briefcase, Ch
 import { VehicleType, TripType, RouteEstimate } from '../types';
 import { FLEET_DATA, COMPANY_INFO } from '../data/avalimoData';
 import { calculateRouteEstimate } from '../services/routeCalculationService';
-import { submitBookingRequest } from '../services/bookingService';
+import { submitBookingRequest, submitQuoteRequest } from '../services/bookingService';
 import { trackEvent } from '../lib/analytics';
 
 interface BookingFormProps {
@@ -49,6 +49,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
 
   const [submittedBooking, setSubmittedBooking] = useState<any | null>(null);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error' | 'fallback'>('idle');
+  const [quoteMode, setQuoteMode] = useState(false);
   const [submitResult, setSubmitResult] = useState<{ status: 'success' | 'error' | 'fallback'; message: string; reference?: string } | null>(null);
 
   const routeEstimate: RouteEstimate = useMemo(() => {
@@ -147,6 +148,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
 
     // No PII here on purpose: trip shape and money, never who or where.
     trackEvent('booking_submit', {
+      quote_mode: quoteMode,
       trip_type: tripType,
       vehicle: selectedVehicle?.name,
       hours: tripType === TripType.HOURLY ? hourlyHours : undefined,
@@ -170,7 +172,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
     };
 
     try {
-      const result = await submitBookingRequest({
+      const submitter = quoteMode ? submitQuoteRequest : submitBookingRequest;
+      const result = await submitter({
         booking_id: confirmationId,
         name: formData.name,
         email: formData.email,
@@ -586,8 +589,17 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
             disabled={submitStatus === 'sending'}
             className="w-full md:w-auto gold-gradient text-black font-bold py-4 px-10 rounded-lg text-xs tracking-widest uppercase transition-all hover:scale-105 shadow-xl shadow-gold/20 disabled:opacity-50"
           >
-            {submitStatus === 'sending' ? 'Sending Request...' : 'Request Reservation'}
+            {submitStatus === 'sending' ? 'Sending Request...' : quoteMode ? 'Get My Quote' : 'Request Reservation'}
           </button>
+          <label className="flex items-center gap-2 text-xs text-white/60 cursor-pointer select-none mt-3 md:mt-0">
+            <input
+              type="checkbox"
+              checked={quoteMode}
+              onChange={(e) => setQuoteMode(e.target.checked)}
+              className="w-4 h-4 accent-[var(--gold)]"
+            />
+            Just want a price? Check for a free quote — no commitment.
+          </label>
         </div>
           </form>
         </div>

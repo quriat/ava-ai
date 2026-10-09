@@ -29,6 +29,43 @@ export interface BookingResult {
   reference?: string;
 }
 
+export async function submitQuoteRequest(payload: BookingPayload): Promise<BookingResult> {
+  // Quote requests go to the dedicated follow-up workflow (24h SMS nudge if they don't book).
+  const endpoint = 'https://n8napp.adamj.fit/webhook/avalimo-quote-followup';
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ ...payload, request_type: 'quote' }),
+    });
+
+    if (response.ok) {
+      return {
+        ok: true,
+        status: 'success',
+        message: 'Quote request received. We\u2019ll text you a price shortly, and Adam will follow up.',
+        reference: payload.booking_id,
+      };
+    }
+
+    return {
+      ok: false,
+      status: 'error',
+      message: 'Could not submit quote request. Please call dispatch.',
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      status: 'fallback',
+      message: 'Quote request could not be sent automatically. Please call (832) 567-8050.',
+    };
+  }
+}
+
 export async function submitBookingRequest(payload: BookingPayload): Promise<BookingResult> {
   // n8n webhook is public and CORS-enabled for avalimo.net, so we call it directly.
   // The BOOKING_API_ENDPOINT env var can still override this in runtimeConfig.
