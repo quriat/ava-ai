@@ -267,6 +267,7 @@ const CORE_ROUTES = [
   { slug: 'faq', title: 'FAQ | AvaLimo Houston Limo Service', desc: 'Answers on booking, pricing, flight tracking, car seats, cancellations and service area for AvaLimo Houston luxury transportation.', h1: 'Frequently Asked Questions' },
   { slug: 'end-of-trip-review', title: 'Review Your Trip | AvaLimo', desc: 'Rate your recent AvaLimo ride. Your feedback keeps our Houston chauffeur service five-star.', h1: 'Review Your Trip', noindex: true },
   { slug: 'corporate', title: 'Corporate Car Service Houston | Business Accounts | AvaLimo', desc: 'AvaLimo corporate accounts: executive airport transfers, client pickups, and roadshows with a dedicated dispatch line, monthly billing, flat rates, and zero surge. Call (832) 567-8050.', h1: 'Corporate Accounts & Business Travel' },
+  { slug: 'sienna', title: 'Sienna Plantation Limo & Airport Transfers | AvaLimo', desc: 'Sienna Plantation luxury car service: IAH & Hobby airport transfers, Astros/Texans games, concerts, weddings. Your Sienna neighbor with flat rates, no surge. Call (832) 567-8050.', h1: 'Sienna Plantation Chauffeur & Airport Car Service' },
 ];
 let ccount = 0;
 for (const r of CORE_ROUTES) {

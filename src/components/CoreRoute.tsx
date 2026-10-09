@@ -10,6 +10,7 @@ import FAQ from './FAQ';
 import EndTripReview from './EndTripReview';
 import BookingForm from './BookingForm';
 import Corporate from './Corporate';
+import Sienna from './Sienna';
 import { COMPANY_INFO } from '../data/avalimoData';
 import landingPages from '../data/landingPages.json';
 
@@ -32,7 +33,7 @@ interface CoreRouteDef {
   crumb: string;
   // Landing-page slugs surfaced as a hub when there is no dedicated section.
   hubs?: string[];
-  section?: 'fleet' | 'rates' | 'reviews' | 'faq' | 'review' | 'corporate';
+  section?: 'fleet' | 'rates' | 'reviews' | 'faq' | 'review' | 'corporate' | 'sienna';
 }
 
 // Mirrors CORE_ROUTES in scripts/prerender.mjs. Both must stay in sync or the
@@ -101,6 +102,14 @@ export const CORE_ROUTES: Record<string, CoreRouteDef> = {
       'AvaLimo corporate accounts: executive airport transfers, client pickups, and roadshows with a dedicated dispatch line, monthly billing, flat rates, and zero surge. Call (832) 567-8050 to set up your account.',
     crumb: 'Corporate',
     section: 'corporate',
+  },
+  sienna: {
+    h1: 'Sienna Plantation Chauffeur & Airport Car Service',
+    title: 'Sienna Plantation Limo & Airport Transfers | AvaLimo',
+    description:
+      'Sienna Plantation luxury car service: IAH & Hobby airport transfers, Astros/Texans games, concerts, weddings. Your Sienna neighbor with flat rates, no surge. Call (832) 567-8050.',
+    crumb: 'Sienna',
+    section: 'sienna',
   },
 };
 
@@ -228,6 +237,7 @@ const CoreRoute: React.FC = () => {
         {route.section === 'faq' && <FAQ />}
         {route.section === 'review' && <EndTripReview />}
         {route.section === 'corporate' && <Corporate />}
+        {route.section === 'sienna' && <Sienna />}
 
         {hubs.length > 0 && (
           <section className="py-20 bg-dark-950 border-t border-gold-500/10">
