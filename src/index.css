@@ -131,3 +131,25 @@ h1, h2, h3, h4, h5, h6, .font-serif {
   .border-gold { border-color: var(--gold); }
   .bg-luxury { background-color: var(--luxury); }
 }
+/* Fix: booking form inputs must have dark bg + light text (bg-ink class wasn't rendering) */
+#booking-section input,
+#booking-section select,
+#booking-section textarea {
+  background-color: #0A0A0B !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+#booking-section input::placeholder,
+#booking-section select::placeholder,
+#booking-section textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.4) !important;
+}
+/* Fix iOS autofill white background */
+#booking-section input:-webkit-autofill,
+#booking-section input:-webkit-autofill:hover,
+#booking-section input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0A0A0B inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
