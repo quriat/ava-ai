@@ -3,7 +3,7 @@ import { COMPANY_INFO } from '../data/avalimoData';
 import { trackEvent } from '../lib/analytics';
 
 const WHATSAPP_URL =
-  'https://wa.me/18325678050?text=Hi%20AvaLimo!%20I%27d%20like%20a%20quote%20for%20a%20ride.';
+  'https://wa.me/18557102439?text=Hi%20AvaLimo!%20I%27d%20like%20a%20quote%20for%20a%20ride.';
 
 /**
  * Always-visible call bar for mobile visitors. One thumb-tap to call or
