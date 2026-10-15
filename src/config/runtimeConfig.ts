@@ -40,12 +40,17 @@ export function getPublicConfig(): PublicRuntimeConfig {
       getWindowConfig().VAPI_FRONT_DESK_ASSISTANT_ID ||
       (typeof __VITE_VAPI_FRONT_DESK_ASSISTANT_ID__ !== 'undefined' ? __VITE_VAPI_FRONT_DESK_ASSISTANT_ID__ : undefined) ||
       process.env?.VITE_VAPI_FRONT_DESK_ASSISTANT_ID ||
-      '',
+      // Fallback: public assistant ID (not a secret — it ships to every
+      // browser). The live deploy once shipped with BOTH the runtime and
+      // build-time values empty, which silently killed the voice agents;
+      // this default keeps them working even if the env plumbing drops it.
+      '37eef87b-ffd8-40b6-88a7-f64047d01b23',
     VAPI_DISPATCH_ASSISTANT_ID:
       getWindowConfig().VAPI_DISPATCH_ASSISTANT_ID ||
       (typeof __VITE_VAPI_DISPATCH_ASSISTANT_ID__ !== 'undefined' ? __VITE_VAPI_DISPATCH_ASSISTANT_ID__ : undefined) ||
       process.env?.VITE_VAPI_DISPATCH_ASSISTANT_ID ||
-      '',
+      // Same public-ID fallback as the front desk (see note above).
+      '37eef87b-ffd8-40b6-88a7-f64047d01b23',
     BOOKING_API_ENDPOINT:
       getWindowConfig().BOOKING_API_ENDPOINT ||
       (typeof __VITE_BOOKING_API_ENDPOINT__ !== 'undefined' ? __VITE_BOOKING_API_ENDPOINT__ : undefined) ||
