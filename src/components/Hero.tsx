@@ -51,7 +51,7 @@ const Hero: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row gap-5 mb-12">
             <button
-              onClick={() => scrollTo('booking')}
+              onClick={() => scrollTo('booking-section')}
               className="gold-gradient text-black px-12 py-5 font-extrabold tracking-[0.2em] uppercase text-[12px] shadow-2xl shadow-gold/20 hover:scale-[1.02] transition-transform"
             >
               Get Your Flat-Rate Quote
