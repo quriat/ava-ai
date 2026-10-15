@@ -39,7 +39,7 @@ export const FLEET_DATA: FleetItem[] = [
     luggage: 3,
     pricePerHour: 100,
     flatRateIAH: 125,
-    flatRateHobby: 110,
+    flatRateHobby: 105,
     flatRateGalveston: 220,
     minHours: 3,
     image: '/mercedes_sclass.png',
@@ -67,7 +67,7 @@ export const FLEET_DATA: FleetItem[] = [
     luggage: 6,
     pricePerHour: 115,
     flatRateIAH: 165,
-    flatRateHobby: 145,
+    flatRateHobby: 135,
     flatRateGalveston: 260,
     minHours: 3,
     image: '/cadillac_escalade.png',
@@ -218,7 +218,7 @@ export const SERVICES_DATA: Service[] = [
     popularRoutes: [
       'IAH Airport ⇄ Downtown Houston ($125 Sedan / $165 SUV)',
       'IAH Airport ⇄ Galleria / Uptown ($130 Sedan / $170 SUV)',
-      'Hobby Airport ⇄ Downtown / Medical Center ($110 Sedan / $145 SUV)'
+      'Hobby Airport ⇄ Downtown / Medical Center ($105 Sedan / $135 SUV)'
     ]
   },
   {
@@ -360,7 +360,7 @@ export const POPULAR_ROUTES = [
   { from: 'IAH Airport', to: 'Downtown Houston / Toyota Center', duration: '30-40 min', startingPrice: '$125 Sedan / $165 SUV' },
   { from: 'IAH Airport', to: 'The Galleria / Uptown Post Oak', duration: '35-45 min', startingPrice: '$130 Sedan / $170 SUV' },
   { from: 'IAH Airport', to: 'The Woodlands / Cynthia Woods', duration: '25-35 min', startingPrice: '$115 Sedan / $155 SUV' },
-  { from: 'Hobby Airport (HOU)', to: 'Downtown / Medical Center', duration: '20-25 min', startingPrice: '$110 Sedan / $145 SUV' },
+  { from: 'Hobby Airport (HOU)', to: 'Downtown / Medical Center', duration: '20-25 min', startingPrice: '$105 Sedan / $135 SUV' },
   { from: 'Hobby Airport (HOU)', to: 'Port of Galveston Cruise Pier', duration: '45-55 min', startingPrice: '$150 Sedan / $190 SUV' },
   { from: 'IAH Airport', to: 'Port of Galveston Cruise Pier', duration: '75-85 min', startingPrice: '$220 Sedan / $260 SUV' },
   { from: 'Houston Metro', to: 'Austin / San Antonio / College Station', duration: '2.5 - 3 hrs', startingPrice: '$495 Sedan / $595 SUV' }
