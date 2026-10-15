@@ -54,7 +54,7 @@ const Hero: React.FC = () => {
               onClick={() => scrollTo('booking')}
               className="gold-gradient text-black px-12 py-5 font-extrabold tracking-[0.2em] uppercase text-[12px] shadow-2xl shadow-gold/20 hover:scale-[1.02] transition-transform"
             >
-              Get A Quote
+              Get Your Flat-Rate Quote
             </button>
             <a
               href={`tel:${COMPANY_INFO.phoneRaw}`}
@@ -64,6 +64,9 @@ const Hero: React.FC = () => {
               Call {COMPANY_INFO.phone}
             </a>
           </div>
+          <p className="text-white/60 text-sm mb-10">
+            See your estimated fare online. Dispatch confirms availability and your final quote.
+          </p>
 
           <div className="flex flex-wrap gap-8 text-[10px] tracking-[0.3em] uppercase font-bold text-white/60">
             <span>Reliable</span>
