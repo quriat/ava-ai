@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AgentType } from '../types';
 import { startVapiCall, stopVapiCall, getVapi, isVapiConfigured, getTransferPhone } from '../services/vapiVoiceService';
 import { Phone } from 'lucide-react';
@@ -14,6 +14,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [transcription, setTranscription] = useState('');
   const [error, setError] = useState('');
   const [transferRequested, setTransferRequested] = useState(false);
+  const transferRequestedRef = useRef(false);
   const configured = isVapiConfigured();
   const transferPhone = getTransferPhone();
 
@@ -21,6 +22,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     try {
       setError('');
       setTransferRequested(false);
+      transferRequestedRef.current = false;
       setStatus('Initializing...');
       startVapiCall(type);
       setIsActive(true);
@@ -39,6 +41,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     setStatus('Ready');
     setTranscription('');
     setTransferRequested(false);
+    transferRequestedRef.current = false;
   }, []);
 
   useEffect(() => {
@@ -56,13 +59,15 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       setStatus('Active');
       setError('');
       setTransferRequested(false);
+      transferRequestedRef.current = false;
     };
 
     const onCallEnd = () => {
       setIsActive(false);
       setStatus('Ready');
       setTranscription('');
-      setTransferRequested(false);
+      // Keep transferRequested as-is: if the call just died on a failed
+      // transfer, the direct-call fallback button must stay visible.
     };
 
     const onSpeechStart = () => {
@@ -83,6 +88,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       const transferKeywords = /transfer|transferring|connect you|human|agent|dispatch|representative|operator/i;
       if (transferKeywords.test(msgStr)) {
         setTransferRequested(true);
+        transferRequestedRef.current = true;
       }
     };
 
@@ -91,9 +97,11 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       const errMsg = err?.message || err?.errorMsg || JSON.stringify(err) || 'Call disconnected.';
       setStatus('Error');
 
-      // If the error mentions transfer, show the direct-call fallback.
-      if (/transfer|dial|destination|phone number|invalid number|unreachable/i.test(errMsg)) {
+      // If the error mentions transfer, or a transfer was requested during
+      // this call, show the direct-call fallback.
+      if (transferRequestedRef.current || /transfer|dial|destination|phone number|invalid number|unreachable/i.test(errMsg)) {
         setTransferRequested(true);
+        transferRequestedRef.current = true;
         setError('Transfer to live agent failed. Tap below to call dispatch directly.');
       } else {
         setError('Call disconnected. Please try again.');
@@ -146,7 +154,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         </button>
       )}
 
-      {isActive && transferRequested && (
+      {transferRequested && (isActive || !!error) && (
         <a
           href={`tel:${transferPhone}`}
           onClick={handleStop}
