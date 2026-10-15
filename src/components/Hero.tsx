@@ -49,9 +49,9 @@ const Hero: React.FC = () => {
             AvaLimo provides professional Houston limo service for corporate travel, airport transfers, Galveston cruises, and special events — 24/7 with zero surge pricing.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 mb-4">
+          <div className="flex flex-col sm:flex-row gap-5 mb-12">
             <button
-              onClick={() => scrollTo('booking-section')}
+              onClick={() => scrollTo('booking')}
               className="gold-gradient text-black px-12 py-5 font-extrabold tracking-[0.2em] uppercase text-[12px] shadow-2xl shadow-gold/20 hover:scale-[1.02] transition-transform"
             >
               Get Your Flat-Rate Quote
@@ -79,7 +79,7 @@ const Hero: React.FC = () => {
           <div className="text-center mb-4">
             <h3 className="text-[var(--gold)] text-xs font-bold tracking-[0.3em] uppercase mb-2">
               AI Concierge Services
-n            </h3>
+            </h3>
             <p className="text-white/50 text-[10px] uppercase tracking-widest">
               Talk to our AI voice assistants
             </p>
