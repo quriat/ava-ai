@@ -14,7 +14,8 @@
   },
   "voice": {
     "provider": "11labs",
-    "voiceId": "Puck"
+    "voiceId": "Sarah",
+    "model": "eleven_turbo_v2"
   },
   "transcriber": {
     "provider": "deepgram",
