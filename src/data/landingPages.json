@@ -7,14 +7,32 @@
     "description": "Luxury Houston airport car service to and from IAH and Hobby. Flat rates, flight tracking, and 24/7 chauffeurs. Sedan from $125, SUV from $165. Call (832) 567-8050.",
     "intro": "Skip the rideshare surge and long taxi lines. AvaLimo provides premium, on-time chauffeured transfers to and from George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports — with real-time flight tracking so your driver is always waiting when you land.",
     "sections": [
-      { "h2": "Flat-rate airport pricing (no surge)", "body": "<p>Transparent, all-inclusive fares across Greater Houston:</p><ul><li><strong>IAH ⇄ Downtown Houston:</strong> Sedan $125 · SUV $165</li><li><strong>Hobby ⇄ Downtown Houston:</strong> Sedan $105 · SUV $135</li><li><strong>Sugar Land / Missouri City ⇄ IAH:</strong> Sedan from $155</li></ul><p>Rates include meet-and-greet, wait time, taxes, and tolls. No hidden fees, ever.</p>" },
-      { "h2": "Real-time flight tracking", "body": "<p>We monitor your flight automatically and adjust pickup time for early arrivals or delays — so you're never charged for someone else's schedule and your chauffeur is curbside the moment you're ready.</p>" },
-      { "h2": "The right vehicle for every trip", "body": "<p>Choose a Mercedes S-Class for solo executives, a Cadillac Escalade for families and luggage, or a Mercedes Sprinter for groups up to 14. Every vehicle is late-model, immaculate, and driven by a professional, background-checked chauffeur.</p>" }
+      {
+        "h2": "Flat-rate airport pricing (no surge)",
+        "body": "<p>Transparent, all-inclusive fares across Greater Houston:</p><ul><li><strong>IAH ⇄ Downtown Houston:</strong> Sedan $125 · SUV $165</li><li><strong>Hobby ⇄ Downtown Houston:</strong> Sedan $105 · SUV $135</li><li><strong>Sugar Land / Missouri City ⇄ IAH:</strong> Sedan from $155</li></ul><p>Rates include meet-and-greet, wait time, taxes, and tolls. No hidden fees, ever.</p>"
+      },
+      {
+        "h2": "Real-time flight tracking",
+        "body": "<p>We monitor your flight automatically and adjust pickup time for early arrivals or delays — so you're never charged for someone else's schedule and your chauffeur is curbside the moment you're ready.</p>"
+      },
+      {
+        "h2": "The right vehicle for every trip",
+        "body": "<p>Choose a Mercedes S-Class for solo executives, a Cadillac Escalade for families and luggage, or a Mercedes Sprinter for groups up to 14. Every vehicle is late-model, immaculate, and driven by a professional, background-checked chauffeur.</p>"
+      }
     ],
     "faqs": [
-      { "q": "Do you track my flight?", "a": "Yes. We track your flight in real time and adjust your pickup automatically for delays or early landings at no extra charge." },
-      { "q": "How much is a limo from IAH to downtown Houston?", "a": "Flat rates start at $125 for a Mercedes S-Class sedan and $165 for a Cadillac Escalade SUV, including tolls, taxes, and meet-and-greet." },
-      { "q": "Is AvaLimo available 24/7?", "a": "Yes, our dispatch and chauffeurs operate 24 hours a day, 365 days a year for both IAH and Hobby airports." }
+      {
+        "q": "Do you track my flight?",
+        "a": "Yes. We track your flight in real time and adjust your pickup automatically for delays or early landings at no extra charge."
+      },
+      {
+        "q": "How much is a limo from IAH to downtown Houston?",
+        "a": "Flat rates start at $125 for a Mercedes S-Class sedan and $165 for a Cadillac Escalade SUV, including tolls, taxes, and meet-and-greet."
+      },
+      {
+        "q": "Is AvaLimo available 24/7?",
+        "a": "Yes, our dispatch and chauffeurs operate 24 hours a day, 365 days a year for both IAH and Hobby airports."
+      }
     ]
   },
   {
@@ -25,13 +43,28 @@
     "description": "Direct luxury transfers between Houston (IAH, Hobby, hotels) and the Port of Galveston cruise terminals. Stress-free, on-time, 24/7. Book with AvaLimo: (832) 567-8050.",
     "intro": "Start and end your cruise in comfort. AvaLimo offers direct, non-stop chauffeured transfers between Houston airports, hotels, and every Port of Galveston cruise terminal — perfectly timed to your embarkation and debarkation.",
     "sections": [
-      { "h2": "Non-stop to your cruise terminal", "body": "<p>We serve all Galveston cruise terminals for Carnival, Royal Caribbean, Disney, and more. No shared shuttles or extra stops — just a direct, private ride so you arrive relaxed and on schedule.</p>" },
-      { "h2": "Perfect for groups and luggage", "body": "<p>The Cadillac Escalade and Mercedes Sprinter handle families, friends, and all your cruise luggage with ease. Traveling as a large party? We can coordinate multiple vehicles.</p>" },
-      { "h2": "Return pickups timed to debarkation", "body": "<p>Cruise schedules shift. We monitor your ship's return and stay flexible so your chauffeur is ready when you clear the terminal — no waiting in the Texas heat.</p>" }
+      {
+        "h2": "Non-stop to your cruise terminal",
+        "body": "<p>We serve all Galveston cruise terminals for Carnival, Royal Caribbean, Disney, and more. No shared shuttles or extra stops — just a direct, private ride so you arrive relaxed and on schedule.</p>"
+      },
+      {
+        "h2": "Perfect for groups and luggage",
+        "body": "<p>The Cadillac Escalade and Mercedes Sprinter handle families, friends, and all your cruise luggage with ease. Traveling as a large party? We can coordinate multiple vehicles.</p>"
+      },
+      {
+        "h2": "Return pickups timed to debarkation",
+        "body": "<p>Cruise schedules shift. We monitor your ship's return and stay flexible so your chauffeur is ready when you clear the terminal — no waiting in the Texas heat.</p>"
+      }
     ],
     "faqs": [
-      { "q": "How far is Houston from the Port of Galveston?", "a": "The Port of Galveston is roughly 45–75 minutes from Houston depending on your pickup point. We plan pickup times to get you to the terminal with comfortable margin." },
-      { "q": "Can you handle large groups for a cruise?", "a": "Absolutely. Our Mercedes Sprinter seats up to 14 passengers with luggage, and we can dispatch multiple vehicles for bigger parties." }
+      {
+        "q": "How far is Houston from the Port of Galveston?",
+        "a": "The Port of Galveston is roughly 45–75 minutes from Houston depending on your pickup point. We plan pickup times to get you to the terminal with comfortable margin."
+      },
+      {
+        "q": "Can you handle large groups for a cruise?",
+        "a": "Absolutely. Our Mercedes Sprinter seats up to 14 passengers with luggage, and we can dispatch multiple vehicles for bigger parties."
+      }
     ]
   },
   {
@@ -42,13 +75,28 @@
     "description": "Reliable executive car service for Houston business travel — roadshows, meetings, and Texas Medical Center appointments. Professional chauffeurs, 24/7. Call (832) 567-8050.",
     "intro": "Houston's energy executives, law partners, and medical professionals trust AvaLimo for dependable, discreet corporate transportation — from single meetings to multi-stop roadshows across the metro.",
     "sections": [
-      { "h2": "Built for busy executives", "body": "<p>Ride in a Mercedes S-Class or Cadillac Escalade with Wi-Fi-friendly quiet cabins so you can work en route. Your chauffeur handles traffic, parking, and timing while you focus on business.</p>" },
-      { "h2": "Roadshows & multi-stop days", "body": "<p>Need several stops around Downtown, the Energy Corridor, or the Texas Medical Center? Your vehicle and chauffeur stay with you all day, waiting curbside and ready to depart on your schedule.</p>" },
-      { "h2": "Corporate accounts & billing", "body": "<p>We offer streamlined billing and priority dispatch for companies with recurring travel needs. Contact us to set up a corporate account.</p>" }
+      {
+        "h2": "Built for busy executives",
+        "body": "<p>Ride in a Mercedes S-Class or Cadillac Escalade with Wi-Fi-friendly quiet cabins so you can work en route. Your chauffeur handles traffic, parking, and timing while you focus on business.</p>"
+      },
+      {
+        "h2": "Roadshows & multi-stop days",
+        "body": "<p>Need several stops around Downtown, the Energy Corridor, or the Texas Medical Center? Your vehicle and chauffeur stay with you all day, waiting curbside and ready to depart on your schedule.</p>"
+      },
+      {
+        "h2": "Corporate accounts & billing",
+        "body": "<p>We offer streamlined billing and priority dispatch for companies with recurring travel needs. Contact us to set up a corporate account.</p>"
+      }
     ],
     "faqs": [
-      { "q": "Do you offer corporate accounts?", "a": "Yes. We provide priority dispatch and consolidated billing for businesses with regular travel. Contact dispatch to set one up." },
-      { "q": "Can a chauffeur wait between meetings?", "a": "Yes. With hourly 'as-directed' service, your chauffeur and vehicle stay with you for multi-stop days across Houston." }
+      {
+        "q": "Do you offer corporate accounts?",
+        "a": "Yes. We provide priority dispatch and consolidated billing for businesses with regular travel. Contact dispatch to set one up."
+      },
+      {
+        "q": "Can a chauffeur wait between meetings?",
+        "a": "Yes. With hourly 'as-directed' service, your chauffeur and vehicle stay with you for multi-stop days across Houston."
+      }
     ]
   },
   {
@@ -59,13 +107,28 @@
     "description": "Make a grand entrance. Luxury wedding limos and special-event transportation across Houston — bridal parties, galas, and celebrations. Book AvaLimo: (832) 567-8050.",
     "intro": "Your big day deserves a flawless arrival. AvaLimo provides elegant, on-time transportation for Houston weddings, bridal parties, galas, proms, and milestone celebrations.",
     "sections": [
-      { "h2": "Arrive in style", "body": "<p>From the ceremony to the reception, our Mercedes and Cadillac fleet ensures the couple and bridal party travel in comfort and elegance — with a professional chauffeur handling every detail.</p>" },
-      { "h2": "Group transportation for guests", "body": "<p>The Mercedes Sprinter (up to 14 passengers) keeps your wedding party or guests together and on schedule between venues, hotels, and photo locations.</p>" },
-      { "h2": "Planned around your timeline", "body": "<p>We coordinate with your planner and venue timeline so transportation is one less thing to worry about on your wedding day.</p>" }
+      {
+        "h2": "Arrive in style",
+        "body": "<p>From the ceremony to the reception, our Mercedes and Cadillac fleet ensures the couple and bridal party travel in comfort and elegance — with a professional chauffeur handling every detail.</p>"
+      },
+      {
+        "h2": "Group transportation for guests",
+        "body": "<p>The Mercedes Sprinter (up to 14 passengers) keeps your wedding party or guests together and on schedule between venues, hotels, and photo locations.</p>"
+      },
+      {
+        "h2": "Planned around your timeline",
+        "body": "<p>We coordinate with your planner and venue timeline so transportation is one less thing to worry about on your wedding day.</p>"
+      }
     ],
     "faqs": [
-      { "q": "Can you transport the whole bridal party?", "a": "Yes. Our Mercedes Sprinter seats up to 14, and we can arrange multiple vehicles to keep everyone together and on time." },
-      { "q": "Do you serve proms and galas too?", "a": "Absolutely — we handle proms, galas, quinceañeras, anniversaries, and other special events across Greater Houston." }
+      {
+        "q": "Can you transport the whole bridal party?",
+        "a": "Yes. Our Mercedes Sprinter seats up to 14, and we can arrange multiple vehicles to keep everyone together and on time."
+      },
+      {
+        "q": "Do you serve proms and galas too?",
+        "a": "Absolutely — we handle proms, galas, quinceañeras, anniversaries, and other special events across Greater Houston."
+      }
     ]
   },
   {
@@ -76,13 +139,76 @@
     "description": "Private door-to-door luxury transport from Houston to Austin, Dallas, San Antonio, and beyond. Skip airport queues — travel in an executive Mercedes or Escalade. Call (832) 567-8050.",
     "intro": "Avoid airport security lines and regional flight delays. AvaLimo offers direct, door-to-door long-distance transport between Houston and any Texas city — relax or work in an executive Mercedes or Cadillac Escalade the entire way.",
     "sections": [
-      { "h2": "Direct door-to-door across Texas", "body": "<p>Travel in private comfort from your Houston doorstep to Austin, Dallas, San Antonio, College Station, and beyond — no connections, no crowds, no waiting.</p>" },
-      { "h2": "Fixed flat rates", "body": "<p>Enjoy predictable, fixed pricing for popular Texas routes including Austin, Dallas, San Antonio, and Texas A&M — with tolls and taxes included.</p>" },
-      { "h2": "Work or rest en route", "body": "<p>Quiet, spacious cabins let you take calls, catch up on email, or simply relax while a professional chauffeur handles the highway miles.</p>" }
+      {
+        "h2": "Direct door-to-door across Texas",
+        "body": "<p>Travel in private comfort from your Houston doorstep to Austin, Dallas, San Antonio, College Station, and beyond — no connections, no crowds, no waiting.</p>"
+      },
+      {
+        "h2": "Fixed flat rates",
+        "body": "<p>Enjoy predictable, fixed pricing for popular Texas routes including Austin, Dallas, San Antonio, and Texas A&M — with tolls and taxes included.</p>"
+      },
+      {
+        "h2": "Work or rest en route",
+        "body": "<p>Quiet, spacious cabins let you take calls, catch up on email, or simply relax while a professional chauffeur handles the highway miles.</p>"
+      }
     ],
     "faqs": [
-      { "q": "Which Texas cities do you serve?", "a": "We provide door-to-door transport from Houston to Austin, Dallas, San Antonio, College Station (Texas A&M), and other Texas destinations on request." },
-      { "q": "Is long-distance priced by the mile?", "a": "Popular routes have fixed flat rates including tolls and taxes, so you know the price up front." }
+      {
+        "q": "Which Texas cities do you serve?",
+        "a": "We provide door-to-door transport from Houston to Austin, Dallas, San Antonio, College Station (Texas A&M), and other Texas destinations on request."
+      },
+      {
+        "q": "Is long-distance priced by the mile?",
+        "a": "Popular routes have fixed flat rates including tolls and taxes, so you know the price up front."
+      }
+    ]
+  },
+  {
+    "slug": "iah-airport-limo-service",
+    "serviceName": "IAH Airport Limo Service",
+    "title": "IAH Airport Limo Service Houston — Flat Rate, Flight Tracking | AvaLimo",
+    "h1": "IAH Airport Transfers — Flat Rate from Pickup to Drop-Off",
+    "description": "AvaLimo provides flat-rate Mercedes and Escalade transfers from Houston IAH to anywhere in the metro. No surge pricing. Flight tracking included. Call (832) 567-8050.",
+    "intro": "Landing at Bush Intercontinental shouldn’t mean fighting for a rideshare. AvaLimo meets you at baggage claim with your name on a sign, tracks your flight in real time, and charges one flat price agreed before you book — serving every IAH terminal (A, B, C, D, E) and the private FBOs, 24/7.",
+    "sections": [
+      {
+        "h2": "What’s included with every IAH pickup",
+        "body": "<ul><li><strong>Meet &amp; greet:</strong> your chauffeur waits at baggage claim holding a name sign</li><li><strong>Real-time flight monitoring:</strong> early or delayed, we adjust — you never pay for the airline’s schedule</li><li><strong>Complimentary wait time:</strong> 45 minutes on domestic arrivals, 60 minutes international</li><li><strong>Luggage help:</strong> from the carousel straight to your vehicle</li><li><strong>24/7 live dispatch:</strong> a real Houston dispatcher at (832) 567-8050, day or night</li></ul>"
+      },
+      {
+        "h2": "Flat IAH rates — the price you see is the price you pay",
+        "body": "<p>All-inclusive flat fares, taxes, tolls and airport parking included. Zero surge, ever:</p><ul><li><strong>IAH ⇄ Downtown Houston:</strong> Sedan $125 · SUV $165</li><li><strong>IAH ⇄ Galleria / Uptown:</strong> Sedan $130 · SUV $170</li><li><strong>IAH ⇄ The Woodlands:</strong> Sedan $115 · SUV $155</li><li><strong>IAH ⇄ Port of Galveston:</strong> Sedan $220 · SUV $260</li></ul><p>Headed somewhere else — Energy Corridor, Texas Medical Center, Sugar Land, Katy, Kingwood? Call <a href=\"tel:+18325678050\">(832) 567-8050</a> for a flat quote before you book.</p>"
+      },
+      {
+        "h2": "Vehicle options",
+        "body": "<ul><li><strong>Mercedes-Benz S-Class</strong> — up to 3 passengers, executive sedan comfort</li><li><strong>Cadillac Escalade ESV</strong> — up to 6 passengers with full luggage room</li><li><strong>Mercedes-Benz Sprinter</strong> — groups up to 14 with bags</li></ul><p>Every vehicle is late-model, detailed before dispatch, and driven by a professional, background-checked chauffeur.</p>"
+      },
+      {
+        "h2": "Private aviation &amp; FBO pickups at IAH",
+        "body": "<p>Flying private? We service IAH’s fixed-base operators — Signature Flight Support, Atlantic Aviation, and Jet Aviation (North &amp; South ramps) — with the same flight-tracked, flat-rate service, planeside where permitted.</p>"
+      }
+    ],
+    "faqs": [
+      {
+        "q": "How early should I book my IAH pickup?",
+        "a": "Whenever you know your flight — a day or two ahead is ideal, but our dispatch runs 24/7 and same-day bookings are welcome whenever a vehicle is available. Call (832) 567-8050."
+      },
+      {
+        "q": "Do you wait if my flight is delayed?",
+        "a": "Yes. We track your flight in real time and adjust your pickup automatically. Complimentary wait time is 45 minutes for domestic arrivals and 60 minutes for international — delays never trigger surge pricing."
+      },
+      {
+        "q": "Is the rate per person or per car?",
+        "a": "Per car. Your flat rate covers the whole vehicle, including taxes, tolls, airport parking, meet-and-greet, and standard wait time — the price agreed before you book is the price you pay."
+      },
+      {
+        "q": "Where do I meet my chauffeur at IAH?",
+        "a": "At your terminal’s baggage claim, holding a name sign. Prefer curbside? Your chauffeur stages nearby and pulls up within minutes of your ready text."
+      },
+      {
+        "q": "What if I’m landing at Hobby instead?",
+        "a": "We serve both Houston airports with the same flat-rate, flight-tracked service — see our Houston airport transfers page or call (832) 567-8050 and we’ll set it up."
+      }
     ]
   }
 ]
