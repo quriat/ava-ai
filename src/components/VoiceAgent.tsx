@@ -14,6 +14,10 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   const [transcription, setTranscription] = useState('');
   const [error, setError] = useState('');
   const [transferRequested, setTransferRequested] = useState(false);
+  const [callMeName, setCallMeName] = useState('');
+  const [callMePhone, setCallMePhone] = useState('');
+  const [callMeState, setCallMeState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [callMeMsg, setCallMeMsg] = useState('');
   const transferRequestedRef = useRef(false);
   const configured = isVapiConfigured();
   const transferPhone = getTransferPhone();
@@ -43,6 +47,37 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
     setTransferRequested(false);
     transferRequestedRef.current = false;
   }, []);
+
+  const handleCallMe = useCallback(async () => {
+    const digits = callMePhone.replace(/\D/g, '');
+    let e164 = '';
+    if (digits.length === 10) e164 = '+1' + digits;
+    else if (digits.length === 11 && digits.startsWith('1')) e164 = '+' + digits;
+    else {
+      setCallMeState('error');
+      setCallMeMsg('Enter a valid 10-digit US phone number.');
+      return;
+    }
+    setCallMeState('sending');
+    setCallMeMsg('');
+    try {
+      const res = await fetch('https://n8napp.adamj.fit/webhook/call_me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: callMeName.trim(),
+          phone: e164,
+          agent: type === AgentType.FRONT_DESK ? 'Front Desk' : 'Dispatch',
+        }),
+      });
+      if (!res.ok) throw new Error('call_me failed');
+      setCallMeState('sent');
+      setCallMeMsg('Calling you now \u2014 answer and talk. On a real call she can transfer you to a live dispatcher.');
+    } catch {
+      setCallMeState('error');
+      setCallMeMsg('Could not place the call. Please try again.');
+    }
+  }, [callMeName, callMePhone, type]);
 
   useEffect(() => {
     if (!configured) return;
@@ -190,6 +225,37 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
       {!configured && !error && !isActive && (
         <div className="text-[10px] text-amber-400 text-center max-w-[180px] leading-relaxed">
           Voice agents require Vapi public key and assistant IDs.
+        </div>
+      )}
+
+      {configured && !isActive && (
+        <div className="w-full border-t border-white/10 pt-4 flex flex-col items-center gap-2.5">
+          <p className="text-[9px] uppercase tracking-[0.3em] text-white/40 font-bold">Or get a real phone call</p>
+          <input
+            value={callMeName}
+            onChange={(e) => setCallMeName(e.target.value)}
+            placeholder="Your name (optional)"
+            className="w-full bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-xs text-white placeholder-white/30 outline-none focus:border-gold/50"
+          />
+          <input
+            value={callMePhone}
+            onChange={(e) => setCallMePhone(e.target.value)}
+            placeholder="Your phone number"
+            inputMode="tel"
+            className="w-full bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-xs text-white placeholder-white/30 outline-none focus:border-gold/50"
+          />
+          <button
+            onClick={handleCallMe}
+            disabled={callMeState === 'sending'}
+            className="w-full bg-gold text-black px-4 py-2.5 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-[var(--gold-light)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {callMeState === 'sending' ? 'Calling\u2026' : 'Call Me Now'}
+          </button>
+          {callMeMsg && (
+            <div className={`text-[10px] text-center max-w-[200px] leading-relaxed ${callMeState === 'error' ? 'text-red-400' : 'text-emerald-400'}`}>
+              {callMeMsg}
+            </div>
+          )}
         </div>
       )}
     </div>
