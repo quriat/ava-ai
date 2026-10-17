@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, Clock, MapPin, User, Mail, Phone, Plane, Users, Briefcase, Check, Sparkles, AlertCircle, Navigation, ShieldCheck } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Mail, Phone, Plane, Users, Briefcase, Check, Sparkles, AlertCircle, Navigation, ShieldCheck, MessageCircle } from 'lucide-react';
 import { VehicleType, TripType, RouteEstimate } from '../types';
 import { FLEET_DATA, COMPANY_INFO } from '../data/avalimoData';
 import { calculateRouteEstimate } from '../services/routeCalculationService';
-import { submitBookingRequest } from '../services/bookingService';
+import { submitBookingRequest, buildWhatsAppFallbackUrl } from '../services/bookingService';
 
 interface BookingFormProps {
   initialData?: {
@@ -190,6 +190,26 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       setSubmittedBooking(submission);
     }
   };
+
+  // WhatsApp escape hatch shown when a submission fails: one tap sends the
+  // visitor's current form values to dispatch over WhatsApp instead.
+  const whatsAppFallbackUrl = (reference?: string) =>
+    buildWhatsAppFallbackUrl(
+      {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        pickup: formData.pickup,
+        dropoff: formData.dropoff,
+        date: formData.date,
+        time: formData.time,
+        passengers: Number(formData.passengers) || 1,
+        luggage: Number(formData.luggage) || 0,
+        vehicle: selectedVehicle.name,
+        tripType,
+      },
+      reference,
+    );
 
   const formatBookingEmail = (data: any) => {
     return `
@@ -581,20 +601,20 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setSubmittedBooking(null)}></div>
           <div className="relative bg-luxury w-full max-w-lg rounded-2xl shadow-2xl border border-gold/40 p-6 sm:p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-gold/20 border border-[var(--gold)] text-[var(--gold)] flex items-center justify-center mx-auto mb-4">
+            <div className={`w-16 h-16 rounded-full border flex items-center justify-center mx-auto mb-4 ${submitStatus === 'success' ? 'bg-gold/20 border-[var(--gold)] text-[var(--gold)]' : 'bg-red-500/15 border-red-400/60 text-red-300'}`}>
               {submitStatus === 'success' ? <Check size={36} /> : <AlertCircle size={36} />}
             </div>
 
-            <span className="text-xs uppercase tracking-widest text-[var(--gold)] font-bold">
-              {submitStatus === 'success' ? 'Reservation Request Received' : 'Request Received — Needs Confirmation'}
+            <span className={`text-xs uppercase tracking-widest font-bold ${submitStatus === 'success' ? 'text-[var(--gold)]' : 'text-red-300'}`}>
+              {submitStatus === 'success' ? 'Reservation Request Received' : 'Request Not Sent'}
             </span>
             <h3 className="text-2xl font-serif font-bold text-white mt-1 mb-2">
-              Thank You, {submittedBooking.name}!
+              {submitStatus === 'success' ? `Thank You, ${submittedBooking.name}!` : "Your Request Didn't Go Through"}
             </h3>
             <p className="text-white/60 text-xs mb-6">
               {submitStatus === 'success'
                 ? 'Your request has been forwarded to dispatch. A dispatcher will confirm availability, final quote, and chauffeur assignment.'
-                : (submitResult && submitResult.message) || 'Your request was recorded. Please call dispatch to confirm.'}
+                : (submitResult && submitResult.message) || 'Your request could not be sent. Send it by WhatsApp instead, or call dispatch.'}
             </p>
 
             <div className="bg-black p-4 rounded-xl border border-white/10 text-left text-xs space-y-2 mb-6">
@@ -623,9 +643,26 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                 <span className="text-[var(--gold)]">${submittedBooking.totalCost}</span>
               </div>
               <div className="text-white/40 text-[10px] pt-1">
-                This is a reservation request, not a confirmed booking, until dispatch approves.
+                {submitStatus === 'success'
+                  ? 'This is a reservation request, not a confirmed booking, until dispatch approves.'
+                  : 'This request has NOT reached dispatch yet. Nothing is booked until you send it by WhatsApp or call us.'}
               </div>
             </div>
+
+            {submitStatus !== 'success' && (
+              <div className="mb-3">
+                <p className="text-[11px] text-white/50 mb-2">Fastest fix — one tap, and your details come with you:</p>
+                <a
+                  href={whatsAppFallbackUrl(submittedBooking.confirmationId)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#25D366] hover:bg-[#1fb857] text-black py-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+                >
+                  <MessageCircle size={16} />
+                  Send It by WhatsApp Instead
+                </a>
+              </div>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-3">
               <a

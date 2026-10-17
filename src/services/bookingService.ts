@@ -28,6 +28,42 @@ export interface BookingResult {
   reference?: string;
 }
 
+// WhatsApp number AvaLimo already publishes on the site (toll-free, WABA-connected).
+export const WHATSAPP_NUMBER = '18557102439';
+
+const MAX_PREFILL_FIELD = 120;
+const MAX_PREFILL_TOTAL = 700;
+
+function clipField(value: unknown, max = MAX_PREFILL_FIELD): string {
+  const text = String(value ?? '').trim().replace(/\s+/g, ' ');
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+/**
+ * One-tap escape hatch for a failed website submission: opens WhatsApp with the
+ * visitor's trip details prefilled, so the lead still reaches dispatch on a
+ * channel that cannot silently fail. Long values are truncated gracefully.
+ */
+export function buildWhatsAppFallbackUrl(payload: BookingPayload, reference?: string): string {
+  const lines = [
+    'Hi AvaLimo, I just tried the website request form and it could not send.',
+    `Name: ${clipField(payload.name) || '—'}`,
+    `Pickup: ${clipField(payload.pickup)}`,
+    `Dropoff: ${clipField(payload.dropoff)}`,
+    `Date: ${clipField(payload.date, 20)}`,
+    `Time: ${clipField(payload.time, 20)}`,
+    `Passengers: ${clipField(payload.passengers, 10)}`,
+    `Vehicle: ${clipField(payload.vehicle)}`,
+    `My phone: ${clipField(payload.phone, 30)}`,
+  ];
+  if (reference) lines.push(`Reference: ${clipField(reference, 30)}`);
+  let message = lines.join('\n');
+  if (message.length > MAX_PREFILL_TOTAL) {
+    message = `${message.slice(0, MAX_PREFILL_TOTAL - 1)}…`;
+  }
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
 export async function submitBookingRequest(payload: BookingPayload): Promise<BookingResult> {
   const endpoint = getPublicConfig().BOOKING_API_ENDPOINT || '/api/book';
 
@@ -55,14 +91,15 @@ export async function submitBookingRequest(payload: BookingPayload): Promise<Boo
     return {
       ok: false,
       status: 'error',
-      message: data.message || 'Could not submit booking request. Please call dispatch.',
+      message: data.message || 'Your request could not be sent to dispatch. Use WhatsApp below or call (832) 567-8050.',
     };
   } catch (err) {
-    // Network / server down — still show the user their request was captured locally
+    // Network / server down — the request did NOT reach dispatch. The form
+    // shows a WhatsApp fallback so the lead is not lost.
     return {
       ok: false,
       status: 'fallback',
-      message: 'Booking request could not be sent automatically. Please call (832) 567-8050 to confirm.',
+      message: 'Your request could not be sent automatically — it has not reached dispatch. Use WhatsApp below or call (832) 567-8050.',
     };
   }
 }
