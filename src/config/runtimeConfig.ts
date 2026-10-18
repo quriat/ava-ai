@@ -48,11 +48,21 @@ export function getPublicConfig(): PublicRuntimeConfig {
       // Dedicated Dispatch assistant ("AvaLimo Houston — Dispatch",
       // published in Vapi Oct 15, 2026) — separate from the front desk.
       'a9df8ecc-29bb-4c19-8935-062f5c54b9a2',
-    BOOKING_API_ENDPOINT:
-      getWindowConfig().BOOKING_API_ENDPOINT ||
-      (typeof __VITE_BOOKING_API_ENDPOINT__ !== 'undefined' ? __VITE_BOOKING_API_ENDPOINT__ : undefined) ||
-      process.env?.VITE_BOOKING_API_ENDPOINT ||
-      '/api/book',
+    // '/api/book' was the old same-host proxy path; nothing serves it on the
+    // current host, so form submissions to it silently died (found Oct 18,
+    // 2026). The live intake is the n8n Booking Router webhook. The deploy
+    // entrypoint still injects '/api/book' as its default, so treat any
+    // non-absolute endpoint as unset and fall back to the router — the same
+    // pattern as the Vapi assistant IDs above.
+    BOOKING_API_ENDPOINT: ((): string => {
+      const candidate =
+        getWindowConfig().BOOKING_API_ENDPOINT ||
+        (typeof __VITE_BOOKING_API_ENDPOINT__ !== 'undefined' ? __VITE_BOOKING_API_ENDPOINT__ : undefined) ||
+        process.env?.VITE_BOOKING_API_ENDPOINT;
+      return candidate && candidate.startsWith('http')
+        ? candidate
+        : 'https://n8napp.adamj.fit/webhook/avalimo-booking';
+    })(),
     VOICE_TRANSFER_PHONE:
       getWindowConfig().VOICE_TRANSFER_PHONE ||
       (typeof __VITE_VOICE_TRANSFER_PHONE__ !== 'undefined' ? __VITE_VOICE_TRANSFER_PHONE__ : undefined) ||

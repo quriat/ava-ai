@@ -65,7 +65,7 @@ export function buildWhatsAppFallbackUrl(payload: BookingPayload, reference?: st
 }
 
 export async function submitBookingRequest(payload: BookingPayload): Promise<BookingResult> {
-  const endpoint = getPublicConfig().BOOKING_API_ENDPOINT || '/api/book';
+  const endpoint = getPublicConfig().BOOKING_API_ENDPOINT || 'https://n8napp.adamj.fit/webhook/avalimo-booking';
 
   try {
     const response = await fetch(endpoint, {
@@ -79,12 +79,20 @@ export async function submitBookingRequest(payload: BookingPayload): Promise<Boo
 
     const data = (await response.json().catch(() => ({}))) as any;
 
-    if (response.ok && data.status === 'ok') {
+    // The n8n Booking Router answers 200 with {"message":"Workflow was
+    // started"} — it has no status field. Any 2xx from the intake endpoint
+    // means the request reached the router (email + message legs fire from
+    // there); requiring data.status === 'ok' marked every real submission
+    // as failed (Oct 18, 2026 fix).
+    if (response.ok) {
       return {
         ok: true,
         status: 'success',
-        message: data.message || 'Booking request received. Dispatch will confirm shortly.',
-        reference: data.reference || data.confirmationId,
+        message:
+          data.status === 'ok' && data.message
+            ? data.message
+            : 'Booking request received. Dispatch will confirm shortly.',
+        reference: data.reference || data.confirmationId || (payload as any).confirmationId,
       };
     }
 
