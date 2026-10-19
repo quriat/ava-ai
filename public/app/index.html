@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>AvaLimo — Client App</title>
+<link rel="manifest" href="/app/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/app/icon-192.png">
+<link rel="icon" type="image/png" href="/app/icon-192.png">
+<style>
+  :root{
+    --gold:#C5A059; --gold-light:#D4AF37; --gold-dark:#A68035;
+    --bg:#000000; --panel:#111111; --panel-2:#1a1a1a; --line:#2a2a2a;
+    --text:#f5f1e8; --muted:#a89f8d; --danger:#e0655f;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh; padding-bottom:env(safe-area-inset-bottom);
+  }
+  header{
+    padding:20px 18px 14px; text-align:center;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#0a0a0a,#000);
+  }
+  .logo{font-size:30px; font-weight:800; letter-spacing:3px; color:var(--gold);}
+  .logo span{color:var(--text);}
+  .tagline{color:var(--muted); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-top:3px;}
+  .app-name{margin-top:8px; display:inline-block; font-size:12px; font-weight:700; letter-spacing:1.5px;
+    color:#000; background:var(--gold); border-radius:999px; padding:3px 12px; text-transform:uppercase;}
+  main{max-width:560px; margin:0 auto; padding:16px;}
+
+  .quick-actions{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px;}
+  .quick-actions a{
+    display:block; text-align:center; text-decoration:none; font-size:13px; font-weight:600;
+    color:var(--gold); background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:11px 4px;
+  }
+  .quick-actions a:active{background:var(--panel-2);}
+
+  .tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .tabs button{
+    flex:1; padding:12px; font-size:15px; font-weight:700; cursor:pointer;
+    background:var(--panel); color:var(--muted); border:1px solid var(--line); border-radius:10px;
+  }
+  .tabs button.active{background:var(--gold); color:#000; border-color:var(--gold);}
+
+  form{display:flex; flex-direction:column; gap:12px;}
+  label{display:block; font-size:13px; font-weight:600; color:var(--muted); margin-bottom:5px; letter-spacing:.3px;}
+  input, select, textarea{
+    width:100%; padding:13px 12px; font-size:16px; color:var(--text);
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    appearance:none; -webkit-appearance:none;
+  }
+  select{background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);
+    background-position:calc(100% - 18px) 55%,calc(100% - 12px) 55%; background-size:6px 6px; background-repeat:no-repeat;}
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--gold);}
+  input[type="date"], input[type="time"]{color-scheme:dark;}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .submit-btn{
+    margin-top:4px; padding:16px; font-size:17px; font-weight:800; letter-spacing:.5px; cursor:pointer;
+    background:linear-gradient(180deg,var(--gold-light),var(--gold)); color:#000;
+    border:none; border-radius:12px;
+  }
+  .submit-btn:disabled{opacity:.55; cursor:default;}
+  .hint{font-size:12px; color:var(--muted); text-align:center;}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px;}
+  .card .route{font-size:16px; font-weight:700; line-height:1.45;}
+  .card .when{color:var(--gold); font-weight:600; font-size:14px; margin-bottom:6px;}
+  .card .meta{color:var(--muted); font-size:13px; margin-top:6px; line-height:1.5;}
+  .saved-note{font-size:12px; color:var(--muted); text-align:center; margin-bottom:12px; letter-spacing:.5px;}
+  .empty{text-align:center; color:var(--muted); padding:34px 16px; font-size:15px; line-height:1.6;}
+
+  .result{text-align:center; padding:28px 10px;}
+  .result .big{font-size:22px; font-weight:800; margin-bottom:10px;}
+  .result .sub{color:var(--muted); font-size:15px; line-height:1.6; margin-bottom:22px;}
+  .result .check{font-size:46px; color:var(--gold); margin-bottom:12px;}
+  .result .err-ic{font-size:46px; color:var(--danger); margin-bottom:12px;}
+  .btn{
+    display:block; width:100%; padding:15px; margin-bottom:10px; text-align:center; text-decoration:none;
+    font-size:16px; font-weight:700; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--text); cursor:pointer;
+  }
+  .btn.gold{background:linear-gradient(180deg,var(--gold-light),var(--gold)); color:#000; border:none;}
+  .btn.whatsapp{background:#1f2c24; color:#7dd87d; border-color:#2e4634;}
+  .hidden{display:none !important;}
+  footer{text-align:center; color:var(--muted); font-size:12px; padding:18px 10px 26px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">AVA<span>LIMO</span></div>
+  <div class="tagline">Luxury Chauffeur Service · Houston</div>
+  <div><span class="app-name">Client App</span></div>
+</header>
+
+<main>
+  <div class="quick-actions">
+    <a href="tel:+18325678050">📞 Call Dispatch</a>
+    <a href="tel:+18329176331">🎙️ AI Concierge</a>
+    <a href="https://wa.me/18557102439" target="_blank" rel="noopener">💬 WhatsApp</a>
+  </div>
+
+  <div class="tabs">
+    <button id="tabBook" class="active" type="button">Book a Ride</button>
+    <button id="tabRides" type="button">My Rides</button>
+  </div>
+
+  <!-- BOOK -->
+  <section id="viewBook">
+    <form id="bookForm" novalidate>
+      <div>
+        <label for="name">Full name *</label>
+        <input id="name" name="name" type="text" autocomplete="name" required placeholder="Your name">
+      </div>
+      <div class="row">
+        <div>
+          <label for="phone">Phone *</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="(832) 555-0123">
+        </div>
+        <div>
+          <label for="email">Email (optional)</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@email.com">
+        </div>
+      </div>
+      <div>
+        <label for="pickup">Pickup location *</label>
+        <input id="pickup" name="pickup" type="text" required placeholder="Pickup address or airport">
+      </div>
+      <div>
+        <label for="dropoff">Drop-off location *</label>
+        <input id="dropoff" name="dropoff" type="text" required placeholder="Destination address">
+      </div>
+      <div class="row">
+        <div>
+          <label for="date">Date *</label>
+          <input id="date" name="date" type="date" required>
+        </div>
+        <div>
+          <label for="time">Time *</label>
+          <input id="time" name="time" type="time" required>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="passengers">Passengers</label>
+          <input id="passengers" name="passengers" type="number" min="1" max="14" value="1" inputmode="numeric">
+        </div>
+        <div>
+          <label for="luggage">Luggage</label>
+          <input id="luggage" name="luggage" type="number" min="0" max="20" value="0" inputmode="numeric">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="vehicle">Vehicle</label>
+          <select id="vehicle" name="vehicle">
+            <option>Sedan</option>
+            <option selected>SUV – Escalade</option>
+            <option>Sprinter Van</option>
+          </select>
+        </div>
+        <div>
+          <label for="tripType">Trip type</label>
+          <select id="tripType" name="tripType">
+            <option selected>One Way</option>
+            <option>Round Trip</option>
+            <option>Hourly</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="flightNumber">Flight number (optional)</label>
+        <input id="flightNumber" name="flightNumber" type="text" placeholder="e.g. UA 1829">
+      </div>
+      <div>
+        <label for="specialInstructions">Special instructions (optional)</label>
+        <textarea id="specialInstructions" name="specialInstructions" rows="3" placeholder="Child seat, sign name, gate details…"></textarea>
+      </div>
+      <button class="submit-btn" id="submitBtn" type="submit">Request My Ride</button>
+      <p class="hint">Flat-rate pricing · No surge · Dispatch confirms every request personally.</p>
+    </form>
+  </section>
+
+  <!-- SUCCESS -->
+  <section id="viewSuccess" class="hidden">
+    <div class="result">
+      <div class="check">✓</div>
+      <div class="big">Request received</div>
+      <p class="sub">Dispatch will confirm shortly. Your ride is saved under <strong>My Rides</strong> on this phone.</p>
+      <button class="btn gold" id="successRidesBtn" type="button">View My Rides</button>
+      <button class="btn" id="successAgainBtn" type="button">Book Another Ride</button>
+    </div>
+  </section>
+
+  <!-- ERROR -->
+  <section id="viewError" class="hidden">
+    <div class="result">
+      <div class="err-ic">⚠</div>
+      <div class="big">We couldn't send your request</div>
+      <p class="sub">Sorry — the booking didn't go through. Your details are <strong>not</strong> lost: send them to us on WhatsApp or call dispatch and we'll book you right away.</p>
+      <a class="btn whatsapp" id="waFallback" href="https://wa.me/18557102439" target="_blank" rel="noopener">💬 Send via WhatsApp</a>
+      <a class="btn gold" href="tel:+18325678050">📞 Call Dispatch — (832) 567-8050</a>
+      <button class="btn" id="errorBackBtn" type="button">Back to the Form</button>
+    </div>
+  </section>
+
+  <!-- MY RIDES -->
+  <section id="viewRides" class="hidden">
+    <p class="saved-note">Saved on this phone</p>
+    <div id="ridesList"></div>
+  </section>
+</main>
+
+<footer>AvaLimo · avalimo.net · (832) 567-8050</footer>
+
+<script>
+(function(){
+  "use strict";
+  var WEBHOOK = "https://n8napp.adamj.fit/webhook/avalimo-booking";
+  var STORE_KEY = "avalimo.myRides";
+
+  var views = {
+    book: document.getElementById("viewBook"),
+    success: document.getElementById("viewSuccess"),
+    error: document.getElementById("viewError"),
+    rides: document.getElementById("viewRides")
+  };
+  var tabBook = document.getElementById("tabBook");
+  var tabRides = document.getElementById("tabRides");
+
+  function show(name){
+    Object.keys(views).forEach(function(k){ views[k].classList.toggle("hidden", k !== name); });
+    tabBook.classList.toggle("active", name === "book" || name === "success" || name === "error");
+    tabRides.classList.toggle("active", name === "rides");
+    if(name === "rides") renderRides();
+    window.scrollTo(0,0);
+  }
+  tabBook.addEventListener("click", function(){ show("book"); });
+  tabRides.addEventListener("click", function(){ show("rides"); });
+  document.getElementById("successRidesBtn").addEventListener("click", function(){ show("rides"); });
+  document.getElementById("successAgainBtn").addEventListener("click", function(){ show("book"); });
+  document.getElementById("errorBackBtn").addEventListener("click", function(){ show("book"); });
+
+  function loadRides(){
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+    catch(e){ return []; }
+  }
+  function saveRide(ride){
+    var rides = loadRides();
+    rides.unshift(ride);
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(rides)); } catch(e){}
+  }
+
+  function fmtDate(dstr){
+    if(!dstr) return "";
+    var parts = dstr.split("-");
+    if(parts.length !== 3) return dstr;
+    var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    return d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric", year:"numeric" });
+  }
+  function fmtTime(tstr){
+    if(!tstr) return "";
+    var p = tstr.split(":");
+    if(p.length < 2) return tstr;
+    var d = new Date(); d.setHours(Number(p[0]), Number(p[1]), 0, 0);
+    return d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+  }
+
+  function renderRides(){
+    var list = document.getElementById("ridesList");
+    var rides = loadRides();
+    list.innerHTML = "";
+    if(!rides.length){
+      list.innerHTML = '<div class="empty">No rides saved yet.<br>Book your first ride and it will appear here.</div>';
+      return;
+    }
+    rides.forEach(function(r){
+      var card = document.createElement("div");
+      card.className = "card";
+      var meta = [];
+      if(r.vehicle) meta.push(r.vehicle);
+      if(r.tripType) meta.push(r.tripType);
+      if(r.passengers) meta.push(r.passengers + " passenger" + (Number(r.passengers) === 1 ? "" : "s"));
+      if(r.flightNumber) meta.push("Flight " + r.flightNumber);
+      card.innerHTML =
+        '<div class="when"></div>' +
+        '<div class="route"></div>' +
+        (meta.length ? '<div class="meta"></div>' : '');
+      card.querySelector(".when").textContent = fmtDate(r.date) + (r.time ? " · " + fmtTime(r.time) : "");
+      card.querySelector(".route").textContent = (r.pickup || "") + " → " + (r.dropoff || "");
+      if(meta.length) card.querySelector(".meta").textContent = meta.join(" · ");
+      list.appendChild(card);
+    });
+  }
+
+  var form = document.getElementById("bookForm");
+  var submitBtn = document.getElementById("submitBtn");
+
+  form.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    if(!form.checkValidity()){ form.reportValidity(); return; }
+
+    var booking = {
+      name: document.getElementById("name").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      pickup: document.getElementById("pickup").value.trim(),
+      dropoff: document.getElementById("dropoff").value.trim(),
+      date: document.getElementById("date").value,
+      time: document.getElementById("time").value,
+      passengers: document.getElementById("passengers").value,
+      luggage: document.getElementById("luggage").value,
+      vehicle: document.getElementById("vehicle").value,
+      tripType: document.getElementById("tripType").value,
+      flightNumber: document.getElementById("flightNumber").value.trim(),
+      specialInstructions: document.getElementById("specialInstructions").value.trim()
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending…";
+
+    fetch(WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(booking)
+    }).then(function(res){
+      if(res.status >= 200 && res.status < 300){
+        booking.savedAt = new Date().toISOString();
+        saveRide(booking);
+        form.reset();
+        document.getElementById("passengers").value = "1";
+        document.getElementById("luggage").value = "0";
+        show("success");
+      } else {
+        showError(booking);
+      }
+    }).catch(function(){
+      showError(booking);
+    }).finally(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Request My Ride";
+    });
+  });
+
+  function showError(booking){
+    var lines = [
+      "AvaLimo ride request",
+      "Name: " + booking.name,
+      "Phone: " + booking.phone,
+      "Pickup: " + booking.pickup,
+      "Drop-off: " + booking.dropoff,
+      "When: " + fmtDate(booking.date) + " at " + fmtTime(booking.time),
+      "Vehicle: " + booking.vehicle + " · " + booking.tripType,
+      "Passengers: " + booking.passengers + " · Luggage: " + booking.luggage
+    ];
+    if(booking.flightNumber) lines.push("Flight: " + booking.flightNumber);
+    if(booking.specialInstructions) lines.push("Notes: " + booking.specialInstructions);
+    document.getElementById("waFallback").href =
+      "https://wa.me/18557102439?text=" + encodeURIComponent(lines.join("\n"));
+    show("error");
+  }
+})();
+</script>
+</body>
+</html>
