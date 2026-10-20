@@ -97,6 +97,8 @@
   <!-- SAVED TRIPS -->
   <section id="viewList">
     <h2 class="section">My Trips</h2>
+    <div id="feedStatus" style="color:var(--muted); font-size:13px; margin:-6px 0 10px;">Loading live trips…</div>
+    <button type="button" id="refreshBtn" style="background:var(--panel); color:var(--gold); border:1px solid var(--line); border-radius:10px; padding:9px 14px; font-size:14px; font-weight:700; margin-bottom:14px; cursor:pointer;">↻ Refresh trips</button>
     <div id="tripsList"></div>
   </section>
 </main>
@@ -183,12 +185,40 @@
     window.scrollTo(0,0);
   }
 
+  var FEED_URL = "https://n8napp.adamj.fit/webhook/driver-feed2-trips?key=C28qQJckj25eTie2sfsLR5gQ";
+  var feedTrips = null;
+
+  function mergedTrips(){
+    var out = [];
+    var seen = {};
+    var feed = feedTrips || [];
+    feed.forEach(function(t){ out.push(t); seen[tripKey(t)] = 1; });
+    loadTrips().forEach(function(t){ if(!seen[tripKey(t)]) out.push(t); });
+    return out;
+  }
+
+  function fetchFeed(){
+    var st = document.getElementById("feedStatus");
+    if(st) st.textContent = "Loading live trips…";
+    fetch(FEED_URL, { headers: { "Accept": "application/json" } })
+      .then(function(r){ if(!r.ok) throw new Error("feed " + r.status); return r.json(); })
+      .then(function(data){
+        feedTrips = (data && data.trips) || [];
+        if(st) st.textContent = "Live trips updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) + " · " + feedTrips.length + " upcoming";
+        if(!viewList.classList.contains("hidden")) showList();
+      })
+      .catch(function(){
+        if(st) st.textContent = "Couldn't refresh live trips — showing saved trips on this phone.";
+        if(!viewList.classList.contains("hidden")) showList();
+      });
+  }
+
   function showList(){
     var list = document.getElementById("tripsList");
-    var trips = loadTrips();
+    var trips = mergedTrips();
     list.innerHTML = "";
     if(!trips.length){
-      list.innerHTML = '<div class="empty">No trips yet — open a trip link from dispatch.</div>';
+      list.innerHTML = '<div class="empty">No trips yet — live trips from dispatch appear here automatically.</div>';
     } else {
       trips.forEach(function(t){
         var b = document.createElement("button");
@@ -229,12 +259,15 @@
   };
   var hasTrip = ["client","phone","date","time","pickup","dropoff"].some(function(k){ return q.get(k); });
 
+  document.getElementById("refreshBtn").addEventListener("click", fetchFeed);
+
   if(hasTrip){
     saveTrip(trip);
     showTrip(trip);
   } else {
     showList();
   }
+  fetchFeed();
 })();
 </script>
 </body>
