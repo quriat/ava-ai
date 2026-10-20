@@ -63,6 +63,23 @@
   .empty{text-align:center; color:var(--muted); padding:38px 16px; font-size:16px; line-height:1.6;
     background:var(--panel); border:1px dashed var(--line); border-radius:12px;}
   .hidden{display:none !important;}
+
+  .status-box{margin-top:4px;}
+  .status-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
+  .status-btn{
+    padding:18px 10px; font-size:17px; font-weight:800; border-radius:12px; cursor:pointer;
+    background:var(--panel); color:var(--gold); border:1px solid var(--gold-dark);
+    font-family:inherit; -webkit-tap-highlight-color:transparent;
+  }
+  .status-btn:active{background:var(--panel-2);}
+  .status-btn:disabled{opacity:.5; cursor:default;}
+  .status-note{color:var(--muted); font-size:15px; text-align:center; padding:8px 0 12px;}
+  .status-done{
+    background:var(--panel); border:1px solid var(--gold-dark); border-radius:12px;
+    padding:16px; font-size:16px; font-weight:700; text-align:center; margin-bottom:12px;
+  }
+  .status-again{display:inline-block; margin-top:8px; color:var(--gold); font-size:14px; font-weight:700; text-decoration:underline; cursor:pointer;}
+  .status-err{color:#e08a8a; font-size:15px; text-align:center; padding:4px 0 12px;}
   footer{text-align:center; color:var(--muted); font-size:12px; padding:18px 10px 26px;}
 </style>
 </head>
@@ -91,6 +108,18 @@
       <a class="btn" id="navDropoff" href="#" target="_blank" rel="noopener">🧭 Navigate to Drop-off</a>
       <a class="btn" id="callClient" href="#">📞 Call Client</a>
       <a class="btn" id="textClient" href="#">💬 Text Client</a>
+    </div>
+    <div class="status-box" id="statusBox">
+      <h2 class="section">Trip Status — tap to update Adam</h2>
+      <div class="status-grid" id="statusGrid">
+        <button type="button" class="status-btn" data-status="On my way">On my way</button>
+        <button type="button" class="status-btn" data-status="Arrived">Arrived</button>
+        <button type="button" class="status-btn" data-status="Picked up">Picked up</button>
+        <button type="button" class="status-btn" data-status="Completed">Completed</button>
+      </div>
+      <div class="status-note hidden" id="statusSending">Sending…</div>
+      <div class="status-done hidden" id="statusDone"></div>
+      <div class="status-err hidden" id="statusErr">Could not send — check signal and tap again</div>
     </div>
   </section>
 
@@ -174,6 +203,9 @@
     if(t.notes){ document.getElementById("tNotes").textContent = t.notes; fNotes.classList.remove("hidden"); }
     else fNotes.classList.add("hidden");
 
+    currentTrip = t;
+    renderStatus(t);
+
     document.getElementById("navPickup").href = mapsUrl(t.pickup);
     document.getElementById("navDropoff").href = mapsUrl(t.dropoff);
     var phone = (t.phone || "").replace(/[^+\d]/g, "");
@@ -183,6 +215,113 @@
     viewTrip.classList.remove("hidden");
     viewList.classList.add("hidden");
     window.scrollTo(0,0);
+  }
+
+  var STATUS_URL = "https://n8napp.adamj.fit/webhook/driver-status";
+  var STATUS_STORE = "avalimo.tripStatus";
+  var currentTrip = null;
+
+  function statusKey(t){
+    return [t.client||"", t.date||"", t.time||""].join("|");
+  }
+  function loadStatusMap(){
+    try { return JSON.parse(localStorage.getItem(STATUS_STORE)) || {}; }
+    catch(e){ return {}; }
+  }
+  function setStatusButtonsEnabled(on){
+    var btns = document.querySelectorAll(".status-btn");
+    for(var i = 0; i < btns.length; i++) btns[i].disabled = !on;
+  }
+  function showStatusDone(status, timeStr){
+    var grid = document.getElementById("statusGrid");
+    var done = document.getElementById("statusDone");
+    grid.classList.add("hidden");
+    document.getElementById("statusSending").classList.add("hidden");
+    document.getElementById("statusErr").classList.add("hidden");
+    done.innerHTML = "";
+    var line = document.createElement("div");
+    line.textContent = "✅ Adam notified — " + status + (timeStr ? " · " + timeStr : "");
+    var again = document.createElement("a");
+    again.className = "status-again";
+    again.textContent = "Report again";
+    again.href = "#";
+    again.addEventListener("click", function(ev){
+      ev.preventDefault();
+      done.classList.add("hidden");
+      grid.classList.remove("hidden");
+      setStatusButtonsEnabled(true);
+    });
+    done.appendChild(line);
+    done.appendChild(again);
+    done.classList.remove("hidden");
+  }
+  function renderStatus(t){
+    var grid = document.getElementById("statusGrid");
+    var done = document.getElementById("statusDone");
+    document.getElementById("statusSending").classList.add("hidden");
+    document.getElementById("statusErr").classList.add("hidden");
+    var saved = loadStatusMap()[statusKey(t)];
+    if(saved && saved.status){
+      showStatusDone(saved.status, saved.at || "");
+    } else {
+      done.classList.add("hidden");
+      grid.classList.remove("hidden");
+      setStatusButtonsEnabled(true);
+    }
+  }
+  function getPosition(){
+    return new Promise(function(resolve){
+      if(!navigator.geolocation){ resolve(null); return; }
+      var settled = false;
+      var timer = setTimeout(function(){ if(!settled){ settled = true; resolve(null); } }, 4000);
+      navigator.geolocation.getCurrentPosition(
+        function(p){ if(!settled){ settled = true; clearTimeout(timer); resolve(p); } },
+        function(){ if(!settled){ settled = true; clearTimeout(timer); resolve(null); } },
+        { timeout: 4000, maximumAge: 60000 }
+      );
+    });
+  }
+  function sendStatus(statusLabel){
+    if(!currentTrip) return;
+    var t = currentTrip;
+    setStatusButtonsEnabled(false);
+    document.getElementById("statusErr").classList.add("hidden");
+    document.getElementById("statusSending").classList.remove("hidden");
+    getPosition().then(function(p){
+      var payload = {
+        driver: q.get("driver") || "",
+        client: t.client || "",
+        date: t.date || "",
+        time: t.time || "",
+        pickup: t.pickup || "",
+        dropoff: t.dropoff || "",
+        status: statusLabel,
+        lat: p ? p.coords.latitude : "",
+        lng: p ? p.coords.longitude : ""
+      };
+      return fetch(STATUS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    }).then(function(r){
+      if(!r.ok) throw new Error("status " + r.status);
+      var timeStr = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      var map = loadStatusMap();
+      map[statusKey(t)] = { status: statusLabel, at: timeStr };
+      try { localStorage.setItem(STATUS_STORE, JSON.stringify(map)); } catch(e){}
+      showStatusDone(statusLabel, timeStr);
+    }).catch(function(){
+      document.getElementById("statusSending").classList.add("hidden");
+      setStatusButtonsEnabled(true);
+      document.getElementById("statusErr").classList.remove("hidden");
+    });
+  }
+  var statusBtns = document.querySelectorAll(".status-btn");
+  for(var bi = 0; bi < statusBtns.length; bi++){
+    (function(btn){
+      btn.addEventListener("click", function(){ sendStatus(btn.getAttribute("data-status")); });
+    })(statusBtns[bi]);
   }
 
   var FEED_URL = "https://n8napp.adamj.fit/webhook/driver-feed2-trips?key=C28qQJckj25eTie2sfsLR5gQ";
