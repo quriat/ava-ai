@@ -21,9 +21,17 @@ function App() {
     pickupLocation?: string;
     dropoffLocation?: string;
     date?: string;
+    time?: string;
     vehicleId?: string;
     specialInstructions?: string;
   } | undefined>(undefined);
+
+  const handleQuickBook = (data: { pickupLocation?: string; dropoffLocation?: string; date?: string; time?: string }) => {
+    setBookingPrefill(prev => ({
+      ...prev,
+      ...data,
+    }));
+  };
 
   const handleSelectVehicle = (vehicleId: string) => {
     setBookingPrefill(prev => ({
@@ -36,7 +44,7 @@ function App() {
     <div className="min-h-screen bg-black text-white">
       <Header />
       <main>
-        <Hero />
+        <Hero onQuickBook={handleQuickBook} />
         <Services />
         <Fleet onSelectVehicle={handleSelectVehicle} />
         <AirportGalveston />

@@ -11,6 +11,7 @@ interface BookingFormProps {
     pickupLocation?: string;
     dropoffLocation?: string;
     date?: string;
+    time?: string;
     vehicleId?: string;
     flightNumber?: string;
     specialInstructions?: string;
@@ -66,6 +67,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialData }) => {
       }
       if (initialData.date) {
         setFormData(prev => ({ ...prev, date: initialData.date || prev.date }));
+      }
+      if (initialData.time) {
+        setFormData(prev => ({ ...prev, time: initialData.time || prev.time }));
       }
       if (initialData.flightNumber) {
         setFormData(prev => ({ ...prev, flightNumber: initialData.flightNumber || prev.flightNumber }));

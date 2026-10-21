@@ -12,10 +12,30 @@ const TruckIcon = () => (
   <Truck size={28} strokeWidth={1.5} />
 );
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onQuickBook?: (data: { pickupLocation?: string; dropoffLocation?: string; date?: string; time?: string }) => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const [quickPickup, setQuickPickup] = React.useState('');
+  const [quickDropoff, setQuickDropoff] = React.useState('');
+  const [quickDate, setQuickDate] = React.useState('');
+  const [quickTime, setQuickTime] = React.useState('');
+
+  const handleQuickBook = (e: React.FormEvent) => {
+    e.preventDefault();
+    onQuickBook?.({
+      pickupLocation: quickPickup.trim() || undefined,
+      dropoffLocation: quickDropoff.trim() || undefined,
+      date: quickDate || undefined,
+      time: quickTime || undefined,
+    });
+    scrollTo('booking-section');
   };
 
   return (
@@ -43,7 +63,7 @@ const Hero: React.FC = () => {
           </h2>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-[1.1] mb-8">
             The Pinnacle of <br />
-            <span className="text-gold-gradient">Luxury Travel</span>
+            Luxury Travel
           </h1>
           <p className="text-white/70 text-lg md:text-xl max-w-xl mb-12 leading-relaxed">
             AvaLimo provides professional Houston limo service for corporate travel, airport transfers, Galveston cruises, and special events — 24/7 with zero surge pricing.
@@ -68,11 +88,6 @@ const Hero: React.FC = () => {
             See your estimated fare online. Dispatch confirms availability and your final quote.
           </p>
 
-          <div className="flex flex-wrap gap-8 text-[10px] tracking-[0.3em] uppercase font-bold text-white/60">
-            <span>Reliable</span>
-            <span className="text-[var(--gold)]">Punctual</span>
-            <span>Professional</span>
-          </div>
         </div>
 
         <div className="flex flex-col gap-6 bg-black/40 backdrop-blur-xl p-8 rounded-[2rem] border border-gold/10 shadow-2xl">
@@ -93,6 +108,52 @@ const Hero: React.FC = () => {
           </p>
         </div>
       </div>
+
+      <form
+        onSubmit={handleQuickBook}
+        className="relative z-10 w-full max-w-5xl mx-auto px-6 mt-14 mb-28"
+      >
+        <div className="flex flex-col md:flex-row gap-3 bg-black/50 backdrop-blur-xl p-3 rounded-2xl border border-gold/10 shadow-2xl">
+          <input
+            type="text"
+            value={quickPickup}
+            onChange={(e) => setQuickPickup(e.target.value)}
+            placeholder="Pickup location"
+            aria-label="Pickup location"
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[var(--gold)]"
+          />
+          <input
+            type="text"
+            value={quickDropoff}
+            onChange={(e) => setQuickDropoff(e.target.value)}
+            placeholder="Drop-off location"
+            aria-label="Drop-off location"
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[var(--gold)]"
+          />
+          <input
+            type="date"
+            value={quickDate}
+            onChange={(e) => setQuickDate(e.target.value)}
+            aria-label="Date"
+            style={{ colorScheme: 'dark' }}
+            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--gold)]"
+          />
+          <input
+            type="time"
+            value={quickTime}
+            onChange={(e) => setQuickTime(e.target.value)}
+            aria-label="Time"
+            style={{ colorScheme: 'dark' }}
+            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--gold)]"
+          />
+          <button
+            type="submit"
+            className="gold-gradient text-black px-8 py-3 font-extrabold tracking-[0.2em] uppercase text-[12px] rounded-xl hover:scale-[1.02] transition-transform whitespace-nowrap"
+          >
+            Get My Quote
+          </button>
+        </div>
+      </form>
 
       <button
         onClick={() => scrollTo('fleet')}
