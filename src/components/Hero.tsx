@@ -90,8 +90,8 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
 
         </div>
 
-        <div className="flex flex-col gap-6 bg-black/40 backdrop-blur-xl p-8 rounded-[2rem] border border-gold/10 shadow-2xl">
-          <div className="text-center mb-4">
+        <div className="flex flex-col gap-4 sm:gap-6 bg-black/40 backdrop-blur-xl p-4 sm:p-8 rounded-[2rem] border border-gold/10 shadow-2xl">
+          <div className="text-center mb-2 sm:mb-4">
             <h3 className="text-[var(--gold)] text-xs font-bold tracking-[0.3em] uppercase mb-2">
               AI Concierge Services
             </h3>
@@ -99,7 +99,7 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
               Talk to our AI voice assistants
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6">
             <VoiceAgent type={AgentType.FRONT_DESK} icon={<UserIcon />} />
             <VoiceAgent type={AgentType.DISPATCH} icon={<TruckIcon />} />
           </div>
@@ -111,7 +111,7 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
 
       <form
         onSubmit={handleQuickBook}
-        className="relative z-10 w-full max-w-5xl mx-auto px-6 mt-14 mb-28"
+        className="relative z-10 w-full max-w-5xl mx-auto px-6 mt-10 lg:mt-14 mb-16 lg:mb-28"
       >
         <div className="flex flex-col md:flex-row gap-3 bg-black/50 backdrop-blur-xl p-3 rounded-2xl border border-gold/10 shadow-2xl">
           <input
@@ -130,22 +130,24 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
             aria-label="Drop-off location"
             className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[var(--gold)]"
           />
-          <input
-            type="date"
-            value={quickDate}
-            onChange={(e) => setQuickDate(e.target.value)}
-            aria-label="Date"
-            style={{ colorScheme: 'dark' }}
-            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--gold)]"
-          />
-          <input
-            type="time"
-            value={quickTime}
-            onChange={(e) => setQuickTime(e.target.value)}
-            aria-label="Time"
-            style={{ colorScheme: 'dark' }}
-            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--gold)]"
-          />
+          <div className="grid grid-cols-2 gap-3 md:contents">
+            <input
+              type="date"
+              value={quickDate}
+              onChange={(e) => setQuickDate(e.target.value)}
+              aria-label="Date"
+              style={{ colorScheme: 'dark' }}
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--gold)]"
+            />
+            <input
+              type="time"
+              value={quickTime}
+              onChange={(e) => setQuickTime(e.target.value)}
+              aria-label="Time"
+              style={{ colorScheme: 'dark' }}
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--gold)]"
+            />
+          </div>
           <button
             type="submit"
             className="gold-gradient text-black px-8 py-3 font-extrabold tracking-[0.2em] uppercase text-[12px] rounded-xl hover:scale-[1.02] transition-transform whitespace-nowrap"
@@ -157,7 +159,7 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
 
       <button
         onClick={() => scrollTo('fleet')}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/40 hover:text-[var(--gold)] transition-colors"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center text-white/40 hover:text-[var(--gold)] transition-colors"
       >
         <span className="text-[10px] tracking-[0.3em] uppercase mb-2">Explore</span>
         <ChevronDown size={24} className="animate-bounce" />

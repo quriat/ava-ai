@@ -163,8 +163,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   }, [configured]);
 
   return (
-    <div className={`flex flex-col items-center gap-5 p-8 rounded-3xl transition-all border ${isActive ? 'bg-gold/10 border-gold/40 shadow-xl shadow-gold/10' : 'bg-white/5 border-white/5 hover:border-gold/20'}`}>
-      <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${isActive ? 'bg-gold text-black shadow-lg shadow-gold/50 animate-pulse' : 'bg-luxury text-gold border border-gold/20'}`}>
+    <div className={`flex flex-col items-center gap-3 sm:gap-5 p-4 sm:p-8 rounded-3xl transition-all border ${isActive ? 'bg-gold/10 border-gold/40 shadow-xl shadow-gold/10' : 'bg-white/5 border-white/5 hover:border-gold/20'}`}>
+      <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all ${isActive ? 'bg-gold text-black shadow-lg shadow-gold/50 animate-pulse' : 'bg-luxury text-gold border border-gold/20'}`}>
         {icon}
       </div>
       <div className="text-center">
@@ -176,14 +176,14 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
         <button
           onClick={handleStart}
           disabled={!configured}
-          className="border-2 border-gold/40 text-gold px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold hover:text-black transition-all w-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="border-2 border-gold/40 text-gold px-3 sm:px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold hover:text-black transition-all w-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {configured ? `Call ${type === AgentType.FRONT_DESK ? 'Desk' : 'Dispatch'}` : 'Configure Voice'}
         </button>
       ) : (
         <button
           onClick={handleStop}
-          className="bg-red-600/20 border border-red-600/40 text-red-500 px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-red-600 hover:text-white transition-all w-full"
+          className="bg-red-600/20 border border-red-600/40 text-red-500 px-3 sm:px-8 py-3 rounded-full text-[10px] font-extrabold tracking-[0.2em] uppercase hover:bg-red-600 hover:text-white transition-all w-full"
         >
           End Call
         </button>
