@@ -342,34 +342,44 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
 
 export const FAQS_DATA: FAQItem[] = [
   {
-    question: 'How do airport pickups work at IAH and Hobby Airport?',
-    answer: 'We offer two pickup options: 1) Inside Meet & Greet where your chauffeur waits at baggage claim holding a personalized digital iPad nameboard; or 2) Curbside VIP where you contact your chauffeur when you collect your bags for immediate curbside arrival.',
+    question: 'How does AvaLimo flat-rate pricing work, and how do I get a quote?',
+    answer: 'Every AvaLimo ride is one flat rate quoted before you book - no surge pricing, ever, and the price agreed up front is the price you pay. Popular flat rates: IAH to Downtown Houston is $125 in a sedan or $165 in an SUV, and Hobby Airport to Downtown is $105 in a sedan or $135 in an SUV. For any other route, call or text dispatch at (832) 567-8050 and we will text you the exact flat rate for your trip.',
+    category: 'pricing'
+  },
+  {
+    question: 'How do airport pickups work at IAH?',
+    answer: 'Your chauffeur is waiting when you land at George Bush Intercontinental Airport (IAH). Choose an inside meet-and-greet at baggage claim - your chauffeur holds a name sign and helps with your luggage - or curbside pickup: text when you have your bags and your chauffeur pulls up within minutes. We serve all IAH terminals (A, B, C, D, E) and the private FBOs.',
     category: 'airport'
   },
   {
-    question: 'What happens if my flight is delayed or arrives early?',
-    answer: 'We track all commercial flights in real time. We automatically adjust your chauffeur dispatch time to your actual landing time at no extra charge. We also include 45 minutes complimentary wait time for domestic flights and 60 minutes for international arrivals.',
+    question: 'How do airport pickups work at Hobby Airport?',
+    answer: 'The same flat-rate, flight-tracked service runs at William P. Hobby Airport (HOU). Your chauffeur meets you at baggage claim with a name sign, or curbside right outside baggage claim. Hobby to Downtown Houston is a flat $105 in a sedan or $135 in an SUV.',
     category: 'airport'
   },
   {
-    question: 'Are your rates flat rates or do they include surge pricing?',
-    answer: 'All quoted rates are fixed flat rates with zero surge pricing. Unlike rideshare apps that double rates during rush hour or events, your AvaLimo price remains strictly guaranteed as quoted.',
-    category: 'booking'
+    question: 'Do you track my flight?',
+    answer: 'Yes. We track your flight in real time and adjust your pickup automatically if your flight lands early or runs late, at no extra charge. A delay never changes your flat rate and never triggers surge pricing.',
+    category: 'airport'
   },
   {
     question: 'How far in advance should I book?',
-    answer: 'We accommodate last-minute 24/7 requests based on fleet availability. We recommend reserving at least 12-24 hours in advance for airport transfers, and 1-4 weeks in advance for weddings, Sprinter vans, and major event dates.',
+    answer: 'Whenever you know your plans. A day or two ahead is ideal for airport transfers, and 1-4 weeks ahead for weddings, Sprinters, and major event dates. Dispatch runs 24/7, and same-day bookings are welcome whenever a vehicle is available.',
     category: 'booking'
   },
   {
-    question: 'Do you provide child safety car seats?',
-    answer: 'Yes! We provide rear-facing infant seats, forward-facing toddler seats, and booster seats upon request for a small sanitization fee. Just select the child seat option during booking.',
+    question: 'What areas does AvaLimo serve?',
+    answer: 'All of Greater Houston: Houston, Sugar Land, Missouri City, Katy, The Woodlands, Pearland, Cypress, Spring, Conroe, Galveston, Humble, Pasadena, League City, Friendswood, Richmond, Rosenberg, Bellaire, and West University Place - including both airports, Galveston cruise terminals, and city-to-city trips across Texas.',
+    category: 'service'
+  },
+  {
+    question: 'What vehicles can I book?',
+    answer: 'Three late-model luxury vehicles, each with a professional chauffeur: the Mercedes-Benz S-Class sedan for up to 3 passengers, the Cadillac Escalade SUV for up to 6 passengers with full luggage room, and the Mercedes-Benz Sprinter for groups of up to 14.',
     category: 'fleet'
   },
   {
-    question: 'What is your cancellation and modification policy?',
-    answer: 'For sedans and SUVs, cancellations made 12+ hours prior to pickup receive a 100% refund. For Sprinters, Limousines, and Mini Coaches, we require a 48-hour notice for full refund. Modifications to pickup times can be made anytime subject to vehicle availability.',
-    category: 'policies'
+    question: 'How do I book and pay?',
+    answer: 'Book with the booking form on this site or call dispatch 24/7 at (832) 567-8050. Your flat rate is confirmed before you ride, and dispatch confirms your booking by text. For flat-rate airport routes we can also text you a secure payment link so you can pay in advance.',
+    category: 'booking'
   }
 ];
 

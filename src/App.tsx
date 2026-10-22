@@ -6,6 +6,7 @@ import Fleet from './components/Fleet';
 import AirportGalveston from './components/AirportGalveston';
 import Rates from './components/Rates';
 import Testimonials from './components/Testimonials';
+import GoogleReviews from './components/GoogleReviews';
 import Blog from './components/Blog';
 import FAQ from './components/FAQ';
 import EndTripReview from './components/EndTripReview';
@@ -49,6 +50,7 @@ function App() {
         <Fleet onSelectVehicle={handleSelectVehicle} />
         <AirportGalveston />
         <Rates />
+        <GoogleReviews />
         <Testimonials />
         <Blog />
         <FAQ />

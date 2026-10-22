@@ -14,31 +14,106 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "LimousineService",
-    "name": "AvaLimo",
-    "url": "https://avalimo.net/",
-    "telephone": "+1-832-567-8050",
-    "priceRange": "$$",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "6026 Lamb Creek",
-      "addressLocality": "Missouri City",
-      "addressRegion": "TX",
-      "postalCode": "77459",
-      "addressCountry": "US"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 29.5339,
-      "longitude": -95.5494
-    },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-      "opens": "00:00",
-      "closes": "24:00"
-    },
-    "areaServed": ["Houston", "Missouri City", "Sugar Land"]
+    "@graph": [
+      {
+        "@type": "LimousineService",
+        "@id": "https://avalimo.net/#business",
+        "name": "AvaLimo",
+        "url": "https://avalimo.net/",
+        "telephone": "+1-832-567-8050",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "6026 Lamb Creek",
+          "addressLocality": "Missouri City",
+          "addressRegion": "TX",
+          "postalCode": "77459",
+          "addressCountry": "US"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 29.5339,
+          "longitude": -95.5494
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          "opens": "00:00",
+          "closes": "24:00"
+        },
+        "areaServed": ["Houston", "Sugar Land", "Missouri City", "Katy", "The Woodlands", "Pearland", "Cypress", "Spring", "Conroe", "Galveston", "Humble", "Pasadena", "League City", "Friendswood", "Richmond", "Rosenberg", "Bellaire", "West University Place"],
+        "sameAs": [
+          "https://www.facebook.com/people/AvaLimo/61595384360025/",
+          "https://www.instagram.com/aljahdhamiadam",
+          "https://g.page/r/CVgUaFV7t4-8EBM/review"
+        ],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Chauffeur & Limousine Services",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Airport Transfers" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Corporate Chauffeur" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Weddings" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Hourly Chauffeur" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Galveston Cruise Transfers" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Special Events" } }
+          ]
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://avalimo.net/#website",
+        "url": "https://avalimo.net/",
+        "name": "AvaLimo",
+        "publisher": { "@id": "https://avalimo.net/#business" }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://avalimo.net/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does AvaLimo flat-rate pricing work, and how do I get a quote?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Every AvaLimo ride is one flat rate quoted before you book - no surge pricing, ever, and the price agreed up front is the price you pay. Popular flat rates: IAH to Downtown Houston is $125 in a sedan or $165 in an SUV, and Hobby Airport to Downtown is $105 in a sedan or $135 in an SUV. For any other route, call or text dispatch at (832) 567-8050 and we will text you the exact flat rate for your trip." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do airport pickups work at IAH?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Your chauffeur is waiting when you land at George Bush Intercontinental Airport (IAH). Choose an inside meet-and-greet at baggage claim - your chauffeur holds a name sign and helps with your luggage - or curbside pickup: text when you have your bags and your chauffeur pulls up within minutes. We serve all IAH terminals (A, B, C, D, E) and the private FBOs." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do airport pickups work at Hobby Airport?",
+            "acceptedAnswer": { "@type": "Answer", "text": "The same flat-rate, flight-tracked service runs at William P. Hobby Airport (HOU). Your chauffeur meets you at baggage claim with a name sign, or curbside right outside baggage claim. Hobby to Downtown Houston is a flat $105 in a sedan or $135 in an SUV." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you track my flight?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. We track your flight in real time and adjust your pickup automatically if your flight lands early or runs late, at no extra charge. A delay never changes your flat rate and never triggers surge pricing." }
+          },
+          {
+            "@type": "Question",
+            "name": "How far in advance should I book?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Whenever you know your plans. A day or two ahead is ideal for airport transfers, and 1-4 weeks ahead for weddings, Sprinters, and major event dates. Dispatch runs 24/7, and same-day bookings are welcome whenever a vehicle is available." }
+          },
+          {
+            "@type": "Question",
+            "name": "What areas does AvaLimo serve?",
+            "acceptedAnswer": { "@type": "Answer", "text": "All of Greater Houston: Houston, Sugar Land, Missouri City, Katy, The Woodlands, Pearland, Cypress, Spring, Conroe, Galveston, Humble, Pasadena, League City, Friendswood, Richmond, Rosenberg, Bellaire, and West University Place - including both airports, Galveston cruise terminals, and city-to-city trips across Texas." }
+          },
+          {
+            "@type": "Question",
+            "name": "What vehicles can I book?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Three late-model luxury vehicles, each with a professional chauffeur: the Mercedes-Benz S-Class sedan for up to 3 passengers, the Cadillac Escalade SUV for up to 6 passengers with full luggage room, and the Mercedes-Benz Sprinter for groups of up to 14." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I book and pay?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Book with the booking form on this site or call dispatch 24/7 at (832) 567-8050. Your flat rate is confirmed before you ride, and dispatch confirms your booking by text. For flat-rate airport routes we can also text you a secure payment link so you can pay in advance." }
+          }
+        ]
+      }
+    ]
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,6 +124,17 @@
 </head>
 <body>
   <div id="root"></div>
+  <noscript>
+    <div style="max-width:820px;margin:0 auto;padding:48px 22px 64px;font:16px/1.65 system-ui,sans-serif;color:#e8e6df;background:#0a0a0a">
+      <h1>Luxury Chauffeur &amp; Limo Service in Houston</h1>
+      <p>AvaLimo is Houston's flat-rate luxury chauffeur and black car service - open 24/7 with no surge pricing and real-time flight tracking. We provide airport transfers at IAH and Hobby, corporate chauffeur service, weddings, hourly chauffeur service, Galveston cruise transfers, and special events transportation across Greater Houston: Houston, Sugar Land, Missouri City, Katy, The Woodlands, Pearland, Cypress, Spring, Conroe, Galveston, Humble, Pasadena, League City, Friendswood, Richmond, Rosenberg, Bellaire, and West University Place. Flat rates include IAH to Downtown Houston at $125 in a sedan or $165 in an SUV, and Hobby to Downtown at $105 in a sedan or $135 in an SUV. Our fleet: Mercedes-Benz S-Class, Cadillac Escalade, and Mercedes-Benz Sprinter for groups of up to 14 - each with a professional chauffeur.</p>
+      <nav>
+        <p><a href="/">AvaLimo Home - Book Your Ride</a></p>
+        <p><a href="/iah-airport-limo-service/">IAH Airport Limo Service - Flat Rate, Flight Tracking</a></p>
+        <p><a href="tel:+18325678050">Call Dispatch 24/7: (832) 567-8050</a></p>
+      </nav>
+    </div>
+  </noscript>
   <script type="module" src="/src/main.tsx"></script>
 <a class="wa-float" href="https://wa.me/18557102439?text=Hi%20AvaLimo!%20I%27d%20like%20a%20quote%20for%20a%20ride." target="_blank" rel="noopener" aria-label="Chat with AvaLimo on WhatsApp">
   <span class="wa-tooltip">Chat with us</span>
