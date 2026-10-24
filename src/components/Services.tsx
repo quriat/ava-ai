@@ -18,7 +18,7 @@ const Services: React.FC = () => {
   };
 
   return (
-    <section id="services" className="w-full py-24 md:py-32 px-6 md:px-12 bg-black">
+    <section id="services" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">Our Services</span>
@@ -34,8 +34,9 @@ const Services: React.FC = () => {
           {SERVICES_DATA.map((service) => (
             <div
               key={service.id}
-              className="group bg-luxury border border-white/5 p-8 rounded-2xl hover:border-gold/30 transition-all duration-300"
+              className="group relative overflow-hidden bg-[#101010] border border-white/[0.07] p-8 hover:border-gold/30 transition-all duration-300"
             >
+              <div className="absolute top-0 left-0 w-full h-1 bg-[var(--gold)]"></div>
               <div className="text-[var(--gold)] mb-6">{iconMap[service.iconName] || <MapPin size={28} />}</div>
               <h3 className="text-xl font-serif font-bold text-white mb-2">{service.title}</h3>
               <p className="text-[var(--gold)] text-[10px] font-bold tracking-[0.15em] uppercase mb-4">{service.tagline}</p>
@@ -50,7 +51,7 @@ const Services: React.FC = () => {
               </ul>
               <button
                 onClick={scrollToBooking}
-                className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-[var(--gold)] hover:text-white transition-colors"
+                className="text-xs font-bold tracking-[0.16em] uppercase text-[var(--gold)] hover:text-white transition-colors"
               >
                 Book This Service →
               </button>

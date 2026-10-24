@@ -6,7 +6,7 @@ const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="w-full py-24 md:py-32 px-6 md:px-12 bg-black">
+    <section id="faq" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
@@ -24,7 +24,7 @@ const FAQ: React.FC = () => {
           {FAQS_DATA.map((faq, index) => (
             <div
               key={index}
-              className={`border rounded-xl transition-all ${openIndex === index ? 'border-[var(--gold)] bg-luxury' : 'border-white/10 bg-white/5'}`}
+              className={`border transition-all ${openIndex === index ? 'border-[var(--gold)] bg-[#101010]' : 'border-white/10 bg-white/5'}`}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}

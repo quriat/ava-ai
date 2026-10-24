@@ -49,7 +49,7 @@ const Blog: React.FC = () => {
   }, []);
 
   return (
-    <section id="blog" className="w-full py-24 md:py-32 px-6 md:px-12 bg-black">
+    <section id="blog" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
@@ -65,7 +65,7 @@ const Blog: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {posts.map((post) => (
-            <article key={post.id} className="bg-luxury border border-white/5 rounded-2xl p-8 hover:border-gold/20 transition-all">
+            <article key={post.id} className="bg-[#101010] border border-white/[0.07] p-8 hover:border-gold/20 transition-all">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-[10px] text-black bg-[var(--gold)] px-2 py-0.5 rounded font-bold uppercase tracking-wider">{post.category}</span>
                 <span className="text-[11px] text-white/40 flex items-center gap-1">
@@ -91,7 +91,7 @@ const Blog: React.FC = () => {
           onClick={() => setOpen(null)}
         >
           <div
-            className="bg-luxury border border-white/10 rounded-2xl max-w-3xl w-full my-8 p-8 md:p-10 relative"
+            className="bg-[#101010] border border-white/10 max-w-3xl w-full my-8 p-8 md:p-10 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button

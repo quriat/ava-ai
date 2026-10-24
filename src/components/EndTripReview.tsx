@@ -12,7 +12,7 @@ const EndTripReview: React.FC = () => {
   };
 
   return (
-    <section id="review" className="w-full py-24 md:py-32 px-6 md:px-12">
+    <section id="review" className="w-full py-20 md:py-28 px-6 md:px-12">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
@@ -27,7 +27,7 @@ const EndTripReview: React.FC = () => {
         </div>
 
         {!submitted ? (
-          <form onSubmit={handleSubmit} className="bg-luxury border border-gold/10 rounded-2xl p-8 md:p-10">
+          <form onSubmit={handleSubmit} className="bg-[#101010] border border-gold/10 p-8 md:p-10">
             <div className="mb-8">
               <label className="block text-xs font-bold text-white uppercase tracking-widest mb-4">Rate your chauffeur</label>
               <div className="flex gap-2">
@@ -82,7 +82,7 @@ const EndTripReview: React.FC = () => {
             </button>
           </form>
         ) : (
-          <div className="bg-luxury border border-gold/10 rounded-2xl p-10 text-center">
+          <div className="bg-[#101010] border border-gold/10 p-10 text-center">
             <CheckCircle2 size={48} className="text-[var(--gold)] mx-auto mb-4" />
             <h3 className="text-2xl font-serif font-bold text-white mb-2">Thank You for Your Feedback</h3>
             <p className="text-white/60">Your review helps us improve our Houston chauffeur service.</p>

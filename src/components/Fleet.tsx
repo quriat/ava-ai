@@ -22,7 +22,7 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
   };
 
   return (
-    <section id="fleet" className="w-full py-24 md:py-32 px-6 md:px-12">
+    <section id="fleet" className="w-full py-20 md:py-28 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">Our Fleet</span>
@@ -40,7 +40,7 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
               <div
                 key={vehicle.id}
                 onClick={() => handleSelect(vehicle.id)}
-                className={`relative overflow-hidden rounded-2xl cursor-pointer border transition-all duration-300 ${
+                className={`relative overflow-hidden cursor-pointer border transition-all duration-300 ${
                   selectedId === vehicle.id
                     ? 'border-[var(--gold)] ring-1 ring-[var(--gold)]'
                     : 'border-white/10 hover:border-white/20'
@@ -78,7 +78,7 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
             ))}
           </div>
 
-          <div className="bg-luxury border border-gold/10 rounded-2xl p-8">
+          <div className="bg-[#101010] border border-gold/10 p-8">
             <span className="text-[10px] text-[var(--gold)] font-bold tracking-[0.15em] uppercase">
               {selected.category}
             </span>
@@ -115,7 +115,7 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
 
             <button
               onClick={scrollToBooking}
-              className="w-full gold-gradient text-black py-4 rounded-full text-[11px] font-extrabold tracking-[0.2em] uppercase hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+              className="w-full gold-gradient text-black py-4 text-[11px] font-extrabold tracking-[0.2em] uppercase hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
             >
               Book {selected.name}
               <ChevronRight size={16} />

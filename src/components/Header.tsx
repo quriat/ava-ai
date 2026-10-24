@@ -34,9 +34,9 @@ export default function Header() {
     <header
       className="fixed top-0 left-0 w-full z-50 transition-all duration-300"
       style={{
-        backgroundColor: scrolled ? 'rgba(10, 10, 10, 0.92)' : 'rgba(10, 10, 10, 0.45)',
+        backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.94)' : 'rgba(0, 0, 0, 0.45)',
         backdropFilter: 'blur(20px)',
-        borderBottom: scrolled ? '1px solid rgba(197, 160, 89, 0.15)' : '1px solid rgba(197, 160, 89, 0.05)'
+        borderBottom: scrolled ? '1px solid rgba(197, 160, 89, 0.35)' : '1px solid rgba(197, 160, 89, 0.05)'
       }}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 h-[70px] flex items-center justify-between">
@@ -50,7 +50,7 @@ export default function Header() {
             <button
               key={item.id}
               onClick={() => scrollTo(item.id)}
-              className="relative nav-link text-[11px] font-semibold tracking-[0.12em] uppercase text-white/70 hover:text-[var(--gold)] transition-colors"
+              className="relative nav-link text-[11px] font-semibold tracking-[0.12em] uppercase text-[rgba(197,160,89,0.7)] hover:text-[var(--gold)] transition-colors"
             >
               {item.label}
             </button>
@@ -64,7 +64,7 @@ export default function Header() {
           </a>
           <button
             onClick={() => scrollTo('booking-section')}
-            className="gold-gradient text-black px-5 py-2 rounded-full text-[10px] font-extrabold tracking-[0.15em] uppercase hover:scale-105 transition-transform"
+            className="gold-gradient text-black px-5 py-2.5 text-[10px] font-extrabold tracking-[0.15em] uppercase hover:scale-105 transition-transform"
           >
             Book Now
           </button>

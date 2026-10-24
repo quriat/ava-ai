@@ -163,7 +163,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ type, icon }) => {
   }, [configured]);
 
   return (
-    <div className={`flex flex-col items-center gap-3 sm:gap-5 p-4 sm:p-8 rounded-3xl transition-all border ${isActive ? 'bg-gold/10 border-gold/40 shadow-xl shadow-gold/10' : 'bg-white/5 border-white/5 hover:border-gold/20'}`}>
+    <div className={`flex flex-col items-center gap-3 sm:gap-5 p-4 sm:p-8 transition-all border ${isActive ? 'bg-gold/10 border-gold/40 shadow-xl shadow-gold/10' : 'bg-white/5 border-white/5 hover:border-gold/20'}`}>
       <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all ${isActive ? 'bg-gold text-black shadow-lg shadow-gold/50 animate-pulse' : 'bg-luxury text-gold border border-gold/20'}`}>
         {icon}
       </div>

@@ -13,8 +13,8 @@ module.exports = {
         luxury: '#0a0a0a',
       },
       fontFamily: {
-        sans: ['Montserrat', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['Libre Franklin', 'sans-serif'],
+        serif: ['Montserrat', 'sans-serif'],
       }
     }
   },

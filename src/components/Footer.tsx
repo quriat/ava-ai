@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, Instagram, Facebook, Twitter, Linkedin } from 'luc
 
 const Footer: React.FC = () => {
   return (
-    <footer id="contact" className="w-full bg-luxury border-t border-gold/10 pt-20 pb-12 px-6 md:px-12">
+    <footer id="contact" className="w-full bg-luxury border-t-[3px] border-[var(--gold)] pt-20 pb-12 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="lg:col-span-2">

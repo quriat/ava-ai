@@ -41,19 +41,13 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
   return (
     <section id="hero" className="relative min-h-screen flex flex-col justify-center items-center pt-20 overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="w-full h-full object-cover opacity-50 scale-105"
-          aria-label="AvaLimo luxury vehicles"
-        >
-          <source src="/videos/hero_bg.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
-        <div className="absolute inset-0 bg-black/60"></div>
+        <img
+          src="/escalade-front-dark.jpg"
+          alt="AvaLimo luxury vehicles"
+          className="w-full h-full object-cover object-[center_38%] opacity-90"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl w-full mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -90,7 +84,7 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
 
         </div>
 
-        <div className="flex flex-col gap-4 sm:gap-6 bg-black/40 backdrop-blur-xl p-4 sm:p-8 rounded-[2rem] border border-gold/10 shadow-2xl">
+        <div className="flex flex-col gap-4 sm:gap-6 bg-black/40 backdrop-blur-xl p-4 sm:p-8 border border-gold/10 shadow-2xl">
           <div className="text-center mb-2 sm:mb-4">
             <h3 className="text-[var(--gold)] text-xs font-bold tracking-[0.3em] uppercase mb-2">
               AI Concierge Services
@@ -113,7 +107,7 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
         onSubmit={handleQuickBook}
         className="relative z-10 w-full max-w-5xl mx-auto px-6 mt-10 lg:mt-14 mb-16 lg:mb-28"
       >
-        <div className="flex flex-col md:flex-row gap-3 bg-black/50 backdrop-blur-xl p-3 rounded-2xl border border-gold/10 shadow-2xl">
+        <div className="flex flex-col md:flex-row gap-3 bg-black/50 backdrop-blur-xl p-3 border border-gold/10 shadow-2xl">
           <input
             type="text"
             value={quickPickup}
@@ -150,7 +144,7 @@ const Hero: React.FC<HeroProps> = ({ onQuickBook }) => {
           </div>
           <button
             type="submit"
-            className="gold-gradient text-black px-8 py-3 font-extrabold tracking-[0.2em] uppercase text-[12px] rounded-xl hover:scale-[1.02] transition-transform whitespace-nowrap"
+            className="gold-gradient text-black px-8 py-3 font-extrabold tracking-[0.2em] uppercase text-[12px] hover:scale-[1.02] transition-transform whitespace-nowrap"
           >
             Get My Quote
           </button>

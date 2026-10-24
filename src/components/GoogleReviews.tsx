@@ -26,7 +26,7 @@ const GoogleReviews: React.FC = () => {
           href={GOOGLE_REVIEW_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 border border-[var(--gold)] text-[var(--gold)] px-6 py-3 rounded-lg text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-[var(--gold)] hover:text-black transition-colors"
+          className="inline-flex items-center gap-2 border border-[var(--gold)] text-[var(--gold)] px-6 py-3 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-[var(--gold)] hover:text-black transition-colors"
         >
           Read our Google reviews
           <ExternalLink size={14} />

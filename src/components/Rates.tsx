@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 
 const Rates: React.FC = () => {
   return (
-    <section id="rates" className="w-full py-24 md:py-32 px-6 md:px-12 bg-black">
+    <section id="rates" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
@@ -19,11 +19,11 @@ const Rates: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          <div className="bg-luxury border border-white/5 rounded-2xl p-8">
-            <h3 className="text-xl font-serif font-bold text-white mb-6">Popular Routes</h3>
-            <div className="space-y-3">
+          <div className="bg-[#101010] border border-white/[0.07] p-8">
+            <h3 className="text-xl font-serif font-bold text-[var(--gold)] mb-6">Popular Routes</h3>
+            <div>
               {POPULAR_ROUTES.map((route, i) => (
-                <div key={i} className="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                <div key={i} className="flex justify-between items-center py-4 border-t border-white/[0.08]">
                   <div>
                     <div className="text-sm font-semibold text-white">{route.from} → {route.to}</div>
                     <div className="text-[11px] text-white/40">{route.duration}</div>
@@ -34,11 +34,11 @@ const Rates: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-luxury border border-white/5 rounded-2xl p-8">
-            <h3 className="text-xl font-serif font-bold text-white mb-6">Fleet Hourly Rates</h3>
-            <div className="space-y-3">
+          <div className="bg-[#101010] border border-white/[0.07] p-8">
+            <h3 className="text-xl font-serif font-bold text-[var(--gold)] mb-6">Fleet Hourly Rates</h3>
+            <div>
               {FLEET_DATA.map((vehicle) => (
-                <div key={vehicle.id} className="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                <div key={vehicle.id} className="flex justify-between items-center py-4 border-t border-white/[0.08]">
                   <div>
                     <div className="text-sm font-semibold text-white">{vehicle.name}</div>
                     <div className="text-[11px] text-white/40">{vehicle.passengers} pax • {vehicle.luggage} bags • {vehicle.minHours} hr min</div>
@@ -57,7 +57,7 @@ const Rates: React.FC = () => {
             'Airport parking included',
             '60 min free wait time'
           ].map((item, i) => (
-            <div key={i} className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-white/10 rounded-xl text-sm text-white/70">
+            <div key={i} className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-white/10 text-sm text-white/70">
               <Check size={16} className="text-[var(--gold)]" />
               {item}
             </div>

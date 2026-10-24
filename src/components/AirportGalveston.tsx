@@ -4,7 +4,7 @@ import { Plane, Ship, Clock, MapPin, ShieldCheck, Phone } from 'lucide-react';
 
 const AirportGalveston: React.FC = () => {
   return (
-    <section id="airport-galveston" className="w-full py-24 md:py-32 px-6 md:px-12 bg-black">
+    <section id="airport-galveston" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
@@ -20,7 +20,7 @@ const AirportGalveston: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {AIRPORT_GUIDES.map((airport) => (
-            <div key={airport.code} className="bg-luxury border border-white/5 p-8 rounded-2xl">
+            <div key={airport.code} className="bg-[#101010] border border-white/[0.07] p-8">
               <div className="flex items-center gap-3 mb-4">
                 <Plane size={24} className="text-[var(--gold)]" />
                 <h3 className="text-xl font-serif font-bold text-white">{airport.name}</h3>
@@ -54,7 +54,7 @@ const AirportGalveston: React.FC = () => {
           ))}
         </div>
 
-        <div className="bg-luxury border border-gold/10 rounded-2xl p-8 md:p-12">
+        <div className="bg-[#101010] border border-gold/10 p-8 md:p-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -87,7 +87,7 @@ const AirportGalveston: React.FC = () => {
                 { route: 'Downtown / Galleria ⇄ Galveston', price: 'Custom quote' },
                 { route: 'Round-trip cruise package', price: '10% off return' }
               ].map((card, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 p-5 rounded-xl">
+                <div key={i} className="bg-white/5 border border-white/10 p-5">
                   <div className="text-[11px] text-white/40 uppercase tracking-wider mb-2">{card.route}</div>
                   <div className="text-[var(--gold)] font-bold text-sm">{card.price}</div>
                 </div>

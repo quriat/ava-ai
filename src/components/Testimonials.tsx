@@ -4,7 +4,7 @@ import { Star, Quote } from 'lucide-react';
 
 const Testimonials: React.FC = () => {
   return (
-    <section id="testimonials" className="w-full py-24 md:py-32 px-6 md:px-12 bg-black">
+    <section id="testimonials" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
@@ -22,8 +22,9 @@ const Testimonials: React.FC = () => {
           {TESTIMONIALS_DATA.map((review) => (
             <div
               key={review.id}
-              className="bg-luxury border border-white/5 p-8 rounded-2xl relative"
+              className="bg-[#101010] border border-white/[0.07] p-8 relative overflow-hidden"
             >
+              <div className="absolute top-0 left-0 w-full h-1 bg-[var(--gold)]"></div>
               <Quote className="absolute top-6 right-6 text-gold/20" size={48} />
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: review.stars }).map((_, i) => (

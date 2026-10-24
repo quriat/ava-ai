@@ -16,17 +16,17 @@ html { scroll-behavior: smooth; }
 body {
   background-color: #000000;
   color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Libre Franklin', sans-serif;
   margin: 0;
   padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6, .font-serif {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .gold-gradient {
-  background: linear-gradient(135deg, #C5A059 0%, #F1D592 50%, #C5A059 100%);
+  background: var(--gold);
 }
 
 .text-gold-gradient {
