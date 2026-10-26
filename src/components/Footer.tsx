@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
   return (
     <footer id="contact" className="w-full bg-luxury border-t-[3px] border-[var(--gold)] pt-20 pb-12 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           <div className="lg:col-span-2">
             <span className="text-2xl font-serif font-bold tracking-[0.15em] text-white block mb-4">
               AVALIMO
@@ -38,6 +38,34 @@ const Footer: React.FC = () => {
               <li>Weddings & Special Events</li>
               <li>Hourly As-Directed Charters</li>
               <li>City-to-City Texas Travel</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-[var(--gold)] text-[11px] font-bold tracking-[0.2em] uppercase mb-6">
+              Service Areas
+            </h4>
+            <ul className="space-y-3 text-sm text-white/60">
+              <li>
+                <a href="/iah-airport-limo-service/" className="hover:text-[var(--gold)] transition-colors">
+                  IAH Airport Limo Service
+                </a>
+              </li>
+              <li>
+                <a href="/hobby-airport-limo-service/" className="hover:text-[var(--gold)] transition-colors">
+                  Hobby Airport Limo Service
+                </a>
+              </li>
+              <li>
+                <a href="/sugar-land-limo-service/" className="hover:text-[var(--gold)] transition-colors">
+                  Sugar Land Limo Service
+                </a>
+              </li>
+              <li>
+                <a href="/missouri-city-limo-service/" className="hover:text-[var(--gold)] transition-colors">
+                  Missouri City Limo Service
+                </a>
+              </li>
             </ul>
           </div>
 
