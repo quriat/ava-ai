@@ -127,13 +127,14 @@
   <!-- SAVED TRIPS -->
   <section id="viewList">
     <h2 class="section">My Trips</h2>
+    <div style="color:var(--muted); font-size:13px; margin:-6px 0 10px;">Tap a trip to see details, navigation, and status buttons.</div>
     <div id="feedStatus" style="color:var(--muted); font-size:13px; margin:-6px 0 10px;">Loading live trips…</div>
     <button type="button" id="refreshBtn" style="background:var(--panel); color:var(--gold); border:1px solid var(--line); border-radius:10px; padding:9px 14px; font-size:14px; font-weight:700; margin-bottom:14px; cursor:pointer;">↻ Refresh trips</button>
     <div id="tripsList"></div>
   </section>
 </main>
 
-<footer>AvaLimo Driver · Dispatch (832) 567-8050</footer>
+<footer>AvaLimo Driver · Dispatch <a href="tel:+18325678050" style="color:inherit;">(832) 567-8050</a></footer>
 
 <script>
 (function(){
@@ -189,8 +190,8 @@
     var when = fmtDate(t.date);
     if(t.time) when += (when ? " · " : "") + fmtTime(t.time);
     document.getElementById("tWhen").textContent = when;
-    document.getElementById("tPickup").textContent = t.pickup || "—";
-    document.getElementById("tDropoff").textContent = t.dropoff || "—";
+    document.getElementById("tPickup").textContent = t.pickup || "Pickup TBA";
+    document.getElementById("tDropoff").textContent = t.dropoff || "Destination TBA";
 
     var fFlight = document.getElementById("fFlight");
     if(t.flight){ document.getElementById("tFlight").textContent = t.flight; fFlight.classList.remove("hidden"); }
@@ -369,7 +370,7 @@
         b.innerHTML = '<div class="sc-when"></div><div class="sc-client"></div><div class="sc-route"></div>';
         b.querySelector(".sc-when").textContent = when;
         b.querySelector(".sc-client").textContent = t.client || "Client";
-        b.querySelector(".sc-route").textContent = (t.pickup || "") + " → " + (t.dropoff || "");
+        b.querySelector(".sc-route").textContent = (t.pickup || "Pickup TBA") + " → " + (t.dropoff || "Destination TBA");
         b.addEventListener("click", function(){ showTrip(t); });
         list.appendChild(b);
       });
