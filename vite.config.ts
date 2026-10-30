@@ -17,7 +17,10 @@ export default defineConfig(({ mode }) => {
       __VITE_VAPI_FRONT_DESK_ASSISTANT_ID__: JSON.stringify(env.VITE_VAPI_FRONT_DESK_ASSISTANT_ID || env.VAPI_FRONT_DESK_ASSISTANT_ID || ''),
       __VITE_VAPI_DISPATCH_ASSISTANT_ID__: JSON.stringify(env.VITE_VAPI_DISPATCH_ASSISTANT_ID || env.VAPI_DISPATCH_ASSISTANT_ID || ''),
       __VITE_BOOKING_API_ENDPOINT__: JSON.stringify(env.VITE_BOOKING_API_ENDPOINT || env.BOOKING_API_ENDPOINT || '/api/book'),
-      __VITE_VOICE_TRANSFER_PHONE__: JSON.stringify(env.VITE_VOICE_TRANSFER_PHONE || env.VOICE_TRANSFER_PHONE || '+18325678050')
+      __VITE_VOICE_TRANSFER_PHONE__: JSON.stringify(env.VITE_VOICE_TRANSFER_PHONE || env.VOICE_TRANSFER_PHONE || '+18325678050'),
+      // Analytics IDs are optional. Empty means no-op: nothing is loaded or sent.
+      __VITE_GA_MEASUREMENT_ID__: JSON.stringify(env.VITE_GA_MEASUREMENT_ID || env.GA_MEASUREMENT_ID || ''),
+      __VITE_CLARITY_PROJECT_ID__: JSON.stringify(env.VITE_CLARITY_PROJECT_ID || env.CLARITY_PROJECT_ID || '')
     },
     resolve: {
       alias: {

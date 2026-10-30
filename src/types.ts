@@ -32,8 +32,6 @@ export interface FleetItem {
   flatRateGalveston: number;
   minHours: number;
   image: string;
-  imageWidth: number;
-  imageHeight: number;
   description: string;
   features: string[];
   idealFor: string[];

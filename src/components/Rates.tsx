@@ -1,67 +1,93 @@
 import React from 'react';
-import { FLEET_DATA, POPULAR_ROUTES } from '../data/avalimoData';
-import { Check } from 'lucide-react';
+import { FLEET_DATA } from '../data/avalimoData';
+import { FleetItem } from '../types';
+import { ShieldCheck, ChevronRight } from 'lucide-react';
+
+const ROW_ORDER = ['mercedes-s-class', 'gmc-yukon-suburban', 'cadillac-escalade-esv', 'lincoln-stretch-limo', 'mercedes-sprinter-van', 'executive-mini-coach'];
 
 const Rates: React.FC = () => {
+  const rows: FleetItem[] = ROW_ORDER
+    .map((id) => FLEET_DATA.find((v) => v.id === id))
+    .filter((v): v is FleetItem => Boolean(v));
+
+  const handleBook = () => {
+    const el = document.getElementById('booking-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <section id="rates" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
-            Transparent Pricing
-          </span>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">
-            Flat Rates — Zero Surge
+    <section id="rates" className="py-24 bg-dark-900/50 border-t border-champagne relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold-400 text-[10px] font-bold uppercase tracking-widest mb-4">
+            <ShieldCheck size={12} className="text-[var(--gold)]" />
+            <span>Guaranteed Pricing Policy</span>
+          </div>
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
+            Transparent Houston Flat Rates
           </h2>
-          <p className="text-white/60 max-w-2xl mx-auto">
-            All-inclusive pricing with taxes, tolls, airport parking, and gratuity clearly shown. The price you see is the price you pay.
+          <p className="text-slate-300 text-sm leading-relaxed">
+            All prices are quoted before you ride. Zero surge charges, zero surprise toll surcharges, and complimentary commercial flight tracking with 60 minutes airport baggage grace period included.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          <div className="bg-[#101010] border border-white/[0.07] p-8">
-            <h3 className="text-xl font-serif font-bold text-[var(--gold)] mb-6">Popular Routes</h3>
-            <div>
-              {POPULAR_ROUTES.map((route, i) => (
-                <div key={i} className="flex justify-between items-center py-4 border-t border-white/[0.08]">
-                  <div>
-                    <div className="text-sm font-semibold text-white">{route.from} → {route.to}</div>
-                    <div className="text-[11px] text-white/40">{route.duration}</div>
-                  </div>
-                  <div className="text-[var(--gold)] font-bold text-sm">{route.startingPrice}</div>
-                </div>
-              ))}
-            </div>
+        <div className="glass-panel rounded-3xl overflow-hidden border-champagne shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-dark-950 text-gold-400 uppercase font-bold text-[10px] sm:text-[11px] tracking-wider border-b border-champagne">
+                <tr>
+                  <th className="py-4 px-5 sm:px-6">Luxury Vehicle</th>
+                  <th className="py-4 px-4 sm:px-6">Capacity</th>
+                  <th className="py-4 px-4 sm:px-6">Hourly Livery</th>
+                  <th className="py-4 px-4 sm:px-6">IAH Airport</th>
+                  <th className="py-4 px-4 sm:px-6">Hobby (HOU)</th>
+                  <th className="py-4 px-4 sm:px-6">Port of Galveston</th>
+                  <th className="py-4 px-4 sm:px-6 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                {rows.map((vehicle) => {
+                  const isFeatured = vehicle.id === 'cadillac-escalade-esv';
+                  return (
+                    <tr
+                      key={vehicle.id}
+                      className={`hover:bg-gold/5 transition-colors ${isFeatured ? 'bg-gold/5' : ''}`}
+                    >
+                      <td className={`py-4 px-5 sm:px-6 font-bold ${isFeatured ? 'text-gold-300' : 'text-white'}`}>
+                        {vehicle.name}
+                        {isFeatured && <span className="ml-2 text-[10px] text-gold-400 bg-gold/10 px-2 py-0.5 rounded-full border border-gold/20 uppercase font-normal">Popular</span>}
+                      </td>
+                      <td className="py-4 px-4 sm:px-6 text-slate-400">
+                        {vehicle.passengers} Pax • {vehicle.luggage} Bags
+                      </td>
+                      <td className="py-4 px-4 sm:px-6 font-semibold text-gold-400">
+                        ${vehicle.pricePerHour}/hr
+                      </td>
+                      <td className="py-4 px-4 sm:px-6 font-bold text-white">
+                        ${vehicle.flatRateIAH}
+                      </td>
+                      <td className="py-4 px-4 sm:px-6 font-bold text-white">
+                        ${vehicle.flatRateHobby}
+                      </td>
+                      <td className="py-4 px-4 sm:px-6 font-bold text-white">
+                        ${vehicle.flatRateGalveston}
+                      </td>
+                      <td className="py-4 px-4 sm:px-6 text-right">
+                        <button
+                          type="button"
+                          onClick={handleBook}
+                          className="px-3.5 py-1.5 rounded-full bg-dark-950 hover:bg-gold/20 border border-champagne text-gold-400 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-all inline-flex items-center gap-1"
+                        >
+                          <span>Quote</span>
+                          <ChevronRight size={12} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-
-          <div className="bg-[#101010] border border-white/[0.07] p-8">
-            <h3 className="text-xl font-serif font-bold text-[var(--gold)] mb-6">Fleet Hourly Rates</h3>
-            <div>
-              {FLEET_DATA.map((vehicle) => (
-                <div key={vehicle.id} className="flex justify-between items-center py-4 border-t border-white/[0.08]">
-                  <div>
-                    <div className="text-sm font-semibold text-white">{vehicle.name}</div>
-                    <div className="text-[11px] text-white/40">{vehicle.passengers} pax • {vehicle.luggage} bags • {vehicle.minHours} hr min</div>
-                  </div>
-                  <div className="text-[var(--gold)] font-bold text-sm">${vehicle.pricePerHour}/hr</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-          {[
-            'No surge pricing ever',
-            'All tolls included',
-            'Airport parking included',
-            '60 min free wait time'
-          ].map((item, i) => (
-            <div key={i} className="flex items-center justify-center gap-2 p-4 bg-white/5 border border-white/10 text-sm text-white/70">
-              <Check size={16} className="text-[var(--gold)]" />
-              {item}
-            </div>
-          ))}
         </div>
       </div>
     </section>

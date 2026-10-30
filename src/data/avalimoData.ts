@@ -1,15 +1,19 @@
 import { FleetItem, VehicleType, Service, Testimonial, FAQItem } from '../types';
+import faqsJson from './faqs.json';
 
 export const COMPANY_INFO = {
   name: 'AvaLimo Houston',
   legalName: 'Ava Limo Luxury Transportation LLC',
     establishedYear: 2008,
   tagline: "Houston's Premier Chauffeur & Limousine Service",
-  domains: ['avalimo.net', 'www.avalimohouston.com'],
+  domains: ['avalimo.net'],
   phone: '(832) 567-8050',
   phoneRaw: '+18325678050',
   aiConciergePhone: '(832) 917-6331',
-  secondaryPhone: '(281) 777-2834',
+  aiConciergePhoneRaw: '+18329176331',
+  secondaryPhone: '(832) 917-6331',
+  secondaryPhoneRaw: '+18329176331',
+  googleReviewUrl: 'https://g.page/r/CVgUaFV7t4-8EBM/review',
   email: 'adam@avalimo.net',
   secondaryEmail: 'quriat@gmail.com',
   address: 'Missouri City, TX 77459',
@@ -33,14 +37,12 @@ export const FLEET_DATA: FleetItem[] = [
     type: VehicleType.SEDAN,
     passengers: 3,
     luggage: 3,
-    pricePerHour: 85,
+    pricePerHour: 100,
     flatRateIAH: 125,
-    flatRateHobby: 105,
+    flatRateHobby: 110,
     flatRateGalveston: 220,
     minHours: 3,
-    image: '/mercedes_sclass.webp',
-    imageWidth: 1024,
-    imageHeight: 576,
+    image: '/mercedes_sclass.png',
     description: 'The pinnacle of German luxury. Ultra-smooth, whisper-quiet cabin for executives, airport arrivals, and distinguished couples.',
     features: [
       'Hand-stitched Nappa leather reclining rear seats',
@@ -65,12 +67,10 @@ export const FLEET_DATA: FleetItem[] = [
     luggage: 6,
     pricePerHour: 115,
     flatRateIAH: 165,
-    flatRateHobby: 135,
+    flatRateHobby: 145,
     flatRateGalveston: 260,
     minHours: 3,
-    image: '/cadillac_escalade.webp',
-    imageWidth: 1024,
-    imageHeight: 576,
+    image: '/cadillac_escalade.png',
     description: 'Imposing, spacious, and prestigious. Extended wheelbase guarantees abundant legroom and cargo capacity for airport or cruise departures.',
     features: [
       'Extended wheelbase (ESV) maximum cargo capacity',
@@ -98,9 +98,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 135,
     flatRateGalveston: 245,
     minHours: 3,
-    image: '/gmc_yukon_suburban.webp',
-    imageWidth: 640,
-    imageHeight: 640,
+    image: '/gmc_yukon_suburban.png',
     description: 'The definitive standard for corporate livery and comfortable group travel across Texas highways.',
     features: [
       'Black leather 7-passenger executive seating',
@@ -128,9 +126,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 240,
     flatRateGalveston: 390,
     minHours: 4,
-    image: '/mercedes_sprinter.webp',
-    imageWidth: 1024,
-    imageHeight: 576,
+    image: '/mercedes_sprinter.png',
     description: 'The ultimate mobile boardroom and luxury group transporter. Full stand-up headroom, custom leather chairs, smart TV, and ambient lighting.',
     features: [
       'High-roof walk-in design with 6\'4" standing clearance',
@@ -158,9 +154,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 220,
     flatRateGalveston: 360,
     minHours: 4,
-    image: '/cadillac_escalade.webp',
-    imageWidth: 1024,
-    imageHeight: 576,
+    image: '/cadillac_escalade.png',
     description: 'The iconic symbol of celebratory glamour. Wrap-around J-lounge sofa, mirrored bar, starlight ceiling, and surround sound.',
     features: [
       'Wrap-around two-tone leather J-seating for 10 guests',
@@ -188,9 +182,7 @@ export const FLEET_DATA: FleetItem[] = [
     flatRateHobby: 320,
     flatRateGalveston: 550,
     minHours: 5,
-    image: '/mercedes_sprinter.webp',
-    imageWidth: 1024,
-    imageHeight: 576,
+    image: '/mercedes_sprinter.png',
     description: 'Engineered for large parties, corporate delegations, and major Houston galas.',
     features: [
       '24 high-back ergonomic leather passenger seats',
@@ -226,7 +218,7 @@ export const SERVICES_DATA: Service[] = [
     popularRoutes: [
       'IAH Airport ⇄ Downtown Houston ($125 Sedan / $165 SUV)',
       'IAH Airport ⇄ Galleria / Uptown ($130 Sedan / $170 SUV)',
-      'Hobby Airport ⇄ Downtown / Medical Center ($105 Sedan / $135 SUV)'
+      'Hobby Airport ⇄ Downtown / Medical Center ($110 Sedan / $145 SUV)'
     ]
   },
   {
@@ -352,54 +344,13 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
   }
 ];
 
-export const FAQS_DATA: FAQItem[] = [
-  {
-    question: 'How does AvaLimo flat-rate pricing work, and how do I get a quote?',
-    answer: 'Every AvaLimo ride is one flat rate quoted before you book - no surge pricing, ever, and the price agreed up front is the price you pay. Popular flat rates: IAH to Downtown Houston is $125 in a sedan or $165 in an SUV, and Hobby Airport to Downtown is $105 in a sedan or $135 in an SUV. For any other route, call or text dispatch at (832) 567-8050 and we will text you the exact flat rate for your trip.',
-    category: 'pricing'
-  },
-  {
-    question: 'How do airport pickups work at IAH?',
-    answer: 'Your chauffeur is waiting when you land at George Bush Intercontinental Airport (IAH). Choose an inside meet-and-greet at baggage claim - your chauffeur holds a name sign and helps with your luggage - or curbside pickup: text when you have your bags and your chauffeur pulls up within minutes. We serve all IAH terminals (A, B, C, D, E) and the private FBOs.',
-    category: 'airport'
-  },
-  {
-    question: 'How do airport pickups work at Hobby Airport?',
-    answer: 'The same flat-rate, flight-tracked service runs at William P. Hobby Airport (HOU). Your chauffeur meets you at baggage claim with a name sign, or curbside right outside baggage claim. Hobby to Downtown Houston is a flat $105 in a sedan or $135 in an SUV.',
-    category: 'airport'
-  },
-  {
-    question: 'Do you track my flight?',
-    answer: 'Yes. We track your flight in real time and adjust your pickup automatically if your flight lands early or runs late, at no extra charge. A delay never changes your flat rate and never triggers surge pricing.',
-    category: 'airport'
-  },
-  {
-    question: 'How far in advance should I book?',
-    answer: 'Whenever you know your plans. A day or two ahead is ideal for airport transfers, and 1-4 weeks ahead for weddings, Sprinters, and major event dates. Dispatch runs 24/7, and same-day bookings are welcome whenever a vehicle is available.',
-    category: 'booking'
-  },
-  {
-    question: 'What areas does AvaLimo serve?',
-    answer: 'All of Greater Houston: Houston, Sugar Land, Missouri City, Katy, The Woodlands, Pearland, Cypress, Spring, Conroe, Galveston, Humble, Pasadena, League City, Friendswood, Richmond, Rosenberg, Bellaire, and West University Place - including both airports, Galveston cruise terminals, and city-to-city trips across Texas.',
-    category: 'service'
-  },
-  {
-    question: 'What vehicles can I book?',
-    answer: 'Three late-model luxury vehicles, each with a professional chauffeur: the Mercedes-Benz S-Class sedan for up to 3 passengers, the Cadillac Escalade SUV for up to 6 passengers with full luggage room, and the Mercedes-Benz Sprinter for groups of up to 14.',
-    category: 'fleet'
-  },
-  {
-    question: 'How do I book and pay?',
-    answer: 'Book with the booking form on this site or call dispatch 24/7 at (832) 567-8050. Your flat rate is confirmed before you ride, and dispatch confirms your booking by text. For flat-rate airport routes we can also text you a secure payment link so you can pay in advance.',
-    category: 'booking'
-  }
-];
+export const FAQS_DATA: FAQItem[] = faqsJson as FAQItem[];
 
 export const POPULAR_ROUTES = [
   { from: 'IAH Airport', to: 'Downtown Houston / Toyota Center', duration: '30-40 min', startingPrice: '$125 Sedan / $165 SUV' },
   { from: 'IAH Airport', to: 'The Galleria / Uptown Post Oak', duration: '35-45 min', startingPrice: '$130 Sedan / $170 SUV' },
   { from: 'IAH Airport', to: 'The Woodlands / Cynthia Woods', duration: '25-35 min', startingPrice: '$115 Sedan / $155 SUV' },
-  { from: 'Hobby Airport (HOU)', to: 'Downtown / Medical Center', duration: '20-25 min', startingPrice: '$105 Sedan / $135 SUV' },
+  { from: 'Hobby Airport (HOU)', to: 'Downtown / Medical Center', duration: '20-25 min', startingPrice: '$110 Sedan / $145 SUV' },
   { from: 'Hobby Airport (HOU)', to: 'Port of Galveston Cruise Pier', duration: '45-55 min', startingPrice: '$150 Sedan / $190 SUV' },
   { from: 'IAH Airport', to: 'Port of Galveston Cruise Pier', duration: '75-85 min', startingPrice: '$220 Sedan / $260 SUV' },
   { from: 'Houston Metro', to: 'Austin / San Antonio / College Station', duration: '2.5 - 3 hrs', startingPrice: '$495 Sedan / $595 SUV' }

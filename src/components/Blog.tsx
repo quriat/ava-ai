@@ -1,120 +1,98 @@
-import React, { useMemo, useState } from 'react';
-import { ArrowRight, Calendar, X } from 'lucide-react';
-import rawPosts from '../../blog_posts.json';
+import React, { useEffect, useState } from 'react';
+import { ArrowUpRight, Calendar } from 'lucide-react';
 
-type RawPost = {
-  title?: string;
-  blog_title?: string;
-  blog_excerpt?: string;
-  summary?: string;
-  blog_content?: string;
-  content?: string;
-  blog_slug?: string;
-  slug?: string;
-  date?: string;
-  cat?: string;
-};
-
-type Post = {
-  id: string;
+interface BlogPost {
   title: string;
-  excerpt: string;
+  summary: string;
   content: string;
   date: string;
-  ts: number;
-  category: string;
-};
-
-function normalize(p: RawPost, i: number): Post | null {
-  const title = p.blog_title || p.title;
-  if (!title) return null;
-  const ts = p.date ? Date.parse(p.date) : NaN;
-  return {
-    id: p.blog_slug || p.slug || `post-${i}`,
-    title,
-    excerpt: p.blog_excerpt || p.summary || '',
-    content: p.blog_content || p.content || '',
-    date: p.date || '',
-    ts: Number.isNaN(ts) ? 0 : ts,
-    category: p.cat || 'AvaLimo',
-  };
+  read: string;
+  emoji: string;
+  cat: string;
+  slug: string;
 }
 
 const Blog: React.FC = () => {
-  const [open, setOpen] = useState<Post | null>(null);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const posts = useMemo(() => {
-    const list = (rawPosts as RawPost[]).map(normalize).filter(Boolean) as Post[];
-    return list.sort((a, b) => b.ts - a.ts).slice(0, 6);
+  useEffect(() => {
+    fetch('/blog_posts.json')
+      .then((res) => res.json())
+      .then((data: BlogPost[]) => {
+        const sorted = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setPosts(sorted.slice(0, 3));
+      })
+      .catch((err) => {
+        console.error('Failed to load blog posts:', err);
+        setPosts([]);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  };
+
   return (
-    <section id="blog" className="w-full py-20 md:py-28 px-6 md:px-12 bg-black">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-[var(--gold)] text-[11px] font-bold tracking-[0.3em] uppercase block mb-4">
-            From the Blog
-          </span>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">
+    <section id="blog" className="py-24 bg-dark-900 border-t border-gold-500/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="text-xs uppercase font-bold text-gold-400 tracking-widest block mb-2">
             Houston Travel Insights
+          </span>
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
+            AvaLimo Travel Blog
           </h2>
-          <p className="text-white/60 max-w-2xl mx-auto">
-            Tips, guides, and updates for airport transfers, cruise travel, and luxury ground transportation in Houston — a new post every day.
+          <p className="text-slate-400 text-sm">
+            Expert guides on navigating Houston airports, Galveston cruise departure schedules, and executive logistics.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {posts.map((post) => (
-            <article key={post.id} className="bg-[#101010] border border-white/[0.07] p-8 hover:border-gold/20 transition-all">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-[10px] text-black bg-[var(--gold)] px-2 py-0.5 rounded font-bold uppercase tracking-wider">{post.category}</span>
-                <span className="text-[11px] text-white/40 flex items-center gap-1">
-                  <Calendar size={12} /> {post.date}
-                </span>
-              </div>
-              <h3 className="text-lg font-serif font-bold text-white mb-3">{post.title}</h3>
-              <p className="text-white/60 text-sm leading-relaxed mb-6">{post.excerpt}</p>
-              <button
-                onClick={() => setOpen(post)}
-                className="inline-flex items-center gap-2 text-[var(--gold)] text-[11px] font-bold uppercase tracking-wider hover:text-white transition-colors"
-              >
-                Read More <ArrowRight size={14} />
-              </button>
-            </article>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {loading ? (
+            <div className="col-span-3 text-center text-slate-400 text-sm">Loading latest posts…</div>
+          ) : posts.length === 0 ? (
+            <div className="col-span-3 text-center text-slate-400 text-sm">No blog posts available.</div>
+          ) : (
+            posts.map((post) => (
+              <article key={post.slug} className="glass-panel rounded-3xl overflow-hidden glass-panel-hover flex flex-col justify-between">
+                <div>
+                  <div className="h-32 flex items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-gold-500/10 border-b border-gold-500/20">
+                    <span className="text-5xl drop-shadow-lg" dangerouslySetInnerHTML={{ __html: post.emoji }} />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-[10px] uppercase font-bold text-black bg-gold-500 px-2 py-0.5 rounded-full tracking-wider">
+                        {post.cat}
+                      </span>
+                      <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                        <Calendar size={12} /> {formatDate(post.date)}
+                      </span>
+                    </div>
+                    <h3 className="font-serif text-xl font-bold text-white mb-3">{post.title}</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                      {post.summary}
+                    </p>
+                  </div>
+                </div>
+                <div className="px-6 pb-6">
+                  <a href={`/blog/${post.slug}`} className="text-xs font-bold text-gold-400 hover:text-white transition-colors inline-flex items-center gap-1">
+                    Read Travel Guide <ArrowUpRight size={12} />
+                  </a>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+
+        <div className="text-center mt-14">
+          <a href="/blog" className="inline-flex items-center gap-2 border-2 border-gold-500/40 text-gold-400 px-8 py-3 rounded-full text-[11px] font-extrabold tracking-[0.2em] uppercase hover:bg-gold-500 hover:text-black transition-all">
+            View All Articles <ArrowUpRight size={14} />
+          </a>
         </div>
       </div>
-
-      {open && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-start md:items-center justify-center p-4 overflow-y-auto"
-          onClick={() => setOpen(null)}
-        >
-          <div
-            className="bg-[#101010] border border-white/10 max-w-3xl w-full my-8 p-8 md:p-10 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setOpen(null)}
-              aria-label="Close article"
-              className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
-            >
-              <X size={22} />
-            </button>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-[10px] text-black bg-[var(--gold)] px-2 py-0.5 rounded font-bold uppercase tracking-wider">{open.category}</span>
-              <span className="text-[11px] text-white/40 flex items-center gap-1">
-                <Calendar size={12} /> {open.date}
-              </span>
-            </div>
-            <h3 className="text-2xl md:text-3xl font-serif font-bold text-white mb-6">{open.title}</h3>
-            <div
-              className="text-white/70 text-sm md:text-base leading-relaxed space-y-4 [&_h2]:text-white [&_h2]:font-serif [&_h2]:text-xl [&_h2]:mt-6 [&_strong]:text-white"
-              dangerouslySetInnerHTML={{ __html: open.content }}
-            />
-          </div>
-        </div>
-      )}
     </section>
   );
 };
