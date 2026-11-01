@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>AvaLimo Driver</title>
 <link rel="manifest" href="/driver/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/driver/icon-192.png">
@@ -346,8 +349,32 @@
     return out;
   }
 
+  // Hardened feed load: 12s timeout per attempt, up to 3 attempts with
+  // backoff, never cached, and a clear tap-to-retry state if all attempts fail.
+  var feedLoading = false;
+  function fetchFeedOnce(token){
+    return new Promise(function(resolve, reject){
+      var ctrl = ("AbortController" in window) ? new AbortController() : null;
+      var timer = setTimeout(function(){ if(ctrl) ctrl.abort(); }, 12000);
+      fetch(FEED_BASE + "?token=" + encodeURIComponent(token), {
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+        signal: ctrl ? ctrl.signal : undefined
+      }).then(function(r){
+        clearTimeout(timer);
+        if(r.status === 401) throw new Error("unauthorized");
+        if(!r.ok) throw new Error("feed " + r.status);
+        return r.json();
+      }).then(resolve, function(err){
+        clearTimeout(timer);
+        reject(err);
+      });
+    });
+  }
+
   function fetchFeed(){
     var st = document.getElementById("feedStatus");
+    var refreshBtn = document.getElementById("refreshBtn");
     var token = driverToken();
     if(!token){
       // No personal link token: make no data call at all.
@@ -355,24 +382,39 @@
       if(!viewList.classList.contains("hidden")) showList();
       return;
     }
-    if(st) st.textContent = "Loading live trips…";
-    fetch(FEED_BASE + "?token=" + encodeURIComponent(token), { headers: { "Accept": "application/json" } })
-      .then(function(r){
-        if(r.status === 401) throw new Error("unauthorized");
-        if(!r.ok) throw new Error("feed " + r.status);
-        return r.json();
-      })
-      .then(function(data){
-        feedTrips = (data && data.trips) || [];
-        if(st) st.textContent = "Live trips updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) + " · " + feedTrips.length + " upcoming";
-        if(!viewList.classList.contains("hidden")) showList();
-      })
-      .catch(function(err){
-        if(err && err.message === "unauthorized"){
-          if(st) st.textContent = "This driver link isn't valid — please use the link from your latest assignment text.";
-        } else if(st) st.textContent = "Couldn't refresh live trips — showing saved trips on this phone.";
-        if(!viewList.classList.contains("hidden")) showList();
-      });
+    if(feedLoading) return;
+    feedLoading = true;
+    if(refreshBtn){ refreshBtn.textContent = "↻ Refresh trips"; refreshBtn.classList.remove("btn", "gold"); }
+    var attempt = 0;
+    var delays = [1500, 3500]; // wait before attempts 2 and 3
+    function tryOnce(){
+      attempt++;
+      if(st) st.textContent = attempt > 1 ? "Loading live trips… (try " + attempt + " of 3)" : "Loading live trips…";
+      fetchFeedOnce(token)
+        .then(function(data){
+          feedLoading = false;
+          feedTrips = (data && data.trips) || [];
+          if(st) st.textContent = "Live trips updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) + " · " + feedTrips.length + " upcoming";
+          if(!viewList.classList.contains("hidden")) showList();
+        })
+        .catch(function(err){
+          if(err && err.message === "unauthorized"){
+            feedLoading = false;
+            if(st) st.textContent = "This driver link isn't valid — please use the link from your latest assignment text.";
+            if(!viewList.classList.contains("hidden")) showList();
+            return;
+          }
+          if(attempt < 3){
+            setTimeout(tryOnce, delays[attempt - 1]);
+            return;
+          }
+          feedLoading = false;
+          if(st) st.textContent = "Couldn't load your trips — please check your signal, then tap the button below to try again.";
+          if(refreshBtn){ refreshBtn.textContent = "↻ Tap to retry"; refreshBtn.classList.add("btn", "gold"); }
+          if(!viewList.classList.contains("hidden")) showList();
+        });
+    }
+    tryOnce();
   }
 
   function showList(){
