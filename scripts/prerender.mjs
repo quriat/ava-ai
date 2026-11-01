@@ -72,9 +72,10 @@ const truncate = (text, max) => {
 const fitTitle = (title) => {
   const clean = String(title || '').replace(/\s+/g, ' ').trim();
   const suffix = ' | AvaLimo';
+  // Titles that already name the brand (trust pages, landing pages) keep their wording.
+  if (/avalimo/i.test(clean)) return clean.length <= 60 ? clean : truncate(clean, 60);
   if (clean.length <= 60 - suffix.length) return `${clean}${suffix}`;
   if (clean.length <= 60) return clean;
-  // Long titles: keep the meaningful head before a colon or dash.
   const head = clean.split(/\s*[:|—–]\s*/)[0].trim();
   if (head.length >= 25 && head.length + suffix.length <= 60) return `${head}${suffix}`;
   return truncate(clean.split('|')[0], 59);

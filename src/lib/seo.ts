@@ -50,6 +50,7 @@ const truncate = (text: string, max: number) => {
 export const fitTitle = (title: string) => {
   const clean = String(title || '').replace(/\s+/g, ' ').trim();
   const suffix = ' | AvaLimo';
+  if (/avalimo/i.test(clean)) return clean.length <= 60 ? clean : truncate(clean, 60);
   if (clean.length <= 60 - suffix.length) return `${clean}${suffix}`;
   if (clean.length <= 60) return clean;
   const head = clean.split(/\s*[:|—–]\s*/)[0].trim();
