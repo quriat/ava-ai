@@ -166,6 +166,81 @@
         .blog-card .btn:hover { opacity: .9; }
         .fade-up { animation: fadeUp .6s ease both; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    /* ===== Houston Now ticker ===== */
+    .houston-buzz {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 28px;
+        background: #0B0D13;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+        overflow: hidden;
+        font-size: 11px;
+    }
+    .houston-buzz-label {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding-left: 12px;
+        color: #D4AF37;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .houston-buzz-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34d399;
+        animation: pulse-glow 2.4s infinite;
+    }
+    .houston-buzz-viewport {
+        flex: 1;
+        overflow: hidden;
+        mask-image: linear-gradient(90deg, transparent, #000 2%, #000 98%, transparent);
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 2%, #000 98%, transparent);
+    }
+    .houston-buzz-track {
+        display: flex;
+        width: max-content;
+        animation: houston-buzz-scroll 70s linear infinite;
+        will-change: transform;
+    }
+    .houston-buzz-track:hover,
+    .houston-buzz:focus-within .houston-buzz-track {
+        animation-play-state: paused;
+    }
+    .houston-buzz-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 18px;
+        border-right: 1px solid rgba(148, 163, 184, 0.16);
+        color: #cbd5e1;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 28px;
+    }
+    a.houston-buzz-item:hover {
+        color: #fff;
+    }
+    @keyframes houston-buzz-scroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .houston-buzz-track { animation: none; }
+        .houston-buzz-viewport { overflow-x: auto; }
+    }
+    @media (max-width: 640px) {
+        .houston-buzz { font-size: 10px; height: 26px; }
+        .houston-buzz-label { font-size: 8px; letter-spacing: 0.1em; }
+        .houston-buzz-item { line-height: 26px; padding: 0 12px; }
+    }
+
     </style>
   <!-- RUNTIME_CONFIG -->
   <script defer data-website-id="dfid_BFqQKrY77CXHzirWO5mpv" data-domain="avalimo.net" src="https://datafa.st/js/script.js"></script>

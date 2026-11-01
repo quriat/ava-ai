@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Menu, X, Phone, CreditCard } from 'lucide-react';
 import { COMPANY_INFO } from '../data/avalimoData';
+import HoustonBuzz from './HoustonBuzz';
 
 const navItems = [
   { label: 'Home', id: 'hero' },
@@ -91,8 +92,10 @@ export default function Header() {
           </div>
         </div>
 
+        <HoustonBuzz />
+
         {menuOpen && (
-          <div className="lg:hidden fixed inset-0 top-[80px] bg-dark-950/98 z-40 flex flex-col items-center justify-center gap-6 p-6">
+          <div className="lg:hidden fixed inset-0 top-[92px] sm:top-[108px] bg-dark-950/98 z-40 flex flex-col items-center justify-center gap-6 p-6">
             {navItems.map((item) => (
               <button
                 key={item.id}
