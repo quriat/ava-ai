@@ -66,6 +66,32 @@ function App() {
   const path = typeof window !== 'undefined' ? window.location.pathname : '/';
   const cleanPath = path.replace(/^\//, '').replace(/\/+$/, '');
 
+  // A ticker event links to /?event=…&dropoff=…&date=…#booking-section; turn those
+  // parameters into a pre-filled booking request before the form mounts.
+  const bookingParams = (() => {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    const dropoff = params.get('dropoff') || '';
+    const event = params.get('event') || '';
+    if (!dropoff && !event) return null;
+    const date = params.get('date') || '';
+    const time = params.get('time') || '';
+    const listing = params.get('listing') || '';
+    const notes = [
+      event ? `Event ride: ${event}` : '',
+      date ? `Date: ${date}` : '',
+      time ? `Show time: ${time}` : '',
+      listing ? `Listing: ${listing}` : '',
+    ].filter(Boolean).join(' · ');
+    return {
+      tripType: TripType.POINT_TO_POINT,
+      pickupLocation: 'Downtown Houston',
+      dropoffLocation: dropoff || undefined,
+      date: date || undefined,
+      specialInstructions: notes || undefined,
+    };
+  })();
+
   const [bookingPrefill, setBookingPrefill] = useState<{
     tripType?: TripType;
     pickupLocation?: string;
@@ -73,7 +99,7 @@ function App() {
     date?: string;
     vehicleId?: string;
     specialInstructions?: string;
-  } | undefined>(undefined);
+  } | undefined>(bookingParams || undefined);
 
   // SPA navigations do not reload the page, so GA4 never sees them on its own.
   // CoreRoute and ServiceLanding set document.title in their own effects, so

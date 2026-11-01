@@ -213,11 +213,18 @@ const liveEvents = async (): Promise<BuzzItem[]> => {
       const time = event?.dates?.start?.localTime as string | undefined;
       const venue = event?._embedded?.venues?.[0]?.name as string | undefined;
       const when = [prettyDate(date), prettyTime(time)].filter(Boolean).join(' · ');
+      const params = new URLSearchParams();
+      if (event.name) params.set('event', event.name);
+      if (venue) params.set('dropoff', venue);
+      if (date) params.set('date', date);
+      if (time) params.set('time', time);
+      if (event.url) params.set('listing', event.url);
       return {
         kind: 'event' as const,
         emoji: '🎟',
         text: truncate(`${event.name} · ${when}${venue ? ` · ${venue}` : ''}`, 110),
-        url: event.url,
+        // Book the ride, not the ticket: pre-fills the booking form for this show.
+        url: `/?${params.toString()}#booking-section`,
       };
     }).filter((item: BuzzItem) => item.text.length > 20);
   } catch {
