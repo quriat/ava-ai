@@ -181,6 +181,27 @@ const feedBuzz = async (feed: Feed): Promise<BuzzItem[]> => {
     .slice(0, feed.limit);
 };
 
+const prettyDate = (value?: string) => {
+  if (!value) return '';
+  const [year, month, day] = value.split('-').map(Number);
+  if (!year || !month || !day) return value;
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+};
+
+const prettyTime = (value?: string) => {
+  if (!value) return '';
+  const [hours, minutes] = value.split(':').map(Number);
+  if (Number.isNaN(hours)) return '';
+  const suffix = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12;
+  return `${hour12}:${String(minutes || 0).padStart(2, '0')} ${suffix}`;
+};
+
 const liveEvents = async (): Promise<BuzzItem[]> => {
   try {
     const response = await fetchWithTimeout(EVENTS_ENDPOINT, 6000);
@@ -191,7 +212,7 @@ const liveEvents = async (): Promise<BuzzItem[]> => {
       const date = event?.dates?.start?.localDate as string | undefined;
       const time = event?.dates?.start?.localTime as string | undefined;
       const venue = event?._embedded?.venues?.[0]?.name as string | undefined;
-      const when = [date, time ? time.slice(0, 5) : ''].filter(Boolean).join(' · ');
+      const when = [prettyDate(date), prettyTime(time)].filter(Boolean).join(' · ');
       return {
         kind: 'event' as const,
         emoji: '🎟',
