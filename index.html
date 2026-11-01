@@ -170,43 +170,47 @@
     .houston-buzz {
         display: flex;
         align-items: center;
-        gap: 10px;
-        height: 28px;
+        gap: 12px;
+        height: 36px;
         background: #0B0D13;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.28);
         overflow: hidden;
-        font-size: 11px;
+        font-size: 13.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
     }
     .houston-buzz-label {
         flex: none;
         display: flex;
         align-items: center;
-        gap: 6px;
-        padding-left: 12px;
-        color: #D4AF37;
-        font-size: 9px;
+        gap: 7px;
+        padding-left: 14px;
+        color: #E6C363;
+        font-size: 11px;
         font-weight: 800;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.13em;
         text-transform: uppercase;
         white-space: nowrap;
+        text-shadow: 0 0 14px rgba(212, 175, 55, 0.35);
     }
     .houston-buzz-dot {
-        width: 6px;
-        height: 6px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         background: #34d399;
+        box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
         animation: pulse-glow 2.4s infinite;
     }
     .houston-buzz-viewport {
         flex: 1;
         overflow: hidden;
-        mask-image: linear-gradient(90deg, transparent, #000 2%, #000 98%, transparent);
-        -webkit-mask-image: linear-gradient(90deg, transparent, #000 2%, #000 98%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 1.5%, #000 98.5%, transparent);
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.5%, #000 98.5%, transparent);
     }
     .houston-buzz-track {
         display: flex;
         width: max-content;
-        animation: houston-buzz-scroll 70s linear infinite;
+        animation: houston-buzz-scroll 80s linear infinite;
         will-change: transform;
     }
     .houston-buzz-track:hover,
@@ -216,16 +220,17 @@
     .houston-buzz-item {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 0 18px;
-        border-right: 1px solid rgba(148, 163, 184, 0.16);
-        color: #cbd5e1;
+        gap: 8px;
+        padding: 0 22px;
+        border-right: 1px solid rgba(148, 163, 184, 0.3);
+        color: #f8fafc;
         text-decoration: none;
         white-space: nowrap;
-        line-height: 28px;
+        line-height: 36px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
     }
     a.houston-buzz-item:hover {
-        color: #fff;
+        color: #ffffff;
     }
     @keyframes houston-buzz-scroll {
         from { transform: translateX(0); }
@@ -236,9 +241,9 @@
         .houston-buzz-viewport { overflow-x: auto; }
     }
     @media (max-width: 640px) {
-        .houston-buzz { font-size: 10px; height: 26px; }
-        .houston-buzz-label { font-size: 8px; letter-spacing: 0.1em; }
-        .houston-buzz-item { line-height: 26px; padding: 0 12px; }
+        .houston-buzz { font-size: 12.5px; height: 32px; gap: 8px; }
+        .houston-buzz-label { font-size: 9.5px; letter-spacing: 0.1em; padding-left: 10px; }
+        .houston-buzz-item { line-height: 32px; padding: 0 14px; }
     }
 
     </style>
