@@ -69,6 +69,8 @@
   }
   .submit-btn:disabled{opacity:.55; cursor:default;}
   .hint{font-size:12px; color:var(--muted); text-align:center;}
+  .msg-err{color:var(--danger); font-size:13px;}
+  .msg-ok{color:#7dd87d; font-size:13px;}
 
   .card{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px;}
   .card .route{font-size:16px; font-weight:700; line-height:1.45;}
@@ -194,7 +196,7 @@
     <div class="result">
       <div class="check">✓</div>
       <div class="big">Request received</div>
-      <p class="sub">Dispatch will confirm shortly. Your ride is saved under <strong>My Rides</strong> on this phone.</p>
+      <p class="sub">Dispatch will confirm shortly. Log in under <strong>My Rides</strong> with your account to see your trips.</p>
       <button class="btn gold" id="successRidesBtn" type="button">View My Rides</button>
       <button class="btn" id="successAgainBtn" type="button">Book Another Ride</button>
     </div>
@@ -214,8 +216,56 @@
 
   <!-- MY RIDES -->
   <section id="viewRides" class="hidden">
-    <p class="saved-note">Saved on this phone</p>
-    <div id="ridesList"></div>
+    <!-- AUTH (shown when logged out) -->
+    <div id="authBox">
+      <div class="tabs">
+        <button id="tabLogin" class="active" type="button">Log In</button>
+        <button id="tabRegister" type="button">Create Account</button>
+      </div>
+      <form id="loginForm" novalidate>
+        <div>
+          <label for="loginId">Email or phone *</label>
+          <input id="loginId" type="text" autocomplete="username" required placeholder="you@email.com or (832) 555-0123">
+        </div>
+        <div>
+          <label for="loginPassword">Password *</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Your password">
+        </div>
+        <button class="submit-btn" id="loginBtn" type="submit">Log In</button>
+        <p class="hint" id="loginMsg"></p>
+      </form>
+      <form id="registerForm" class="hidden" novalidate>
+        <div>
+          <label for="regName">Full name *</label>
+          <input id="regName" type="text" autocomplete="name" required placeholder="Your name">
+        </div>
+        <div>
+          <label for="regPhone">Phone *</label>
+          <input id="regPhone" type="tel" autocomplete="tel" required placeholder="(832) 555-0123">
+        </div>
+        <div>
+          <label for="regEmail">Email *</label>
+          <input id="regEmail" type="email" autocomplete="email" required placeholder="you@email.com">
+        </div>
+        <div>
+          <label for="regPassword">Password *</label>
+          <input id="regPassword" type="password" autocomplete="new-password" required placeholder="Choose a password">
+        </div>
+        <button class="submit-btn" id="registerBtn" type="submit">Create Account</button>
+        <p class="hint" id="registerMsg"></p>
+      </form>
+      <p class="hint">Log in to see the trips on your AvaLimo account.</p>
+    </div>
+
+    <!-- ACCOUNT TRIPS (shown when logged in) -->
+    <div id="accountBox" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <p class="saved-note" style="margin-bottom:0;">Your trips</p>
+        <button class="btn" id="logoutBtn" type="button" style="width:auto; margin-bottom:0; padding:9px 16px; font-size:14px;">Log Out</button>
+      </div>
+      <div id="accountRides"></div>
+      <button class="btn" id="ridesRefreshBtn" type="button">↻ Refresh trips</button>
+    </div>
   </section>
 </main>
 
@@ -274,32 +324,187 @@
     return d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
   }
 
+  // ---- Passenger account (locked trips) ----
+  var API_BASE = "https://n8napp.adamj.fit/webhook";
+  var TOKEN_KEY = "avalimo.passengerToken";
+
+  function getToken(){ try { return localStorage.getItem(TOKEN_KEY) || ""; } catch(e){ return ""; } }
+  function setToken(t){
+    try {
+      if(t) localStorage.setItem(TOKEN_KEY, t);
+      else localStorage.removeItem(TOKEN_KEY);
+    } catch(e){}
+  }
+  function pickToken(data){
+    if(!data || typeof data !== "object") return "";
+    return data.token || data.sessionToken || data.session_token || data.accessToken || data.access_token || "";
+  }
+
+  var authBox = document.getElementById("authBox");
+  var accountBox = document.getElementById("accountBox");
+
   function renderRides(){
-    var list = document.getElementById("ridesList");
-    var rides = loadRides();
+    if(getToken()){
+      authBox.classList.add("hidden");
+      accountBox.classList.remove("hidden");
+      fetchMyTrips();
+    } else {
+      // Logged out: no trips are shown — only the login / create-account screen.
+      accountBox.classList.add("hidden");
+      authBox.classList.remove("hidden");
+    }
+  }
+
+  function fetchMyTrips(){
+    var list = document.getElementById("accountRides");
+    list.innerHTML = '<div class="empty">Loading your trips…</div>';
+    fetch(API_BASE + "/passenger-my-trips?token=" + encodeURIComponent(getToken()), {
+      headers: { "Accept": "application/json" }
+    }).then(function(r){
+      if(r.status === 401){ setToken(""); renderRides(); throw new Error("unauthorized"); }
+      if(!r.ok) throw new Error("trips " + r.status);
+      return r.json();
+    }).then(function(data){
+      var trips = [];
+      if(Array.isArray(data)) trips = data;
+      else if(data && Array.isArray(data.trips)) trips = data.trips;
+      else if(data && Array.isArray(data.rides)) trips = data.rides;
+      renderAccountTrips(trips);
+    }).catch(function(err){
+      if(err && err.message === "unauthorized") return;
+      list.innerHTML = '<div class="empty">Couldn\'t load your trips — check your connection and tap Refresh trips.</div>';
+    });
+  }
+
+  function renderAccountTrips(trips){
+    var list = document.getElementById("accountRides");
     list.innerHTML = "";
-    if(!rides.length){
-      list.innerHTML = '<div class="empty">No rides saved yet.<br>Book your first ride and it will appear here.</div>';
+    if(!trips.length){
+      list.innerHTML = '<div class="empty">No trips on your account yet.<br>Book a ride and it will appear here once dispatch confirms it.</div>';
       return;
     }
-    rides.forEach(function(r){
+    trips.forEach(function(r){
       var card = document.createElement("div");
       card.className = "card";
       var meta = [];
       if(r.vehicle) meta.push(r.vehicle);
       if(r.tripType) meta.push(r.tripType);
       if(r.passengers) meta.push(r.passengers + " passenger" + (Number(r.passengers) === 1 ? "" : "s"));
-      if(r.flightNumber) meta.push("Flight " + r.flightNumber);
+      var flight = r.flightNumber || r.flight;
+      if(flight) meta.push("Flight " + flight);
+      if(r.status) meta.push(r.status);
       card.innerHTML =
         '<div class="when"></div>' +
         '<div class="route"></div>' +
         (meta.length ? '<div class="meta"></div>' : '');
       card.querySelector(".when").textContent = fmtDate(r.date) + (r.time ? " · " + fmtTime(r.time) : "");
-      card.querySelector(".route").textContent = (r.pickup || "") + " → " + (r.dropoff || "");
+      card.querySelector(".route").textContent = (r.pickup || "Pickup TBA") + " → " + (r.dropoff || "Destination TBA");
       if(meta.length) card.querySelector(".meta").textContent = meta.join(" · ");
       list.appendChild(card);
     });
   }
+
+  var tabLogin = document.getElementById("tabLogin");
+  var tabRegister = document.getElementById("tabRegister");
+  var loginForm = document.getElementById("loginForm");
+  var registerForm = document.getElementById("registerForm");
+
+  function showAuth(which){
+    tabLogin.classList.toggle("active", which === "login");
+    tabRegister.classList.toggle("active", which === "register");
+    loginForm.classList.toggle("hidden", which !== "login");
+    registerForm.classList.toggle("hidden", which !== "register");
+  }
+  tabLogin.addEventListener("click", function(){ showAuth("login"); });
+  tabRegister.addEventListener("click", function(){ showAuth("register"); });
+
+  function setMsg(id, text, ok){
+    var el = document.getElementById(id);
+    el.textContent = text || "";
+    el.className = "hint" + (text ? (ok ? " msg-ok" : " msg-err") : "");
+  }
+  function postJson(url, payload){
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(data){
+        return { ok: r.ok, status: r.status, data: data };
+      });
+    });
+  }
+  function serverMsg(data, fallback){
+    if(data && typeof data.error === "string" && data.error && data.error !== "unauthorized") return data.error;
+    if(data && typeof data.message === "string" && data.message) return data.message;
+    return fallback;
+  }
+
+  loginForm.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    if(!loginForm.checkValidity()){ loginForm.reportValidity(); return; }
+    var btn = document.getElementById("loginBtn");
+    btn.disabled = true;
+    btn.textContent = "Logging in…";
+    setMsg("loginMsg", "");
+    postJson(API_BASE + "/passenger-login", {
+      emailOrPhone: document.getElementById("loginId").value.trim(),
+      password: document.getElementById("loginPassword").value
+    }).then(function(res){
+      var token = pickToken(res.data);
+      if(res.ok && token){
+        setToken(token);
+        loginForm.reset();
+        renderRides();
+      } else {
+        setMsg("loginMsg", serverMsg(res.data, "Login failed — check your email/phone and password."));
+      }
+    }).catch(function(){
+      setMsg("loginMsg", "Couldn't reach the server — check your connection and try again.");
+    }).finally(function(){
+      btn.disabled = false;
+      btn.textContent = "Log In";
+    });
+  });
+
+  registerForm.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    if(!registerForm.checkValidity()){ registerForm.reportValidity(); return; }
+    var btn = document.getElementById("registerBtn");
+    btn.disabled = true;
+    btn.textContent = "Creating account…";
+    setMsg("registerMsg", "");
+    postJson(API_BASE + "/passenger-register", {
+      name: document.getElementById("regName").value.trim(),
+      phone: document.getElementById("regPhone").value.trim(),
+      email: document.getElementById("regEmail").value.trim(),
+      password: document.getElementById("regPassword").value
+    }).then(function(res){
+      var token = pickToken(res.data);
+      if(res.ok && token){
+        setToken(token);
+        registerForm.reset();
+        renderRides();
+      } else if(res.ok){
+        registerForm.reset();
+        showAuth("login");
+        setMsg("loginMsg", "Account created — please log in.", true);
+      } else {
+        setMsg("registerMsg", serverMsg(res.data, "Couldn't create your account — please check the details and try again."));
+      }
+    }).catch(function(){
+      setMsg("registerMsg", "Couldn't reach the server — check your connection and try again.");
+    }).finally(function(){
+      btn.disabled = false;
+      btn.textContent = "Create Account";
+    });
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", function(){
+    setToken("");
+    renderRides();
+  });
+  document.getElementById("ridesRefreshBtn").addEventListener("click", fetchMyTrips);
 
   var form = document.getElementById("bookForm");
   var submitBtn = document.getElementById("submitBtn");

@@ -327,8 +327,15 @@
     })(statusBtns[bi]);
   }
 
-  var FEED_URL = "https://n8napp.adamj.fit/webhook/driver-feed2-trips?key=C28qQJckj25eTie2sfsLR5gQ";
+  var FEED_BASE = "https://n8napp.adamj.fit/webhook/driver-feed2-trips";
   var feedTrips = null;
+
+  // The driver's personal token arrives in this page's own URL
+  // (?driver=<Name>&token=<token>) from the assignment text.
+  function driverToken(){
+    try { return (new URLSearchParams(window.location.search)).get("token") || ""; }
+    catch(e){ return ""; }
+  }
 
   function mergedTrips(){
     var out = [];
@@ -341,24 +348,44 @@
 
   function fetchFeed(){
     var st = document.getElementById("feedStatus");
+    var token = driverToken();
+    if(!token){
+      // No personal link token: make no data call at all.
+      if(st) st.textContent = "";
+      if(!viewList.classList.contains("hidden")) showList();
+      return;
+    }
     if(st) st.textContent = "Loading live trips…";
-    fetch(FEED_URL, { headers: { "Accept": "application/json" } })
-      .then(function(r){ if(!r.ok) throw new Error("feed " + r.status); return r.json(); })
+    fetch(FEED_BASE + "?token=" + encodeURIComponent(token), { headers: { "Accept": "application/json" } })
+      .then(function(r){
+        if(r.status === 401) throw new Error("unauthorized");
+        if(!r.ok) throw new Error("feed " + r.status);
+        return r.json();
+      })
       .then(function(data){
         feedTrips = (data && data.trips) || [];
         if(st) st.textContent = "Live trips updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) + " · " + feedTrips.length + " upcoming";
         if(!viewList.classList.contains("hidden")) showList();
       })
-      .catch(function(){
-        if(st) st.textContent = "Couldn't refresh live trips — showing saved trips on this phone.";
+      .catch(function(err){
+        if(err && err.message === "unauthorized"){
+          if(st) st.textContent = "This driver link isn't valid — please use the link from your latest assignment text.";
+        } else if(st) st.textContent = "Couldn't refresh live trips — showing saved trips on this phone.";
         if(!viewList.classList.contains("hidden")) showList();
       });
   }
 
   function showList(){
     var list = document.getElementById("tripsList");
-    var trips = mergedTrips();
     list.innerHTML = "";
+    if(!driverToken()){
+      list.innerHTML = '<div class="empty">To see your trips, please open this page from the link in your assignment text from dispatch.</div>';
+      viewTrip.classList.add("hidden");
+      viewList.classList.remove("hidden");
+      window.scrollTo(0,0);
+      return;
+    }
+    var trips = mergedTrips();
     if(!trips.length){
       list.innerHTML = '<div class="empty">No trips yet — live trips from dispatch appear here automatically.</div>';
     } else {
