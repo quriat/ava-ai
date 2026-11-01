@@ -3,6 +3,7 @@ import { ArrowRight, ArrowLeft, Calendar, Clock, Phone } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
 import { COMPANY_INFO } from '../data/avalimoData';
+import { REDIRECTED_SLUGS, fitTitle, descriptionFrom, sanitizeArticleHtml } from '../lib/seo';
 
 interface BlogPost {
   title: string;
@@ -37,17 +38,6 @@ function setCanonical(href: string) {
   el.setAttribute('href', href);
 }
 
-function setJsonLd(id: string, data: object | null) {
-  const existing = document.getElementById(id);
-  if (existing) existing.remove();
-  if (!data) return;
-  const s = document.createElement('script');
-  s.type = 'application/ld+json';
-  s.id = id;
-  s.textContent = JSON.stringify(data);
-  document.head.appendChild(s);
-}
-
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -62,7 +52,11 @@ const BlogArticle: React.FC = () => {
     fetch('/blog_posts.json')
       .then(res => res.json())
       .then((data: BlogPost[]) => {
-        setPosts([...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setPosts(
+          [...data]
+            .filter(post => !REDIRECTED_SLUGS.has(post.slug))
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        );
       })
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
@@ -73,39 +67,22 @@ const BlogArticle: React.FC = () => {
   useEffect(() => {
     if (loading) return;
     if (slug && post) {
-      const desc = post.summary?.slice(0, 160) || '';
-      document.title = `${post.title} | AvaLimo Houston Blog`;
+      const desc = descriptionFrom(post.summary, post.content);
+      const title = fitTitle(post.title);
+      document.title = title;
       setMeta('description', desc);
       setCanonical(`${SITE}/blog/${post.slug}`);
-      setMeta('og:title', post.title, 'property');
+      setMeta('og:title', title, 'property');
       setMeta('og:description', desc, 'property');
       setMeta('og:url', `${SITE}/blog/${post.slug}`, 'property');
       setMeta('og:type', 'article', 'property');
-      setMeta('twitter:title', post.title);
+      setMeta('twitter:title', title);
       setMeta('twitter:description', desc);
-      setJsonLd('ld-article', {
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: post.title,
-        description: desc,
-        datePublished: post.date,
-        dateModified: post.date,
-        author: { '@type': 'Organization', name: 'AvaLimo Houston', url: SITE },
-        publisher: {
-          '@type': 'Organization',
-          name: 'AvaLimo Houston',
-          logo: { '@type': 'ImageObject', url: `${SITE}/og-image.jpg` },
-        },
-        mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE}/blog/${post.slug}` },
-        image: `${SITE}/og-image.jpg`,
-      });
     } else if (!slug) {
-      document.title = 'Houston Travel Insights & Luxury Transport Blog | AvaLimo Houston';
-      setMeta('description', 'Guides, tips, and updates on Houston airport transfers, Galveston cruise travel, corporate chauffeur service, and luxury ground transportation from AvaLimo.');
+      document.title = 'Houston Travel & Chauffeur Blog | AvaLimo';
+      setMeta('description', 'Guides and tips on Houston airport transfers, Galveston cruise travel, corporate chauffeur service and luxury ground transportation from AvaLimo Houston.');
       setCanonical(`${SITE}/blog`);
-      setJsonLd('ld-article', null);
     }
-    return () => setJsonLd('ld-article', null);
   }, [loading, slug, post]);
 
   if (loading) {
@@ -150,7 +127,7 @@ const BlogArticle: React.FC = () => {
           <h1 className="text-3xl md:text-5xl font-serif font-bold text-white mb-8 leading-tight">{post.title}</h1>
           <article
             className="blog-content text-white/75 leading-relaxed space-y-5 [&_p]:mb-5 [&_h2]:text-2xl [&_h2]:font-serif [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-white [&_h3]:mt-8 [&_h3]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:text-white/75 [&_strong]:text-white [&_a]:text-[var(--gold)]"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(post.content) }}
           />
           <div className="mt-14 p-8 rounded-2xl bg-luxury border border-gold/20 text-center">
             <h2 className="text-xl font-serif font-bold text-white mb-3">Ready to ride in style?</h2>

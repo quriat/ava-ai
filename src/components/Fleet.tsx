@@ -83,8 +83,11 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
                   <img
                     src={vehicle.image}
                     alt={`${vehicle.name} — ${vehicle.category} available from AvaLimo Houston`}
-                    className="max-h-52 object-contain drop-shadow-2xl transition-transform hover:scale-105 duration-500"
+                    width={vehicle.imageWidth}
+                    height={vehicle.imageHeight}
+                    className="max-h-52 w-auto object-contain drop-shadow-2xl transition-transform hover:scale-105 duration-500"
                     loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute top-4 right-4 bg-dark-900/90 border border-champagne text-gold-400 px-3 py-1 rounded-full text-[11px] font-bold">
                     ${vehicle.pricePerHour}/hr

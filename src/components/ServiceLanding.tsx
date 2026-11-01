@@ -30,12 +30,6 @@ function setCanonical(href: string) {
   if (!el) { el = document.createElement('link'); el.setAttribute('rel', 'canonical'); document.head.appendChild(el); }
   el.setAttribute('href', href);
 }
-function setJsonLd(id: string, data: object | null) {
-  const ex = document.getElementById(id); if (ex) ex.remove();
-  if (!data) return;
-  const s = document.createElement('script'); s.type = 'application/ld+json'; s.id = id;
-  s.textContent = JSON.stringify(data); document.head.appendChild(s);
-}
 
 const ServiceLanding: React.FC = () => {
   const slug = window.location.pathname.replace(/^\//, '').replace(/\/+$/, '');
@@ -53,25 +47,8 @@ const ServiceLanding: React.FC = () => {
     setMeta('og:type', 'website', 'property');
     setMeta('twitter:title', page.title);
     setMeta('twitter:description', page.description);
-    setJsonLd('ld-service', {
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      serviceType: page.serviceName,
-      name: page.h1,
-      description: page.description,
-      url,
-      areaServed: { '@type': 'AdministrativeArea', name: 'Greater Houston Metropolitan Area, Texas' },
-      provider: { '@type': 'LimousineService', name: 'AvaLimo Houston', telephone: '+18325678050', url: SITE },
-    });
-    setJsonLd('ld-faq', page.faqs.length ? {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: page.faqs.map(f => ({
-        '@type': 'Question', name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    } : null);
-    return () => { setJsonLd('ld-service', null); setJsonLd('ld-faq', null); };
+    // Structured data for this page is prerendered into the static head by
+    // scripts/prerender.mjs; injecting a second block here duplicated it.
   }, [page]);
 
   if (!page) {

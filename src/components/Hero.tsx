@@ -320,7 +320,10 @@ export default function Hero({ onSelectRoute, onBookingPrefill }: HeroProps) {
                           <img
                             src={v.image}
                             alt={v.name}
-                            className="max-h-7 object-contain"
+                            width={v.imageWidth}
+                            height={v.imageHeight}
+                            className="max-h-7 w-auto object-contain"
+                            decoding="async"
                           />
                         </div>
                         <div>

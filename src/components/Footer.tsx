@@ -2,6 +2,20 @@ import React from 'react';
 import { COMPANY_INFO } from '../data/avalimoData';
 import { Phone, Mail, Star } from 'lucide-react';
 
+const AREA_LINKS = [
+  { label: 'IAH Airport Limo', href: '/iah-airport-limo-service' },
+  { label: 'Hobby Airport Limo', href: '/hobby-airport-limo-service' },
+  { label: 'Sugar Land Limo', href: '/sugar-land-limo-service' },
+  { label: 'Missouri City Limo', href: '/missouri-city-limo-service' },
+];
+
+const COMPANY_LINKS = [
+  { label: 'About AvaLimo', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms of Service', href: '/terms' },
+];
+
 const SERVICE_LINKS = [
   { label: 'Airport Transfers (IAH / HOU)', href: '/houston-airport-transfers' },
   { label: 'Galveston Cruise Transfers', href: '/galveston-cruise-transportation' },
@@ -42,6 +56,20 @@ const Footer: React.FC = () => {
         </div>
         <nav className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 text-[11px] text-slate-500 font-semibold mb-8">
           {SERVICE_LINKS.map((link) => (
+            <a key={link.href} href={link.href} className="hover:text-gold-400 transition-colors">
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <nav aria-label="Service areas" className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 text-[11px] text-slate-500 font-semibold mb-3">
+          {AREA_LINKS.map((link) => (
+            <a key={link.href} href={link.href} className="hover:text-gold-400 transition-colors">
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <nav aria-label="Company" className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 text-[11px] text-slate-500 font-semibold mb-4">
+          {COMPANY_LINKS.map((link) => (
             <a key={link.href} href={link.href} className="hover:text-gold-400 transition-colors">
               {link.label}
             </a>

@@ -9,6 +9,8 @@ import Blog from './components/Blog';
 import BlogArticle from './components/BlogArticle';
 import ServiceLanding, { landingSlugs } from './components/ServiceLanding';
 import CoreRoute, { coreSlugs } from './components/CoreRoute';
+import StaticPage from './components/StaticPage';
+import trustPages from './data/trustPages.json';
 import FAQ from './components/FAQ';
 import AIConciergeSection from './components/AIConciergeSection';
 import BookingForm from './components/BookingForm';
@@ -110,6 +112,14 @@ function App() {
     return () => window.clearTimeout(t);
   }, [path]);
 
+  const trustPage = trustPages.find((page) => page.slug === cleanPath);
+  if (trustPage) {
+    return (
+      <GlobalErrorCatcher>
+        <StaticPage page={trustPage} />
+      </GlobalErrorCatcher>
+    );
+  }
   if (path === '/blog' || path === '/blog/' || path.startsWith('/blog/')) {
     return (
       <GlobalErrorCatcher>

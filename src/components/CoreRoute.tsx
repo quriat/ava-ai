@@ -118,17 +118,6 @@ function setCanonical(href: string) {
   el.setAttribute('href', href);
 }
 
-function setJsonLd(id: string, data: object | null) {
-  const ex = document.getElementById(id);
-  if (ex) ex.remove();
-  if (!data) return;
-  const s = document.createElement('script');
-  s.type = 'application/ld+json';
-  s.id = id;
-  s.textContent = JSON.stringify(data);
-  document.head.appendChild(s);
-}
-
 function CtaRow() {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
@@ -165,16 +154,8 @@ const CoreRoute: React.FC = () => {
     setMeta('og:type', 'website', 'property');
     setMeta('twitter:title', route.title);
     setMeta('twitter:description', route.description);
-    setJsonLd('ld-core', {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: route.h1,
-      description: route.description,
-      url,
-      inLanguage: 'en-US',
-      isPartOf: { '@type': 'WebSite', name: 'AvaLimo Houston', url: SITE },
-    });
-    return () => setJsonLd('ld-core', null);
+    // Structured data for this page is prerendered into the static head by
+    // scripts/prerender.mjs; injecting a second block here duplicated it.
   }, [slug, route]);
 
   if (!route) {

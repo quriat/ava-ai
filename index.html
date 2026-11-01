@@ -48,7 +48,7 @@
     "telephone": "+18325678050",
     "email": "adam@avalimo.net",
     "image": "https://avalimo.net/og-image.jpg",
-    "logo": "https://avalimo.net/og-image.jpg",
+    "logo": "https://avalimo.net/logo.png",
     "priceRange": "$$$",
     "address": {
       "@type": "PostalAddress",
@@ -86,7 +86,6 @@
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Weddings & Special Events" } }
       ]
     },
-    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "500", "bestRating": "5" },
     "sameAs": ["https://g.page/r/CVgUaFV7t4-8EBM/review", "https://www.facebook.com/avalimo", "https://www.instagram.com/avalimo"]
   }
   </script>
@@ -96,41 +95,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        gold: {
-                            DEFAULT: '#D4AF37',
-                            300: '#F5E096',
-                            400: '#E6C363',
-                            500: '#D4AF37',
-                            600: '#AA8C2C',
-                            700: '#7D651E'
-                        },
-                        dark: {
-                            DEFAULT: '#0B0D13',
-                            950: '#060709',
-                            900: '#0B0D13',
-                            800: '#12151F',
-                            700: '#1D2230',
-                            600: '#2A3144'
-                        }
-                    },
-                    fontFamily: {
-                        serif: ['"Playfair Display"', 'serif'],
-                        sans: ['"Montserrat"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Tailwind is compiled into /assets/*.css by @tailwindcss/vite.
+         The cdn.tailwindcss.com runtime and the unused Font Awesome CDN were
+         removed: they added ~150 KB of blocking third-party requests. -->
     <style>
         .gold-gradient-text {
             background: linear-gradient(135deg, #FFF6D1 0%, #D4AF37 50%, #997A15 100%);
@@ -205,31 +172,6 @@
 </head>
 <body class="bg-dark-950 text-slate-100 font-sans antialiased selection:bg-gold-500 selection:text-black min-h-screen flex flex-col">
 
-    <h2 class="seo-static">Houston Limo Service | AvaLimo Luxury Chauffeur & Airport Transportation</h2>
-    <div class="seo-static">
-      <h2>Luxury Limo Service in Houston, TX</h2>
-      <p>AvaLimo is Houston's premier limousine company, serving Greater Houston and Galveston since 2008. Our professional chauffeurs provide a comfortable, reliable ride for every occasion: airport transportation to IAH and Hobby, corporate travel for executives and business clients, wedding limousines, prom and party events, night on the town, and cruise ship transfers to the Port of Galveston.</p>
-      <h2>Airport Transportation — IAH &amp; Hobby, Flat Rates</h2>
-      <p>We specialize in Houston airport transportation with flat rates and zero surge pricing. Our chauffeurs track your flight and meet you on time, every time. Service to George Bush Intercontinental Airport (IAH), William P. Hobby Airport (HOU), and Galveston cruise terminals.</p>
-      <h2>Corporate &amp; Executive Transportation</h2>
-      <p>Impress your business clients with our executive black car service. We provide corporate accounts, priority dispatch, and professional chauffeurs for meetings, conferences, and hourly as-directed travel across Houston.</p>
-      <h2>Our Fleet: Escalades, Mercedes Sprinters &amp; Luxury Sedans</h2>
-      <p>Choose from Cadillac Escalades, Mercedes Sprinter vans, luxury sedans, and SUVs — seating individuals, families, and groups. Every vehicle is detailed, insured, and chauffeur-driven for your comfort and safety.</p>
-      <h2>Group &amp; Party Transportation</h2>
-      <p>Planning a wedding, prom, quinceañera, concert, or group event? Our party buses and Sprinter vans keep your group together and on schedule. Galveston cruise transfer packages available for families and groups of any size.</p>
-      <p>Book online in minutes or call (832) 567-8050 — flat rates, no surge, always on time. AvaLimo: The Premier Houston Limo Service.</p>
-    </div>
-    <style>
-      .seo-static {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        clip-path: inset(50%);
-        white-space: nowrap;
-      }
-    </style>
 
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

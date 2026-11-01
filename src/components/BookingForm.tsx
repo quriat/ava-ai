@@ -475,7 +475,15 @@ NOTE: This is a reservation request. Dispatch must confirm availability and chau
                     >
                       <div>
                         <div className="relative h-32 rounded-lg overflow-hidden mb-3">
-                          <img src={car.image} alt={`${car.name} — ${car.category}`} className="w-full h-full object-cover" />
+                          <img
+                            src={car.image}
+                            alt={`${car.name} — ${car.category}`}
+                            width={car.imageWidth}
+                            height={car.imageHeight}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover"
+                          />
                           <div className="absolute top-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[10px] text-[var(--gold)] font-bold border border-gold/30">
                             ${carPrice}
                           </div>

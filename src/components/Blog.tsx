@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, Calendar } from 'lucide-react';
+import { REDIRECTED_SLUGS } from '../lib/seo';
 
 interface BlogPost {
   title: string;
@@ -20,7 +21,9 @@ const Blog: React.FC = () => {
     fetch('/blog_posts.json')
       .then((res) => res.json())
       .then((data: BlogPost[]) => {
-        const sorted = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        const sorted = data
+          .filter((post) => !REDIRECTED_SLUGS.has(post.slug))
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setPosts(sorted.slice(0, 3));
       })
       .catch((err) => {
