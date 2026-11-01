@@ -20,7 +20,7 @@ type BuzzItem = {
 };
 
 const HOUSTON_TZ = 'America/Chicago';
-const CACHE_KEY = 'avalimo-houston-buzz-v3';
+const CACHE_KEY = 'avalimo-houston-buzz-v4';
 const CACHE_MS = 30 * 60 * 1000;
 
 const TEAMS = [
@@ -43,6 +43,10 @@ const FEEDS: Feed[] = [
   // Houston sports headlines (game schedules arrive from ESPN above)
   { url: 'https://abc13.com/feed/sports/', limit: 2, defaultKind: 'sport', localOnly: true },
 ];
+
+// Server-side proxy on our own host (hermes.avalimo.net) keeps the Ticketmaster
+// API key out of the browser bundle. It returns Discovery API JSON for Houston.
+const EVENTS_ENDPOINT = 'https://hermes.avalimo.net/avalimo-events';
 
 const FALLBACK: BuzzItem[] = [
   { kind: 'sport', emoji: '🏀', text: 'Rockets at Toyota Center · Astros at Minute Maid Park · Texans at NRG Stadium' },
@@ -177,10 +181,34 @@ const feedBuzz = async (feed: Feed): Promise<BuzzItem[]> => {
     .slice(0, feed.limit);
 };
 
+const liveEvents = async (): Promise<BuzzItem[]> => {
+  try {
+    const response = await fetchWithTimeout(EVENTS_ENDPOINT, 6000);
+    if (!response.ok) return [];
+    const data = await response.json();
+    const events = data?._embedded?.events || [];
+    return events.slice(0, 5).map((event: any) => {
+      const date = event?.dates?.start?.localDate as string | undefined;
+      const time = event?.dates?.start?.localTime as string | undefined;
+      const venue = event?._embedded?.venues?.[0]?.name as string | undefined;
+      const when = [date, time ? time.slice(0, 5) : ''].filter(Boolean).join(' · ');
+      return {
+        kind: 'event' as const,
+        emoji: '🎟',
+        text: truncate(`${event.name} · ${when}${venue ? ` · ${venue}` : ''}`, 110),
+        url: event.url,
+      };
+    }).filter((item: BuzzItem) => item.text.length > 20);
+  } catch {
+    return [];
+  }
+};
+
 const collect = async (): Promise<BuzzItem[]> => {
-  const [sports, feeds] = await Promise.all([
+  const [sports, feeds, tickets] = await Promise.all([
     Promise.allSettled(TEAMS.map(teamBuzz)),
     Promise.allSettled(FEEDS.map(feedBuzz)),
+    liveEvents(),
   ]);
 
   const sportItems = sports
@@ -197,9 +225,8 @@ const collect = async (): Promise<BuzzItem[]> => {
       return true;
     });
 
-  // Games first (they are time-sensitive), then events, then news.
-  const rank: Record<BuzzItem['kind'], number> = { sport: 0, event: 1, news: 2 };
-  const items = [...sportItems, ...headlineItems.sort((a, b) => rank[a.kind] - rank[b.kind])].slice(0, 14);
+  // Games first (time-sensitive), then ticketed events, then other headlines.
+  const items = [...sportItems, ...tickets, ...headlineItems].slice(0, 14);
   return items.length >= 2 ? items : FALLBACK;
 };
 
