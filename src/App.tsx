@@ -75,7 +75,13 @@ function App() {
     const event = params.get('event') || '';
     if (!dropoff && !event) return null;
     const date = params.get('date') || '';
-    const time = params.get('time') || '';
+    const rawTime = params.get('time') || '';
+    const time = (() => {
+      const [hoursText, minutesText] = rawTime.split(':');
+      const hours = Number(hoursText);
+      if (!hoursText || Number.isNaN(hours)) return rawTime;
+      return `${hours % 12 || 12}:${String(Number(minutesText) || 0).padStart(2, '0')} ${hours >= 12 ? 'PM' : 'AM'}`;
+    })();
     const listing = params.get('listing') || '';
     const notes = [
       event ? `Event ride: ${event}` : '',
