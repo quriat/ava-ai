@@ -16,11 +16,14 @@ type BuzzItem = {
   kind: 'sport' | 'event' | 'news';
   emoji: string;
   text: string;
+  /** External listing/article link opened by the text itself. */
   url?: string;
+  /** In-site pre-filled booking link for events. */
+  bookingUrl?: string;
 };
 
 const HOUSTON_TZ = 'America/Chicago';
-const CACHE_KEY = 'avalimo-houston-buzz-v4';
+const CACHE_KEY = 'avalimo-houston-buzz-v6';
 const CACHE_MS = 30 * 60 * 1000;
 
 const TEAMS = [
@@ -223,8 +226,9 @@ const liveEvents = async (): Promise<BuzzItem[]> => {
         kind: 'event' as const,
         emoji: '🎟',
         text: truncate(`${event.name} · ${when}${venue ? ` · ${venue}` : ''}`, 110),
+        url: event.url,
         // Book the ride, not the ticket: pre-fills the booking form for this show.
-        url: `/?${params.toString()}#booking-section`,
+        bookingUrl: `/?${params.toString()}#booking-section`,
       };
     }).filter((item: BuzzItem) => item.text.length > 20);
   } catch {
@@ -313,29 +317,53 @@ export default function HoustonBuzz() {
       </span>
       <div className="houston-buzz-viewport">
         <div className="houston-buzz-track">
-          {[...items, ...items].map((item, index) =>
-            item.url ? (
+          {[...items, ...items].map((item, index) => {
+            const duplicated = index >= items.length;
+            const content = (
+              <>
+                <span aria-hidden="true">{item.emoji}</span> {item.text}
+              </>
+            );
+            if (item.bookingUrl) {
+              return (
+                <span key={`${item.text}-${index}`} className="houston-buzz-item" aria-hidden={duplicated}>
+                  {item.url ? (
+                    <a
+                      className="houston-buzz-link"
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      tabIndex={duplicated ? -1 : 0}
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <span>{content}</span>
+                  )}
+                  <a className="houston-buzz-book" href={item.bookingUrl} tabIndex={duplicated ? -1 : 0}>
+                    Book ride
+                  </a>
+                </span>
+              );
+            }
+            return item.url ? (
               <a
                 key={`${item.text}-${index}`}
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="houston-buzz-item"
-                tabIndex={index >= items.length ? -1 : 0}
-                aria-hidden={index >= items.length}
+                tabIndex={duplicated ? -1 : 0}
+                aria-hidden={duplicated}
               >
-                <span aria-hidden="true">{item.emoji}</span> {item.text}
+                {content}
               </a>
             ) : (
-              <span
-                key={`${item.text}-${index}`}
-                className="houston-buzz-item"
-                aria-hidden={index >= items.length}
-              >
-                <span aria-hidden="true">{item.emoji}</span> {item.text}
+              <span key={`${item.text}-${index}`} className="houston-buzz-item" aria-hidden={duplicated}>
+                {content}
               </span>
-            )
-          )}
+            );
+          })}
         </div>
       </div>
     </div>
