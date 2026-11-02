@@ -105,6 +105,7 @@
       <div class="field"><div class="k">Pickup</div><div class="v" id="tPickup"></div></div>
       <div class="field"><div class="k">Drop-off</div><div class="v" id="tDropoff"></div></div>
       <div class="field hidden" id="fFlight"><div class="k">Flight</div><div class="v" id="tFlight"></div></div>
+      <div class="field hidden" id="fFare"><div class="k">Charge</div><div class="v" id="tFare"></div></div>
       <div class="field hidden" id="fVehicle"><div class="k">Vehicle</div><div class="v" id="tVehicle"></div></div>
       <div class="field hidden" id="fNotes"><div class="k">Notes</div><div class="v notes" id="tNotes"></div></div>
     </div>
@@ -200,6 +201,10 @@
     var fFlight = document.getElementById("fFlight");
     if(t.flight){ document.getElementById("tFlight").textContent = t.flight; fFlight.classList.remove("hidden"); }
     else fFlight.classList.add("hidden");
+
+    var fFare = document.getElementById("fFare");
+    if(t.fare){ document.getElementById("tFare").textContent = t.fare; fFare.classList.remove("hidden"); }
+    else fFare.classList.add("hidden");
 
     var fVehicle = document.getElementById("fVehicle");
     if(t.vehicle){ document.getElementById("tVehicle").textContent = t.vehicle; fVehicle.classList.remove("hidden"); }
