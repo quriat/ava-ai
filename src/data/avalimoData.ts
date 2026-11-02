@@ -38,8 +38,8 @@ export const FLEET_DATA: FleetItem[] = [
     passengers: 3,
     luggage: 3,
     pricePerHour: 100,
-    flatRateIAH: 125,
-    flatRateHobby: 110,
+    flatRateIAH: 200,
+    flatRateHobby: 180,
     flatRateGalveston: 220,
     minHours: 3,
     image: '/mercedes_sclass.webp',
@@ -228,9 +228,9 @@ export const SERVICES_DATA: Service[] = [
     ],
     recommendedVehicle: 'Mercedes-Benz S-Class or Cadillac Escalade ESV',
     popularRoutes: [
-      'IAH Airport ⇄ Downtown Houston ($125 Sedan / $165 SUV)',
-      'IAH Airport ⇄ Galleria / Uptown ($130 Sedan / $170 SUV)',
-      'Hobby Airport ⇄ Downtown / Medical Center ($110 Sedan / $145 SUV)'
+      'IAH Airport ⇄ Downtown Houston ($125 Sedan / $165 SUV / $200 S-Class)',
+      'IAH Airport ⇄ Galleria / Uptown ($130 Sedan / $170 SUV / $250 S-Class)',
+      'Hobby Airport ⇄ Downtown / Medical Center ($110 Sedan / $145 SUV / $180 S-Class)'
     ]
   },
   {
@@ -359,10 +359,10 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
 export const FAQS_DATA: FAQItem[] = faqsJson as FAQItem[];
 
 export const POPULAR_ROUTES = [
-  { from: 'IAH Airport', to: 'Downtown Houston / Toyota Center', duration: '30-40 min', startingPrice: '$125 Sedan / $165 SUV' },
-  { from: 'IAH Airport', to: 'The Galleria / Uptown Post Oak', duration: '35-45 min', startingPrice: '$130 Sedan / $170 SUV' },
+  { from: 'IAH Airport', to: 'Downtown Houston / Toyota Center', duration: '30-40 min', startingPrice: '$125 Sedan / $165 SUV / $200 S-Class' },
+  { from: 'IAH Airport', to: 'The Galleria / Uptown Post Oak', duration: '35-45 min', startingPrice: '$130 Sedan / $170 SUV / $250 S-Class' },
   { from: 'IAH Airport', to: 'The Woodlands / Cynthia Woods', duration: '25-35 min', startingPrice: '$115 Sedan / $155 SUV' },
-  { from: 'Hobby Airport (HOU)', to: 'Downtown / Medical Center', duration: '20-25 min', startingPrice: '$110 Sedan / $145 SUV' },
+  { from: 'Hobby Airport (HOU)', to: 'Downtown / Medical Center', duration: '20-25 min', startingPrice: '$110 Sedan / $145 SUV / $180 S-Class' },
   { from: 'Hobby Airport (HOU)', to: 'Port of Galveston Cruise Pier', duration: '45-55 min', startingPrice: '$150 Sedan / $190 SUV' },
   { from: 'IAH Airport', to: 'Port of Galveston Cruise Pier', duration: '75-85 min', startingPrice: '$220 Sedan / $260 SUV' },
   { from: 'Houston Metro', to: 'Austin / San Antonio / College Station', duration: '2.5 - 3 hrs', startingPrice: '$495 Sedan / $595 SUV' }

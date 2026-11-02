@@ -7,13 +7,13 @@
     "description": "Luxury Houston airport car service to and from IAH and Hobby. Flat rates, flight tracking, and 24/7 chauffeurs. Sedan from $125, SUV from $165. Call (832) 567-8050.",
     "intro": "Skip the rideshare surge and long taxi lines. AvaLimo provides premium, on-time chauffeured transfers to and from George Bush Intercontinental (IAH) and William P. Hobby (HOU) airports — with real-time flight tracking so your driver is always waiting when you land.",
     "sections": [
-      { "h2": "Flat-rate airport pricing (no surge)", "body": "<p>Transparent, all-inclusive fares across Greater Houston:</p><ul><li><strong>IAH ⇄ Downtown Houston:</strong> Sedan $125 · SUV $165</li><li><strong>Hobby ⇄ Downtown Houston:</strong> Sedan $105 · SUV $135</li><li><strong>Sugar Land / Missouri City ⇄ IAH:</strong> Sedan from $155</li></ul><p>Rates include meet-and-greet, wait time, taxes, and tolls. No hidden fees, ever.</p>" },
+      { "h2": "Flat-rate airport pricing (no surge)", "body": "<p>Transparent, all-inclusive fares across Greater Houston:</p><ul><li><strong>IAH ⇄ Downtown Houston:</strong> Sedan $125 · SUV $165 · S-Class $200</li><li><strong>IAH ⇄ Galleria / Uptown:</strong> Sedan $130 · SUV $170 · S-Class $250</li><li><strong>Hobby ⇄ Downtown Houston:</strong> Sedan $105 · SUV $135 · S-Class $180</li><li><strong>Sugar Land / Missouri City ⇄ IAH:</strong> Sedan from $155</li></ul><p>Rates include meet-and-greet, wait time, taxes, and tolls. No hidden fees, ever.</p>" },
       { "h2": "Real-time flight tracking", "body": "<p>We monitor your flight automatically and adjust pickup time for early arrivals or delays — so you're never charged for someone else's schedule and your chauffeur is curbside the moment you're ready.</p>" },
       { "h2": "The right vehicle for every trip", "body": "<p>Choose a Mercedes S-Class for solo executives, a Cadillac Escalade for families and luggage, or a Mercedes Sprinter for groups up to 14. Every vehicle is late-model, immaculate, and driven by a professional, background-checked chauffeur.</p>" }
     ],
     "faqs": [
       { "q": "Do you track my flight?", "a": "Yes. We track your flight in real time and adjust your pickup automatically for delays or early landings at no extra charge." },
-      { "q": "How much is a limo from IAH to downtown Houston?", "a": "Flat rates start at $125 for a Mercedes S-Class sedan and $165 for a Cadillac Escalade SUV, including tolls, taxes, and meet-and-greet." },
+      { "q": "How much is a limo from IAH to downtown Houston?", "a": "Flat rates start at $125 for a sedan and $165 for a Cadillac Escalade SUV, including tolls, taxes, and meet-and-greet. The Mercedes S-Class, our premium flagship sedan, is $200 on this route." },
       { "q": "Is AvaLimo available 24/7?", "a": "Yes, our dispatch and chauffeurs operate 24 hours a day, 365 days a year for both IAH and Hobby airports." }
     ]
   },
