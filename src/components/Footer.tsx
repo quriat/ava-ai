@@ -7,6 +7,9 @@ const AREA_LINKS = [
   { label: 'Hobby Airport Limo', href: '/hobby-airport-limo-service' },
   { label: 'Sugar Land Limo', href: '/sugar-land-limo-service' },
   { label: 'Missouri City Limo', href: '/missouri-city-limo-service' },
+  { label: 'Sienna Limo', href: '/sienna-limo-service' },
+  { label: 'Riverstone Limo', href: '/riverstone-limo-service' },
+  { label: 'Fort Bend County', href: '/fort-bend-limo-service' },
 ];
 
 const COMPANY_LINKS = [

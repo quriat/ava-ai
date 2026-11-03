@@ -530,6 +530,9 @@ const STATIC_PAGES = [
   'hobby-airport-limo-service',
   'sugar-land-limo-service',
   'missouri-city-limo-service',
+  'sienna-limo-service',
+  'riverstone-limo-service',
+  'fort-bend-limo-service',
 ];
 for (const slug of STATIC_PAGES) {
   const file = path.join(dist, slug, 'index.html');
