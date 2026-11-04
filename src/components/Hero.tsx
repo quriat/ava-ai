@@ -170,6 +170,23 @@ export default function Hero({ onSelectRoute, onBookingPrefill }: HeroProps) {
                 <Sparkles size={14} className="text-[var(--gold)]" />
                 <span>Talk with 24/7 AI Concierge</span>
               </a>
+
+              <a
+                href="https://play.google.com/store/apps/details?id=com.adamj.avalimo"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Get the AvaLimo app on Google Play"
+                onClick={() => trackEvent('hero_app_download_click', { store: 'google_play', app: 'client' })}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-black hover:bg-dark-800 border border-gold/40 transition-all flex items-center justify-center gap-3"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--gold)" aria-hidden="true" className="flex-shrink-0">
+                  <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.404 1.39a1 1 0 0 1 0 1.73l-2.404 1.39-2.52-2.52 2.52-2.509zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z" />
+                </svg>
+                <span className="text-left leading-tight">
+                  <span className="block text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-400">Get the AvaLimo App</span>
+                  <span className="block text-base font-bold text-white leading-snug">Google Play</span>
+                </span>
+              </a>
             </div>
           </div>
 
