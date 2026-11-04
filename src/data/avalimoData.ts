@@ -313,6 +313,16 @@ export const SERVICES_DATA: Service[] = [
 
 export const TESTIMONIALS_DATA: Testimonial[] = [
   {
+    id: 5,
+    name: 'Anya Evans',
+    role: 'AvaLimo Client',
+    location: 'Missouri City, TX',
+    text: 'Awesome service 👏 First class at affordable prices . The only way to travel around the Houston area...',
+    stars: 5,
+    date: 'November 2026',
+    serviceType: 'Hobby Airport Pickup'
+  },
+  {
     id: 1,
     name: 'Marcus Vance',
     role: 'VP of Global Operations',
