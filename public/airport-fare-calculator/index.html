@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Houston Airport Fare Calculator | AvaLimo Flat Rates</title>
+<meta name="description" content="Estimate your Houston airport transfer in seconds. Published flat rates from IAH and Hobby to Downtown, the Galleria, Sugar Land and Galveston — no surge, included tolls.">
+<link rel="canonical" href="https://avalimo.net/airport-fare-calculator/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AvaLimo">
+<meta property="og:title" content="Houston Airport Fare Calculator | AvaLimo">
+<meta property="og:description" content="Estimate your Houston airport transfer in seconds. Published flat rates, no surge pricing.">
+<meta property="og:url" content="https://avalimo.net/airport-fare-calculator/">
+<meta property="og:image" content="https://avalimo.net/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Libre+Franklin:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C5A059;--ink:#0a0a0a;--card:#101010;--line:#2a2a2a;--text:#e8e6df;--muted:#9a978c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--text);font:1rem/1.6 "Libre Franklin",system-ui,sans-serif}
+main{max-width:70ch;margin:0 auto;padding:48px 22px 72px}
+h1,h2{font-family:Montserrat,system-ui,sans-serif;text-wrap:balance}
+h1{font-size:clamp(1.75rem,1.35rem+1.8vw,2.375rem);line-height:1.15;letter-spacing:-.01em;color:#fff;margin:0 0 12px}
+h2{font-size:1.375rem;line-height:1.25;letter-spacing:-.01em;color:var(--gold);margin:2.2rem 0 .6rem}
+a{color:var(--gold)}
+nav.crumb{font-size:.875rem;color:var(--muted);margin-bottom:26px}
+.calc{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:12px;padding:20px;margin:24px 0}
+label{display:block;font-size:.8125rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+select{width:100%;font-size:1rem;padding:12px 14px;border-radius:8px;border:1px solid var(--line);background:#161616;color:var(--text)}
+select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.result{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:1.0625rem}
+.price{font-family:Montserrat,sans-serif;font-size:2rem;color:#fff;display:block;line-height:1.2}
+.note{font-size:.875rem;color:var(--muted)}
+.cta{display:inline-block;background:var(--gold);color:#111;font-weight:700;padding:13px 24px;border-radius:10px;text-decoration:none;margin-top:14px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9375rem}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.8125rem;text-transform:uppercase;letter-spacing:.04em}
+details{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin:10px 0}
+summary{cursor:pointer;color:#fff;font-weight:600}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"How much is a flat-rate airport transfer from IAH?","acceptedAnswer":{"@type":"Answer","text":"Published flat rates run from $125 to Downtown Houston, $130 to the Galleria and the Uptown area, $115 to The Woodlands, and $220 to the Port of Galveston cruise terminals. Prices are per vehicle, include tolls, and do not surge."}},
+{"@type":"Question","name":"What does a Hobby Airport transfer cost?","acceptedAnswer":{"@type":"Answer","text":"Hobby to Downtown or the Medical Center starts at $110, and Hobby to the Galveston cruise terminals starts at $150. The quoted rate covers the whole vehicle, not each passenger."}},
+{"@type":"Question","name":"Is the price per person?","acceptedAnswer":{"@type":"Answer","text":"No. Every rate is per car, covering up to 3 passengers in a sedan, 6 in an SUV, and 14 in a Sprinter, with luggage."}},
+{"@type":"Question","name":"Do rates change with traffic or demand?","acceptedAnswer":{"@type":"Answer","text":"No. AvaLimo quotes flat rates that do not change with traffic, demand, or time of day. Tolls and taxes are included in the quote."}},
+{"@type":"Question","name":"How do I get an exact rate for a destination not listed?","acceptedAnswer":{"@type":"Answer","text":"Call 832-567-8050 or submit the booking form. Dispatch will confirm the exact flat rate for the whole vehicle before your trip."}}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+{"@type":"ListItem","position":1,"name":"Home","item":"https://avalimo.net/"},
+{"@type":"ListItem","position":2,"name":"Airport Fare Calculator","item":"https://avalimo.net/airport-fare-calculator/"}]}
+</script>
+</head>
+<body>
+<main>
+<nav class="crumb"><a href="https://avalimo.net/">Home</a> › Airport Fare Calculator</nav>
+<header>
+<h1>Houston airport fare calculator</h1>
+<p>Pick your airport, destination and vehicle. These are AvaLimo's published flat rates — per vehicle, tolls included, no surge pricing.</p>
+</header>
+
+<form class="calc" id="calc" aria-labelledby="calc-heading">
+<h2 id="calc-heading" style="margin-top:0">Estimate your fare</h2>
+<label for="airport">Airport</label>
+<select id="airport">
+  <option value="IAH">IAH — George Bush Intercontinental</option>
+  <option value="HOU">Hobby (HOU)</option>
+</select>
+<label for="zone">Destination area</label>
+<select id="zone">
+  <option value="downtown">Downtown Houston / Toyota Center</option>
+  <option value="galleria">The Galleria / Uptown</option>
+  <option value="woodlands">The Woodlands</option>
+  <option value="sugarland">Sugar Land</option>
+  <option value="missouricity">Missouri City / Sienna</option>
+  <option value="katy">Katy</option>
+  <option value="energy">Energy Corridor</option>
+  <option value="galveston">Port of Galveston cruise terminal</option>
+</select>
+<label for="vehicle">Vehicle</label>
+<select id="vehicle">
+  <option value="sedan">Mercedes-Benz S-Class — up to 3 passengers</option>
+  <option value="suv">Cadillac Escalade ESV / GMC Yukon — up to 6</option>
+  <option value="sprinter">Mercedes-Benz Sprinter — up to 14</option>
+</select>
+<div class="result" role="status" aria-live="polite" id="result">
+  <span class="price" id="price">$125</span>
+  <span class="note" id="detail">IAH to Downtown Houston — per vehicle, tolls included.</span>
+</div>
+<a class="cta" href="https://avalimo.net/#booking-section">Book this ride</a>
+<p class="note" style="margin-top:10px">Need something not listed, or an hourly run? Call <a href="tel:+18325678050">(832) 567-8050</a> — dispatch runs 24/7.</p>
+</form>
+
+<h2>Published flat rates</h2>
+<table>
+<thead><tr><th>Route</th><th>Sedan</th><th>SUV</th><th>Sprinter</th></tr></thead>
+<tbody>
+<tr><td>IAH → Downtown Houston</td><td>$125</td><td>$165</td><td>On request</td></tr>
+<tr><td>IAH → The Galleria</td><td>$130</td><td>$170</td><td>On request</td></tr>
+<tr><td>IAH → The Woodlands</td><td>$115</td><td>$155</td><td>On request</td></tr>
+<tr><td>IAH → Port of Galveston</td><td>$220</td><td>$260</td><td>On request</td></tr>
+<tr><td>Hobby → Downtown / Medical Center</td><td>$110</td><td>$145</td><td>On request</td></tr>
+<tr><td>Hobby → Port of Galveston</td><td>$150</td><td>$190</td><td>On request</td></tr>
+</tbody>
+</table>
+<p class="note">Sugar Land, Missouri City, Sienna, Katy and the Energy Corridor are quoted per trip — call or use the booking form for the exact flat rate.</p>
+
+<h2>How the flat rate works</h2>
+<p>One price covers the whole vehicle, up to its passenger limit, with luggage, tolls and taxes included. It does not change with traffic, time of day or demand, and there is no surge multiplier. Flights are tracked in real time, and the chauffeur arrives 15 minutes early for departures.</p>
+
+<h2>Frequently asked questions</h2>
+<details><summary>How much is a flat-rate airport transfer from IAH?</summary><p>Published flat rates run from $125 to Downtown Houston, $130 to the Galleria, $115 to The Woodlands, and $220 to the Port of Galveston cruise terminals — per vehicle, tolls included.</p></details>
+<details><summary>What does a Hobby Airport transfer cost?</summary><p>Hobby to Downtown or the Medical Center starts at $110, and Hobby to the Galveston cruise terminals starts at $150.</p></details>
+<details><summary>Is the price per person?</summary><p>No — every rate is per car: up to 3 passengers in a sedan, 6 in an SUV, 14 in a Sprinter, with luggage.</p></details>
+<details><summary>Do rates change with traffic or demand?</summary><p>No. The quote is flat, tolls and taxes included, and it never surges.</p></details>
+<details><summary>Where can I book?</summary><p>Use the booking form on <a href="https://avalimo.net/#booking-section">avalimo.net</a> or call <a href="tel:+18325678050">(832) 567-8050</a>.</p></details>
+
+<p style="margin-top:40px"><a href="https://avalimo.net/">← AvaLimo home</a> · <a href="https://avalimo.net/iah-airport-limo-service">IAH Airport limo service</a> · <a href="https://avalimo.net/hobby-airport-limo-service">Hobby Airport limo service</a> · <a href="https://avalimo.net/fort-bend-limo-service">Fort Bend chauffeur service</a></p>
+</main>
+<script>
+const TABLE = {
+  IAH: {
+    downtown:  { sedan: 125, suv: 165 },
+    galleria:  { sedan: 130, suv: 170 },
+    woodlands: { sedan: 115, suv: 155 },
+    galveston: { sedan: 220, suv: 260 }
+  },
+  HOU: {
+    downtown: { sedan: 110, suv: 145 },
+    galveston:{ sedan: 150, suv: 190 }
+  }
+};
+const ZONE_LABEL = {
+  downtown: "Downtown Houston / Toyota Center",
+  galleria: "The Galleria / Uptown",
+  woodlands: "The Woodlands",
+  sugarland: "Sugar Land",
+  missouricity: "Missouri City / Sienna",
+  katy: "Katy",
+  energy: "Energy Corridor",
+  galveston: "Port of Galveston cruise terminal"
+};
+const AIRPORT_LABEL = { IAH: "IAH", HOU: "Hobby (HOU)" };
+const VEHICLE_LABEL = { sedan: "S-Class sedan", suv: "Escalade / Yukon SUV", sprinter: "Executive Sprinter" };
+const $ = (id) => document.getElementById(id);
+
+function update() {
+  const a = $("airport").value, z = $("zone").value, v = $("vehicle").value;
+  const row = (TABLE[a] || {})[z] || {};
+  const price = row[v];
+  if (price) {
+    $("price").textContent = "$" + price;
+    $("detail").textContent = AIRPORT_LABEL[a] + " to " + ZONE_LABEL[z] + " — " + VEHICLE_LABEL[v] + ", per vehicle, tolls included.";
+  } else if (row.sedan && v === "sprinter") {
+    $("price").textContent = "On request";
+    $("detail").textContent = "Sprinter pricing for " + ZONE_LABEL[z] + " is quoted per trip — call dispatch for the exact flat rate.";
+  } else {
+    $("price").textContent = "Call for rate";
+    $("detail").textContent = ZONE_LABEL[z] + " from " + AIRPORT_LABEL[a] + " is quoted per trip. Dispatch will confirm the flat rate before you book.";
+  }
+}
+["airport","zone","vehicle"].forEach((id) => $(id).addEventListener("change", update));
+update();
+</script>
+</body>
+</html>

@@ -10,6 +10,7 @@ const AREA_LINKS = [
   { label: 'Sienna Limo', href: '/sienna-limo-service' },
   { label: 'Riverstone Limo', href: '/riverstone-limo-service' },
   { label: 'Fort Bend County', href: '/fort-bend-limo-service' },
+  { label: 'Fare Calculator', href: '/airport-fare-calculator' },
 ];
 
 const COMPANY_LINKS = [

@@ -533,6 +533,7 @@ const STATIC_PAGES = [
   'sienna-limo-service',
   'riverstone-limo-service',
   'fort-bend-limo-service',
+  'airport-fare-calculator',
 ];
 for (const slug of STATIC_PAGES) {
   const file = path.join(dist, slug, 'index.html');
