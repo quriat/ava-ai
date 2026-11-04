@@ -357,6 +357,7 @@
   // Hardened feed load: 12s timeout per attempt, up to 3 attempts with
   // backoff, never cached, and a clear tap-to-retry state if all attempts fail.
   var feedLoading = false;
+  var lastFeedStart = 0;
   function fetchFeedOnce(token){
     return new Promise(function(resolve, reject){
       var ctrl = ("AbortController" in window) ? new AbortController() : null;
@@ -389,6 +390,7 @@
     }
     if(feedLoading) return;
     feedLoading = true;
+    lastFeedStart = Date.now();
     if(refreshBtn){ refreshBtn.textContent = "↻ Refresh trips"; refreshBtn.classList.remove("btn", "gold"); }
     var attempt = 0;
     var delays = [1500, 3500]; // wait before attempts 2 and 3
@@ -484,6 +486,20 @@
     showList();
   }
   fetchFeed();
+
+  // Home-screen icons (iOS especially) resume this page from a frozen
+  // snapshot instead of loading it fresh, so the script never reruns and
+  // the list looks stuck. Refetch whenever the page is shown again or
+  // comes back to the foreground (throttled to one refetch per 30s).
+  function maybeRefetch(){
+    if(Date.now() - lastFeedStart > 30000) fetchFeed();
+  }
+  window.addEventListener("pageshow", function(ev){
+    if(ev.persisted) fetchFeed(); else maybeRefetch();
+  });
+  document.addEventListener("visibilitychange", function(){
+    if(!document.hidden) maybeRefetch();
+  });
 })();
 </script>
 </body>
