@@ -254,7 +254,7 @@ const homeBody = `
       <tbody>
         <tr><td>IAH Airport ⇄ Downtown Houston</td><td>$125</td><td>$165</td><td>$200</td></tr>
         <tr><td>IAH Airport ⇄ Galleria / Uptown</td><td>$130</td><td>$170</td><td>$250</td></tr>
-        <tr><td>Hobby Airport ⇄ Downtown Houston</td><td>$110</td><td>$135</td><td>$180</td></tr>
+        <tr><td>Hobby Airport ⇄ Downtown Houston</td><td>$110</td><td>$145</td><td>$180</td></tr>
         <tr><td>Sugar Land / Missouri City ⇄ IAH Airport</td><td>$170</td><td>Call for quote</td><td>Call for quote</td></tr>
         <tr><td>Houston ⇄ Galveston Cruise Port</td><td>Call for quote</td><td>Call for quote</td><td>Call for quote</td></tr>
       </tbody>
