@@ -313,14 +313,74 @@ export const SERVICES_DATA: Service[] = [
 
 export const TESTIMONIALS_DATA: Testimonial[] = [
   {
+    id: 6,
+    name: 'Tim Studdert',
+    role: 'AvaLimo Client',
+    location: 'Houston, TX',
+    text: 'Adam is very professional cars are all clean. Great company and people.',
+    stars: 5,
+    date: 'November 2026',
+    serviceType: 'IAH Airport Drop-off'
+  },
+  {
     id: 5,
     name: 'Anya Evans',
     role: 'AvaLimo Client',
     location: 'Missouri City, TX',
-    text: 'Awesome service 👏 First class at affordable prices . The only way to travel around the Houston area...',
+    text: 'Awesome service 👏 First class at affordable prices . The only way to travel around the Houston area and beyond.',
     stars: 5,
     date: 'November 2026',
     serviceType: 'Hobby Airport Pickup'
+  },
+  {
+    id: 7,
+    name: 'Joey Logreco',
+    role: 'AvaLimo Client',
+    location: 'Houston, TX',
+    text: 'For over five years, Adam has transported us with extreme reliability, dependability, and professionalism. He arrives 15 minutes prior to the scheduled departure time and greets us with an infectious smile. He handles all of the baggage for us, offers refreshments, and then we are driven professionally, comfortably, and cheerfully. Always a pleasurable and relaxed experience to which we are grateful.',
+    stars: 5,
+    date: 'October 2026',
+    serviceType: 'Airport Pickup & Drop-off'
+  },
+  {
+    id: 8,
+    name: 'Lee Labrada',
+    role: 'AvaLimo Client',
+    location: 'Houston, TX',
+    text: 'Adam has been our go-to driver for years. Adam is professional, always on time, and personable. I trust him with my family and business associates... always trustworthy and dependable, not to mention he\u2019s just a great person. Thank you, Adam.',
+    stars: 5,
+    date: 'September 2026',
+    serviceType: 'Chauffeur Service'
+  },
+  {
+    id: 9,
+    name: 'Ethan James',
+    role: 'AvaLimo Client',
+    location: 'Houston, TX',
+    text: 'Adam and this company are always amazing! Been using them for a few years now and the rides are always on time, easy, and comfortable.',
+    stars: 5,
+    date: 'June 2026',
+    serviceType: 'Airport Service'
+  },
+  {
+    id: 10,
+    name: 'Mario Mendias',
+    role: 'AvaLimo Client',
+    location: 'Houston, TX',
+    text: 'Adam showed up 15 minutes early, wouldn\u2019t let me touch my own bags and drove so smoothly I feel asleep on the way to the airport.',
+    stars: 5,
+    date: 'June 2026',
+    serviceType: 'Airport Drop-off'
+  },
+  {
+    id: 11,
+    name: 'Teddy',
+    role: 'AvaLimo Client',
+    location: 'Houston, TX',
+    text: 'Excellent service. Incredibly dependable. Super clean cars and friendly service.',
+    stars: 5,
+    date: 'June 2026',
+    serviceType: 'Chauffeur Service'
   },
   {
     id: 1,
