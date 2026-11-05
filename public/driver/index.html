@@ -84,6 +84,16 @@
   }
   .status-again{display:inline-block; margin-top:8px; color:var(--gold); font-size:14px; font-weight:700; text-decoration:underline; cursor:pointer;}
   .status-err{color:#e08a8a; font-size:15px; text-align:center; padding:4px 0 12px;}
+
+  .pay-card{background:var(--panel); border:1px solid var(--gold-dark); border-radius:14px; padding:18px; margin-bottom:18px;}
+  .pay-k{font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:4px;}
+  .pay-line{font-size:21px; font-weight:800; line-height:1.3;}
+  .pay-line .pay-amt{color:var(--gold);}
+  .pay-toggle{display:inline-block; margin-top:10px; color:var(--gold); font-size:14px; font-weight:700; text-decoration:underline; cursor:pointer;}
+  .pay-list{margin-top:12px; border-top:1px solid var(--line);}
+  .pay-row{display:flex; justify-content:space-between; align-items:center; padding:9px 2px; border-bottom:1px solid var(--line); font-size:15px;}
+  .pay-row .pay-date{color:var(--muted);}
+  .pay-row .pay-val{color:var(--gold); font-weight:800;}
   footer{text-align:center; color:var(--muted); font-size:12px; padding:18px 10px 26px;}
 </style>
   <script defer data-website-id="dfid_BFqQKrY77CXHzirWO5mpv" data-domain="avalimo.net" src="https://datafa.st/js/script.js"></script>
@@ -131,6 +141,12 @@
 
   <!-- SAVED TRIPS -->
   <section id="viewList">
+    <div class="pay-card hidden" id="payCard">
+      <div class="pay-k">My Pay</div>
+      <div class="pay-line" id="payLine"></div>
+      <a class="pay-toggle hidden" id="payToggle" href="#">View payments</a>
+      <div class="pay-list hidden" id="payList"></div>
+    </div>
     <h2 class="section">My Trips</h2>
     <div style="color:var(--muted); font-size:13px; margin:-6px 0 10px;">Tap a trip to see details, navigation, and status buttons.</div>
     <div id="feedStatus" style="color:var(--muted); font-size:13px; margin:-6px 0 10px;">Loading live trips…</div>
@@ -345,6 +361,84 @@
     catch(e){ return ""; }
   }
 
+  // Pay history: the server resolves the driver from this page's own
+  // personal token — the page never sends a driver name, so a driver can
+  // only ever see their own pay. Best-effort: any failure just leaves the
+  // pay card hidden and never affects the trip list.
+  var PAY_URL = "https://n8napp.adamj.fit/webhook/driver-my-pay";
+  function fmtMoney(n){
+    return "$" + Number(n || 0).toLocaleString("en-US");
+  }
+  function fmtPayDate(dstr){
+    if(!dstr) return "";
+    var parts = String(dstr).split("-");
+    if(parts.length !== 3) return dstr;
+    var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    if(isNaN(d.getTime())) return dstr;
+    return d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+  }
+  function renderPay(data){
+    var card = document.getElementById("payCard");
+    if(!card || !data || data.ok !== true) return;
+    var payments = Array.isArray(data.payments) ? data.payments : [];
+    var count = (typeof data.count === "number") ? data.count : payments.length;
+    var year = data.year || 2026;
+    var line = document.getElementById("payLine");
+    line.innerHTML = "";
+    var yspan = document.createElement("span");
+    yspan.textContent = "My Pay — " + year + ": ";
+    var amt = document.createElement("span");
+    amt.className = "pay-amt";
+    amt.textContent = fmtMoney(data.total);
+    var cspan = document.createElement("span");
+    cspan.textContent = " (" + count + (count === 1 ? " payment" : " payments") + ")";
+    line.appendChild(yspan); line.appendChild(amt); line.appendChild(cspan);
+    var list = document.getElementById("payList");
+    var toggle = document.getElementById("payToggle");
+    list.innerHTML = "";
+    if(payments.length){
+      var rows = payments.slice().reverse();
+      rows.forEach(function(p){
+        var row = document.createElement("div");
+        row.className = "pay-row";
+        var dl = document.createElement("span");
+        dl.className = "pay-date";
+        dl.textContent = fmtPayDate(p.date);
+        var vl = document.createElement("span");
+        vl.className = "pay-val";
+        vl.textContent = fmtMoney(p.amount);
+        row.appendChild(dl); row.appendChild(vl);
+        list.appendChild(row);
+      });
+      toggle.classList.remove("hidden");
+    } else {
+      toggle.classList.add("hidden");
+      list.classList.add("hidden");
+    }
+    card.classList.remove("hidden");
+  }
+  var payToggleBtn = document.getElementById("payToggle");
+  if(payToggleBtn){
+    payToggleBtn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      var list = document.getElementById("payList");
+      var open = !list.classList.contains("hidden");
+      if(open){ list.classList.add("hidden"); payToggleBtn.textContent = "View payments"; }
+      else { list.classList.remove("hidden"); payToggleBtn.textContent = "Hide payments"; }
+    });
+  }
+  function fetchPay(){
+    var token = driverToken();
+    if(!token) return;
+    fetch(PAY_URL + "?token=" + encodeURIComponent(token), {
+      headers: { "Accept": "application/json" },
+      cache: "no-store"
+    }).then(function(r){
+      if(!r.ok) throw new Error("pay " + r.status);
+      return r.json();
+    }).then(renderPay).catch(function(){ /* pay card stays hidden */ });
+  }
+
   function mergedTrips(){
     var out = [];
     var seen = {};
@@ -486,16 +580,17 @@
     showList();
   }
   fetchFeed();
+  fetchPay();
 
   // Home-screen icons (iOS especially) resume this page from a frozen
   // snapshot instead of loading it fresh, so the script never reruns and
   // the list looks stuck. Refetch whenever the page is shown again or
   // comes back to the foreground (throttled to one refetch per 30s).
   function maybeRefetch(){
-    if(Date.now() - lastFeedStart > 30000) fetchFeed();
+    if(Date.now() - lastFeedStart > 30000){ fetchFeed(); fetchPay(); }
   }
   window.addEventListener("pageshow", function(ev){
-    if(ev.persisted) fetchFeed(); else maybeRefetch();
+    if(ev.persisted){ fetchFeed(); fetchPay(); } else maybeRefetch();
   });
   document.addEventListener("visibilitychange", function(){
     if(!document.hidden) maybeRefetch();
