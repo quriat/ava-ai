@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { TripType, VehicleType } from '../types';
 import { FLEET_DATA, COMPANY_INFO } from '../data/avalimoData';
-import { Phone, Calendar, Star, ShieldCheck, Plane, Clock, Sparkles, CheckCircle2, ChevronRight, Award } from 'lucide-react';
+import { Phone, Calendar, Star, ShieldCheck, Plane, Clock, Sparkles, CheckCircle2, ChevronRight, Award, MessageCircle } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
+import QuoteWidget from './QuoteWidget';
+import { WHATSAPP_URL } from '../data/avalimoData';
 
 interface HeroProps {
   onSelectRoute?: (route: 'iah' | 'galveston') => void;
@@ -161,6 +163,17 @@ export default function Hero({ onSelectRoute, onBookingPrefill }: HeroProps) {
               >
                 <Phone size={15} />
                 <span>Call Dispatch: {COMPANY_INFO.phone}</span>
+              </a>
+
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('hero_whatsapp_click', { placement: 'homepage_hero' })}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/40 text-[#4be07f] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+              >
+                <MessageCircle size={15} />
+                <span>WhatsApp Us</span>
               </a>
 
               <a
@@ -401,6 +414,20 @@ export default function Hero({ onSelectRoute, onBookingPrefill }: HeroProps) {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Instant route quote — pick a route + vehicle class, see the flat price */}
+        <div className="mt-10">
+          <QuoteWidget
+            onBook={(data) => {
+              onBookingPrefill?.({
+                tripType: data.tripType,
+                vehicleId: data.vehicleId ?? selectedVehicleId,
+                pickupLocation: data.pickupLocation,
+                dropoffLocation: data.dropoffLocation,
+              });
+            }}
+          />
         </div>
       </div>
     </section>

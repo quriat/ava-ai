@@ -1,6 +1,6 @@
 import React from 'react';
-import { COMPANY_INFO } from '../data/avalimoData';
-import { Phone, Mail, Star } from 'lucide-react';
+import { COMPANY_INFO, WHATSAPP_URL } from '../data/avalimoData';
+import { Phone, Mail, Star, MessageCircle } from 'lucide-react';
 
 const AREA_LINKS = [
   { label: 'IAH Airport Limo', href: '/iah-airport-limo-service' },
@@ -45,6 +45,10 @@ const Footer: React.FC = () => {
           <a href={`tel:${COMPANY_INFO.aiConciergePhoneRaw}`} className="hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-900 border border-champagne">
             <Phone size={12} className="text-[var(--gold)]" /> {COMPANY_INFO.aiConciergePhone}
             <span className="text-slate-400 font-normal">(AI Concierge)</span>
+          </a>
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-900 border border-champagne">
+            <MessageCircle size={12} className="text-[#4be07f]" /> WhatsApp
+            <span className="text-slate-400 font-normal">{COMPANY_INFO.phone}</span>
           </a>
           <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-900 border border-champagne">
             <Mail size={12} className="text-[var(--gold)]" /> {COMPANY_INFO.email}

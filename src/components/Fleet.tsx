@@ -18,6 +18,13 @@ const FILTERS: { id: FilterCat; label: string }[] = [
 
 const CARD_ORDER = ['cadillac-escalade-esv', 'mercedes-sprinter-van', 'gmc-yukon-suburban', 'mercedes-s-class'];
 
+/** Short "best for" tags shown on the homepage fleet cards. */
+const USE_TAGS: Record<string, string[]> = {
+  'mercedes-s-class': ['Airport Transfers', 'Corporate Travel', 'Date Nights'],
+  'cadillac-escalade-esv': ['Families', 'Galveston Cruises', 'City-to-City'],
+  'mercedes-sprinter-van': ['Weddings', 'Group Transfers', 'Events'],
+};
+
 const CATEGORY_MAP: Record<FilterCat, string[]> = {
   all: CARD_ORDER,
   suv: ['cadillac-escalade-esv', 'gmc-yukon-suburban'],
@@ -111,9 +118,22 @@ const Fleet: React.FC<FleetProps> = ({ onSelectVehicle }) => {
                     </span>
                   </div>
 
-                  <p className="text-slate-400 text-xs leading-relaxed mb-5 min-h-[36px]">
+                  <p className="text-slate-400 text-xs leading-relaxed mb-4 min-h-[36px]">
                     {vehicle.description}
                   </p>
+
+                  {USE_TAGS[vehicle.id] && (
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {USE_TAGS[vehicle.id].map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2.5 py-1 rounded-full bg-gold/10 border border-gold/25 text-gold-300 text-[10px] font-bold uppercase tracking-wider"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Flat Rate breakdown */}
                   <div className="bg-dark-950/80 p-3.5 rounded-2xl border border-slate-800/80 text-[11px] text-slate-300 space-y-1.5 mb-2">

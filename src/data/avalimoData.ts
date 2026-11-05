@@ -428,6 +428,74 @@ export const TESTIMONIALS_DATA: Testimonial[] = [
 
 export const FAQS_DATA: FAQItem[] = faqsJson as FAQItem[];
 
+/** WhatsApp chat link for the dispatch line (same number as voice dispatch). */
+export const WHATSAPP_URL = 'https://wa.me/18325678050';
+
+/**
+ * Verified flat rates by route and vehicle class, used by the homepage
+ * instant quote widget and the route rates table. A null price means the
+ * route/class combination is quoted by phone only — never estimate it.
+ */
+export type QuoteVehicleClass = 'sedan' | 'suv' | 'sclass';
+
+export const QUOTE_VEHICLE_CLASSES: { id: QuoteVehicleClass; label: string; note: string }[] = [
+  { id: 'sedan', label: 'Sedan', note: 'Executive sedan' },
+  { id: 'suv', label: 'SUV', note: 'Cadillac Escalade ESV' },
+  { id: 'sclass', label: 'S-Class', note: 'Mercedes-Benz S-Class' },
+];
+
+export interface QuoteRoute {
+  id: string;
+  label: string;
+  pickupLocation: string;
+  dropoffLocation: string;
+  tripType: 'airport' | 'galveston';
+  prices: Record<QuoteVehicleClass, number | null>;
+}
+
+export const QUOTE_ROUTES: QuoteRoute[] = [
+  {
+    id: 'iah-downtown',
+    label: 'IAH Airport ⇄ Downtown Houston',
+    pickupLocation: 'George Bush Intercontinental Airport (IAH)',
+    dropoffLocation: 'Downtown Houston',
+    tripType: 'airport',
+    prices: { sedan: 125, suv: 165, sclass: 200 },
+  },
+  {
+    id: 'iah-galleria',
+    label: 'IAH Airport ⇄ Galleria / Uptown',
+    pickupLocation: 'George Bush Intercontinental Airport (IAH)',
+    dropoffLocation: 'Galleria / Uptown Houston',
+    tripType: 'airport',
+    prices: { sedan: 130, suv: 170, sclass: 250 },
+  },
+  {
+    id: 'hobby-downtown',
+    label: 'Hobby Airport ⇄ Downtown Houston',
+    pickupLocation: 'William P. Hobby Airport (HOU)',
+    dropoffLocation: 'Downtown Houston',
+    tripType: 'airport',
+    prices: { sedan: 110, suv: 145, sclass: 180 },
+  },
+  {
+    id: 'sugar-land-iah',
+    label: 'Sugar Land / Missouri City ⇄ IAH Airport',
+    pickupLocation: 'Sugar Land / Missouri City, TX',
+    dropoffLocation: 'George Bush Intercontinental Airport (IAH)',
+    tripType: 'airport',
+    prices: { sedan: 170, suv: null, sclass: null },
+  },
+  {
+    id: 'houston-galveston',
+    label: 'Houston ⇄ Galveston Cruise Port',
+    pickupLocation: 'Greater Houston Metropolitan Area',
+    dropoffLocation: 'Port of Galveston Cruise Terminal',
+    tripType: 'galveston',
+    prices: { sedan: null, suv: null, sclass: null },
+  },
+];
+
 export const POPULAR_ROUTES = [
   { from: 'IAH Airport', to: 'Downtown Houston / Toyota Center', duration: '30-40 min', startingPrice: '$125 Sedan / $165 SUV / $200 S-Class' },
   { from: 'IAH Airport', to: 'The Galleria / Uptown Post Oak', duration: '35-45 min', startingPrice: '$130 Sedan / $170 SUV / $250 S-Class' },

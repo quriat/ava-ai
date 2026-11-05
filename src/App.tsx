@@ -3,7 +3,8 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import Options from './components/Options';
 import Fleet from './components/Fleet';
-import Rates from './components/Rates';
+import Arrival from './components/Arrival';
+import RouteRates from './components/RouteRates';
 import Testimonials from './components/Testimonials';
 import Blog from './components/Blog';
 import BlogArticle from './components/BlogArticle';
@@ -211,7 +212,8 @@ function App() {
           />
           <Options onSelect={handleSelectRoute} />
           <Fleet onSelectVehicle={handleSelectVehicle} />
-          <Rates />
+          <Arrival />
+          <RouteRates />
           <AIConciergeSection />
           <Testimonials />
           <Blog />

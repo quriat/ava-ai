@@ -246,6 +246,29 @@ const homeBody = `
   <h1 style="font-size:2.5rem;">Houston Luxury Chauffeur &amp; Private Car Service</h1>
   <p>AvaLimo is Houston's trusted luxury chauffeur service, offering 24/7 flat-rate airport transfers at George Bush Intercontinental (<a href="/houston-airport-transfers">IAH</a>) and William P. Hobby (<a href="/houston-airport-transfers">HOU</a>), <a href="/galveston-cruise-transportation">Galveston cruise port shuttles</a>, <a href="/corporate-chauffeur-houston">corporate travel</a> and <a href="/houston-wedding-limo">weddings</a> across Greater Houston — with flight tracking and zero surge pricing.</p>
   <p><a href="tel:+18325678050">Call (832) 567-8050</a> · <a href="/#booking-section">Book Online</a></p>
+  <section>
+    <h2>Flat Rates by Route</h2>
+    <p>One flat rate per vehicle — no surge, no surprises. Rates include meet &amp; greet, wait time, taxes, tolls and airport parking.</p>
+    <table>
+      <thead><tr><th>Route</th><th>Sedan</th><th>SUV</th><th>S-Class</th></tr></thead>
+      <tbody>
+        <tr><td>IAH Airport ⇄ Downtown Houston</td><td>$125</td><td>$165</td><td>$200</td></tr>
+        <tr><td>IAH Airport ⇄ Galleria / Uptown</td><td>$130</td><td>$170</td><td>$250</td></tr>
+        <tr><td>Hobby Airport ⇄ Downtown Houston</td><td>$110</td><td>$135</td><td>$180</td></tr>
+        <tr><td>Sugar Land / Missouri City ⇄ IAH Airport</td><td>$170</td><td>Call for quote</td><td>Call for quote</td></tr>
+        <tr><td>Houston ⇄ Galveston Cruise Port</td><td>Call for quote</td><td>Call for quote</td><td>Call for quote</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>The AvaLimo Arrival — Wheels Down. Car Waiting.</h2>
+    <ol>
+      <li>Your flight is tracked in real time — your pickup adjusts to your actual landing.</li>
+      <li>Your chauffeur waits at baggage claim with your name on a sign.</li>
+      <li>Every bag carried, carousel to car.</li>
+      <li>One flat rate. No surge. No surprises.</li>
+    </ol>
+  </section>
   <nav aria-label="Site">
     <ul>
       <li><a href="/services">Limo Services</a></li>
@@ -272,6 +295,17 @@ writeFile(
     canonical: `${SITE}/`,
     ogType: 'website',
     bodyHtml: homeBody,
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: { '@type': 'Answer', text: f.answer },
+        })),
+      },
+    ],
   })
 );
 
