@@ -468,14 +468,160 @@ for (const pg of landing) {
   lcount++;
 }
 
+// ---- Rich crawlable bodies for the core routes (OpenSEO thin-content fix) ----
+const FAQ_BODY = `
+  <section>
+    <h2>Questions &amp; Answers</h2>
+    ${faqs.map((f) => `<h3>${esc(f.question)}</h3><p>${esc(f.answer)}</p>`).join('\n    ')}
+  </section>`;
+
+const SERVICES_BODY = `
+  <section>
+    <h2>Airport Transfers — IAH &amp; Hobby</h2>
+    <p>Our most-booked service. Your chauffeur tracks your flight in real time and adjusts the pickup to your actual landing. Choose inside meet &amp; greet at baggage claim — your chauffeur waits with a name sign and carries your bags to the car — or curbside pickup when you are ready. Complimentary wait time is included: 45 minutes for domestic arrivals and 60 minutes for international arrivals.</p>
+    <ul>
+      <li>IAH Airport ⇄ Downtown Houston — Sedan $125 · SUV $165 · S-Class $200</li>
+      <li>IAH Airport ⇄ Galleria / Uptown — Sedan $130 · SUV $170 · S-Class $250</li>
+      <li>Hobby Airport ⇄ Downtown Houston — Sedan $110 · SUV $145 · S-Class $180</li>
+      <li>Sugar Land / Missouri City ⇄ IAH Airport — Sedan $170</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Corporate &amp; Executive Chauffeur Service</h2>
+    <p>Houston energy executives, law partners and medical professionals rely on AvaLimo for roadshows, board meetings and Texas Medical Center appointments. Corporate accounts get simplified monthly itemized billing, a dedicated chauffeur on standby for multi-stop days, and strict confidentiality. Every car offers Wi-Fi and power outlets, so the ride doubles as working time.</p>
+  </section>
+  <section>
+    <h2>Hourly &amp; As-Directed Charters</h2>
+    <p>When your day has several stops — meetings, dinner, an event — hire the car by the hour and your chauffeur stays with you, waiting curbside at every stop. The Mercedes-Benz S-Class is $185 per hour with a five-hour minimum; hourly charters in other vehicles are quoted when you book.</p>
+  </section>
+  <section>
+    <h2>City-to-City &amp; Long-Distance Rides</h2>
+    <p>Door-to-door private car service between Houston and the rest of Texas, without airport lines or regional-flight delays. Victoria to IAH, Hobby or Downtown Houston is a $600 flat rate; Wharton to Houston airports or downtown is $350 flat. Other Texas cities are quoted at booking — the price you are quoted is the price you pay.</p>
+  </section>
+  <section>
+    <h2>Galveston Cruise Port Transfers</h2>
+    <p>Direct, non-stop rides between Houston, IAH, Hobby and every Port of Galveston cruise terminal, with pier drop-off and a scheduled pickup when your ship returns. SUVs and 14-passenger Sprinters handle cruise luggage and multi-family groups with room to spare.</p>
+  </section>
+  <section>
+    <h2>Every Ride Includes</h2>
+    <ul>
+      <li>One flat rate — no surge pricing, ever</li>
+      <li>Real-time flight tracking and meet &amp; greet</li>
+      <li>Licensed, insured, professional chauffeurs</li>
+      <li>Late-model, sanitized luxury vehicles</li>
+      <li>Complimentary bottled water and Wi-Fi</li>
+      <li>Child safety seats available on request</li>
+    </ul>
+  </section>`;
+
+const RATES_BODY = `
+  <section>
+    <h2>Airport Flat Rates</h2>
+    <p>One flat rate per vehicle — no surge, no surprises. Rates include meet &amp; greet, complimentary wait time (45 minutes domestic, 60 minutes international), taxes, tolls and airport parking.</p>
+    <table>
+      <thead><tr><th>Route</th><th>Sedan</th><th>SUV</th><th>S-Class</th></tr></thead>
+      <tbody>
+        <tr><td>IAH Airport ⇄ Downtown Houston</td><td>$125</td><td>$165</td><td>$200</td></tr>
+        <tr><td>IAH Airport ⇄ Galleria / Uptown</td><td>$130</td><td>$170</td><td>$250</td></tr>
+        <tr><td>Hobby Airport ⇄ Downtown Houston</td><td>$110</td><td>$145</td><td>$180</td></tr>
+        <tr><td>Sugar Land / Missouri City ⇄ IAH Airport</td><td>$170</td><td>Call for quote</td><td>Call for quote</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Long-Distance Flat Rates</h2>
+    <table>
+      <thead><tr><th>Route</th><th>Flat Rate</th></tr></thead>
+      <tbody>
+        <tr><td>Victoria, TX → IAH, Hobby or Downtown Houston</td><td>$600</td></tr>
+        <tr><td>Wharton, TX → Houston Airports or Downtown</td><td>$350</td></tr>
+      </tbody>
+    </table>
+    <p>Long-distance rides are private and door-to-door, with rest stops whenever you need them. Routes not listed — including other Texas cities and Galveston cruise transfers — are quoted at booking, and the quoted price is guaranteed.</p>
+  </section>
+  <section>
+    <h2>Hourly Charter Rates</h2>
+    <p>Mercedes-Benz S-Class: $185 per hour, five-hour minimum. Your chauffeur stays with you for unlimited stops within the booked time. Hourly rates for SUVs, Sprinters and stretch limousines are quoted when you book.</p>
+  </section>
+  <section>
+    <h2>Good to Know</h2>
+    <ul>
+      <li>No surge pricing — your rate is locked when you book, even during rush hour, conventions and major events.</li>
+      <li>Child safety seats (infant, toddler and booster) are available on request.</li>
+      <li>Sedans and SUVs: cancel 12 or more hours before pickup for a full refund. Sprinters, limousines and coaches: 48 hours.</li>
+      <li>Pickup time changes are free and easy, subject to vehicle availability.</li>
+    </ul>
+  </section>`;
+
+const FLEET_BODY = `
+  <section>
+    <h2>Mercedes-Benz S-Class — Executive Luxury Sedan</h2>
+    <p>Seats 3 · 3 bags. The pinnacle of German luxury: an ultra-smooth, whisper-quiet cabin for executives, airport arrivals and distinguished couples. Hand-stitched Nappa leather reclining rear seats, dual rear climate control, complimentary Wi-Fi and device charging, and acoustic privacy glass. IAH ⇄ Downtown $200 flat; hourly $185 with a five-hour minimum.</p>
+  </section>
+  <section>
+    <h2>Cadillac Escalade ESV — Flagship Luxury SUV</h2>
+    <p>Seats 6 · 6 bags. Imposing, spacious and prestigious, with an extended wheelbase for maximum legroom and cargo space — the airport and cruise-departure favorite. Luxury captain chairs, rear entertainment screens and a glass-smooth ride. IAH ⇄ Downtown $165 flat.</p>
+  </section>
+  <section>
+    <h2>GMC Yukon XL / Chevy Suburban — Executive Black SUV</h2>
+    <p>Seats 7 · 6 bags. The standard for corporate livery and comfortable group travel across Texas highways: black leather seating, room for golf bags and cruise luggage, heavy-duty dual rear A/C for Texas heat, power outlets and tinted privacy windows.</p>
+  </section>
+  <section>
+    <h2>Mercedes-Benz Sprinter Executive — VIP Group Van</h2>
+    <p>Seats 14 · 14 bags. A mobile boardroom with full stand-up headroom, premium leather recliners, a 43-inch smart TV, ambient lighting and a dedicated rear luggage hold. Built for corporate roadshows, cruise groups and event shuttles.</p>
+  </section>
+  <section>
+    <h2>Choosing Your Vehicle</h2>
+    <p>Solo travelers and couples usually pick the sedan or S-Class; families and anyone with serious luggage take the Escalade; groups of 8 to 14 ride in the Sprinter. Not sure? Call dispatch at <a href="tel:+18325678050">(832) 567-8050</a> and we will match the vehicle to your trip, passengers and bags. Every vehicle is late-model, detailed before your ride, and driven by a licensed, insured professional chauffeur.</p>
+  </section>`;
+
+const GALVESTON_BODY = `
+  <section>
+    <h2>How Your Cruise Transfer Works</h2>
+    <ol>
+      <li>Book your ride — tell us your ship, terminal and sailing time.</li>
+      <li>We track your flight into IAH or Hobby and adjust to your real landing time.</li>
+      <li>Your chauffeur meets you at baggage claim with a name sign and handles every bag.</li>
+      <li>Ride direct to your Port of Galveston terminal and step out at the pier.</li>
+      <li>When your cruise returns, your chauffeur is scheduled and waiting at disembarkation.</li>
+    </ol>
+  </section>
+  <section>
+    <h2>From Either Houston Airport</h2>
+    <p>From Hobby Airport the drive to the Port of Galveston takes about 45–55 minutes; from Bush Intercontinental (IAH) about 75–85 minutes. We also pick up from homes, hotels and offices across Greater Houston — including Sugar Land, Missouri City, Katy and The Woodlands.</p>
+  </section>
+  <section>
+    <h2>Room for Cruise Luggage &amp; Groups</h2>
+    <p>Cruise bags are big and families travel heavy. The Cadillac Escalade ESV swallows multi-week suitcases for up to six passengers, and the 14-passenger Mercedes Sprinter carries the whole group plus a dedicated luggage hold — one vehicle, no splitting up, no second rideshare gamble on sailing day.</p>
+  </section>
+  <section>
+    <h2>On-Time, Every Sailing</h2>
+    <p>Ships do not wait. We plan your pickup around your embarkation window with a buffer for I-45 traffic, track your inbound flight if you fly in the same day, and provide child safety seats on request. Your transfer is one flat rate confirmed when you book — call <a href="tel:+18325678050">(832) 567-8050</a> for your quote.</p>
+  </section>`;
+
+const REVIEWS_BODY = `
+  <section>
+    <h2>Five-Star Reviews from Houston Riders</h2>
+    <p>AvaLimo riders rate their trips five stars on Google. Here is what recent clients say about our airport transfers, chauffeur service and cruise rides:</p>
+    <blockquote><p>"Very prompt and professional."</p><p>— Art Contreras, Houston, TX · Hobby Airport Drop-off</p></blockquote>
+    <blockquote><p>"Adam is very professional cars are all clean. Great company and people."</p><p>— Tim Studdert, Houston, TX · IAH Airport Drop-off</p></blockquote>
+    <blockquote><p>"Awesome service. First class at affordable prices. The only way to travel around the Houston area and beyond."</p><p>— Anya Evans, Missouri City, TX · Hobby Airport Pickup</p></blockquote>
+    <blockquote><p>"For over five years, Adam has transported us with extreme reliability, dependability, and professionalism. He arrives 15 minutes prior to the scheduled departure time and greets us with an infectious smile. He handles all of the baggage for us, offers refreshments, and then we are driven professionally, comfortably, and cheerfully. Always a pleasurable and relaxed experience to which we are grateful."</p><p>— Joey Logreco, Houston, TX · Airport Pickup &amp; Drop-off</p></blockquote>
+    <blockquote><p>"Adam has been our go-to driver for years. Adam is professional, always on time, and personable. I trust him with my family and business associates... always trustworthy and dependable, not to mention he's just a great person. Thank you, Adam."</p><p>— Lee Labrada, Houston, TX · Chauffeur Service</p></blockquote>
+    <blockquote><p>"Adam and this company are always amazing! Been using them for a few years now and the rides are always on time, easy, and comfortable."</p><p>— Ethan James, Houston, TX · Airport Service</p></blockquote>
+    <blockquote><p>"Adam showed up 15 minutes early, wouldn't let me touch my own bags and drove so smoothly I feel asleep on the way to the airport."</p><p>— Mario Mendias, Houston, TX · Airport Drop-off</p></blockquote>
+    <blockquote><p>"Excellent service. Incredibly dependable. Super clean cars and friendly service."</p><p>— Teddy, Houston, TX · Chauffeur Service</p></blockquote>
+    <p>Rode with us recently? <a href="https://g.page/r/CVgUaFV7t4-8EBM/review" rel="noopener">Leave AvaLimo a Google review</a> — it helps other Houston travelers find a chauffeur they can trust.</p>
+  </section>`;
+
 // ---- Core SPA routes ----
 const CORE_ROUTES = [
-  { slug: 'fleet', title: 'Luxury Fleet | Mercedes S-Class, Escalade | AvaLimo', desc: 'Houston luxury sedan & SUV fleet: Mercedes S-Class, Cadillac Escalade, Mercedes Sprinter. Black car service for airport transfers & events.', h1: 'Our Luxury Fleet' },
-  { slug: 'services', title: 'Limo Services Houston | Airport & Corporate | AvaLimo', desc: 'Houston limo services: IAH & Hobby airport transfers, corporate car service, wedding limousine, prom, events. Luxury sedans, SUVs, Sprinters.', h1: 'Limo Services in Houston' },
-  { slug: 'airport-galveston', title: 'Airport to Galveston Cruise Transfer | AvaLimo', desc: 'Reliable IAH & Hobby airport transfers to Galveston cruise port. Flight tracking, meet-and-greet, flat rates. Call (832) 567-8050.', h1: 'Airport to Galveston Cruise Transfers' },
-  { slug: 'rates', title: 'Limo Rates & Flat Pricing Houston | AvaLimo', desc: 'Transparent flat-rate pricing for Houston airport transfers, hourly charters, weddings and Galveston cruise ports. No surge, no surprises.', h1: 'Rates & Flat Pricing' },
-  { slug: 'reviews', title: 'Customer Reviews | AvaLimo Houston', desc: 'Read verified reviews from Houston travelers who rode with AvaLimo for airport transfers, weddings and corporate travel.', h1: 'Customer Reviews' },
-  { slug: 'faq', title: 'FAQ | AvaLimo Houston Limo Service', desc: 'Answers on booking, pricing, flight tracking, car seats, cancellations and service area for AvaLimo Houston luxury transportation.', h1: 'Frequently Asked Questions' },
+  { slug: 'fleet', title: 'Luxury Fleet | Mercedes S-Class, Escalade | AvaLimo', desc: 'Houston luxury sedan & SUV fleet: Mercedes S-Class, Cadillac Escalade, Mercedes Sprinter. Black car service for airport transfers & events.', h1: 'Our Luxury Fleet', body: FLEET_BODY },
+  { slug: 'services', title: 'Limo Services Houston | Airport & Corporate | AvaLimo', desc: 'Houston limo services: IAH & Hobby airport transfers, corporate car service, wedding limousine, prom, events. Luxury sedans, SUVs, Sprinters.', h1: 'Limo Services in Houston', body: SERVICES_BODY },
+  { slug: 'airport-galveston', title: 'Airport to Galveston Cruise Transfer | AvaLimo', desc: 'Reliable IAH & Hobby airport transfers to Galveston cruise port. Flight tracking, meet-and-greet, flat rates. Call (832) 567-8050.', h1: 'Airport to Galveston Cruise Transfers', body: GALVESTON_BODY },
+  { slug: 'rates', title: 'Limo Rates & Flat Pricing Houston | AvaLimo', desc: 'Transparent flat-rate pricing for Houston airport transfers, hourly charters, weddings and Galveston cruise ports. No surge, no surprises.', h1: 'Rates & Flat Pricing', body: RATES_BODY },
+  { slug: 'reviews', title: 'Customer Reviews | AvaLimo Houston', desc: 'Read verified reviews from Houston travelers who rode with AvaLimo for airport transfers, weddings and corporate travel.', h1: 'Customer Reviews', body: REVIEWS_BODY },
+  { slug: 'faq', title: 'FAQ | AvaLimo Houston Limo Service', desc: 'Answers on booking, pricing, flight tracking, car seats, cancellations and service area for AvaLimo Houston luxury transportation.', h1: 'Frequently Asked Questions', body: FAQ_BODY },
   { slug: 'end-of-trip-review', title: 'Review Your Trip | AvaLimo', desc: 'Rate your recent AvaLimo ride. Your feedback keeps our Houston chauffeur service five-star.', h1: 'Review Your Trip', noindex: true },
 ];
 let ccount = 0;
@@ -486,6 +632,7 @@ for (const r of CORE_ROUTES) {
   <h1 style="font-size:2.5rem;">${esc(r.h1)}</h1>
   <p>${esc(r.desc)}</p>
   <p><a href="tel:+18325678050">Call (832) 567-8050</a> · <a href="/#booking-section">Book Online</a></p>
+  ${r.body || ''}
   ${TRUST_LINKS}
 </main>`;
   writeFile(
