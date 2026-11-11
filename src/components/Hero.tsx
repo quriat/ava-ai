@@ -82,10 +82,10 @@ export default function Hero({ onSelectRoute, onBookingPrefill }: HeroProps) {
           loop
           muted
           playsInline
-          poster="/og-image.jpg"
+          poster="/videos/hero-poster.jpg"
           className="w-full h-full object-cover filter brightness-[0.22] contrast-115"
         >
-          <source src="/videos/hero_bg.mp4" type="video/mp4" />
+          <source src="/videos/hero_houston.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/70 to-transparent"></div>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(197,160,89,0.12),transparent_70%)]"></div>
