@@ -83,11 +83,11 @@ export default function Hero({ onSelectRoute, onBookingPrefill }: HeroProps) {
           muted
           playsInline
           poster="/videos/hero-poster.jpg"
-          className="w-full h-full object-cover filter brightness-[0.22] contrast-115"
+          className="w-full h-full object-cover filter brightness-[0.85] contrast-110 saturate-[1.1]"
         >
           <source src="/videos/hero_houston.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/70 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-dark-950/25 to-transparent"></div>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(197,160,89,0.12),transparent_70%)]"></div>
       </div>
 
@@ -112,11 +112,11 @@ export default function Hero({ onSelectRoute, onBookingPrefill }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           {/* Left Column: Authority & Brand Position */}
           <div className="lg:col-span-7 text-center sm:text-left">
-            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-6">
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.65),0_1px_3px_rgba(0,0,0,0.8)]">
               Houston Luxury Chauffeur &amp; Private Car Service
             </h1>
 
-            <p className="text-slate-300 text-base sm:text-lg leading-relaxed mb-8 max-w-2xl font-light">
+            <p className="text-slate-100 text-base sm:text-lg leading-relaxed mb-8 max-w-2xl font-light [text-shadow:0_1px_12px_rgba(0,0,0,0.7),0_1px_2px_rgba(0,0,0,0.8)]">
               Punctual, flat-rate airport transfers to <strong className="text-white font-medium">IAH</strong> and <strong className="text-white font-medium">Hobby</strong>, executive roadshows, and <strong className="text-white font-medium">Port of Galveston</strong> cruise departures. Real-time commercial flight tracking with zero surge pricing.
             </p>
 
